@@ -1,1 +1,106 @@
 package org.fenixedu.academicTreasury.domain;
+
+valueType java.math.BigDecimal as BigDecimalAT
+{
+	externalizeWith {
+		String toString();
+	}
+} 
+
+/************
+ * ENTITIES *
+ ************/
+
+
+/* --------
+ * Settings
+ * --------
+ */
+
+class settings.AcademicTreasurySettings {
+}
+
+/*-----------
+ * Tariff 
+ * ----------*/
+
+class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff {
+	BigDecimalAT baseAmount;
+	int unitsForBase;
+	BigDecimalAT unitAmount;
+	BigDecimalAT pageAmount;
+	BigDecimalAT maximumAmount;
+	BigDecimalAT urgencyRate;
+	BigDecimalAT languageTranslationRate;
+	CycleType cycleType;
+}
+
+/*************
+ * RELATIONS *
+ *************/
+
+/* -------------
+ * Configuration
+ * -------------
+ */
+
+/* --- AcademicTreasurySettings --- */
+
+relation AcademicTreasurySettingsBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+
+	settings.AcademicTreasurySettings playsRole academicTreasurySettings {
+		multiplicity *;
+	}
+}
+
+relation AcademicTreasurySettingsEmolumentsProductGroup {
+	settings.AcademicTreasurySettings playsRole academicTreasurySettings {
+		multiplicity 0..1;
+	}
+	
+	.org.fenixedu.treasury.domain.ProductGroup playsRole emolumentsProductGroup {
+		multiplicity 0..1;
+	}
+}
+
+/*-----------
+ * Tariff 
+ * ----------*/
+
+/* --- AcademicTariff --- */
+
+relation AcademicTariffAdministrativeOffice {
+	
+	.org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice playsRole administrativeOffice {
+		multiplicity 1..1;
+	}
+	
+	tariff.AcademicTariff playsRole academicTariffs {
+		multiplicity *;
+	}
+}
+
+relation AcademicTariffDegreeType {
+	
+	.org.fenixedu.academic.domain.degree.DegreeType playsRole degreeType {
+		multiplicity 0..1;
+	}
+		
+	tariff.AcademicTariff playsRole academicTariffs {
+		multiplicity *;
+	}
+}
+
+relation AcademicTariffDegree {
+	
+	.org.fenixedu.academic.domain.Degree playsRole degree {
+		multiplicity 0..1;
+	}
+	
+	tariff.AcademicTariff playsRole academicTariffs {
+		multiplicity *;
+	}
+}
