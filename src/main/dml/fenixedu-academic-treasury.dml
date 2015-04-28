@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.domain;
+package org.fenixedu.academictreasury.domain;
 
 valueType java.math.BigDecimal as BigDecimalAT
 {

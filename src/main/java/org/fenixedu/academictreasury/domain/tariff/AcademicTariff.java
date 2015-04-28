@@ -6,9 +6,9 @@ import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
-import org.fenixedu.academicTreasury.dataTransferObject.tariff.AcademicTariffBean;
-import org.fenixedu.academicTreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.academicTreasury.util.Constants;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
+import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
@@ -19,11 +19,11 @@ import org.joda.time.Interval;
 import pt.ist.fenixframework.Atomic;
 
 public class AcademicTariff extends AcademicTariff_Base {
-    
+
     protected AcademicTariff(final FinantialEntity finantialEntity, final Product product, final VatType vatType,
             final AcademicTariffBean bean) {
         super();
-        
+
         init(finantialEntity, product, vatType, bean);
     }
 
@@ -31,10 +31,10 @@ public class AcademicTariff extends AcademicTariff_Base {
             final AcademicTariffBean bean) {
 
         super.init(finantialEntity, product, vatType, bean.getBeginDate(), bean.getEndDate(), bean.getDueDateCalculationType(),
-                bean.getFixedDueDate() != null ? bean.getFixedDueDate().toLocalDate() : null, bean.getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInterests(),
-                bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
-                bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
-                bean.getRate());
+                bean.getFixedDueDate() != null ? bean.getFixedDueDate().toLocalDate() : null,
+                bean.getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInterests(), bean.getInterestType(),
+                bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(),
+                bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(), bean.getRate());
 
         setBaseAmount(bean.getBaseAmount());
         setUnitsForBase(bean.getUnitsForBase());
@@ -71,11 +71,11 @@ public class AcademicTariff extends AcademicTariff_Base {
     public boolean isApplyLanguageTranslationRate() {
         return isPositive(getLanguageTranslationRate());
     }
-    
+
     public boolean isApplyBaseAmount() {
         return isPositive(getBaseAmount());
     }
-    
+
     protected void checkRules() {
         super.checkRules();
 
@@ -130,8 +130,8 @@ public class AcademicTariff extends AcademicTariff_Base {
         if (isNegative(getUrgencyRate())) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.urgencyRate.negative");
         }
-        
-        if(Constants.HUNDRED_PERCENT.compareTo(getUrgencyRate()) < 0) {
+
+        if (Constants.HUNDRED_PERCENT.compareTo(getUrgencyRate()) < 0) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.urgencyRate.greater.than.hundred");
         }
 
@@ -142,8 +142,8 @@ public class AcademicTariff extends AcademicTariff_Base {
         if (isNegative(getLanguageTranslationRate())) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.languageTranslationRate.negative");
         }
-        
-        if(Constants.HUNDRED_PERCENT.compareTo(getLanguageTranslationRate()) < 0) {
+
+        if (Constants.HUNDRED_PERCENT.compareTo(getLanguageTranslationRate()) < 0) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.languageTranslationRate.greater.than.hundred");
         }
 
