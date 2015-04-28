@@ -1,0 +1,66 @@
+<!--  
+Template for using Select2 Control easily
+
+Input Parameters:
+_FIELD_NAME_ -> The HTML Control ID that will be defined in the JSP, and that will be used to be the Form parameter ID
+_FIELD_NAME__options -> The Model Attribute where the Items DataSource is
+
+Steps:
+
+1 - Copy this HTML snippet to the JSP
+2 - Define the Input Parameters
+3 - Add the _FIELD_NAME__options to the Model in the Spring MVC Control .java  
+   Ex:
+		model.addAttribute(_FIELD_NAME__options, <array_of_elements>);
+
+
+-->
+
+
+
+		 <select id="_FIELD_NAME_" class="js-example-basic-single" name="_FIELD_NAME_">
+		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		</select>
+		<script>
+		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+		var _FIELD_NAME__options = [
+			<c:forEach items="${_FIELD_NAME__options}" var="element">   // THIS _FIELD_NAME__options must be added in the Controller.java 
+				{
+					text :"<c:out value='${element.name}'/>",  //Format the Output for the HTML Option
+					id : "<c:out value='${element.externalId}'/>" //Define the ID for the HTML Option
+				},
+			</c:forEach>
+		];
+
+		//Init Select2Options
+		initSelect2("#_FIELD_NAME_",_FIELD_NAME__options, "<c:out value='${param._FIELD_NAME}'/>"); //
+		</script>
+
+		
+		
+<!--  ##############          EXAMPLE ############## -->
+
+<!-- JSP -->
+		 <select id="finantialinstitution" class="js-example-basic-single" name="finantialinstitution">
+		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		</select>
+		<script>
+		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+		var finantialinstitution_options = [
+			<c:forEach items="${finantialinstitution_options}" var="element"> 
+				{
+					text :"<c:out value='${element.name}'/>", 
+					id : "<c:out value='${element.externalId}'/>"
+				},
+			</c:forEach>
+		];
+
+		//Init Select2Options
+		initSelect2("#finantialinstitution",finantialinstitution_options, "<c:out value='${param.finantialinstitution}'/>");
+		</script>
+
+<!-- JAVA -->
+
+        model.addAttribute("finantialinstitution_options", FinantialInstitution.findAll().collect(Collectors.toList())); // CHANGE_ME
+
+
