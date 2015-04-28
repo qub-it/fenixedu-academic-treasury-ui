@@ -1,4 +1,4 @@
-package org.fenixedu.academictreasury.ui.manageEmoluments;
+package org.fenixedu.academictreasury.ui.manageemoluments;
 
 import java.util.ArrayList;
 import java.util.Arrays;
