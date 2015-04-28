@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.domain.exceptions;
+package org.fenixedu.academictreasury.domain.exceptions;
 
 import javax.ws.rs.core.Response.Status;
 

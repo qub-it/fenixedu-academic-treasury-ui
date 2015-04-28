@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.ui;
+package org.fenixedu.academictreasury.ui;
 
 import org.fenixedu.bennu.spring.portal.SpringApplication;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;

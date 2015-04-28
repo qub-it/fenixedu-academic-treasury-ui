@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.ui.manageEmoluments;
+package org.fenixedu.academictreasury.ui.manageEmoluments;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -9,9 +9,9 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.degree.DegreeType;
-import org.fenixedu.academicTreasury.dataTransferObject.tariff.AcademicTariffBean;
-import org.fenixedu.academicTreasury.domain.tariff.AcademicTariff;
-import org.fenixedu.academicTreasury.ui.AcademicTreasuryBaseController;
+import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
+import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
+import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;

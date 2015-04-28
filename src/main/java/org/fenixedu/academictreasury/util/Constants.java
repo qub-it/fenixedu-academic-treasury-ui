@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.util;
+package org.fenixedu.academictreasury.util;
 
 import java.math.BigDecimal;
 

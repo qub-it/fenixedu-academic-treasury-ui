@@ -2,7 +2,7 @@ package test.not.commit;
 
 import java.util.Locale;
 
-import org.fenixedu.academicTreasury.domain.settings.AcademicTreasurySettings;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;

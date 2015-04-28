@@ -1,11 +1,11 @@
-package org.fenixedu.academicTreasury.ui.manageEmoluments;
+package org.fenixedu.academictreasury.ui.manageEmoluments;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.academicTreasury.services.EmolumentServices;
-import org.fenixedu.academicTreasury.ui.AcademicTreasuryBaseController;
+import org.fenixedu.academictreasury.services.EmolumentServices;
+import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.LocalizedString;

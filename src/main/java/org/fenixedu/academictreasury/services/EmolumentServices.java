@@ -1,9 +1,9 @@
-package org.fenixedu.academicTreasury.services;
+package org.fenixedu.academictreasury.services;
 
 import java.util.stream.Stream;
 
-import org.fenixedu.academicTreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.academicTreasury.domain.settings.AcademicTreasurySettings;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 

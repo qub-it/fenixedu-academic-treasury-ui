@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.dataTransferObject.tariff;
+package org.fenixedu.academictreasury.dto.tariff;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

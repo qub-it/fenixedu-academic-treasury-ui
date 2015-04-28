@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.domain.tariff;
+package org.fenixedu.academictreasury.domain.tariff;
 
 import java.util.stream.Stream;
 

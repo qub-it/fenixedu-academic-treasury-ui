@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.ui;
+package org.fenixedu.academictreasury.ui;
 
 import java.util.ArrayList;
 import java.util.List;

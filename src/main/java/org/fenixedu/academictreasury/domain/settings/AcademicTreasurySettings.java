@@ -1,7 +1,8 @@
-package org.fenixedu.academicTreasury.domain.settings;
+package org.fenixedu.academictreasury.domain.settings;
 
 import java.util.Optional;
 
+import org.fenixedu.academicTreasury.domain.settings.AcademicTreasurySettings_Base;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.ProductGroup;
 

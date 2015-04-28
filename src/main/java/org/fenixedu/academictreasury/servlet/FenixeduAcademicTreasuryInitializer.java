@@ -1,4 +1,4 @@
-package org.fenixedu.academicTreasury.servlet;
+package org.fenixedu.academictreasury.servlet;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
