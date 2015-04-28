@@ -31,7 +31,7 @@ import pt.ist.fenixframework.Atomic;
 //@Component("org.fenixedu.academicTreasury.ui.manageEmoluments") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = AcademicTreasuryController.class, title = "title.manageEmoluments", accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 //or
-@BennuSpringController(value = FinantialEntityController.class)
+@BennuSpringController(value = ProductController.class)
 @RequestMapping("/academictreasury/manageemoluments/academictariff")
 public class AcademicTariffController extends AcademicTreasuryBaseController {
 
