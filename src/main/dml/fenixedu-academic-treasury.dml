@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.domain;
 
+enum org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType                   as AcademicServiceRequestSituationTypeT;
+
 valueType java.math.BigDecimal as BigDecimalAT
 {
 	externalizeWith {
@@ -20,9 +22,19 @@ valueType java.math.BigDecimal as BigDecimalAT
 class settings.AcademicTreasurySettings {
 }
 
-/*-----------
+/* --------------
+ * PersonCustomer
+ * --------------*/
+
+class customer.PersonCustomer extends .org.fenixedu.treasury.domain.Customer {
+}
+
+/*-------
  * Tariff 
- * ----------*/
+ * ------*/
+
+class event.AcademicTreasuryEvent extends .org.fenixedu.treasury.domain.event.TreasuryEvent {
+}
 
 class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff {
 	BigDecimalAT baseAmount;
@@ -33,6 +45,14 @@ class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff 
 	BigDecimalAT urgencyRate;
 	BigDecimalAT languageTranslationRate;
 	CycleType cycleType;
+}
+
+/*------------------------------------
+ * ServiceRequestEmolumentMapEntry
+ *------------------------------------*/
+ 
+class emoluments.ServiceRequestMapEntry {
+	AcademicServiceRequestSituationTypeT createEventOnSituation;
 }
 
 /*************
@@ -66,9 +86,35 @@ relation AcademicTreasurySettingsEmolumentsProductGroup {
 	}
 }
 
+/* --------------
+ * PersonCustomer
+ * --------------*/
+
+relation PersonCustomerPerson {
+	.org.fenixedu.academic.domain.Person playsRole person {
+		multiplicity 1..1;
+	}
+	
+	customer.PersonCustomer playsRole personCustomer {
+		multiplicity 0..1;
+	}	
+}
+
 /*-----------
  * Tariff 
  * ----------*/
+
+/* --- AcademicTreasuryEvent --- */
+
+relation AcademicTreasuryEventAcademicServiceRequest {
+	.org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest playsRole academicServiceRequest {
+		multiplicity 0..1;
+	}
+	
+	event.AcademicTreasuryEvent playsRole academicTreasuryEvent {
+		multiplicity 0..1;
+	}
+}
 
 /* --- AcademicTariff --- */
 
@@ -104,3 +150,48 @@ relation AcademicTariffDegree {
 		multiplicity *;
 	}
 }
+
+/*------------------------------------
+ * ServiceRequestEmolumentMapEntry
+ *------------------------------------*/
+ 
+relation ServiceRequestMapEntryBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+
+	emoluments.ServiceRequestMapEntry playsRole serviceRequestMapEntries {
+		multiplicity *;
+	}
+}
+
+relation ServiceRequestMapEntryProduct {
+	.org.fenixedu.treasury.domain.Product playsRole product {
+		multiplicity 1..1;
+	}
+
+	emoluments.ServiceRequestMapEntry playsRole serviceRequestMapEntries {
+		multiplicity *;
+	}
+}
+
+relation ServiceRequestMapEntryServiceRequestType {
+	.org.fenixedu.academic.domain.serviceRequests.ServiceRequestType playsRole serviceRequestType {
+		multiplicity 1..1;
+	}
+	
+	emoluments.ServiceRequestMapEntry playsRole serviceRequestMapEntries {
+		multiplicity *;
+	}
+}
+
+relation ServiceRequestMapEntryServiceRequestTypeOptionBooleanValue {
+	emoluments.ServiceRequestMapEntry playsRole serviceRequestMapEntry {
+		multiplicity 0..1;
+	}
+
+	.org.fenixedu.academic.domain.serviceRequests.ServiceRequestTypeOptionBooleanValue playsRole serviceRequestTypeOptionBooleanValues {
+		multiplicity *;
+	}
+}
+

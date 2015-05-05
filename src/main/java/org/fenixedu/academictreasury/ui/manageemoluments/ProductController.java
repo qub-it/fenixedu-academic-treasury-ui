@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import pt.ist.fenixframework.Atomic;
 
-@Component("org.fenixedu.academicTreasury.ui.manageEmoluments")
+@Component("org.fenixedu.academictreasury.ui.manageemoluments")
 @BennuSpringController(value = FinantialEntityController.class)
 @RequestMapping("/academictreasury/manageemoluments/product")
 public class ProductController extends AcademicTreasuryBaseController {

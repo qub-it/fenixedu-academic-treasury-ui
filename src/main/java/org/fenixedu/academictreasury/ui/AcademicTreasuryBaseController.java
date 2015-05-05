@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import pt.ist.fenixframework.DomainObject;
 
@@ -55,27 +56,35 @@ public class AcademicTreasuryBaseController {
         model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
     }
 
+    protected String redirect(String destinationAction, Model model, RedirectAttributes redirectAttributes) {
+        if (model.containsAttribute(INFO_MESSAGES)) {
+            redirectAttributes.addFlashAttribute(INFO_MESSAGES, model.asMap().get(INFO_MESSAGES));
+        }
+        if (model.containsAttribute(WARNING_MESSAGES)) {
+            redirectAttributes.addFlashAttribute(WARNING_MESSAGES, model.asMap().get(WARNING_MESSAGES));
+        }
+        if (model.containsAttribute(ERROR_MESSAGES)) {
+            redirectAttributes.addFlashAttribute(ERROR_MESSAGES, model.asMap().get(ERROR_MESSAGES));
+        }
+
+        return "redirect:" + destinationAction;
+    }
+
     @ModelAttribute
     protected void addModelProperties(Model model) {
-        model.addAttribute(INFO_MESSAGES, new ArrayList<String>());
-        model.addAttribute(WARNING_MESSAGES, new ArrayList<String>());
-        model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
+        if (!model.containsAttribute(INFO_MESSAGES)) {
+            model.addAttribute(INFO_MESSAGES, new ArrayList<String>());
+        }
+        if (!model.containsAttribute(WARNING_MESSAGES)) {
+            model.addAttribute(WARNING_MESSAGES, new ArrayList<String>());
+        }
+        if (!model.containsAttribute(ERROR_MESSAGES)) {
+            model.addAttribute(ERROR_MESSAGES, new ArrayList<String>());
+        }
 
-        String infoMessages = request.getParameter(INFO_MESSAGES);
-        if (infoMessages != null) {
-            addInfoMessage(infoMessages, model);
-        }
-        String warningMessages = request.getParameter(WARNING_MESSAGES);
-        if (warningMessages != null) {
-            addWarningMessage(warningMessages, model);
-        }
-        String errorMessages = request.getParameter(ERROR_MESSAGES);
-        if (errorMessages != null) {
-            addErrorMessage(errorMessages, model);
-        }
-        //Add here more attributes to the Model
-        //model.addAttribute(<attr1Key>, <attr1Value>);
-        //....
+        // Add here more attributes to the Model
+        // model.addAttribute(<attr1Key>, <attr1Value>);
+        // ....
     }
 
     @InitBinder

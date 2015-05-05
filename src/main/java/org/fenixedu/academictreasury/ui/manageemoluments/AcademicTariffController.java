@@ -28,20 +28,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import pt.ist.fenixframework.Atomic;
 
-//@Component("org.fenixedu.academicTreasury.ui.manageEmoluments") <-- Use for duplicate controller name disambiguation
-//@SpringFunctionality(app = AcademicTreasuryController.class, title = "title.manageEmoluments", accessGroup = "anyone")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
-//or
-@BennuSpringController(value = ProductController.class)
+@BennuSpringController(value = FinantialEntityController.class)
 @RequestMapping("/academictreasury/manageemoluments/academictariff")
 public class AcademicTariffController extends AcademicTreasuryBaseController {
-
-    @Atomic
-    public void deleteAcademicTariff(AcademicTariff academicTariff) {
-        // CHANGE_ME: Do the processing for deleting the academicTariff
-        // Do not catch any exception here
-
-        // academicTariff.delete(); 
-    }
 
     @RequestMapping(value = "/viewemolumenttariffs/{finantialEntityId}/{productId}")
     public String viewEmolumentTariffs(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
@@ -75,7 +64,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         setAcademicTariff(academicTariff, model);
         try {
             //call the Atomic delete function
-            deleteAcademicTariff(academicTariff);
+            //deleteAcademicTariff(academicTariff);
 
             addInfoMessage("Sucess deleting AcademicTariff ...", model);
             return "redirect:/academictreasury/manageemoluments/product/searchemoluments";
@@ -107,9 +96,9 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             @PathVariable("productId") final Product product,
             @RequestParam(value = "academicTariffBean", required = true) final AcademicTariffBean academicTariffBean,
             final Model model) {
-
+        
         academicTariffBean.resetFields();
-
+        
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("product", product);
 
@@ -124,7 +113,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 .getDegreeType().getCycleTypes() : Collections.emptyList());
         model.addAttribute("AcademicTariff_dueDateCalculationType_options", Arrays.asList(DueDateCalculationType.values()));
         model.addAttribute("AcademicTariff_interestType_options", Arrays.asList(InterestType.values()));
-
+        
         return "academicTreasury/manageemoluments/academictariff/createemolumenttariff";
     }
 
@@ -133,6 +122,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             @PathVariable("productId") final Product product,
             @RequestParam(value = "academicTariffBean", required = false) final AcademicTariffBean bean, final Model model) {
 
+
         try {
 
             bean.resetFields();
@@ -140,7 +130,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
 
             return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
                     finantialEntity.getExternalId(), product.getExternalId(), academicTariff.getExternalId());
-
+            
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
             return _createemolumenttariff(finantialEntity, product, bean, model);

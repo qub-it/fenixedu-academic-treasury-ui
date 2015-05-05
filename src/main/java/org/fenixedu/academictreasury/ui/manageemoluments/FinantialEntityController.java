@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import pt.ist.fenixframework.Atomic;
 
-//@Component("org.fenixedu.academicTreasury.ui.manageEmoluments") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageEmoluments", accessGroup = "anyone")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/academictreasury/manageemoluments/finantialentity")
