@@ -142,8 +142,6 @@ $(document).ready(function() {
 			}	  
 	    );
 	    
-	    
-	    
 	    $("#serviceRequestMapEntry_serviceRequestType").select2().select2('val', '<c:out value='${param.servicerequesttype}'/>');
 	
 		<%-- End block for providing serviceRequestType options --%>

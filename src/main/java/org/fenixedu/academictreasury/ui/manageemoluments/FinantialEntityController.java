@@ -9,12 +9,14 @@ import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import pt.ist.fenixframework.Atomic;
 
+@Component("org.fenixedu.academictreasury.ui.manageemoluments.FinantialEntityController")
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageEmoluments", accessGroup = "anyone")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping("/academictreasury/manageemoluments/finantialentity")

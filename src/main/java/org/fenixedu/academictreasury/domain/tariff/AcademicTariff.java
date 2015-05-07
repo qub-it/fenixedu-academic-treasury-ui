@@ -2,17 +2,17 @@ package org.fenixedu.academictreasury.domain.tariff;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
-import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
-import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
@@ -22,6 +22,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -189,11 +190,11 @@ public class AcademicTariff extends AcademicTariff_Base {
         super.delete();
     }
 
-    public BigDecimal amountToPay(final AcademicServiceRequest academicServiceRequest) {
-        BigDecimal amount = BigDecimal.ZERO;
+    public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent) {
+        BigDecimal amount = getBaseAmount();
 
         if (isApplyUnitsAmount()) {
-            int remainingUnits = academicServiceRequest.getNumberOfUnits() - getUnitsForBase();
+            int remainingUnits = academicTreasuryEvent.getNumberOfUnits() - getUnitsForBase();
 
             if (remainingUnits > 0) {
                 amount = amount.add(getUnitAmount().multiply(new BigDecimal(remainingUnits)));
@@ -201,33 +202,33 @@ public class AcademicTariff extends AcademicTariff_Base {
         }
 
         if (isApplyPagesAmount()) {
-            amount = amount.add(getPageAmount().multiply(new BigDecimal(academicServiceRequest.getNumberOfPages())));
+            amount = amount.add(getPageAmount().multiply(new BigDecimal(academicTreasuryEvent.getNumberOfPages())));
         }
 
         if (isApplyMaximumAmount() && isGreaterThan(amount, getMaximumAmount())) {
             amount = getMaximumAmount();
         }
 
-        if (isApplyUrgencyRate() && academicServiceRequest.isUrgentRequest()) {
+        if (isApplyUrgencyRate() && academicTreasuryEvent.isUrgentRequest()) {
             amount =
                     amount.multiply(BigDecimal.ONE.add(getUrgencyRate().setScale(20, RoundingMode.HALF_EVEN)
                             .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN)));
         }
 
-        if (isApplyLanguageTranslationRate() && Constants.isForeignLanguage(academicServiceRequest.getLanguage())) {
+        if (isApplyLanguageTranslationRate() && Constants.isForeignLanguage(academicTreasuryEvent.getLanguage())) {
             amount =
                     amount.multiply(BigDecimal.ONE.add(getLanguageTranslationRate().setScale(20, RoundingMode.HALF_EVEN)
                             .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN)));
         }
+        
         return amount;
     }
-    
-    public DebitEntry createDebitEntry(final DebtAccount debtAccount, final AcademicTreasuryEvent academicTreasuryEvent) {
-        final AcademicServiceRequest academicServiceRequest = academicTreasuryEvent.getAcademicServiceRequest();
 
-        final BigDecimal amount = amountToPay(academicServiceRequest);
-        
-        return DebitEntry.create(debtAccount, academicTreasuryEvent, amount);
+    public DebitEntry createDebitEntry(final DebtAccount debtAccount, final AcademicTreasuryEvent academicTreasuryEvent) {
+        final BigDecimal amount = amountToPay(academicTreasuryEvent);
+        final LocalDate dueDate = dueDate(academicTreasuryEvent.getRequestDate());
+
+        return DebitEntry.create(debtAccount, academicTreasuryEvent, getVatType(), amount, dueDate);
     }
 
     // @formatter: off
@@ -369,7 +370,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         return null;
     }
 
-    public static Optional<? extends AcademicTariff> findMatch(final Product product, final Degree degree, final DateTime when) {
+    public static AcademicTariff findMatch(final Product product, final Degree degree, final DateTime when) {
         if (degree == null) {
             throw new RuntimeException("degree is null. wrong findMatch call");
         }
@@ -378,32 +379,33 @@ public class AcademicTariff extends AcademicTariff_Base {
         final DegreeType degreeType = degree.getDegreeType();
 
         // With the most specific conditions tariff was not found. Fallback to degree
-        Stream<? extends AcademicTariff> stream = findActive(product, administrativeOffice, degreeType, degree, when);
-        if (stream.count() > 1) {
+        Set<? extends AcademicTariff> activeTariffs =
+                findActive(product, administrativeOffice, degreeType, degree, when).collect(Collectors.<AcademicTariff> toSet());
+        if (activeTariffs.size() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (stream.count() == 1) {
-            return stream.findFirst();
+        } else if (activeTariffs.size() == 1) {
+            return activeTariffs.iterator().next();
         }
 
         // Fallback to degreeType
-        stream = findActive(product, administrativeOffice, degreeType, when);
-        if (stream.count() > 1) {
+        activeTariffs = findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
+        if (activeTariffs.size() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (stream.count() == 1) {
-            return stream.findFirst();
+        } else if (activeTariffs.size() == 1) {
+            return activeTariffs.iterator().next();
         }
 
         // Fallback to administrativeOffice and return
-        stream = findActive(product, administrativeOffice, when);
-        if (stream.count() > 1) {
+        activeTariffs = findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
+        if (activeTariffs.size() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
         }
 
-        return stream.findFirst();
+        return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
     }
 
-    public static Optional<? extends AcademicTariff> findMatch(final Product product, final Degree degree,
-            final CycleType cycleType, final DateTime when) {
+    public static AcademicTariff findMatch(final Product product, final Degree degree, final CycleType cycleType,
+            final DateTime when) {
         if (degree == null || cycleType == null) {
             throw new RuntimeException("degree or cycle type is null. wrong findMatch call");
         }
@@ -411,36 +413,53 @@ public class AcademicTariff extends AcademicTariff_Base {
         final AdministrativeOffice administrativeOffice = degree.getAdministrativeOffice();
         final DegreeType degreeType = degree.getDegreeType();
 
-        Stream<? extends AcademicTariff> stream = findActive(product, administrativeOffice, degreeType, degree, cycleType, when);
-        if (stream.count() > 1) {
+        Set<? extends AcademicTariff> activeTariffs =
+                findActive(product, administrativeOffice, degreeType, degree, cycleType, when).collect(
+                        Collectors.<AcademicTariff> toSet());
+        if (activeTariffs.size() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (stream.count() == 1) {
-            return stream.findFirst();
+        } else if (activeTariffs.size() == 1) {
+            return activeTariffs.iterator().next();
         }
 
         // With the most specific conditions tariff was not found. Fallback to degree
-        stream = findActive(product, administrativeOffice, degreeType, degree, when);
-        if (stream.count() > 1) {
+        activeTariffs =
+                findActive(product, administrativeOffice, degreeType, degree, when).collect(Collectors.<AcademicTariff> toSet());
+        if (activeTariffs.size() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (stream.count() == 1) {
-            return stream.findFirst();
+        } else if (activeTariffs.size() == 1) {
+            return activeTariffs.iterator().next();
         }
 
         // Fallback to degreeType
-        stream = findActive(product, administrativeOffice, degreeType, when);
-        if (stream.count() > 1) {
+        activeTariffs = findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
+        if (activeTariffs.size() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (stream.count() == 1) {
-            return stream.findFirst();
+        } else if (activeTariffs.size() == 1) {
+            return activeTariffs.iterator().next();
         }
 
         // Fallback to administrativeOffice and return
-        stream = findActive(product, administrativeOffice, when);
-        if (stream.count() > 1) {
+        activeTariffs = findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
+        if (activeTariffs.size() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
         }
 
-        return stream.findFirst();
+        return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
+    }
+
+    /* ----
+     * UTIL
+     * ----
+     */
+
+    private LocalDate dueDate(final LocalDate requestDate) {
+
+        if (getDueDateCalculationType().isFixedDate()) {
+            return getFixedDueDate();
+        }
+
+        return requestDate.plusDays(getNumberOfDaysAfterCreationForDueDate());
     }
 
 }

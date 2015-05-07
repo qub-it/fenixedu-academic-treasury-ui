@@ -2,10 +2,13 @@ package org.fenixedu.academictreasury.domain.emoluments;
 
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import javax.crypto.spec.PSource;
 
 import org.fenixedu.academic.domain.DomainObjectUtil;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
@@ -21,6 +24,8 @@ import pt.ist.fenixframework.Atomic;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
 
@@ -79,22 +84,21 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
                     continue;
                 }
 
-                if (outer.positiveServiceRequestTypeOptions().count() != inner.positiveServiceRequestTypeOptions().count()) {
+                if (outer.positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).count() != inner
+                        .positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).count()) {
                     continue;
                 }
 
-                if (Sets.difference(outer.positiveServiceRequestTypeOptions().collect(Collectors.toSet()),
-                        outer.positiveServiceRequestTypeOptions().collect(Collectors.toSet())).isEmpty()) {
+                if (Sets.difference(
+                        outer.positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).collect(
+                                Collectors.toSet()),
+                        outer.positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).collect(
+                                Collectors.toSet())).isEmpty()) {
                     throw new AcademicTreasuryDomainException("error.ServiceRequestMapEntry.duplicate.entry");
                 }
             }
         }
 
-    }
-
-    private Stream<ServiceRequestTypeOption> positiveServiceRequestTypeOptions() {
-        return getServiceRequestTypeOptionBooleanValuesSet().stream().filter(v -> v.getValue())
-                .map(v -> v.getServiceRequestTypeOption());
     }
 
     private boolean isDeletable() {
@@ -123,18 +127,22 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
         return getServiceRequestTypeOptionBooleanValuesSet().stream().filter(v -> v.getValue()).count();
     }
 
-    private boolean hasOptionAndEqualsToValue(final ServiceRequestTypeOption key, final boolean value) {
-        return findOptionValue(key).isPresent() && findOptionValue(key).get().getValue() == value;
-    }
-
     private Optional<ServiceRequestTypeOptionBooleanValue> findOptionValue(final ServiceRequestTypeOption option) {
         return getServiceRequestTypeOptionBooleanValuesSet().stream().filter(v -> v.getServiceRequestTypeOption() == option)
                 .findFirst();
     }
 
-    private Set<ServiceRequestTypeOption> serviceRequestTypeOptions() {
-        return getServiceRequestTypeOptionBooleanValuesSet().stream().map(v -> v.getServiceRequestTypeOption())
-                .collect(Collectors.toSet());
+    private boolean satisfyPositiveOptions(final Set<ServiceRequestTypeOption> requestPositiveOptions) {
+        final Set<ServiceRequestTypeOption> positiveOptions =
+                positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).collect(Collectors.toSet());
+
+        for (final ServiceRequestTypeOption o : positiveOptions) {
+            if (!requestPositiveOptions.contains(o)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /*---------
@@ -158,48 +166,45 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
         return find(product).filter(e -> e.getServiceRequestType() == requestType);
     }
 
-    public static Optional<ServiceRequestMapEntry> findMatch(final AcademicServiceRequest academicServiceRequest) {
+    public static ServiceRequestMapEntry findMatch(final AcademicServiceRequest academicServiceRequest) {
         final ServiceRequestType serviceRequestType = ServiceRequestType.findUnique(academicServiceRequest);
-        final Map<ServiceRequestTypeOption, Boolean> optionValuesMap =
-                Maps.newHashMap(ServiceRequestTypeOption.optionValuesMap(academicServiceRequest));
 
-        // The options are all of boolean values. It is necessary to complete the
-        // optionValuesMap with the rest of serviceRequestType options with false
+        final Set<ServiceRequestTypeOption> requestPositiveOptions =
+                positiveServiceRequestTypeOptions(academicServiceRequest.getServiceRequestTypeOptionBooleanValuesSet()).collect(
+                        Collectors.toSet());
 
-        for (final ServiceRequestTypeOption option : serviceRequestType.getServiceRequestTypeOptionsSet()) {
-            if (!optionValuesMap.containsKey(option)) {
-                optionValuesMap.put(option, false);
+        final Set<ServiceRequestMapEntry> candidates = Sets.newTreeSet(Collections.reverseOrder(COMPARE_BY_POSITIVE_OPTIONS));
+        for (final ServiceRequestMapEntry mapEntry : find(serviceRequestType).collect(Collectors.toSet())) {
+            if (mapEntry.satisfyPositiveOptions(requestPositiveOptions)) {
+                candidates.add(mapEntry);
             }
         }
 
-        // First consider mapEntries with have options declared in optionValuesMap variable
-        // and 
+        return candidates != null ? candidates.iterator().next() : null;
+    }
 
-        final Set<ServiceRequestMapEntry> firstFilter = Sets.newHashSet();
-        for (final Map.Entry<ServiceRequestTypeOption, Boolean> entry : optionValuesMap.entrySet()) {
-            if (!serviceRequestType.hasOption(entry.getKey())) {
-                continue;
-            }
-
-            for (final ServiceRequestMapEntry mapEntry : find(serviceRequestType).collect(Collectors.toSet())) {
-                if (mapEntry.hasOptionAndEqualsToValue(entry.getKey(), entry.getValue())) {
-                    firstFilter.add(mapEntry);
-                }
-            }
+    public static Product findProduct(final AcademicServiceRequest academicServiceRequest) {
+        if (findMatch(academicServiceRequest) == null) {
+            throw new AcademicTreasuryDomainException("error.ServiceRequestMapEntry.cannot.find.serviceRequestMapEntry");
         }
 
-        if (firstFilter.size() > 1) {
-            throw new AcademicTreasuryDomainException(
-                    "error.ServiceRequestMapEntry.findMatch.academicServiceRequest.more.than.one");
-        }
-
-        return firstFilter.stream().findFirst();
+        return findMatch(academicServiceRequest).getProduct();
     }
 
     @Atomic
     public static ServiceRequestMapEntry create(final Product product, final ServiceRequestType requestType,
             AcademicServiceRequestSituationType situationType, final Set<ServiceRequestTypeOption> optionValues) {
         return new ServiceRequestMapEntry(product, requestType, situationType, optionValues);
+    }
+
+    /*--------------
+     * OTHER METHODS
+     * -------------
+     */
+
+    private static Stream<ServiceRequestTypeOption> positiveServiceRequestTypeOptions(
+            final Set<ServiceRequestTypeOptionBooleanValue> values) {
+        return values.stream().filter(v -> v.getValue()).map(v -> v.getServiceRequestTypeOption());
     }
 
 }

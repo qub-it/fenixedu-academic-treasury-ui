@@ -17,6 +17,8 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
     
     protected PersonCustomer(final Person person) {
+        this();
+        
         setPerson(person);
         
         checkRules();

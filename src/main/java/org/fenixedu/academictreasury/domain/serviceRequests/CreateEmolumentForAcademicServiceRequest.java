@@ -17,10 +17,16 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 
+import com.google.common.eventbus.Subscribe;
+
 public class CreateEmolumentForAcademicServiceRequest {
 
+    @Subscribe
     public void newAcademicServiceRequestSituationEvent(final DomainObjectEvent<AcademicServiceRequest> event) {
-        final AcademicServiceRequest academicServiceRequest = event.getInstance();
+        newAcademicServiceRequestSituationEvent(event.getInstance());
+    }
+
+    public void newAcademicServiceRequestSituationEvent(final AcademicServiceRequest academicServiceRequest) {
 
         if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
             return;
@@ -34,16 +40,12 @@ public class CreateEmolumentForAcademicServiceRequest {
         }
 
         // Find configured map entry for service request type
-        final Optional<ServiceRequestMapEntry> matchMapEntryOptional = ServiceRequestMapEntry.findMatch(academicServiceRequest);
+        final ServiceRequestMapEntry serviceRequestMapEntry = ServiceRequestMapEntry.findMatch(academicServiceRequest);
 
-        if (!matchMapEntryOptional.isPresent()) {
+        if (serviceRequestMapEntry == null) {
             throw new AcademicTreasuryDomainException(
                     "error.CreateEmolumentForAcademicServiceRequest.cannot.find.serviceRequestMapEntry");
         }
-
-        final ServiceRequestMapEntry serviceRequestMapEntry = matchMapEntryOptional.get();
-
-        final AdministrativeOffice administrativeOffice = academicServiceRequest.getAdministrativeOffice();
 
         if (!(academicServiceRequest.getAcademicProgram() instanceof Degree)) {
             throw new AcademicTreasuryDomainException("error.CreateEmolumentForAcademicServiceRequest.only.degrees.are.supported");
@@ -51,19 +53,17 @@ public class CreateEmolumentForAcademicServiceRequest {
 
         // Find tariff
 
-        final Product product = serviceRequestMapEntry.getProduct();
         final Degree degree = (Degree) academicServiceRequest.getAcademicProgram();
+        final Product product = ServiceRequestMapEntry.findProduct(academicServiceRequest);
 
-        final Optional<? extends AcademicTariff> academicTariffOptional =
+        final AcademicTariff academicTariff =
                 academicServiceRequest.isRequestedWithCycle() ? AcademicTariff.findMatch(product, degree,
                         academicServiceRequest.getRequestedCycle(), academicServiceRequest.getActiveSituationDate()) : AcademicTariff
                         .findMatch(product, degree, academicServiceRequest.getActiveSituationDate());
 
-        if (!academicTariffOptional.isPresent()) {
+        if (academicTariff == null) {
             throw new AcademicTreasuryDomainException("error.CreateEmolumentForAcademicServiceRequest.cannot.find.tariff");
         }
-
-        final AcademicTariff academicTariff = academicTariffOptional.get();
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
         final FinantialInstitution finantialInstitution = finantialEntity.getFinantialInstitution();
@@ -82,10 +82,8 @@ public class CreateEmolumentForAcademicServiceRequest {
         }
         
         // Find if debt is created
-        
-        
-        // If not create debt
-
-        // 
+        if(!academicTresuryEvent.isChargedWithDebitEntry()) {
+            academicTariff.createDebitEntry(personDebtAccount, academicTresuryEvent);
+        }
     }
 }
