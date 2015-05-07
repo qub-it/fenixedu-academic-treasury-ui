@@ -49,6 +49,10 @@ public class PersonCustomer extends PersonCustomer_Base {
         return getPerson().getName();
     }
 
+    public String getIdentificationNumber() {
+        return getPerson().getDocumentIdNumber();
+    }
+    
     @Override
     public String getAddress() {
         return null;
