@@ -12,6 +12,8 @@
 <link rel="stylesheet" type="text/css"
 	href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
+${portal.angularToolkit()}
+
 <link href="//cdn.datatables.net/responsive/1.0.4/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="//cdn.datatables.net/responsive/1.0.4/js/dataTables.responsive.js"></script>
 <link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet"/>
@@ -21,14 +23,10 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/treasury/js/omnis.js"></script>
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 
 <script src="${pageContext.request.contextPath}/webjars/angular-sanitize/1.3.11/angular-sanitize.js"></script>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.css" />
 <script src="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.js"></script>
-
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -92,7 +90,14 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 	};
 }]);
 
+window.jclosures = [];
+
+function registerJqueryReadyClosure(func) {
+	window.jclosures.push(func);
+}
+
 </script>
+
 
 <form name="form" method="post" class="form-horizontal" ng-app="changeExample" ng-controller="ExampleController" 
 	action="${pageContext.request.contextPath}/academictreasury/manageemoluments/academictariff/createemolumenttariff/${finantialEntity.externalId}/${product.externalId}"#<%= System.currentTimeMillis() %>>
@@ -352,6 +357,12 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 						</select>
 					</div>
 				</div>
+				<script type="text/javascript">
+					registerJqueryReadyClosure(function() {
+						$("#academicTariff_applyInFirstWorkday").select2().select2('val', '${academicTariffBean.applyInFirstWorkday}');
+					});
+				</script>
+				
 
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.maximumDaysToApplyPenalty"/></div> 
@@ -396,113 +407,119 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 </form>
 
 <script>
-$(document).ready(function() {
 
-		<%-- Block for providing administrativeOffice options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		administrativeOffice_options = [
-			<c:forEach items="${AcademicTariff_administrativeOffice_options}" var="element"> 
-				{
-					text : "<c:out value='${element.name.content}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#academicTariff_administrativeOffice").select2(
- 			{
-				data : administrativeOffice_options,
-			}	  
-	    );
-	    
-	    $("#academicTariff_administrativeOffice").select2().select2('val', '<c:out value='${not empty academicTariffBean.administrativeOffice ? academicTariffBean.administrativeOffice.externalId : ""}'/>');
-	
-		<%-- End block for providing administrativeOffice options --%>
-		<%-- Block for providing degreeType options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		degreeType_options = [
-			<c:forEach items="${AcademicTariff_degreeType_options}" var="element"> 
-				{
-					text : "<c:out value='${element.name.content}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#academicTariff_degreeType").select2(
- 			{
-				data : degreeType_options,
-			}
- 	    );
-		
-	    $("#academicTariff_degreeType").select2().select2('val', '<c:out value='${not empty academicTariffBean.degreeType ? academicTariffBean.degreeType.externalId : ""}'/>');
-	
-		<%-- End block for providing degreeType options --%>
-		<%-- Block for providing degree options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		degree_options = [
-			<c:forEach items="${AcademicTariff_degree_options}" var="element"> 
-				{
-					text : "<c:out value='${element.nameI18N.content}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#academicTariff_degree").select2(
+registerJqueryReadyClosure(function() {
+	<%-- Block for providing administrativeOffice options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	administrativeOffice_options = [
+		<c:forEach items="${AcademicTariff_administrativeOffice_options}" var="element"> 
 			{
-				data : degree_options,
-			}
+				text : "<c:out value='${element.name.content}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
+	
+	$("#academicTariff_administrativeOffice").select2(
+			{
+			data : administrativeOffice_options,
+		}	  
+    );
+    
+    $("#academicTariff_administrativeOffice").select2().select2('val', '<c:out value='${not empty academicTariffBean.administrativeOffice ? academicTariffBean.administrativeOffice.externalId : ""}'/>');
+
+	<%-- End block for providing administrativeOffice options --%>
+	<%-- Block for providing degreeType options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	degreeType_options = [
+		<c:forEach items="${AcademicTariff_degreeType_options}" var="element"> 
+			{
+				text : "<c:out value='${element.name.content}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
+	
+	$("#academicTariff_degreeType").select2(
+			{
+			data : degreeType_options,
+		}
 	    );
-	    
-	    $("#academicTariff_degree").select2().select2('val', '<c:out value='${not empty academicTariffBean.degree ? academicTariffBean.degree.externalId : ""}'/>');
 	
-		<%-- End block for providing degree options --%>
+    $("#academicTariff_degreeType").select2().select2('val', '<c:out value='${not empty academicTariffBean.degreeType ? academicTariffBean.degreeType.externalId : ""}'/>');
+
+	<%-- End block for providing degreeType options --%>
+	<%-- Block for providing degree options --%>
+	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+	degree_options = [
+		<c:forEach items="${AcademicTariff_degree_options}" var="element"> 
+			{
+				text : "<c:out value='${element.nameI18N.content}'/>",  
+				id : "<c:out value='${element.externalId}'/>"
+			},
+		</c:forEach>
+	];
 	
-		cycleType_options = [
-    		<c:forEach items="${AcademicTariff_cycleType_options}" var="element"> 
+	$("#academicTariff_degree").select2(
+		{
+			data : degree_options,
+		}
+    );
+    
+    $("#academicTariff_degree").select2().select2('val', '<c:out value='${not empty academicTariffBean.degree ? academicTariffBean.degree.externalId : ""}'/>');
+
+	<%-- End block for providing degree options --%>
+
+	cycleType_options = [
+		<c:forEach items="${AcademicTariff_cycleType_options}" var="element"> 
+				{
+					text : "${element.descriptionI18N.content}",
+					id : "${element}"
+				},
+			</c:forEach>
+		];
+	
+	console.log(cycleType_options);
+	
+	$("#academicTariff_cycleType").select2({ data : cycleType_options } );
+	$("#academicTariff_cycleType").select2().select2('val', '<c:out value='${not empty academicTariffBean.cycleType ? academicTariffBean.cycleType.name() : ""}'/>');
+	
+	$("#academicTariff_applyUnitsAmount").select2().select2('val', '${academicTariffBean.applyUnitsAmount}');
+	$("#academicTariff_applyPagesAmount").select2().select2('val', '${academicTariffBean.applyPagesAmount}');
+	$("#academicTariff_applyMaximumAmount").select2().select2('val', '${academicTariffBean.applyMaximumAmount}');
+	
+	dueDateCalculationType_options = [
+    		<c:forEach items="${AcademicTariff_dueDateCalculationType_options}" var="element"> 
     				{
     					text : "${element.descriptionI18N.content}",
     					id : "${element}"
     				},
     			</c:forEach>
     		];
-		
-		console.log(cycleType_options);
-		
-    	$("#academicTariff_cycleType").select2({ data : cycleType_options } );
-		$("#academicTariff_cycleType").select2().select2('val', '<c:out value='${not empty academicTariffBean.cycleType ? academicTariffBean.cycleType.name() : ""}'/>');
-		
-		$("#academicTariff_applyUnitsAmount").select2().select2('val', '${academicTariffBean.applyUnitsAmount}');
-		$("#academicTariff_applyPagesAmount").select2().select2('val', '${academicTariffBean.applyPagesAmount}');
-		$("#academicTariff_applyMaximumAmount").select2().select2('val', '${academicTariffBean.applyMaximumAmount}');
-		
-		dueDateCalculationType_options = [
-        		<c:forEach items="${AcademicTariff_dueDateCalculationType_options}" var="element"> 
-        				{
-        					text : "${element.descriptionI18N.content}",
-        					id : "${element}"
-        				},
-        			</c:forEach>
-        		];
 
-		$("#academicTariff_dueDateCalculationType").select2({ data : dueDateCalculationType_options } );
-		$("#academicTariff_dueDateCalculationType").select2().select2('val', '${not empty academicTariffBean.dueDateCalculationType ? academicTariffBean.dueDateCalculationType : ""}');
-		
- 		$("#academicTariff_applyInterests").select2().select2('val', '${academicTariffBean.applyInterests}');
- 
-		interestType_options = [
-        		<c:forEach items="${AcademicTariff_interestType_options}" var="element"> 
-        				{
-        					text : "${element.descriptionI18N.content}",
-        					id : "${element}"
-        				},
-        			</c:forEach>
-        		];
-
-		$("#academicTariff_interestType").select2({ data : interestType_options } );
-		$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestType ? academicTariffBean.interestType : ""}');
+	$("#academicTariff_dueDateCalculationType").select2({ data : dueDateCalculationType_options } );
+	$("#academicTariff_dueDateCalculationType").select2().select2('val', '${not empty academicTariffBean.dueDateCalculationType ? academicTariffBean.dueDateCalculationType : ""}');
 	
-		$("#academicTariff_applyInFirstWorkday").select2().select2('val', '${academicTariffBean.applyInFirstWorkday}');
+		$("#academicTariff_applyInterests").select2().select2('val', '${academicTariffBean.applyInterests}');
+
+	interestType_options = [
+    		<c:forEach items="${AcademicTariff_interestType_options}" var="element"> 
+    				{
+    					text : "${element.descriptionI18N.content}",
+    					id : "${element}"
+    				},
+    			</c:forEach>
+    		];
+	$("#academicTariff_interestType").select2({ data : interestType_options } );
+	$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestType ? academicTariffBean.interestType : ""}');
+
+});
+
+$(document).ready(function() {
+	
+	for(var i = 0; i < window.jclosures.length; i++) {
+		window.jclosures[i].apply();
+	}
+	
 });
 </script>

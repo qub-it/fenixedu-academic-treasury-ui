@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.domain.tariff;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -25,6 +26,8 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.google.common.collect.Maps;
 
 public class AcademicTariff extends AcademicTariff_Base {
 
@@ -187,48 +190,121 @@ public class AcademicTariff extends AcademicTariff_Base {
 
     @Atomic
     public void delete() {
+        setAdministrativeOffice(null);
+        setDegreeType(null);
+        setDegree(null);
+
         super.delete();
     }
 
     public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent) {
+        BigDecimal amount = amountWithLanguageRate(academicTreasuryEvent);
+
+        if (isApplyUrgencyRate() && academicTreasuryEvent.isUrgentRequest()) {
+            amount = amount.add(amountForUrgencyRate(academicTreasuryEvent));
+        }
+
+        return amount;
+    }
+
+    public BigDecimal amountForUrgencyRate(final AcademicTreasuryEvent academicTreasuryEvent) {
+        BigDecimal amount = amountWithLanguageRate(academicTreasuryEvent);
+
+        return amount.multiply(getUrgencyRate().setScale(20, RoundingMode.HALF_EVEN)
+                .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN));
+    }
+
+    public BigDecimal amountForLanguageTranslationRate(final AcademicTreasuryEvent academicTreasuryEvent) {
+        final BigDecimal amount = amountToPayWithoutRates(academicTreasuryEvent);
+
+        final BigDecimal result =
+                amount.multiply(getLanguageTranslationRate().setScale(20, RoundingMode.HALF_EVEN)
+                        .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN));
+
+        return isPositive(result) ? result : BigDecimal.ZERO;
+    }
+
+    public BigDecimal amountToPayWithoutRates(final AcademicTreasuryEvent academicTreasuryEvent) {
         BigDecimal amount = getBaseAmount();
 
         if (isApplyUnitsAmount()) {
-            int remainingUnits = academicTreasuryEvent.getNumberOfUnits() - getUnitsForBase();
+            int remainingUnits = numberOfAdditionalUnits(academicTreasuryEvent);
 
             if (remainingUnits > 0) {
-                amount = amount.add(getUnitAmount().multiply(new BigDecimal(remainingUnits)));
+                amount = amount.add(amountForAdditionalUnits(academicTreasuryEvent));
             }
         }
 
         if (isApplyPagesAmount()) {
-            amount = amount.add(getPageAmount().multiply(new BigDecimal(academicTreasuryEvent.getNumberOfPages())));
+            amount = amount.add(amountForPages(academicTreasuryEvent));
         }
 
         if (isApplyMaximumAmount() && isGreaterThan(amount, getMaximumAmount())) {
             amount = getMaximumAmount();
         }
-
-        if (isApplyUrgencyRate() && academicTreasuryEvent.isUrgentRequest()) {
-            amount =
-                    amount.multiply(BigDecimal.ONE.add(getUrgencyRate().setScale(20, RoundingMode.HALF_EVEN)
-                            .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN)));
-        }
-
-        if (isApplyLanguageTranslationRate() && Constants.isForeignLanguage(academicTreasuryEvent.getLanguage())) {
-            amount =
-                    amount.multiply(BigDecimal.ONE.add(getLanguageTranslationRate().setScale(20, RoundingMode.HALF_EVEN)
-                            .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN)));
-        }
-        
         return amount;
+    }
+
+    public BigDecimal amountForPages(final AcademicTreasuryEvent academicTreasuryEvent) {
+        final BigDecimal result = getPageAmount().multiply(new BigDecimal(academicTreasuryEvent.getNumberOfPages()));
+
+        return isPositive(result) ? result : BigDecimal.ZERO;
+    }
+
+    public BigDecimal amountForAdditionalUnits(final AcademicTreasuryEvent academicTreasuryEvent) {
+        final int remainingUnits = numberOfAdditionalUnits(academicTreasuryEvent);
+        final BigDecimal result = getUnitAmount().multiply(new BigDecimal(remainingUnits));
+
+        return isPositive(result) ? result : BigDecimal.ZERO;
+    }
+
+    public int numberOfAdditionalUnits(final AcademicTreasuryEvent academicTreasuryEvent) {
+        return academicTreasuryEvent.getNumberOfUnits() - getUnitsForBase();
     }
 
     public DebitEntry createDebitEntry(final DebtAccount debtAccount, final AcademicTreasuryEvent academicTreasuryEvent) {
         final BigDecimal amount = amountToPay(academicTreasuryEvent);
         final LocalDate dueDate = dueDate(academicTreasuryEvent.getRequestDate());
+        final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent);
+        
+        return DebitEntry.create(debtAccount, academicTreasuryEvent, getVatType(), amount, dueDate, fillPriceProperties);
+    }
 
-        return DebitEntry.create(debtAccount, academicTreasuryEvent, getVatType(), amount, dueDate);
+    private Map<String, String> fillPriceProperties(final AcademicTreasuryEvent academicTreasuryEvent) {
+        final Map<String, String> propertiesMap = Maps.newHashMap();
+        
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.BASE_AMOUNT.getDescriptionI18N().getContent(), getBaseAmount().toString());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.UNITS_FOR_BASE.getDescriptionI18N().getContent(), String.valueOf(getUnitsForBase()));
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.UNIT_AMOUNT.getDescriptionI18N().getContent(), getUnitAmount().toString());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ADDITIONAL_UNITS.getDescriptionI18N().getContent(), String.valueOf(numberOfAdditionalUnits(academicTreasuryEvent)));
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_UNITS_AMOUNT.getDescriptionI18N().getContent(), amountForAdditionalUnits(academicTreasuryEvent).toString());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.PAGE_AMOUNT.getDescriptionI18N().getContent(), getPageAmount().toString());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.NUMBER_OF_PAGES.getDescriptionI18N().getContent(), String.valueOf(academicTreasuryEvent.getNumberOfPages()));
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_PAGES_AMOUNT.getDescriptionI18N().getContent(), amountForPages(academicTreasuryEvent).toString());
+        
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.MAXIMUM_AMOUNT.getDescriptionI18N().getContent(), getMaximumAmount().toString());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FOREIGN_LANGUAGE_RATE.getDescriptionI18N().getContent(), getLanguageTranslationRate().toString());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_FOREIGN_LANGUAGE_RATE.getDescriptionI18N().getContent(), amountForLanguageTranslationRate(academicTreasuryEvent).toString());
+        
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.URGENT_PERCENTAGE.getDescriptionI18N().getContent(), getUrgencyRate().toString());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_URGENT_AMOUNT.getDescriptionI18N().getContent(), amountForUrgencyRate(academicTreasuryEvent).toString());
+        
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(), amountToPay(academicTreasuryEvent).toString());
+        
+        return propertiesMap;
+    }
+    
+    private BigDecimal amountWithLanguageRate(final AcademicTreasuryEvent academicTreasuryEvent) {
+        BigDecimal amount = amountToPayWithoutRates(academicTreasuryEvent);
+
+        if (isApplyLanguageTranslationRate() && Constants.isForeignLanguage(academicTreasuryEvent.getLanguage())) {
+            amount = amount.add(amountForLanguageTranslationRate(academicTreasuryEvent));
+        }
+
+        return amount;
     }
 
     // @formatter: off

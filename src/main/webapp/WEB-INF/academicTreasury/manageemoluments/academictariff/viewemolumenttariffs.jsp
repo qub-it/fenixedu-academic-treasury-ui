@@ -76,7 +76,7 @@ ${portal.toolkit()}
 
 <script type="text/javascript">
 	  function processDelete(externalId) {
-	    url = "${pageContext.request.contextPath}/academictreasury/manageemoluments/academictariff/viewemolumenttariffsviewEmolumentTariffs/delete/" + externalId;
+	    url = "${pageContext.request.contextPath}/academictreasury/manageemoluments/academictariff/viewEmolumentTariffs/delete/${finantialEntity.externalId}/${product.externalId}/" + externalId;
 	    $("#deleteForm").attr("action", url);
 	    $('#deleteModal').modal('toggle')
 	  }
@@ -207,7 +207,7 @@ ${portal.toolkit()}
 						</td>
 						<td>
 							<a  class="btn btn-xs btn-danger" href="#" 
-								onClick="javascript:processDelete('${searchResult.externalId}')">
+								onClick="javascript:processDelete('${tariff.externalId}')">
 								<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> &nbsp; <spring:message code='label.delete' />
 							</a>
 						</td>

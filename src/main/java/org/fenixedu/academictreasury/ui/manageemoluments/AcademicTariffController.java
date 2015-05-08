@@ -12,8 +12,10 @@ import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
+import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
@@ -59,22 +61,20 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 academicTariff.getExternalId());
     }
 
-    @RequestMapping(value = "/viewEmolumentTariffs/delete/{oid}, method = RequestMethod.POST")
-    public String processViewEmolumentTariffsToDeleteAction(@PathVariable("oid") AcademicTariff academicTariff, Model model) {
-        setAcademicTariff(academicTariff, model);
+    @RequestMapping(value = "/viewEmolumentTariffs/delete/{oid}", method = RequestMethod.POST)
+    public String processViewEmolumentTariffsToDeleteAction(
+            @PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
+            @PathVariable("productId") final Product product, @PathVariable("oid") AcademicTariff academicTariff, Model model) {
         try {
-            //call the Atomic delete function
-            //deleteAcademicTariff(academicTariff);
+            academicTariff.delete();
 
-            addInfoMessage("Sucess deleting AcademicTariff ...", model);
-            return "redirect:/academictreasury/manageemoluments/product/searchemoluments";
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicTariff.delete.success"), model);
         } catch (DomainException ex) {
-            //Add error messages to the list
-            addErrorMessage("Error deleting the AcademicTariff due to " + ex.getLocalizedMessage(), model);
+            addErrorMessage(ex.getLocalizedMessage(), model);
         }
 
-        //The default mapping is the same Search screen
-        return "academicTreasury/manageemoluments/academictariff/viewemolumenttariffs";
+        return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
+                finantialEntity.getExternalId(), product.getExternalId());
     }
 
     @RequestMapping(value = "/createemolumenttariff/{finantialEntityId}/{productId}", method = RequestMethod.GET)
@@ -96,9 +96,9 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             @PathVariable("productId") final Product product,
             @RequestParam(value = "academicTariffBean", required = true) final AcademicTariffBean academicTariffBean,
             final Model model) {
-        
+
         academicTariffBean.resetFields();
-        
+
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("product", product);
 
@@ -113,7 +113,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 .getDegreeType().getCycleTypes() : Collections.emptyList());
         model.addAttribute("AcademicTariff_dueDateCalculationType_options", Arrays.asList(DueDateCalculationType.values()));
         model.addAttribute("AcademicTariff_interestType_options", Arrays.asList(InterestType.values()));
-        
+
         return "academicTreasury/manageemoluments/academictariff/createemolumenttariff";
     }
 
@@ -122,7 +122,6 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             @PathVariable("productId") final Product product,
             @RequestParam(value = "academicTariffBean", required = false) final AcademicTariffBean bean, final Model model) {
 
-
         try {
 
             bean.resetFields();
@@ -130,7 +129,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
 
             return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
                     finantialEntity.getExternalId(), product.getExternalId(), academicTariff.getExternalId());
-            
+
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
             return _createemolumenttariff(finantialEntity, product, bean, model);
