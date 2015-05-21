@@ -1,5 +1,6 @@
 package org.fenixedu.academictreasury.domain.event;
 
+import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
@@ -7,18 +8,20 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
+import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Maps;
 
-public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base {
+public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements IAcademicTreasuryEvent {
 
     protected AcademicTreasuryEvent(final AcademicServiceRequest academicServiceRequest) {
         init(academicServiceRequest, ServiceRequestMapEntry.findProduct(academicServiceRequest));
@@ -190,6 +193,91 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base {
 
     private LocalizedString booleanLabel(final boolean detailed) {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, detailed ? "label.yes" : "label.no");
+    }
+
+    @Override
+    public boolean isWithDebitEntry() {
+        return DebitEntry.findActive(this).count() > 0;
+    }
+
+    @Override
+    public BigDecimal getAmountToPay() {
+        return DebitEntry.amountToPay(this);
+    }
+    
+    public BigDecimal getPayedAmount() {
+        return DebitEntry.payedAmount(this);
+    }
+
+    @Override
+    public BigDecimal getRemainingAmountToPay() {
+        return DebitEntry.remainingAmountToPay(this);
+    }
+
+    @Override
+    public BigDecimal getBaseAmount() {
+        if(!isChargedWithDebitEntry()) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.baseAmount.unavailable");
+        }
+        
+        return super.getBaseAmount();
+    }
+
+    @Override
+    public BigDecimal getAdditionalUnitsAmount() {
+        if(!isChargedWithDebitEntry()) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.additionalUnitsAmount.unavailable");
+        }
+        
+        return super.getAmountForAdditionalUnits();
+    }
+
+    @Override
+    public BigDecimal getMaximumAmount() {
+        if(!isChargedWithDebitEntry()) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.maximumAmount.unavailable");
+        }
+        
+        return super.getMaximumAmount();
+    }
+
+    @Override
+    public BigDecimal getPagesAmount() {
+        if(!isChargedWithDebitEntry()) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.pagesAmount.unavailable");
+        }
+        
+        return super.getAmountForPages();
+    }
+
+    @Override
+    public BigDecimal getAmountForLanguageTranslationRate() {
+        if(!isChargedWithDebitEntry()) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.amountForLanguageTranslationRate.unavailable");
+        }
+        
+        return super.getAmountForLanguageTranslationRate();
+    }
+
+    @Override
+    public BigDecimal getAmountForUrgencyRate() {
+        if(!isChargedWithDebitEntry()) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.amountForUrgencyRate.unavailable");
+        }
+        
+        return super.getAmountForUrgencyRate();
+    }
+
+    public void updatePricingFields(final BigDecimal baseAmount, final BigDecimal amountForAdditionalUnits,
+            final BigDecimal amountForPages, final BigDecimal maximumAmount, final BigDecimal amountForLanguageTranslationRate,
+            final BigDecimal amountForUrgencyRate) {
+        
+        super.setBaseAmount(baseAmount); 
+        super.setAmountForAdditionalUnits(amountForAdditionalUnits);
+        super.setAmountForPages(amountForPages);
+        super.setMaximumAmount(maximumAmount); 
+        super.setAmountForLanguageTranslationRate(amountForLanguageTranslationRate);
+        super.setAmountForUrgencyRate(amountForUrgencyRate);
     }
 
 }

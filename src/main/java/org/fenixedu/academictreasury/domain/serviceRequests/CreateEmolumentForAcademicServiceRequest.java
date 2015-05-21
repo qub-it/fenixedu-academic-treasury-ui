@@ -1,9 +1,6 @@
 package org.fenixedu.academictreasury.domain.serviceRequests;
 
-import java.util.Optional;
-
 import org.fenixedu.academic.domain.Degree;
-import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;

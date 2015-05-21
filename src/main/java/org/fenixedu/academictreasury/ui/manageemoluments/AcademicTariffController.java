@@ -125,7 +125,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         try {
 
             bean.resetFields();
-            AcademicTariff academicTariff = AcademicTariff.create(finantialEntity, product, null, bean);
+            AcademicTariff academicTariff = AcademicTariff.create(finantialEntity, product, bean);
 
             return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
                     finantialEntity.getExternalId(), product.getExternalId(), academicTariff.getExternalId());

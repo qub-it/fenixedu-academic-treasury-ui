@@ -1,6 +1,10 @@
 package org.fenixedu.academictreasury.domain;
 
 enum org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType                   as AcademicServiceRequestSituationTypeT;
+enum org.fenixedu.academic.domain.student.RegistrationRegimeType                                        as RegistrationRegimeTypeT;
+enum org.fenixedu.academic.domain.candidacy.Ingression                                                  as IngressionT;
+enum org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType                                as TuitionCalculationType;
+enum org.fenixedu.academictreasury.domain.tuition.EctsCalculationType                                   as EctsCalculationType;
 
 valueType java.math.BigDecimal as BigDecimalAT
 {
@@ -34,6 +38,14 @@ class customer.PersonCustomer extends .org.fenixedu.treasury.domain.Customer {
  * ------*/
 
 class event.AcademicTreasuryEvent extends .org.fenixedu.treasury.domain.event.TreasuryEvent {
+	
+	/* Properties used in academic to print documents with detailed pricing */
+	BigDecimal baseAmount; 
+	BigDecimal amountForAdditionalUnits;
+	BigDecimal amountForPages; 
+	BigDecimal maximumAmount; 
+	BigDecimal amountForLanguageTranslationRate;
+	BigDecimal amountForUrgencyRate;
 }
 
 class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff {
@@ -45,7 +57,10 @@ class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff 
 	BigDecimalAT urgencyRate;
 	BigDecimalAT languageTranslationRate;
 	CycleType cycleType;
+	boolean academicalActBlockingOff;
 }
+
+
 
 /*------------------------------------
  * ServiceRequestEmolumentMapEntry
@@ -53,6 +68,35 @@ class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff 
  
 class emoluments.ServiceRequestMapEntry {
 	AcademicServiceRequestSituationTypeT createEventOnSituation;
+}
+
+/*--------
+ * Tuition
+ *--------*/
+
+class tuition.TuitionPaymentPlanGroup {
+	String code;
+	LocalizedString name;
+}
+
+class tuition.TuitionPaymentPlan {
+	boolean defaultPaymentPlan;	
+	RegistrationRegimeTypeT registrationRegimeType;
+	IngressionT ingression;
+	boolean firstTimeStudent;
+	boolean customized;
+	LocalizedString customizedName;
+	boolean withLaboratorialClasses;
+}
+
+class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tariff.Tariff {
+	int installmentOrder;
+	TuitionCalculationType tuitionCalculationType;
+	BigDecimalT fixedAmount;
+	EctsCalculationType ectsCalculationType;
+	int factor;
+	int totalUnits;
+	boolean academicalActBlockingOff;
 }
 
 /*************
@@ -82,6 +126,36 @@ relation AcademicTreasurySettingsEmolumentsProductGroup {
 	}
 	
 	.org.fenixedu.treasury.domain.ProductGroup playsRole emolumentsProductGroup {
+		multiplicity 0..1;
+	}
+}
+
+relation AcademicTreasurySettingsTuitionPaymentPlanGroupForRegistration {
+	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForRegistration {
+		multiplicity 0..1;
+	}
+	
+	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroupForRegistration {
+		multiplicity 0..1;
+	}
+}
+
+relation AcademicTreasurySettingsTuitionPaymentPlanGroupForStandalone {
+	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForStandalone {
+		multiplicity 0..1;
+	}
+	
+	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroupForStandalone {
+		multiplicity 0..1;
+	}
+}
+
+relation AcademicTreasurySettingsTuitionPaymentPlanGroupForExtracurricular {
+	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForExtracurricular {
+		multiplicity 0..1;
+	}
+	
+	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroupForExtracurricular {
 		multiplicity 0..1;
 	}
 }
@@ -191,6 +265,118 @@ relation ServiceRequestMapEntryServiceRequestTypeOptionBooleanValue {
 	}
 
 	.org.fenixedu.academic.domain.serviceRequests.ServiceRequestTypeOptionBooleanValue playsRole serviceRequestTypeOptionBooleanValues {
+		multiplicity *;
+	}
+}
+
+/*--------
+ * Tuition
+ *--------*/
+
+/* --- TuitionPaymentPlanGroup --- */
+
+relation TuitionPaymentPlanGroupBennu {
+
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+
+	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroups {
+		multiplicity *;
+	}
+}
+
+/* --- TuitionPaymentPlan --- */
+
+relation TuitionPaymentPlanBennu {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		multiplicity 1..1;
+	}
+
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity *;
+	}
+}
+
+relation TuitionPaymentPlanProduct {
+	
+	.org.fenixedu.treasury.domain.Product playsRole product {
+		multiplicity 1..1;
+	}
+	
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity *;
+	}
+}
+
+relation TuitionPaymentPlanTuitionPaymentPlanGroup {
+	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroup {
+		multiplicity 1..1;
+	}
+
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity *;
+	}
+}
+
+relation TuitionPaymentPlanExecutionYear {
+	.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear {
+		multiplicity 1..1;
+	}
+	
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity *;
+	}
+}
+
+relation TuitionPaymentPlanDegreeCurricularPlan {
+	.org.fenixedu.academic.domain.DegreeCurricularPlan playsRole degreeCurricularPlan {
+		multiplicity 1..1;
+	}
+	
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity *;
+	}
+}
+
+relation TuitionPaymentPlanRegistrationProtocol {
+	.org.fenixedu.academic.domain.student.RegistrationProtocol playsRole registrationProtocol {
+		multiplicity 0..1;
+	}
+	
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity *;
+	}
+}
+
+relation TuitionPaymentPlanCurricularYear {
+	.org.fenixedu.academic.domain.CurricularYear playsRole curricularYear {
+		multiplicity 0..1;
+	}
+	
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity *;
+	}
+}
+
+relation TuitionPaymentPlanCurricularSemester {
+	.org.fenixedu.academic.domain.CurricularSemester playsRole curricularSemester {
+		multiplicity 0..1;
+	}
+	
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity *;
+	}
+}
+
+/* --- TuitionInstallmentTariff --- */
+
+relation TuitionInstallmentTariffTuitionPaymentPlan {
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+		multiplicity 1..1;
+	}
+	
+	tuition.TuitionInstallmentTariff playsRole tuitionInstallmentTariffs {
 		multiplicity *;
 	}
 }

@@ -7,6 +7,8 @@ import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
+import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
+import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
@@ -51,6 +53,14 @@ public class AcademicTariffBean implements IBean, Serializable {
     private BigDecimal urgencyRate;
     private BigDecimal languageTranslationRate;
 
+    /* TuitionInstallment */
+    private int installmentOrder;
+    private TuitionCalculationType tuitionCalculationType;
+    private BigDecimal fixedAmount;
+    private EctsCalculationType ectsCalculationType;
+    private boolean academicalActBlockingOff;
+    
+    
     public AcademicTariffBean() {
         setBeginDate(new DateTime());
         setEndDate(null);
@@ -87,6 +97,9 @@ public class AcademicTariffBean implements IBean, Serializable {
         resetFields();
     }
     
+    public AcademicTariffBean(final int installmentOrder) {
+        setInstallmentOrder(installmentOrder);
+    }
     
     public void resetFields() {
         if(getDueDateCalculationType() == null || !getDueDateCalculationType().isDaysAfterCreation()) {
@@ -356,6 +369,56 @@ public class AcademicTariffBean implements IBean, Serializable {
 
     public void setRate(BigDecimal rate) {
         this.rate = rate;
+    }
+
+    
+    /* TuitionInstallmentTariff */
+
+    public int getInstallmentOrder() {
+        return installmentOrder;
+    }
+    
+    public void setInstallmentOrder(int installmentOrder) {
+        this.installmentOrder = installmentOrder;
+    }
+    
+    public TuitionCalculationType getTuitionCalculationType() {
+        return tuitionCalculationType;
+    }
+
+
+    public void setTuitionCalculationType(TuitionCalculationType tuitionCalculationType) {
+        this.tuitionCalculationType = tuitionCalculationType;
+    }
+
+
+    public BigDecimal getFixedAmount() {
+        return fixedAmount;
+    }
+
+
+    public void setFixedAmount(BigDecimal fixedAmount) {
+        this.fixedAmount = fixedAmount;
+    }
+
+
+    public EctsCalculationType getEctsCalculationType() {
+        return ectsCalculationType;
+    }
+
+
+    public void setEctsCalculationType(EctsCalculationType ectsCalculationType) {
+        this.ectsCalculationType = ectsCalculationType;
+    }
+
+
+    public boolean isAcademicalActBlockingOff() {
+        return academicalActBlockingOff;
+    }
+
+
+    public void setAcademicalActBlockingOff(boolean academicalActBlockingOff) {
+        this.academicalActBlockingOff = academicalActBlockingOff;
     }
 
 }

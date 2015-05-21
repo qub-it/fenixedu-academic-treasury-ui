@@ -11,6 +11,7 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.VatType;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +27,7 @@ import pt.ist.fenixframework.Atomic;
 public class ProductController extends AcademicTreasuryBaseController {
 
     @Atomic
-    public void deleteProduct(Product product) {
+    public void deleteProduct(final Product product) {
         // CHANGE_ME: Do the processing for deleting the product
         // Do not catch any exception here
 
@@ -34,7 +35,7 @@ public class ProductController extends AcademicTreasuryBaseController {
     }
 
     @RequestMapping(value = "/searchemoluments/{finantialEntityId}")
-    public String searchEmoluments(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity, Model model) {
+    public String searchEmoluments(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity, final Model model) {
         List<Product> searchemolumentsResultsDataSet = filterSearchEmoluments();
 
         //add the results dataSet to the model
@@ -62,45 +63,27 @@ public class ProductController extends AcademicTreasuryBaseController {
     @RequestMapping(value = "/createemolument/{finantialEntityId}", method = RequestMethod.GET)
     public String createemolument(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity, final Model model) {
         model.addAttribute("finantialEntity", finantialEntity);
+        model.addAttribute("vatType_options", VatType.findAll().collect(Collectors.toSet()));
+
         return "academicTreasury/manageemoluments/product/createemolument";
     }
 
     @RequestMapping(value = "/createemolument/{finantialEntityId}", method = RequestMethod.POST)
     public String createemolument(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity, @RequestParam(
-            value = "code", required = false) java.lang.String code,
-            @RequestParam(value = "name", required = false) LocalizedString name, Model model) {
+            value = "code", required = false) final java.lang.String code,
+            @RequestParam(value = "name", required = false) final LocalizedString name, @RequestParam(value = "vattype",
+                    required = false) final VatType vatType, final Model model) {
 
         try {
-            final Product product = EmolumentServices.createEmolument(code, name);
+            final Product product = EmolumentServices.createEmolument(code, name, vatType);
 
-            //Success Validation
-            //Add the bean to be used in the View
             model.addAttribute("product", product);
             return String.format("redirect:/academictreasury/manageemoluments/product/searchemoluments/%s",
                     finantialEntity.getExternalId());
-        } catch (DomainException de) {
-
-            // @formatter: off
-            /*
-             * If there is any error in validation 
-             *
-             * Add a error / warning message
-             * 
-             * addErrorMessage(" Error creating due to " + de.getLocalizedMessage(),model);
-             * addWarningMessage(" Warning creating due to "+ ex.getLocalizedMessage(),model); */
-            // @formatter: on
-
-            addErrorMessage(" Error creating due to " + de.getLocalizedMessage(), model);
+        } catch (final DomainException de) {
+            addErrorMessage(de.getLocalizedMessage(), model);
             return createemolument(finantialEntity, model);
         }
-    }
-
-    private Product getProduct(Model m) {
-        return (Product) m.asMap().get("product");
-    }
-
-    private void setProduct(Product product, Model m) {
-        m.addAttribute("product", product);
     }
 
 }
