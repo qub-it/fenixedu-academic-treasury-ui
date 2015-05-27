@@ -1,8 +1,9 @@
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.TuitionPaymentPlanController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
 <%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
-<%@ taglib prefix="cur" uri="http://example.com/currency"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
 
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js"/>
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
@@ -74,7 +75,7 @@ ${portal.toolkit()}
 
 
 <c:forEach items="${searchtuitionpaymentplanResultsDataSet}" var="paymentPlan"  varStatus="loopStatus">
-	<p><c:out value="${paymentPlan.name}" /></p>	
+	<p><strong><c:out value="${paymentPlan.name}" /></strong></p>	
 
 	<datatables:table id="paymentPlans-${loopStatus.index}" row="installment" data="${paymentPlan.tuitionInstallmentTariffs}" 
 		cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
@@ -86,12 +87,12 @@ ${portal.toolkit()}
 		
 		<datatables:column cssStyle="width:20%">
 			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.amount" /></datatables:columnHead>
-	
+
 			<c:choose>
 				<c:when test="${installment.tuitionCalculationType.fixedAmount}" >
 					<c:out value="${installment.finantialEntity.finantialInstitution.getValue(installment.fixedAmount)}" />
 				</c:when>
-				<c:when test="${installment.tuitionCalculationType.ects}" >
+				<c:when test="${installment.tuitionCalculationType.ects}">
 					<p>
 						<strong>
 							<c:out value="${installment.tuitionCalculationType.descriptionI18N}" />
@@ -101,100 +102,157 @@ ${portal.toolkit()}
 
 					<c:if test="${installment.ectsCalculationType.fixedAmount}">
 						<p>&nbsp;</p>
+						
 						<p><spring:message code="label.TuitionInstallmentTariff.amountPerEcts" 
-							arguments="${installment.finantialEntity.finantialInstitution.getValue(installment.amountPerEcts)}" /></p>
+							arguments="${installment.finantialEntity.finantialInstitution.currency.getValue(installment.amountPerEctsOrUnit)}" /></p>
 					</c:if>
 					<c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
 						<p><em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
 							arguments="${installment.factor},${installment.totalUnits}" /></em></p>
 						<p>&nbsp;</p>
 
-						<p><spring:message code="label.TuitionInstallmentTariff.amountByEcts" 
-							arguments="${installment.finantialEntity.finantialInstitution.getValue(installment.amountPerEcts)}" /></p>
-						<p><spring:message code="label.</p>
+						<p><spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
+							arguments="${installment.finantialEntity.finantialInstitution.currency.getValue(installment.amountPerEctsOrUnit)}" /></p>
+						<p><em>(<spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" />)</em></p>
+					</c:if>
+				</c:when>
+				<c:when test="${installment.tuitionCalculationType.units}">
+					<p>
+						<strong>
+							<c:out value="${installment.tuitionCalculationType.descriptionI18N}" />
+							[<c:out value="${installment.ectsCalculationType.descriptionI18N}" />]
+						</strong>
+					</p>
+
+					<c:if test="${installment.ectsCalculationType.fixedAmount}">
+						<p>&nbsp;</p>
+						
+						<p><spring:message code="label.TuitionInstallmentTariff.amountPerUnits" 
+							arguments="${installment.finantialEntity.finantialInstitution.currency.getValue(installment.amountPerEctsOrUnit)}" /></p>
+					</c:if>
+					<c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+						<p><em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.unitsParameters"
+							arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em></p>
+						<p>&nbsp;</p>
+
+						<p><spring:message code="label.TuitionInstallmentTariff.amountPerUnits" 
+							arguments="${installment.finantialEntity.finantialInstitution.currency.getValue(installment.amountPerEctsOrUnit)}" /></p>
+						<p><em>(<spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" />)</em></p>
 					</c:if>
 				</c:when>
 			</c:choose>
 		</datatables:column>
-		
-		
+		<datatables:column>
+			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.beginDate" /></datatables:columnHead>
+			<joda:format value="${installment.beginDate}" style="S-" />
+		</datatables:column>
+		<datatables:column>
+			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.dueDate" /></datatables:columnHead>
+			<c:choose>
+				<c:when test="${installment.dueDateCalculationType.noDueDate}">
+					<spring:message code="label.TuitionInstallmentTariff.noDueDate" />
+				</c:when>
+				<c:when test="${installment.dueDateCalculationType.fixedDate}">
+					<c:out value="${installment.fixedDueDate}" />
+				</c:when>
+				<c:when test="${installment.dueDateCalculationType.daysAfterCreation}">
+					<spring:message code="label.TuitionInstallmentTariff.daysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" />
+				</c:when>
+			</c:choose>
+		</datatables:column>
+
+		<datatables:column>
+			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.dueDate" /></datatables:columnHead>
+			<c:if test="not ${installment.applyInterests}">
+				<spring:message code="label.TuitionInstallmentTariff.interests.not.applied" />
+			</c:if>
+			<c:if test="${installment.applyInterests}">
+				<strong>[<c:out value="${installment.interestRate.descriptionI18N}" />]</strong>
+				
+				<c:choose>
+					<c:when test="${installment.interestRate.interestType.daily}">
+						<p>
+							<strong><spring:message code="label.TuitionInstallmentTariff.numberOfDaysAfterCreationForDueDate"  />:</strong>
+							<c:out value="${installment.interestRate.numberOfDaysAfterDueDate}" />
+						</p>
+						<p>
+							<strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:</strong>
+							<c:if test="${installment.interestRate.applyInFirstWorkday}">
+								<spring:message code="label.true" />
+							</c:if>
+							<c:if test="not ${installment.interestRate.applyInFirstWorkday}">
+								<spring:message code="label.false" />
+							</c:if>
+						</p>
+						
+						<c:if test="${installment.interestRate.maximumDaysToApplyPenaltyApplied}">
+							<p>
+								<strong><spring:message code="label.TuitionInstallmentTariff.maximumDaysToApplyPenalty" />:</strong>
+								<c:out value="${installment.interestRate.maximumDaysToApplyPenalty}" />
+							</p>
+						</c:if>
+						
+						<p>
+							<strong><spring:message code="label.TuitionInstallmentTariff.rate" />:</strong>
+							<c:out value="${installment.interestRate.rate}" />
+						</p>
+					</c:when>
+					<c:when test="${installment.interestRate.interestType.monthly}">
+						<p>
+							<strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:</strong>
+							<c:if test="${installment.interestRate.applyInFirstWorkday}">
+								<spring:message code="label.true" />
+							</c:if>
+							<c:if test="not ${installment.interestRate.applyInFirstWorkday}">
+								<spring:message code="label.false" />
+							</c:if>
+						</p>
+
+						<c:if test="${installment.interestRate.MaximumMonthsToApplyPenaltyApplied}">
+							<p>
+								<strong><spring:message code="label.TuitionInstallmentTariff.maximumMonthsToApplyPenalty" />:</strong>
+								<c:out value="${installment.interestRate.maximumMonthsToApplyPenalty}" />
+							</p>
+						</c:if>
+
+						<p>
+							<strong><spring:message code="label.TuitionInstallmentTariff.rate" />:</strong>
+							<c:out value="${installment.interestRate.rate}" />
+						</p>
+					</c:when>
+					
+					<c:when test="${installment.interestRate.interestType.fixedAmount}">
+						<p>
+							<strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:</strong>
+							<c:if test="${installment.interestRate.applyInFirstWorkday}">
+								<spring:message code="label.true" />
+							</c:if>
+							<c:if test="not ${installment.interestRate.applyInFirstWorkday}">
+								<spring:message code="label.false" />
+							</c:if>
+						</p>
+						
+						<p>
+							<strong><spring:message code="label.TuitionInstallmentTariff.interestFixedAmount" />:</strong>
+							<c:out value="${installment.interestRate.interestFixedAmount}" />
+						</p>
+					</c:when>
+				</c:choose>
+			</c:if>
+		</datatables:column>
 	</datatables:table>
-		
+	<script>
+		createDataTables("paymentPlans-${loopStatus.index}", false, false, false, "${pageContext.request.contextPath}", "${datatablesI18NUrl}");
+	</script>
+	
+	<p><a href="${pageContext.request.contextPath}<%= TuitionPaymentPlanController.SEARCH_TO_DELETE_ACTION_URL %>${paymentPlan.externalId}">
+		<spring:message code="label.TuitionPaymentPlan.delete.plan" />
+	</a></p>
+	
 </c:forEach>
 
-<c:choose>
-	<c:when test="${not empty searchtuitionpaymentplanResultsDataSet}">
-		<table id="searchtuitionpaymentplanTable" class="table responsive table-bordered table-hover">
-			<thead>
-				<tr>
-					<th>
-						<spring:message code="label.TuitionPaymentPlan.order"/>
-					</th>
-					<th><spring:message code="label.TuitionPaymentPlan.fixedAmount"/></th>
-					<th><spring:message code="label.TuitionPaymentPlan.beginDate"/></th>
-					<th><spring:message code="label.TuitionPaymentPlan.dueDate"/></th>
-					<th><spring:message code="label.TuitionPaymentPlan.interests"/></th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
-	</c:when>
-	<c:otherwise>
-		<div class="alert alert-warning" role="alert">
-			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>			<spring:message code="label.noResultsFound" /></p>
-		</div>	
-	</c:otherwise>
-</c:choose>
 
 <script>
-	var searchtuitionpaymentplanDataSet = [
-			<c:forEach items="${searchtuitionpaymentplanResultsDataSet}" var="searchResult">
-				<%-- Field access / formatting  here CHANGE_ME --%>
-				{
-				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"order" : "<c:out value='${searchResult.order}'/>",
-"fixedamount" : "<c:out value='${searchResult.fixedAmount}'/>",
-"begindate" : "<c:out value='${searchResult.beginDate}'/>",
-"duedate" : "<c:out value='${searchResult.dueDate}'/>",
-"interests" : "<c:out value='${searchResult.interests}'/>",
-			},
-            </c:forEach>
-    ];
-	
-	$(document).ready(function() {
-
-	
-
-
-		var table = $('#searchtuitionpaymentplanTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columns": [
-			{ data: 'order' },
-			{ data: 'fixedamount' },
-			{ data: 'begindate' },
-			{ data: 'duedate' },
-			{ data: 'interests' },
-			
-		],
-		"data" : searchtuitionpaymentplanDataSet,
-		//Documentation: https://datatables.net/reference/option/dom
-"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
-        "tableTools": {
-            "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"        	
-        }
-		});
-		table.columns.adjust().draw();
-		
-		  $('#searchtuitionpaymentplanTable tbody').on( 'click', 'tr', function () {
-		        $(this).toggleClass('selected');
-		    } );
-		  
-	}); 
+	$(document).ready(function() {}); 
 </script>
 

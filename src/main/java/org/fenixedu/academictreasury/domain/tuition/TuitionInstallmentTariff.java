@@ -66,7 +66,25 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixed.must.be.positive");
         }
     }
-
+    
+    public BigDecimal getAmountPerEctsOrUnit() {
+        if(getTuitionCalculationType().isFixedAmount()) {
+            throw new RuntimeException("invalid call");
+        }
+        
+        if(getEctsCalculationType().isFixedAmount()) {
+            return getFixedAmount();
+        }
+        
+        if(!getTuitionPaymentPlan().isDefaultPaymentPlanDefined()) {
+            throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.default.payment.plan.not.defined");
+        }
+        
+        // TODO ANIL: Fetch default payment plan for execution year and degree curricular plan 
+        return BigDecimal.ZERO;
+    }
+    
+    
     // @formatter:off
     /* --------
      * SERVICES

@@ -54,8 +54,12 @@ public class DegreeCurricularPlanController extends AcademicTreasuryBaseControll
     public static final String CHOOSEDEGREECURRICULARPLAN_URL = CONTROLLER_URL + _CHOOSEDEGREECURRICULARPLAN_URI;
 
     @RequestMapping(value = _CHOOSEDEGREECURRICULARPLAN_URI + "/{finantialEntityId}/{executionYearId}")
-    public String chooseDegreeCurricularPlan(@PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
+    public String chooseDegreeCurricularPlan(@PathVariable("finantialEntityId") FinantialEntity finantialEntity,
+            @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
         model.addAttribute("choosedegreecurricularplanResultsDataSet", DegreeCurricularPlan.readBolonhaDegreeCurricularPlans());
+        model.addAttribute("finantialEntity", finantialEntity);
+        model.addAttribute("executionYear", executionYear);
+        model.addAttribute("executionYearOptions", ExecutionYear.readOpenExecutionYears());
 
         return jspPage("choosedegreecurricularplan");
     }

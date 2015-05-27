@@ -33,71 +33,39 @@ ${portal.toolkit()}
 	</h1>
 </div>
 <%-- NAVIGATION --%>
-	<c:if test="${not empty infoMessages}">
-		<div class="alert alert-info" role="alert">
-			
-			<c:forEach items="${infoMessages}" var="message"> 
-				<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-							${message}
-						</p>
-			</c:forEach>
-			
-		</div>	
-	</c:if>
-	<c:if test="${not empty warningMessages}">
-		<div class="alert alert-warning" role="alert">
-			
-			<c:forEach items="${warningMessages}" var="message"> 
-				<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-							${message}
-						</p>
-			</c:forEach>
-			
-		</div>	
-	</c:if>
-	<c:if test="${not empty errorMessages}">
-		<div class="alert alert-danger" role="alert">
-			
-			<c:forEach items="${errorMessages}" var="message"> 
-				<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-							${message}
-						</p>
-			</c:forEach>
-			
-		</div>	
-	</c:if>
-
-
-<script type="text/javascript">
-	  function processDelete(externalId) {
-	    url = "${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/finantialentity/choosefinantialentitychooseFinantialEntity/delete/" + externalId;
-	    $("#deleteForm").attr("action", url);
-	    $('#deleteModal').modal('toggle')
-	  }
-</script>
-
-
-<div class="modal fade" id="deleteModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-    <form id ="deleteForm" action="#" method="POST">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
-      </div>
-      <div class="modal-body">
-        <p><spring:message code = "label.manageTuitionPaymentPlan.chooseFinantialEntity.confirmDelete"/></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
-        <button id="deleteButton" class ="btn btn-danger" type="submit"> <spring:message code = "label.delete"/></button>
-      </div>
-      </form>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-
+<c:if test="${not empty infoMessages}">
+	<div class="alert alert-info" role="alert">
+		
+		<c:forEach items="${infoMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+<c:if test="${not empty warningMessages}">
+	<div class="alert alert-warning" role="alert">
+		
+		<c:forEach items="${warningMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+<c:if test="${not empty errorMessages}">
+	<div class="alert alert-danger" role="alert">
+		
+		<c:forEach items="${errorMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
 
 <c:choose>
 	<c:when test="${not empty choosefinantialentityResultsDataSet}">
@@ -131,9 +99,9 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"name" : "<c:out value='${searchResult.name}'/>",
+"name" : "<c:out value='${searchResult.name.content}'/>",
 "actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/finantialentity/choosefinantialentitychooseFinantialEntity/choose/${searchResult.externalId}\"><spring:message code='label.manageTuitionPaymentPlan.chooseFinantialEntity.choose'/></a>" +
+" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/finantialentity/chooseFinantialEntity/choose/${searchResult.externalId}\"><spring:message code='label.manageTuitionPaymentPlan.chooseFinantialEntity.choose'/></a>" +
                 "" 
 			},
             </c:forEach>

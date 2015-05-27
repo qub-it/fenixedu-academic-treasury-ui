@@ -83,6 +83,7 @@ class tuition.TuitionPaymentPlan {
 	boolean defaultPaymentPlan;	
 	RegistrationRegimeTypeT registrationRegimeType;
 	IngressionT ingression;
+	int semester;
 	boolean firstTimeStudent;
 	boolean customized;
 	LocalizedString customizedName;
@@ -95,7 +96,7 @@ class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tar
 	BigDecimalT fixedAmount;
 	EctsCalculationType ectsCalculationType;
 	int factor;
-	int totalUnits;
+	int totalEctsOrUnits;
 	boolean academicalActBlockingOff;
 }
 
@@ -372,7 +373,7 @@ relation TuitionPaymentPlanCurricularSemester {
 /* --- TuitionInstallmentTariff --- */
 
 relation TuitionInstallmentTariffTuitionPaymentPlan {
-	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+	tuition.TuitionPaymentPlan playsRole tuitionPaymentPlan {
 		multiplicity 1..1;
 	}
 	

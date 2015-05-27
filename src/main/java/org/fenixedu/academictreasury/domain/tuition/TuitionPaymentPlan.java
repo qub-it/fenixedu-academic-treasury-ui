@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.domain.tuition;
 
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
@@ -65,6 +66,11 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         if (isCustomized() && LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.customized.required.name");
         }
+
+        if (findDefaultPaymentPlans(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear()).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.defaultPaymentPlan.not.unique");
+        }
+
     }
 
     private void createInstallments(final TuitionPaymentPlanBean tuitionPaymentPlanBean) {
@@ -92,6 +98,18 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public boolean isCustomized() {
         return getCustomized();
+    }
+
+    public Optional<TuitionPaymentPlan> defaultPaymentPlan() {
+        return findUniqueDefaultPaymentPlan(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear());
+    }
+
+    public boolean isDefaultPaymentPlan() {
+        return getDefaultPaymentPlan();
+    }
+
+    public boolean isDefaultPaymentPlanDefined() {
+        return defaultPaymentPlan().isPresent();
     }
 
     public boolean isDeletable() {
@@ -145,12 +163,26 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     }
 
     public static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
-            final FinantialEntity finantialEntity, final ExecutionYear executionYear,
-            final DegreeCurricularPlan degreeCurricularPlan) {
+            final FinantialEntity finantialEntity, final ExecutionYear executionYear) {
+        return find(tuitionPaymentPlanGroup).filter(t -> t.finantialEntity() == finantialEntity);
+    }
+
+    public static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
+            final DegreeCurricularPlan degreeCurricularPlan, final ExecutionYear executionYear) {
 
         return find(tuitionPaymentPlanGroup).filter(
-                t -> t.finantialEntity() == finantialEntity && t.getExecutionYear() == executionYear
-                        && t.getDegreeCurricularPlan() == degreeCurricularPlan);
+                t -> t.getExecutionYear() == executionYear && t.getDegreeCurricularPlan() == degreeCurricularPlan);
+    }
+
+    private static Stream<TuitionPaymentPlan> findDefaultPaymentPlans(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
+            final DegreeCurricularPlan degreeCurricularPlan, final ExecutionYear executionYear) {
+        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear).filter(t -> t.isDefaultPaymentPlan());
+    }
+
+    public static Optional<TuitionPaymentPlan> findUniqueDefaultPaymentPlan(
+            final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final DegreeCurricularPlan degreeCurricularPlan,
+            final ExecutionYear executionYear) {
+        return findDefaultPaymentPlans(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear).findFirst();
     }
 
     @Atomic

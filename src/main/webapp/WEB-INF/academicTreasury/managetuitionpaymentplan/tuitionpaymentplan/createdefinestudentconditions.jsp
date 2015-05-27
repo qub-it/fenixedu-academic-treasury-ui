@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.TuitionPaymentPlanController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -11,9 +12,7 @@
 <spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json"/>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
+${portal.angularToolkit()} 
 
 <link href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
@@ -24,67 +23,211 @@ ${portal.toolkit()}
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
 
+<script src="${pageContext.request.contextPath}/webjars/angular-sanitize/1.3.11/angular-sanitize.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.css" />
+<script src="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.js"></script>
 
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1><spring:message code="label.manageTuitionPaymentPlan.createDefineStudentConditions" />
-		<small></small>
-	</h1>
+	<h1><spring:message code="label.manageTuitionPaymentPlan.createTuitionPaymentPlan" /></h1>
+
+	<h3><spring:message code="label.manageTuitionPaymentPlan.createChooseDegreeCurricularPlans" /></h3>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/createdefinestudentconditions/define"><spring:message code="label.event.manageTuitionPaymentPlan.define"  /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+	&nbsp;
+	<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/" >
+		<spring:message code="label.event.back" />
+	</a>
 </div>
-	<c:if test="${not empty infoMessages}">
-				<div class="alert alert-info" role="alert">
-					
-					<c:forEach items="${infoMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
-			<c:if test="${not empty warningMessages}">
-				<div class="alert alert-warning" role="alert">
-					
-					<c:forEach items="${warningMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
-			<c:if test="${not empty errorMessages}">
-				<div class="alert alert-danger" role="alert">
-					
-					<c:forEach items="${errorMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
 
-<form method="post" class="form-horizontal">
-<div class="panel panel-default">
-  <div class="panel-body">
-  </div>
-  <div class="panel-footer">
-		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
+<c:if test="${not empty infoMessages}">
+	<div class="alert alert-info" role="alert">
+		
+		<c:forEach items="${infoMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+<c:if test="${not empty warningMessages}">
+	<div class="alert alert-warning" role="alert">
+		
+		<c:forEach items="${warningMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+<c:if test="${not empty errorMessages}">
+	<div class="alert alert-danger" role="alert">
+		
+		<c:forEach items="${errorMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+
+<script>
+
+angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).controller('TuitionPaymentPlanController', ['$scope', function($scope) {
+
+ 	$scope.object=angular.fromJson('${tuitionPaymentPlanBeanJson}');
+	$scope.postBack = createAngularPostbackFunction($scope); 
+
+	//Begin here of Custom Screen business JS - code
+ 	
+}]);
+</script>
+
+<form name='form' method="post" class="form-horizontal"
+	ng-app="angularAppTuitionPaymentPlan" ng-controller="TuitionPaymentPlanController"
+	action='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATEINSERTINSTALLMENTS_URL %>/${finantialEntity.externalId}/${executionYear.externalId}'>
+	
+	<input type="hidden" name="postback"
+		value='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATEINSERTINSTALLMENTSPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
+			
+	<input name="bean" type="hidden" value="{{ object }}" />
+	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><span id="executionYearLabel"><spring:message code="label.TuitionPaymentPlan.executionYear"/></span></div> 
+				
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<label for="executionYearLabel">${executionYear.qualifiedName}</label>
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.defaultPaymentPlan"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlan_defaultPaymentPlan" name="defaultpaymentplan" class="form-control" ng-model="object.defaultpaymentplan">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionPaymentPlan_defaultPaymentPlan").val('<c:out value='${not empty tuitionPaymentPlan.defaultPaymentPlan }'/>');
+					</script>	
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.registrationRegimeType"/></div> 
+				
+				<div class="col-sm-4">
+					<ui-select id="tuitionPaymentPlan_registrationRegimeType" class="form-control" name="registrationregimetype" ng-model="$parent.object.registrationRegimeType" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="registrationRegimeType.id as registrationRegimeType in object.registrationRegimeTypeDataSource | filter: $select.search">
+							<span ng-bind-html="registrationRegimeType.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.registrationProtocol"/></div> 
+				
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<ui-select id="tuitionPaymentPlan_registrationProtocol" class="form-control" name="registrationprotocol" ng-model="$parent.object.registrationProtocol" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="registrationProtocol.id as registrationProtocol in object.registrationProtocolDataSource | filter: $select.search">
+							<span ng-bind-html="registrationProtocol.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.ingression"/></div> 
+				
+				<div class="col-sm-4">
+					<ui-select id="tuitionPaymentPlan_ingression" class="form-control" name="ingression" ng-model="$parent.object.ingression" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="ingression.id as ingression in object.ingressionDataSource | filter: $select.search">
+							<span ng-bind-html="ingression.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.curricularYear"/></div> 
+				
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<ui-select id="tuitionPaymentPlan_curricularYear" class="form-control" name="curricularyear" ng-model="$parent.object.curricularYear" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="curricularYear.id as curricularYear in object.curricularYearDataSource | filter: $select.search">
+							<span ng-bind-html="curricularYear.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.curricularSemester"/></div> 
+				
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<ui-select id="tuitionPaymentPlan_semester" class="form-control" name="semester" ng-model="$parent.object.semester" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="semester.id as semester in object.semesterDataSource | filter: $select.search">
+							<span ng-bind-html="semester.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.firstTimeStudent"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlan_firstTimeStudent" name="firsttimestudent" class="form-control" ng-model="object.firsttimestudent">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionPaymentPlan_firstTimeStudent").val('<c:out value='${not empty param.firsttimestudent ? param.firsttimestudent : tuitionPaymentPlan.firstTimeStudent }'/>');
+					</script>	
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.customized"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlan_customized" name="customized" class="form-control" ng-model="object.customized">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionPaymentPlan_customized").val('<c:out value='${not empty param.customized ? param.customized : tuitionPaymentPlan.customized }'/>');
+					</script>	
+				</div>
+			</div>		
+			<div class="form-group row" ng-show="object.customized=='true'">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.customizedName"/></div> 
+				
+				<div class="col-sm-10">
+					<input id="tuitionPaymentPlan_customizedName" class="form-control" type="text" name="customizedname"  ng-localized-string="object.customizedname"/>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="panel-footer">
+			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
+		</div>
 	</div>
-</div>
 </form>
 
 <script>
 $(document).ready(function() {
 
-
-	});
+});
 </script>

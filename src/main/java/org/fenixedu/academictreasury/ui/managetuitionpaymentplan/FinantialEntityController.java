@@ -28,6 +28,7 @@ package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
 import java.util.stream.Collectors;
 
+import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -49,7 +50,7 @@ public class FinantialEntityController extends AcademicTreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
-        return "forward:" + CONTROLLER_URL + "/";
+        return "forward:" + CHOOSEFINANTIALENTITY_URL;
     }
 
     private static final String _CHOOSEFINANTIALENTITY_URI = "/choosefinantialentity";
@@ -71,7 +72,11 @@ public class FinantialEntityController extends AcademicTreasuryBaseController {
             @PathVariable("finantialEntityId") final FinantialEntity finantialEntity, final Model model,
             final RedirectAttributes redirectAttributes) {
 
-        return redirect(DegreeCurricularPlanController.CONTROLLER_URL + "/" + finantialEntity.getExternalId(), model,
+        final ExecutionYear executionYear = ExecutionYear.readCurrentExecutionYear();
+
+        return redirect(
+                DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_URL
+                        + String.format("/%s/%s", finantialEntity.getExternalId(), executionYear.getExternalId()), model,
                 redirectAttributes);
     }
 

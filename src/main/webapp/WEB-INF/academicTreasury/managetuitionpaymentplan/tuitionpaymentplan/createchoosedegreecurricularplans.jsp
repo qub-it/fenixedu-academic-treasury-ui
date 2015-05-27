@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.TuitionPaymentPlanController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -12,8 +13,8 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
+${portal.angularToolkit()} 
+<%--${portal.toolkit()}--%>
 
 <link href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
@@ -24,67 +25,147 @@ ${portal.toolkit()}
 <script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
 <script src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
 
+<script src="${pageContext.request.contextPath}/webjars/angular-sanitize/1.3.11/angular-sanitize.js"></script>
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.css" />
+<script src="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.js"></script>
 
 
 <%-- TITLE --%>
 <div class="page-header">
-	<h1><spring:message code="label.manageTuitionPaymentPlan.createChooseDegreeCurricularPlans" />
-		<small></small>
+	<h1>
+		<spring:message code="label.manageTuitionPaymentPlan.createTuitionPaymentPlan" />
 	</h1>
+	
+	<h3>
+		<spring:message code="label.manageTuitionPaymentPlan.createChooseDegreeCurricularPlans" />
+	</h3>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/"  ><spring:message code="label.event.back" /></a>
-|&nbsp;&nbsp;	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/createchoosedegreecurricularplans/choose"><spring:message code="label.event.manageTuitionPaymentPlan.choose"  /></a>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+	&nbsp;
+	<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/${finantialEntity.externalId}/${executionYear.externalId}">
+		<spring:message code="label.event.back" />
+	</a>
 </div>
-	<c:if test="${not empty infoMessages}">
-				<div class="alert alert-info" role="alert">
-					
-					<c:forEach items="${infoMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
-			<c:if test="${not empty warningMessages}">
-				<div class="alert alert-warning" role="alert">
-					
-					<c:forEach items="${warningMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
-			<c:if test="${not empty errorMessages}">
-				<div class="alert alert-danger" role="alert">
-					
-					<c:forEach items="${errorMessages}" var="message"> 
-						<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-  							${message}
-  						</p>
-					</c:forEach>
-					
-				</div>	
-			</c:if>
 
-<form method="post" class="form-horizontal">
-<div class="panel panel-default">
-  <div class="panel-body">
-  </div>
-  <div class="panel-footer">
-		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
+<c:if test="${not empty infoMessages}">
+	<div class="alert alert-info" role="alert">
+		
+		<c:forEach items="${infoMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+<c:if test="${not empty warningMessages}">
+	<div class="alert alert-warning" role="alert">
+		
+		<c:forEach items="${warningMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+<c:if test="${not empty errorMessages}">
+	<div class="alert alert-danger" role="alert">
+		
+		<c:forEach items="${errorMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+
+<script>
+
+angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).controller('TuitionPaymentPlanController', ['$scope', function($scope) {
+
+ 	$scope.object=angular.fromJson('${tuitionPaymentPlanBeanJson}');
+	
+ 	$scope.object.degreeCurricularPlans=[];
+ 	
+ 	$scope.postBack = createAngularPostbackFunction($scope); 
+
+	//Begin here of Custom Screen business JS - code
+	
+	$scope.onDegreeTypeChange = function(degreeType, model) {
+		$scope.postBack(model);
+	}
+ 	
+	$scope.toggleDegreeCurricularPlans = function toggleSelection(dcpId) {
+		var idx = $scope.object.degreeCurricularPlans.indexOf(dcpId);
+		
+		// is currently selected
+		if (idx > -1) {
+		  $scope.object.degreeCurricularPlans.splice(idx, 1);
+		} else {
+			// is newly selected
+		  $scope.object.degreeCurricularPlans.push(dcpId);
+		}
+	};	
+}]);
+</script>
+
+<form name='form' method="post" class="form-horizontal"
+	ng-app="angularAppTuitionPaymentPlan" ng-controller="TuitionPaymentPlanController"
+	action='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATEDEFINESTUDENTCONDITIONS_URL %>/${finantialEntity.externalId}/${executionYear.externalId}'>
+	
+	<input type="hidden" name="postback"
+		value='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATECHOOSEDEGREECURRICULARPLANSPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
+			
+	<input name="bean" type="hidden" value="{{ object }}" />
+	
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.executionYear"/></div>
+				<div class="col-sm-4">
+					<c:out value="${executionYear.qualifiedName}" />
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.degreeType"/></div> 
+				
+				<div class="col-sm-8">
+					<ui-select id="tuitionPaymentPlan_degreeType" class="form-control" name="degreeType" ng-model="$parent.object.degreeType" theme="bootstrap" ng-disabled="disabled" 
+						on-select="onDegreeTypeChange($product, $model)" >
+						<ui-select-match>{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="degreeType.id as degreeType in object.degreeTypeDataSource | filter: $select.search">
+							<span ng-bind-html="degreeType.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.degreeCurricularPlans"/></div> 
+				
+				<div class="col-sm-8">
+					<div ng-repeat="dcp in object.degreeCurricularPlanDataSource">
+						<label for="{{dcp.id}}">
+							<input class="checkbox" name="{{dcp.id}}" type="checkbox" id="{{dcp.id}}" 
+							ng-checked="object.degreeCurricularPlans.indexOf(dcp.id) > -1"
+							ng-click="toggleDegreeCurricularPlans(dcp.id)" />
+							{{dcp.text}}
+						</label>
+					</div>
+					
+				</div>
+			</div>		
+		</div>
+		<div class="panel-footer">
+			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.continue" />" />
+		</div>
 	</div>
-</div>
 </form>
 
 <script>
-$(document).ready(function() {
-
-
-	});
+	$(document).ready(function() {});
 </script>

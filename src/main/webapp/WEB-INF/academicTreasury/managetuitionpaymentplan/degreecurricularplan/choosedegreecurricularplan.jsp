@@ -1,7 +1,10 @@
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.DegreeCurricularPlanController"%>
 <%@page import="static org.fenixedu.academictreasury.ui.managetuitionpaymentplan.DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
+
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js"/>
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -13,8 +16,8 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
+${portal.angularToolkit()}
+<%-- ${portal.toolkit()} --%>
 
 <link href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css" rel="stylesheet"/>
 <script src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
@@ -33,136 +36,118 @@ ${portal.toolkit()}
 		<small></small>
 	</h1>
 </div>
+
+<%-- Choose Execution Year --%>
+<div ng-app="changeExample" ng-controller="ExampleController" style="margin-bottom: 20px" >
+	<select id="executionYearOptions" class="js-example-basic-single form-control" name="executionYearId" 
+		ng-change="change(executionYearId, '{{ executionYearId }}')" ng-model="executionYearId">
+		<option value=""></option>
+	</select>
+</div>
+
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/finantialentity/choosefinantialentity"   ><spring:message code="label.event.back"/></a>
-|&nbsp;&nbsp;</div>
-	<c:if test="${not empty infoMessages}">
-		<div class="alert alert-info" role="alert">
-			
-			<c:forEach items="${infoMessages}" var="message"> 
-				<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
-							${message}
-						</p>
-			</c:forEach>
-			
-		</div>	
-	</c:if>
-	<c:if test="${not empty warningMessages}">
-		<div class="alert alert-warning" role="alert">
-			
-			<c:forEach items="${warningMessages}" var="message"> 
-				<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-							${message}
-						</p>
-			</c:forEach>
-			
-		</div>	
-	</c:if>
-	<c:if test="${not empty errorMessages}">
-		<div class="alert alert-danger" role="alert">
-			
-			<c:forEach items="${errorMessages}" var="message"> 
-				<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-							${message}
-						</p>
-			</c:forEach>
-			
-		</div>	
-	</c:if>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true">
+	</span>&nbsp;
+	<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/finantialentity/choosefinantialentity">
+		<spring:message code="label.event.back"/>
+	</a>
+	|&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+	&nbsp;
+	<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/createchoosedegreecurricularplans/${finantialEntity.externalId}/${executionYear.externalId}">
+		<spring:message code="label.event.create" />
+	</a>
+	|&nbsp;&nbsp;
+</div>
 
-
-<div class="modal fade" id="deleteModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-    <form id ="deleteForm" action="#" method="POST">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title"><spring:message code="label.confirmation"/></h4>
-      </div>
-      <div class="modal-body">
-        <p><spring:message code = "label.manageTuitionPaymentPlan.chooseDegreeCurricularPlan.confirmDelete"/></p>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><spring:message code = "label.close"/></button>
-        <button id="deleteButton" class ="btn btn-danger" type="submit"> <spring:message code = "label.delete"/></button>
-      </div>
-      </form>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
-
-<table id="choosedegreecurricularplanTable" class="table responsive table-bordered table-hover">
-	<thead>
-		<tr>
-			<th>
-				<spring:message code="label.DegreeCurricularPlan.degreeTypeName"/>
-			</th>
-			<th>
-				<spring:message code="label.DegreeCurricularPlan.presentationName"/>
-			</th>
-			<th>
-			</th>
-		</tr>
-	</thead>
-	<tbody>
-	<c:forEach items="${choosedegreecurricularplanResultsDataSet}" var="dcp">
-		<tr>
-			<td>
-				<c:out value="${dcp.acronym}" />
-			</td>
-			<td>
-				<p>
-					<c:out value="${dcp.presentationName}" />
-				</p>
-				<p style="color: red;">
-					Sem planos criados
-				</p>
-			</td>
-			<td>
-				<a  href="<%= request.getContextPath() + "/" + CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>/${finantialInstitution.externalId}/${executionYearId}/${dcp.externalId}"
-					class="btn btn-default btn-xs" >
-					<spring:message code="label.manageTuitionPaymentPlan.chooseDegreeCurricularPlan.choose"/>
-				</a>
-			</td>
-		</tr>
-	</c:forEach>
-	</tbody>
-</table>
-
-<script>
-	$(document).ready(function() {
-
-		var table = $('#choosedegreecurricularplanTable').DataTable({language : {
-			url : "${datatablesI18NUrl}",			
-		},
-		"columns": [
-			{ data: 'degreetypename' },
-			{ data: 'presentationname' },
-			{ data: 'actions' }
-			
-		],
-		//CHANGE_ME adjust the actions column width if needed
-		"columnDefs": [
-		//74
-		               { "width": "74px", "targets": 2 } 
-		             ],
-		//Documentation: https://datatables.net/reference/option/dom
-"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
-        "tableTools": {
-            "sSwfPath": "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"        	
-        }
-		});
+<c:if test="${not empty infoMessages}">
+	<div class="alert alert-info" role="alert">
 		
-		table.columns.adjust().draw();
+		<c:forEach items="${infoMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
 		
-		  $('#choosedegreecurricularplanTable tbody').on( 'click', 'tr', function () {
-		        $(this).toggleClass('selected');
-		    } );
-		  
-	}); 
+	</div>	
+</c:if>
+<c:if test="${not empty warningMessages}">
+	<div class="alert alert-warning" role="alert">
+		
+		<c:forEach items="${warningMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+<c:if test="${not empty errorMessages}">
+	<div class="alert alert-danger" role="alert">
+		
+		<c:forEach items="${errorMessages}" var="message"> 
+			<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+						${message}
+					</p>
+		</c:forEach>
+		
+	</div>	
+</c:if>
+
+<script type="text/javascript">
+angular.module('changeExample', []).controller('ExampleController', ['$scope', function($scope) {
+	$scope.change = function(newValue, oldValue) {
+
+		if(newValue !== oldValue) {
+			document.location.href=$('input[name="executionYearPostback"]').attr('value') + $scope.executionYearId;
+		}
+	};
+}]);
 </script>
 
+<input type="hidden" name="executionYearPostback" 
+	value="${pageContext.request.contextPath}<%= DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_URL %>/${finantialEntity.externalId}/" />
+
+<datatables:table id="choosedegreecurricularplanTable" row="dcp" data="${choosedegreecurricularplanResultsDataSet}" 
+	cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
+	
+	<datatables:column>
+		<datatables:columnHead ><spring:message code="label.DegreeCurricularPlan.degreeTypeName" /></datatables:columnHead>
+		<c:out value="${dcp.degree.degreeType.name.content}" />
+	</datatables:column>
+
+	<datatables:column>
+		<datatables:columnHead ><spring:message code="label.DegreeCurricularPlan.degreeTypeName" /></datatables:columnHead>
+			<p><c:out value="${dcp.getPresentationName(executionYear)}" /></p>
+			<p style="color: red;">Sem planos criados</p>
+	</datatables:column>
+	<datatables:column>
+		<a  href="${pageContext.request.contextPath}<%= CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>/${finantialInstitution.externalId}/${executionYearId}/${dcp.externalId}"
+			class="btn btn-default btn-xs" >
+			<spring:message code="label.manageTuitionPaymentPlan.chooseDegreeCurricularPlan.choose"/>
+		</a>
+	</datatables:column>
+
+</datatables:table>
+
+<script>
+	createDataTables("choosedegreecurricularplanTable", false, false, false, "${pageContext.request.contextPath}", "${datatablesI18NUrl}");
+</script>
+
+<script>
+$(document).ready(function() {
+	executionYear_options = [
+ 			<c:forEach items="${executionYearOptions}" var="element"> 
+ 				{
+ 					text : "${element.qualifiedName}",
+ 					id : "${element.externalId}"
+ 				},
+ 			</c:forEach>
+ 		];
+     		
+	$("#executionYearOptions").select2({ data : executionYear_options });
+    $("#executionYearOptions").select2().select2('val', '<c:out value='${executionYear.externalId}'/>');
+
+});
+</script>

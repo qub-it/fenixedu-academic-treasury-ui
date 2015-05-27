@@ -3,6 +3,7 @@ package org.fenixedu.academictreasury.domain.tuition;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.util.LocalizedStringUtil;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -68,6 +69,18 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     
     public static Stream<TuitionPaymentPlanGroup> findAll() {
         return Bennu.getInstance().getTuitionPaymentPlanGroupsSet().stream();
+    }
+    
+    public static TuitionPaymentPlanGroup findDefaultGroupForRegistration() {
+        return AcademicTreasurySettings.getInstance().getTuitionPaymentPlanGroupForRegistration();
+    }
+    
+    public static TuitionPaymentPlanGroup findDefaultGroupForStandalone() {
+        return AcademicTreasurySettings.getInstance().getTuitionPaymentPlanGroupForStandalone();
+    }
+    
+    public static TuitionPaymentPlanGroup findDefaultGroupForExtracurricular() {
+        return AcademicTreasurySettings.getInstance().getTuitionPaymentPlanGroupForExtracurricular();
     }
     
     @Atomic
