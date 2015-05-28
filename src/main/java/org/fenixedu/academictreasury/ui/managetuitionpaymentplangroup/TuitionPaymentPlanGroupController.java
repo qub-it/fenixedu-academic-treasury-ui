@@ -108,7 +108,7 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
             required = false) final LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
 
         try {
-            final TuitionPaymentPlanGroup group = TuitionPaymentPlanGroup.create(code, name);
+            final TuitionPaymentPlanGroup group = TuitionPaymentPlanGroup.create(code, name, true, false, false);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.creation.success"), model);
             return redirect(route("/read", group.getExternalId()), model, redirectAttributes);

@@ -118,7 +118,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 						<option value="true"><spring:message code="label.yes"/></option>				
 					</select>
 					<script>
-						$("#tuitionPaymentPlan_defaultPaymentPlan").val('<c:out value='${not empty tuitionPaymentPlan.defaultPaymentPlan }'/>');
+						$("#tuitionPaymentPlan_defaultPaymentPlan").select2().val('<c:out value='${not empty tuitionPaymentPlan.defaultPaymentPlan }'/>');
 					</script>	
 				</div>
 			</div>		
@@ -194,7 +194,8 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 						<option value="true"><spring:message code="label.yes"/></option>				
 					</select>
 					<script>
-						$("#tuitionPaymentPlan_firstTimeStudent").val('<c:out value='${not empty param.firsttimestudent ? param.firsttimestudent : tuitionPaymentPlan.firstTimeStudent }'/>');
+						$("#tuitionPaymentPlan_firstTimeStudent").select2()
+							.val('<c:out value='${not empty param.firsttimestudent ? param.firsttimestudent : tuitionPaymentPlan.firstTimeStudent }'/>');
 					</script>	
 				</div>
 			</div>		
@@ -207,7 +208,8 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 						<option value="true"><spring:message code="label.yes"/></option>				
 					</select>
 					<script>
-						$("#tuitionPaymentPlan_customized").val('<c:out value='${not empty param.customized ? param.customized : tuitionPaymentPlan.customized }'/>');
+						$("#tuitionPaymentPlan_customized").select2()
+							.val('<c:out value='${not empty param.customized ? param.customized : tuitionPaymentPlan.customized }'/>');
 					</script>	
 				</div>
 			</div>		

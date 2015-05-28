@@ -7,8 +7,10 @@ import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
+import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
@@ -20,10 +22,10 @@ public class AcademicTariffBean implements IBean, Serializable {
     private static final long serialVersionUID = 1L;
 
     /* Tariff */
-    private DateTime beginDate;
-    private DateTime endDate;
+    private LocalDate beginDate;
+    private LocalDate endDate;
     private DueDateCalculationType dueDateCalculationType;
-    private DateTime fixedDueDate;
+    private LocalDate fixedDueDate;
     private int numberOfDaysAfterCreationForDueDate;
 
     /* InterestRate */
@@ -35,7 +37,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     private int maximumMonthsToApplyPenalty;
     private BigDecimal interestFixedAmount;
     private BigDecimal rate;
-    
+
     /* AcademicTariff */
     private AdministrativeOffice administrativeOffice;
     private DegreeType degreeType;
@@ -59,17 +61,18 @@ public class AcademicTariffBean implements IBean, Serializable {
     private BigDecimal fixedAmount;
     private EctsCalculationType ectsCalculationType;
     private boolean academicalActBlockingOff;
-    
-    
+    private BigDecimal factor;
+    private BigDecimal totalEctsOrUnits;
+
     public AcademicTariffBean() {
-        setBeginDate(new DateTime());
+        setBeginDate(new LocalDate());
         setEndDate(null);
-        
+
         setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
         setFixedDueDate(null);
         setNumberOfDaysAfterCreationForDueDate(0);
         setApplyInterests(false);
-        
+
         setInterestType(InterestType.DAILY);
         setNumberOfDaysAfterDueDate(0);
         setApplyInFirstWorkday(false);
@@ -77,12 +80,12 @@ public class AcademicTariffBean implements IBean, Serializable {
         setMaximumMonthsToApplyPenalty(0);
         setInterestFixedAmount(BigDecimal.ZERO);
         setRate(BigDecimal.ZERO);
-        
+
         setAdministrativeOffice(null);
         setDegreeType(null);
         setDegree(null);
         setCycleType(null);
-        
+
         setBaseAmount(BigDecimal.ZERO);
         setUnitsForBase(0);
         setApplyUnitsAmount(false);
@@ -93,79 +96,99 @@ public class AcademicTariffBean implements IBean, Serializable {
         setMaximumAmount(BigDecimal.ZERO);
         setUrgencyRate(BigDecimal.ZERO);
         setLanguageTranslationRate(BigDecimal.ZERO);
-        
+
         resetFields();
     }
-    
+
     public AcademicTariffBean(final int installmentOrder) {
         setInstallmentOrder(installmentOrder);
     }
-    
+
     public void resetFields() {
-        if(getDueDateCalculationType() == null || !getDueDateCalculationType().isDaysAfterCreation()) {
+        if (getDueDateCalculationType() == null || !getDueDateCalculationType().isDaysAfterCreation()) {
             setNumberOfDaysAfterCreationForDueDate(0);
-        } 
-        
-        if(getDueDateCalculationType() == null || !getDueDateCalculationType().isFixedDate()) {
+        }
+
+        if (getDueDateCalculationType() == null || !getDueDateCalculationType().isFixedDate()) {
             setFixedDueDate(null);
         }
-        
-        if(getInterestType() == null) {
+
+        if (getInterestType() == null) {
             setNumberOfDaysAfterCreationForDueDate(0);
             setApplyInFirstWorkday(false);
             setRate(BigDecimal.ZERO);
         }
 
-        if(getInterestType() == null || !getInterestType().isDaily()) {
+        if (getInterestType() == null || !getInterestType().isDaily()) {
             setMaximumDaysToApplyPenalty(0);
         }
-        
-        if(getInterestType() == null || !getInterestType().isMonthly()) {
+
+        if (getInterestType() == null || !getInterestType().isMonthly()) {
             setMaximumMonthsToApplyPenalty(0);
         }
-        
-        if(getInterestType() == null || !getInterestType().isFixedAmount()) {
+
+        if (getInterestType() == null || !getInterestType().isFixedAmount()) {
             setInterestFixedAmount(BigDecimal.ZERO);
         }
-        
-        if(getDegree() == null) {
+
+        if (getDegree() == null) {
             setCycleType(null);
         }
-        
-        if(getDegreeType() == null) {
+
+        if (getDegreeType() == null) {
             setDegree(null);
         }
-        
-        if(!isApplyUnitsAmount()) {
+
+        if (!isApplyUnitsAmount()) {
             setUnitAmount(BigDecimal.ZERO);
         }
-        
-        if(!isApplyPagesAmount()) {
+
+        if (!isApplyPagesAmount()) {
             setPageAmount(BigDecimal.ZERO);
         }
-        
-        if(!isApplyMaximumAmount()) {
+
+        if (!isApplyMaximumAmount()) {
             setMaximumAmount(BigDecimal.ZERO);
         }
+    }
+
+    public BigDecimal getAmountPerEctsOrUnit() {
+        if (getTuitionCalculationType().isFixedAmount()) {
+            throw new RuntimeException("invalid call");
+        }
+
+        if (getEctsCalculationType().isFixedAmount()) {
+            return getFixedAmount();
+        }
+
+        return BigDecimal.ZERO;
+    }
+
+    public boolean isMaximumDaysToApplyPenaltyApplied() {
+        return getMaximumDaysToApplyPenalty() > 0;
+    }
+    
+    public boolean isMaximumMonthsToApplyPenaltyApplied() {
+        return getMaximumMonthsToApplyPenalty() > 0;
     }
     
     /*
      * GETTERS & SETTERS
      */
-    
-    public DateTime getBeginDate() {
+
+    public LocalDate getBeginDate() {
         return beginDate;
     }
 
-    public void setBeginDate(DateTime beginDate) {
+    public void setBeginDate(LocalDate beginDate) {
         this.beginDate = beginDate;
     }
 
-    public DateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(DateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -177,11 +200,11 @@ public class AcademicTariffBean implements IBean, Serializable {
         this.dueDateCalculationType = dueDateCalculationType;
     }
 
-    public DateTime getFixedDueDate() {
+    public LocalDate getFixedDueDate() {
         return fixedDueDate;
     }
 
-    public void setFixedDueDate(DateTime fixedDueDate) {
+    public void setFixedDueDate(LocalDate fixedDueDate) {
         this.fixedDueDate = fixedDueDate;
     }
 
@@ -200,11 +223,11 @@ public class AcademicTariffBean implements IBean, Serializable {
     public void setApplyInterests(boolean applyInterests) {
         this.applyInterests = applyInterests;
     }
-    
+
     public boolean isApplyInFirstWorkday() {
         return applyInFirstWorkday;
     }
-    
+
     public void setApplyInFirstWorkday(boolean applyInFirstWorkday) {
         this.applyInFirstWorkday = applyInFirstWorkday;
     }
@@ -371,54 +394,61 @@ public class AcademicTariffBean implements IBean, Serializable {
         this.rate = rate;
     }
 
-    
     /* TuitionInstallmentTariff */
 
     public int getInstallmentOrder() {
         return installmentOrder;
     }
-    
+
     public void setInstallmentOrder(int installmentOrder) {
         this.installmentOrder = installmentOrder;
     }
-    
+
     public TuitionCalculationType getTuitionCalculationType() {
         return tuitionCalculationType;
     }
-
 
     public void setTuitionCalculationType(TuitionCalculationType tuitionCalculationType) {
         this.tuitionCalculationType = tuitionCalculationType;
     }
 
-
     public BigDecimal getFixedAmount() {
         return fixedAmount;
     }
-
 
     public void setFixedAmount(BigDecimal fixedAmount) {
         this.fixedAmount = fixedAmount;
     }
 
-
     public EctsCalculationType getEctsCalculationType() {
         return ectsCalculationType;
     }
-
 
     public void setEctsCalculationType(EctsCalculationType ectsCalculationType) {
         this.ectsCalculationType = ectsCalculationType;
     }
 
-
     public boolean isAcademicalActBlockingOff() {
         return academicalActBlockingOff;
     }
 
-
     public void setAcademicalActBlockingOff(boolean academicalActBlockingOff) {
         this.academicalActBlockingOff = academicalActBlockingOff;
     }
-
+    
+    public BigDecimal getFactor() {
+        return factor;
+    }
+    
+    public void setFactor(BigDecimal factor) {
+        this.factor = factor;
+    }
+    
+    public BigDecimal getTotalEctsOrUnits() {
+        return totalEctsOrUnits;
+    }
+    
+    public void setTotalEctsOrUnits(BigDecimal totalEctsOrUnits) {
+        this.totalEctsOrUnits = totalEctsOrUnits;
+    }
 }

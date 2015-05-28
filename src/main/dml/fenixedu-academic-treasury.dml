@@ -77,13 +77,16 @@ class emoluments.ServiceRequestMapEntry {
 class tuition.TuitionPaymentPlanGroup {
 	String code;
 	LocalizedString name;
+	boolean forRegistration;
+	boolean forStandalone;
+	boolean forExtracurricular;
 }
 
 class tuition.TuitionPaymentPlan {
 	boolean defaultPaymentPlan;	
 	RegistrationRegimeTypeT registrationRegimeType;
 	IngressionT ingression;
-	int semester;
+	Integer semester;
 	boolean firstTimeStudent;
 	boolean customized;
 	LocalizedString customizedName;
@@ -95,8 +98,8 @@ class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tar
 	TuitionCalculationType tuitionCalculationType;
 	BigDecimalT fixedAmount;
 	EctsCalculationType ectsCalculationType;
-	int factor;
-	int totalEctsOrUnits;
+	BigDecimal factor;
+	BigDecimal totalEctsOrUnits;
 	boolean academicalActBlockingOff;
 }
 
@@ -127,36 +130,6 @@ relation AcademicTreasurySettingsEmolumentsProductGroup {
 	}
 	
 	.org.fenixedu.treasury.domain.ProductGroup playsRole emolumentsProductGroup {
-		multiplicity 0..1;
-	}
-}
-
-relation AcademicTreasurySettingsTuitionPaymentPlanGroupForRegistration {
-	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForRegistration {
-		multiplicity 0..1;
-	}
-	
-	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroupForRegistration {
-		multiplicity 0..1;
-	}
-}
-
-relation AcademicTreasurySettingsTuitionPaymentPlanGroupForStandalone {
-	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForStandalone {
-		multiplicity 0..1;
-	}
-	
-	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroupForStandalone {
-		multiplicity 0..1;
-	}
-}
-
-relation AcademicTreasurySettingsTuitionPaymentPlanGroupForExtracurricular {
-	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForExtracurricular {
-		multiplicity 0..1;
-	}
-	
-	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroupForExtracurricular {
 		multiplicity 0..1;
 	}
 }

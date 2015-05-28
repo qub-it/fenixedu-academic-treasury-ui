@@ -51,11 +51,12 @@ public class AcademicTariff extends AcademicTariff_Base {
 
     protected void init(final FinantialEntity finantialEntity, final Product product, final AcademicTariffBean bean) {
 
-        super.init(finantialEntity, product, bean.getBeginDate(), bean.getEndDate(), bean.getDueDateCalculationType(),
-                bean.getFixedDueDate() != null ? bean.getFixedDueDate().toLocalDate() : null,
-                bean.getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInterests(), bean.getInterestType(),
-                bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(),
-                bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(), bean.getRate());
+        super.init(finantialEntity, product, bean.getBeginDate().toDateTimeAtStartOfDay(), bean.getEndDate()
+                .toDateTimeAtStartOfDay(), bean.getDueDateCalculationType(),
+                bean.getFixedDueDate() != null ? bean.getFixedDueDate() : null, bean.getNumberOfDaysAfterCreationForDueDate(),
+                bean.isApplyInterests(), bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(),
+                bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean
+                        .getInterestFixedAmount(), bean.getRate());
 
         setBaseAmount(bean.getBaseAmount());
         setUnitsForBase(bean.getUnitsForBase());

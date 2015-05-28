@@ -162,7 +162,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
         final TuitionPaymentPlanBean bean =
-                new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findDefaultGroupForRegistration(), finantialEntity,
+                new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), finantialEntity,
                         executionYear);
 
         model.addAttribute("finantialEntity", finantialEntity);

@@ -2,20 +2,17 @@ package org.fenixedu.academictreasury.dto.tariff;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.CurricularSemester;
 import org.fenixedu.academic.domain.CurricularYear;
-import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
+import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.candidacy.Ingression;
 import org.fenixedu.academic.domain.degree.DegreeType;
-import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
@@ -30,8 +27,7 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 import org.joda.time.DateTime;
-
-import pt.ist.fenixframework.FenixFramework;
+import org.joda.time.LocalDate;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -57,7 +53,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private RegistrationProtocol registrationProtocol;
     private Ingression ingression;
     private CurricularYear curricularYear;
-    private CurricularSemester curricularSemester;
+    private ExecutionSemester executionSemester;
     private boolean firstTimeStudent;
     private boolean customized;
     private LocalizedString name;
@@ -84,10 +80,10 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
      */
 
     /* Tariff */
-    private DateTime beginDate;
-    private DateTime endDate;
+    private LocalDate beginDate;
+    private LocalDate endDate;
     private DueDateCalculationType dueDateCalculationType;
-    private DateTime fixedDueDate;
+    private LocalDate fixedDueDate;
     private int numberOfDaysAfterCreationForDueDate;
 
     /* InterestRate */
@@ -105,8 +101,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private TuitionCalculationType tuitionCalculationType;
     private BigDecimal fixedAmount;
     private EctsCalculationType ectsCalculationType;
-    private int factor;
-    private int totalEctsOrUnits;
+    private BigDecimal factor;
+    private BigDecimal totalEctsOrUnits;
     private boolean academicalActBlockingOff;
 
     /*---------------------
@@ -120,8 +116,6 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.tuitionPaymentPlanGroup = tuitionPaymentPlanGroup;
         this.finantialEntity = finantialEntity;
         this.executionYear = executionYear;
-
-        this.degreeType = FenixFramework.getDomainObject("4604204941318");
 
         updateData();
     }
@@ -155,8 +149,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     public void addInstallment() {
 
-        final AcademicTariffBean installmentBean =
-                new AcademicTariffBean(tuitionInstallmentBeans.get(tuitionInstallmentBeans.size() - 1).getInstallmentOrder());
+        final AcademicTariffBean installmentBean = new AcademicTariffBean(tuitionInstallmentBeans.size() + 1);
 
         installmentBean.setBeginDate(this.beginDate);
         installmentBean.setEndDate(this.endDate);
@@ -290,13 +283,13 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     public void setCurricularYear(CurricularYear curricularYear) {
         this.curricularYear = curricularYear;
     }
-
-    public CurricularSemester getCurricularSemester() {
-        return curricularSemester;
+    
+    public ExecutionSemester getExecutionSemester() {
+        return executionSemester;
     }
-
-    public void setCurricularSemester(CurricularSemester curricularSemester) {
-        this.curricularSemester = curricularSemester;
+    
+    public void setExecutionSemester(ExecutionSemester executionSemester) {
+        this.executionSemester = executionSemester;
     }
 
     public boolean isFirstTimeStudent() {
@@ -383,19 +376,19 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
      * GETTERS & SETTERS
      */
 
-    public DateTime getBeginDate() {
+    public LocalDate getBeginDate() {
         return beginDate;
     }
 
-    public void setBeginDate(DateTime beginDate) {
+    public void setBeginDate(LocalDate beginDate) {
         this.beginDate = beginDate;
     }
 
-    public DateTime getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(DateTime endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
@@ -407,11 +400,11 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.dueDateCalculationType = dueDateCalculationType;
     }
 
-    public DateTime getFixedDueDate() {
+    public LocalDate getFixedDueDate() {
         return fixedDueDate;
     }
 
-    public void setFixedDueDate(DateTime fixedDueDate) {
+    public void setFixedDueDate(LocalDate fixedDueDate) {
         this.fixedDueDate = fixedDueDate;
     }
 
@@ -523,19 +516,19 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.ectsCalculationType = ectsCalculationType;
     }
 
-    public int getFactor() {
+    public BigDecimal getFactor() {
         return factor;
     }
 
-    public void setFactor(int factor) {
+    public void setFactor(BigDecimal factor) {
         this.factor = factor;
     }
 
-    public int getTotalEctsOrUnits() {
+    public BigDecimal getTotalEctsOrUnits() {
         return totalEctsOrUnits;
     }
 
-    public void setTotalEctsOrUnits(int totalEctsOrUnits) {
+    public void setTotalEctsOrUnits(BigDecimal totalEctsOrUnits) {
         this.totalEctsOrUnits = totalEctsOrUnits;
     }
 

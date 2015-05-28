@@ -20,10 +20,10 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         setBennu(Bennu.getInstance());
     }
 
-    protected TuitionInstallmentTariff(final FinantialEntity finantialEntity, final Product product, final AcademicTariffBean bean) {
+    protected TuitionInstallmentTariff(final FinantialEntity finantialEntity, final TuitionPaymentPlan tuitionPaymentPlan, final AcademicTariffBean bean) {
         this();
 
-        this.init(finantialEntity, product, bean);
+        this.init(finantialEntity, tuitionPaymentPlan, bean);
     }
 
     @Override
@@ -35,19 +35,21 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         throw new RuntimeException("wrong call");
     }
 
-    protected void init(final FinantialEntity finantialEntity, final Product product, final AcademicTariffBean bean) {
+    protected void init(final FinantialEntity finantialEntity, final TuitionPaymentPlan tuitionPaymentPlan, final AcademicTariffBean bean) {
 
-        super.init(finantialEntity, product, bean.getBeginDate(), bean.getEndDate(), bean.getDueDateCalculationType(), bean
-                .getFixedDueDate().toLocalDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInterests(), bean
-                .getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(), bean
-                .getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(), bean
-                .getRate());
-        
+        super.init(finantialEntity, tuitionPaymentPlan.getProduct(), bean.getBeginDate().toDateTimeAtStartOfDay(), bean.getEndDate()
+                .toDateTimeAtStartOfDay(), bean.getDueDateCalculationType(), bean.getFixedDueDate(), bean
+                .getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInterests(), bean.getInterestType(), bean
+                .getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(), bean
+                .getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(), bean.getRate());
+
         super.setInstallmentOrder(bean.getInstallmentOrder());
         super.setTuitionCalculationType(bean.getTuitionCalculationType());
         super.setFixedAmount(bean.getFixedAmount());
         super.setEctsCalculationType(bean.getEctsCalculationType());
         super.setAcademicalActBlockingOff(bean.isAcademicalActBlockingOff());
+        super.setFactor(bean.getFactor());
+        super.setTotalEctsOrUnits(bean.getTotalEctsOrUnits());
 
         checkRules();
     }
@@ -65,26 +67,28 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 && !isPositive(getFixedAmount())) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixed.must.be.positive");
         }
+        
+        
     }
-    
+
     public BigDecimal getAmountPerEctsOrUnit() {
-        if(getTuitionCalculationType().isFixedAmount()) {
+        if (getTuitionCalculationType().isFixedAmount()) {
             throw new RuntimeException("invalid call");
         }
-        
-        if(getEctsCalculationType().isFixedAmount()) {
+
+        if (getEctsCalculationType().isFixedAmount()) {
             return getFixedAmount();
         }
-        
-        if(!getTuitionPaymentPlan().isDefaultPaymentPlanDefined()) {
+
+        if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getDegreeCurricularPlan(),
+                getTuitionPaymentPlan().getExecutionYear())) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.default.payment.plan.not.defined");
         }
-        
+
         // TODO ANIL: Fetch default payment plan for execution year and degree curricular plan 
         return BigDecimal.ZERO;
     }
-    
-    
+
     // @formatter:off
     /* --------
      * SERVICES
@@ -92,9 +96,9 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
      */
     // @formatter:on
 
-    public static TuitionInstallmentTariff create(final FinantialEntity finantialEntity, final Product product,
-            final AcademicTariffBean bean) {
-        return new TuitionInstallmentTariff(finantialEntity, product, bean);
+    public static TuitionInstallmentTariff create(final FinantialEntity finantialEntity,
+            final TuitionPaymentPlan tuitionPaymentPlan, final AcademicTariffBean bean) {
+        return new TuitionInstallmentTariff(finantialEntity, tuitionPaymentPlan, bean);
     }
 
     @Override
