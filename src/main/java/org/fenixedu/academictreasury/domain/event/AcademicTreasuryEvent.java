@@ -6,11 +6,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
+import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
+import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -29,6 +33,12 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         checkRules();
     }
 
+    public AcademicTreasuryEvent(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Product product,
+            final Registration registration, final ExecutionYear executionYear) {
+
+        checkRules();
+    }
+
     @Override
     protected void init(final Product product) {
         throw new RuntimeException("wrong call");
@@ -43,13 +53,57 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         checkRules();
     }
 
+    protected void init(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Product product,
+            final Registration registration, final ExecutionYear executionYear) {
+        super.init(product);
+
+        setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup);
+        setRegistration(registration);
+        setExecutionYear(executionYear);
+
+        checkRules();
+    }
+
     @Override
     protected void checkRules() {
         super.checkRules();
 
-        if (getAcademicServiceRequest() != null && find(getAcademicServiceRequest()).count() > 1) {
+        if (!isForAcademicServiceRequest() && !isForRegistrationTuition() && !isForStandaloneTuition()) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.not.for.service.request.nor.tuition");
+        }
+
+        if ((isForRegistrationTuition() || isForStandaloneTuition()) && getRegistration() == null) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.registration.required");
+        }
+
+        if ((isForRegistrationTuition() || isForStandaloneTuition()) && getExecutionYear() == null) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.executionYear.required");
+        }
+
+        if (isForAcademicServiceRequest() && find(getAcademicServiceRequest()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.event.for.academicServiceRequest.duplicate");
         }
+
+        if (isForRegistrationTuition() && findForRegistrationTuition(getRegistration(), getExecutionYear()).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.for.registration.tuition.duplicate");
+        }
+
+        if (isForStandaloneTuition() && findForStandaloneTuition(getRegistration(), getExecutionYear()).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.for.standalone.registration.duplicate");
+        }
+
+    }
+
+    public boolean isForAcademicServiceRequest() {
+        return getAcademicServiceRequest() != null;
+    }
+
+    public boolean isForRegistrationTuition() {
+        return getTuitionPaymentPlanGroup() != null && getTuitionPaymentPlanGroup().isForRegistration();
+    }
+
+    public boolean isForStandaloneTuition() {
+        return getTuitionPaymentPlanGroup() != null && getTuitionPaymentPlanGroup().isForStandalone();
     }
 
     public boolean isChargedWithDebitEntry() {
@@ -96,6 +150,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.language.not.applied");
     }
 
+    public boolean isChargedWithDebitEntry(final TuitionInstallmentTariff tariff) {
+        return DebitEntry.findActive(this).filter(d -> d.getTariff() == tariff).count() > 0;
+    }
+
     // @formatter: off
     /************
      * SERVICES *
@@ -120,22 +178,50 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return find(academicServiceRequest).findFirst();
     }
 
+    protected static Stream<? extends AcademicTreasuryEvent> findForRegistrationTuition(final Registration registration,
+            final ExecutionYear executionYear) {
+        return findAll().filter(
+                e -> e.getTuitionPaymentPlanGroup().isForRegistration() && e.getRegistration() == registration
+                        && e.getExecutionYear() == executionYear);
+    }
+
+    public static Optional<? extends AcademicTreasuryEvent> findUniqueForRegistrationTuition(final Registration registration,
+            final ExecutionYear executionYear) {
+        return findForRegistrationTuition(registration, executionYear).findFirst();
+    }
+
+    protected static Stream<? extends AcademicTreasuryEvent> findForStandaloneTuition(final Registration registration,
+            final ExecutionYear executionYear) {
+        return findAll().filter(
+                e -> e.getTuitionPaymentPlanGroup().isForStandalone() && e.getRegistration() == registration
+                        && e.getExecutionYear() == executionYear);
+    }
+
+    public static Optional<? extends AcademicTreasuryEvent> findUniqueForStandaloneTuition(final Registration registration,
+            final ExecutionYear executionYear) {
+        return findForStandaloneTuition(registration, executionYear).findFirst();
+    }
+
     public static AcademicTreasuryEvent createForAcademicServiceRequest(final AcademicServiceRequest academicServiceRequest) {
         return new AcademicTreasuryEvent(academicServiceRequest);
+    }
+
+    public static AcademicTreasuryEvent createForRegistrationTuition(final Product product, final Registration registration,
+            final ExecutionYear executionYear) {
+        return new AcademicTreasuryEvent(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), product,
+                registration, executionYear);
+    }
+
+    public static AcademicTreasuryEvent createForStandaloneTuition(final Product product, final Registration registration,
+            final ExecutionYear executionYear) {
+        return new AcademicTreasuryEvent(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), product,
+                registration, executionYear);
     }
 
     /* -----
      * UTILS
      * -----
      */
-
-    public boolean isForAcademicServiceRequest() {
-        return getAcademicServiceRequest() != null;
-    }
-
-    public boolean isForTuiton() {
-        return false;
-    }
 
     // @formatter:off
     public static enum AcademicTreasuryEventKeys {
@@ -158,7 +244,16 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         CALCULATED_FOREIGN_LANGUAGE_RATE,
         URGENT_PERCENTAGE,
         CALCULATED_URGENT_AMOUNT,
-        FINAL_AMOUNT;
+        FINAL_AMOUNT, 
+        TUITION_CALCULATION_TYPE, 
+        FIXED_AMOUNT, 
+        ECTS_CREDITS, 
+        AMOUNT_PER_ECTS, 
+        ENROLLED_COURSES, 
+        AMOUNT_PER_COURSE, 
+        DUE_DATE,
+        DEGREE,
+        DEGREE_CURRICULAR_PLAN;
 
         public LocalizedString getDescriptionI18N() {
             return BundleUtil
@@ -171,22 +266,31 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     private Map<String, String> fillPropertiesMap() {
         final Map<String, String> propertiesMap = Maps.newHashMap();
 
-        propertiesMap.put(AcademicTreasuryEventKeys.ACADEMIC_SERVICE_REQUEST_NAME.getDescriptionI18N().getContent(),
-                ServiceRequestType.findUnique(getAcademicServiceRequest()).getName().getContent());
+        if (isForAcademicServiceRequest()) {
+            propertiesMap.put(AcademicTreasuryEventKeys.ACADEMIC_SERVICE_REQUEST_NAME.getDescriptionI18N().getContent(),
+                    ServiceRequestType.findUnique(getAcademicServiceRequest()).getName().getContent());
 
-        if (getAcademicServiceRequest().hasExecutionYear()) {
-            propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(),
-                    getAcademicServiceRequest().getExecutionYear().getQualifiedName());
+            if (getAcademicServiceRequest().hasExecutionYear()) {
+                propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(),
+                        getAcademicServiceRequest().getExecutionYear().getQualifiedName());
+            }
+
+            propertiesMap.put(AcademicTreasuryEventKeys.DETAILED.getDescriptionI18N().getContent(),
+                    booleanLabel(getAcademicServiceRequest().isDetailed()).getContent());
+            propertiesMap.put(AcademicTreasuryEventKeys.URGENT.getDescriptionI18N().getContent(),
+                    booleanLabel(getAcademicServiceRequest().isUrgentRequest()).getContent());
+            propertiesMap.put(AcademicTreasuryEventKeys.LANGUAGE.getDescriptionI18N().getContent(), getAcademicServiceRequest()
+                    .getLanguage().getLanguage());
+            propertiesMap.put(AcademicTreasuryEventKeys.BASE_AMOUNT.getDescriptionI18N().getContent(),
+                    getAcademicServiceRequest().getLanguage().getLanguage());
+        } else if (isForRegistrationTuition() || isForStandaloneTuition()) {
+            propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(), getExecutionYear()
+                    .getQualifiedName());
+            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), getRegistration().getDegree()
+                    .getPresentationNameI18N(getExecutionYear()).getContent());
+            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
+                    getRegistration().getDegreeCurricularPlanName());
         }
-
-        propertiesMap.put(AcademicTreasuryEventKeys.DETAILED.getDescriptionI18N().getContent(),
-                booleanLabel(getAcademicServiceRequest().isDetailed()).getContent());
-        propertiesMap.put(AcademicTreasuryEventKeys.URGENT.getDescriptionI18N().getContent(),
-                booleanLabel(getAcademicServiceRequest().isUrgentRequest()).getContent());
-        propertiesMap.put(AcademicTreasuryEventKeys.LANGUAGE.getDescriptionI18N().getContent(), getAcademicServiceRequest()
-                .getLanguage().getLanguage());
-        propertiesMap.put(AcademicTreasuryEventKeys.BASE_AMOUNT.getDescriptionI18N().getContent(), getAcademicServiceRequest()
-                .getLanguage().getLanguage());
 
         return propertiesMap;
     }
@@ -204,7 +308,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public BigDecimal getAmountToPay() {
         return DebitEntry.amountToPay(this);
     }
-    
+
     public BigDecimal getPayedAmount() {
         return DebitEntry.payedAmount(this);
     }
@@ -216,66 +320,96 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public BigDecimal getBaseAmount() {
-        if(!isChargedWithDebitEntry()) {
+        if (!isChargedWithDebitEntry()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.baseAmount.unavailable");
         }
-        
+
         return super.getBaseAmount();
     }
 
     @Override
     public BigDecimal getAdditionalUnitsAmount() {
-        if(!isChargedWithDebitEntry()) {
+        if (!isChargedWithDebitEntry()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.additionalUnitsAmount.unavailable");
         }
-        
+
         return super.getAmountForAdditionalUnits();
     }
 
     @Override
     public BigDecimal getMaximumAmount() {
-        if(!isChargedWithDebitEntry()) {
+        if (!isChargedWithDebitEntry()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.maximumAmount.unavailable");
         }
-        
+
         return super.getMaximumAmount();
     }
 
     @Override
     public BigDecimal getPagesAmount() {
-        if(!isChargedWithDebitEntry()) {
+        if (!isChargedWithDebitEntry()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.pagesAmount.unavailable");
         }
-        
+
         return super.getAmountForPages();
     }
 
     @Override
     public BigDecimal getAmountForLanguageTranslationRate() {
-        if(!isChargedWithDebitEntry()) {
+        if (!isChargedWithDebitEntry()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.amountForLanguageTranslationRate.unavailable");
         }
-        
+
         return super.getAmountForLanguageTranslationRate();
     }
 
     @Override
     public BigDecimal getAmountForUrgencyRate() {
-        if(!isChargedWithDebitEntry()) {
+        if (!isChargedWithDebitEntry()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.amountForUrgencyRate.unavailable");
         }
-        
+
         return super.getAmountForUrgencyRate();
+    }
+
+    public BigDecimal getEnrolledEctsUnits() {
+        if (getTuitionPaymentPlanGroup().isForRegistration()) {
+            return new BigDecimal(getRegistration().getEnrolmentsEcts(getExecutionYear()));
+        } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
+            return getRegistration().getStandaloneCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+        } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
+            return getRegistration().getExtraCurricularCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+        }
+
+        throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
+    }
+
+    public BigDecimal getEnrolledCoursesCount() {
+        if (getTuitionPaymentPlanGroup().isForRegistration()) {
+            return new BigDecimal(getRegistration().getEnrolments(getExecutionYear()).size());
+        } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
+            return new BigDecimal(getRegistration().getStandaloneCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).count());
+        } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
+            return new BigDecimal(getRegistration().getExtraCurricularCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).count());
+        }
+
+        throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
     }
 
     public void updatePricingFields(final BigDecimal baseAmount, final BigDecimal amountForAdditionalUnits,
             final BigDecimal amountForPages, final BigDecimal maximumAmount, final BigDecimal amountForLanguageTranslationRate,
             final BigDecimal amountForUrgencyRate) {
-        
-        super.setBaseAmount(baseAmount); 
+
+        super.setBaseAmount(baseAmount);
         super.setAmountForAdditionalUnits(amountForAdditionalUnits);
         super.setAmountForPages(amountForPages);
-        super.setMaximumAmount(maximumAmount); 
+        super.setMaximumAmount(maximumAmount);
         super.setAmountForLanguageTranslationRate(amountForLanguageTranslationRate);
         super.setAmountForUrgencyRate(amountForUrgencyRate);
     }

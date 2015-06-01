@@ -18,7 +18,7 @@ import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.VatType;
+import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
@@ -281,9 +281,10 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent);
 
-        return DebitEntry.create(null, debtAccount, academicTreasuryEvent, getProduct().getVatType(), amount, dueDate,
-                fillPriceProperties, academicTreasuryEvent.getProduct(), academicTreasuryEvent.getProduct().getName()
-                        .getContent(), Constants.DEFAULT_QUANTITY, this);
+        return DebitEntry.create(null, debtAccount, academicTreasuryEvent,
+                Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(), new DateTime()).get(),
+                amount, dueDate, fillPriceProperties, academicTreasuryEvent.getProduct(), academicTreasuryEvent.getProduct()
+                        .getName().getContent(), Constants.DEFAULT_QUANTITY, this, new DateTime());
     }
 
     private void updatePriceValuesInEvent(final AcademicTreasuryEvent academicTreasuryEvent) {
@@ -572,15 +573,6 @@ public class AcademicTariff extends AcademicTariff_Base {
      * UTIL
      * ----
      */
-
-    private LocalDate dueDate(final LocalDate requestDate) {
-
-        if (getDueDateCalculationType().isFixedDate()) {
-            return getFixedDueDate();
-        }
-
-        return requestDate.plusDays(getNumberOfDaysAfterCreationForDueDate());
-    }
 
     @Override
     public LocalizedString getUiTariffDescription() {

@@ -188,7 +188,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 					<spring:message code="label.TuitionInstallmentTariff.noDueDate" />
 				</c:when>
 				<c:when test="${installment.dueDateCalculationType.fixedDate}">
-					<joda:format value="${installment.endDate}" style="S-" />
+					<joda:format value="${installment.fixedDueDate}" style="S-" />
 				</c:when>
 				<c:when test="${installment.dueDateCalculationType.daysAfterCreation}">
 					<spring:message code="label.TuitionInstallmentTariff.daysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" />
@@ -406,12 +406,12 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 			</div>
 			<div class="form-group row" ng-show="object.dueDateCalculationType == 'FIXED_DATE'">
 				<div class="col-sm-2 control-label">
-					<spring:message code="label.TuitionInstallmentTariff.endDate" />
+					<spring:message code="label.TuitionInstallmentTariff.fixedDueDate" />
 				</div>
 
 				<div class="col-sm-4">
-					<input id="tuitionInstallmentTariff_endDate" class="form-control" 
-						type="date" name="enddate"  value='<c:out value='${bean.endDate}'/>' ng-model="object.endDate" required />
+					<input id="tuitionInstallmentTariff_fixedduedate" class="form-control" 
+						type="date" name="fixedduedate"  value='<c:out value='${bean.fixedDueDate}'/>' ng-model="object.fixedDueDate" required />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.dueDateCalculationType == 'DAYS_AFTER_CREATION'">

@@ -83,6 +83,7 @@ class tuition.TuitionPaymentPlanGroup {
 }
 
 class tuition.TuitionPaymentPlan {
+	int paymentPlanOrder;
 	boolean defaultPaymentPlan;	
 	RegistrationRegimeTypeT registrationRegimeType;
 	IngressionT ingression;
@@ -161,6 +162,39 @@ relation AcademicTreasuryEventAcademicServiceRequest {
 	
 	event.AcademicTreasuryEvent playsRole academicTreasuryEvent {
 		multiplicity 0..1;
+	}
+}
+
+relation AcademicTreasuryEventRegistration {
+	
+	.org.fenixedu.academic.domain.student.Registration playsRole registration {
+		multiplicity 0..1;
+	}
+	
+	event.AcademicTreasuryEvent playsRole academicTreasuryEvent {
+		multiplicity *;
+	}
+}
+
+relation AcademicTreasuryEventExecutionYear {
+	
+	.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear {
+		multiplicity 0..1;
+	}
+	
+	event.AcademicTreasuryEvent playsRole academicTreasuryEvent {
+		multiplicity *;
+	}
+}
+
+relation AcademicTreasuryEventTuitionPaymentPlanGroup {
+	
+	event.AcademicTreasuryEvent playsRole academicTreasuryEvent {
+		multiplicity *;
+	}
+	
+	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroup {
+		multiplicity 1..1;
 	}
 }
 
@@ -257,6 +291,17 @@ relation TuitionPaymentPlanGroupBennu {
 
 	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroups {
 		multiplicity *;
+	}
+}
+
+relation TuitionPaymentPlanGroupProduct {
+
+	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroups {
+		multiplicity *;
+	}
+
+	.org.fenixedu.treasury.domain.Product playsRole currentProduct {
+		multiplicity 0..1;
 	}
 }
 

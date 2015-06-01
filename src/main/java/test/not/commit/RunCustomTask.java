@@ -1,19 +1,19 @@
 package test.not.commit;
 
-import java.math.BigDecimal;
+import java.util.Locale;
 
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
-import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.Vat;
+import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.ProductGroup;
 import org.fenixedu.treasury.domain.VatType;
-import org.joda.time.DateTime;
 
 public class RunCustomTask extends CustomTask {
 
     @Override
     public void runTask() throws Exception {
-        Vat.create(VatType.findByCode("EXEMPT"), FinantialInstitution.findByCode("Instituicao Financeira").findFirst().get(), null, new BigDecimal("1"),
-                new DateTime().minusDays(10), null);
+        Product.create(ProductGroup.findByCode("PROPINA"), "PROPINA_MATRICULA", new LocalizedString(new Locale("PT", "pt"),
+                "Propina de Matrícula"), new LocalizedString(new Locale("PT", "pt"), "Un"), true, VatType.findByCode("ISE"));
     }
 
 }

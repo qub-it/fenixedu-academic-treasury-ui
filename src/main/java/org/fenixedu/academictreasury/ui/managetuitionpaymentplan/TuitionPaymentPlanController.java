@@ -28,6 +28,7 @@ package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,7 +39,6 @@ import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.springframework.http.HttpStatus;
@@ -162,8 +162,8 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
         final TuitionPaymentPlanBean bean =
-                new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), finantialEntity,
-                        executionYear);
+                new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                        finantialEntity, executionYear);
 
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
@@ -183,9 +183,9 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
-        
+
         bean.updateData();
-        
+
         return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);
     }
 
@@ -232,7 +232,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("bean", bean);
         model.addAttribute("tuitionPaymentPlanBeanJson", getBeanJson(bean));
-        
+
         return jspPage("createinsertinstallments");
     }
 
@@ -257,18 +257,18 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
     public String addinstallmentspostback(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
-        
+
         bean.addInstallment();
         bean.resetInstallmentFields();
-        
+
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("bean", bean);
         model.addAttribute("tuitionPaymentPlanBeanJson", getBeanJson(bean));
- 
+
         return jspPage("createinsertinstallments");
     }
-    
+
 //    public @ResponseBody ResponseEntity<String> addinstallmentspostback(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
 //            @PathVariable("executionYearId") final ExecutionYear executionYear,
 //            @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
@@ -278,23 +278,22 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
 
     private static final String _CREATEPAYMENTPLAN_URI = "/createpaymentplan";
     public static final String CREATEPAYMENTPLAN_URL = CONTROLLER_URL + _CREATEPAYMENTPLAN_URI;
-    
+
     @RequestMapping(value = _CREATEPAYMENTPLAN_URI + "/{finantialEntityId}/{executionYearId}", method = RequestMethod.POST)
-    public String createinsertinstallments(
-            @PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
+    public String createinsertinstallments(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
-            TuitionPaymentPlan tuitionPaymentPlan = TuitionPaymentPlan.create(null, bean);
+            TuitionPaymentPlan.create(bean);
 
             //Success Validation
             //Add the bean to be used in the View
-            model.addAttribute("tuitionPaymentPlan", tuitionPaymentPlan);
 
-            return redirect("/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/"
-                    + getTuitionPaymentPlan(model).getExternalId(), model, redirectAttributes);
+            return redirect(
+                    String.format("%s/%s/%s", DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_URL,
+                            finantialEntity.getExternalId(), executionYear.getExternalId()), model, redirectAttributes);
         } catch (final DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
             return createinsertinstallments(finantialEntity, executionYear, bean, model);

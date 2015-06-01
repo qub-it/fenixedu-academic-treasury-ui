@@ -1,3 +1,7 @@
+<%@page import="org.fenixedu.academic.domain.ExecutionYear"%>
+<%@page import="org.fenixedu.academic.domain.DegreeCurricularPlan"%>
+<%@page import="org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup"%>
+<%@page import="org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan"%>
 <%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.DegreeCurricularPlanController"%>
 <%@page import="static org.fenixedu.academictreasury.ui.managetuitionpaymentplan.DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -119,11 +123,25 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 
 	<datatables:column>
 		<datatables:columnHead ><spring:message code="label.DegreeCurricularPlan.degreeTypeName" /></datatables:columnHead>
-			<p><c:out value="${dcp.getPresentationName(executionYear)}" /></p>
-			<p style="color: red;">Sem planos criados</p>
+			<c:set var="dcp" scope="request" value="${dcp}" />
+			
+			<p><strong><c:out value="${dcp.getPresentationName(executionYear)}" /></strong></p>
+			
+			
+		<%  request.setAttribute("tuitionPaymentPlanCount", (Long) TuitionPaymentPlan.find(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), (DegreeCurricularPlan) request.getAttribute("dcp"), 
+	        	(ExecutionYear) request.getAttribute("executionYear")).count());
+		
+			if((Long) request.getAttribute("tuitionPaymentPlanCount") == 0) { %>
+			<p style="color: red;"><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.zero" /></em></p>
+		<% } else if((Long) request.getAttribute("tuitionPaymentPlanCount") == 1) { %>
+			<p><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.only.one" /></em></p>
+		<% } else { %>
+			<p><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan" arguments="${tuitionPaymentPlanCount}" /></em></p>
+		<% } %>
+		
 	</datatables:column>
 	<datatables:column>
-		<a  href="${pageContext.request.contextPath}<%= CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>/${finantialInstitution.externalId}/${executionYearId}/${dcp.externalId}"
+		<a  href="${pageContext.request.contextPath}<%= CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>/${finantialInstitution.externalId}/${executionYear.externalId}/${dcp.externalId}"
 			class="btn btn-default btn-xs" >
 			<spring:message code="label.manageTuitionPaymentPlan.chooseDegreeCurricularPlan.choose"/>
 		</a>

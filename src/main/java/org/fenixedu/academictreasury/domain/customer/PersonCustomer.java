@@ -84,6 +84,11 @@ public class PersonCustomer extends PersonCustomer_Base {
         
         return getPerson().getDefaultPhysicalAddress().getCountryOfResidence().getThreeLetterCode();
     }
+
+    @Override
+    public String getPaymentReferenceBaseCode() {
+        return this.getCode();
+    }
     
     // @formatter: off
     /************
