@@ -71,7 +71,8 @@ public class TuitionServices {
         stream.filter(t -> t.getSemester() == null || t.getSemester() == semesterWithFirstEnrolments);
         stream.filter(t -> t.getCurricularYear() == null || t.getCurricularYear() == curricularYear);
         stream.filter(t -> t.getFirstTimeStudent() == firstTimeStudent);
-
+        stream.filter(t -> !t.isCustomized());
+        
         return stream.findFirst().orElse(null);
     }
 

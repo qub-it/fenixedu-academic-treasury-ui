@@ -113,7 +113,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.defaultPaymentPlan"/></div> 
 				
 				<div class="col-sm-2">
-					<select id="tuitionPaymentPlan_defaultPaymentPlan" name="defaultpaymentplan" class="form-control" ng-model="object.defaultpaymentplan">
+					<select id="tuitionPaymentPlan_defaultPaymentPlan" name="defaultpaymentplan" class="form-control" ng-model="object.defaultPaymentPlan">
 						<option value="false"><spring:message code="label.no"/></option>
 						<option value="true"><spring:message code="label.yes"/></option>				
 					</select>

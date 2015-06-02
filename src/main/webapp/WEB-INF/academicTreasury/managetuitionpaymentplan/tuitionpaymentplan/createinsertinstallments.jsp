@@ -229,7 +229,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 						
 						<p>
 							<strong><spring:message code="label.TuitionInstallmentTariff.rate" />:&nbsp;</strong>
-							<c:out value="${installment.rate}" />
+							<c:out value="${installment.rate}" />&nbsp;&#37;
 						</p>
 					</c:when>
 					<c:when test="${installment.interestType.monthly}">
@@ -252,14 +252,14 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 	
 						<p>
 							<strong><spring:message code="label.TuitionInstallmentTariff.rate" />:&nbsp;</strong>
-							<c:out value="${installment.rate}" />
+							<c:out value="${installment.rate}" />&nbsp;&#37;
 						</p>
 					</c:when>
 					
 					<c:when test="${installment.interestType.fixedAmount}">
 						<p>
 							<strong><spring:message code="label.TuitionInstallmentTariff.interestFixedAmount" />:&nbsp;</strong>
-							<c:out value="${installment.interestFixedAmount}" />
+							<c:out value="${finantialEntity.finantialInstitution.currency.getValueFor(installment.interestFixedAmount)}" />
 						</p>
 					</c:when>
 				</c:choose>

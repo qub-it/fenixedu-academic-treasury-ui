@@ -28,10 +28,10 @@ package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
@@ -108,27 +108,20 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
     private static final String _SEARCH_URI = "/";
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
-    @RequestMapping(value = _SEARCH_URI)
-    public String search(Model model) {
-        List<TuitionPaymentPlan> searchtuitionpaymentplanResultsDataSet = filterSearchTuitionPaymentPlan();
+    @RequestMapping(value = _SEARCH_URI + "{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}")
+    public String search(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
+            @PathVariable("executionYearId") final ExecutionYear executionYear,
+            @PathVariable("degreeCurricularPlanId") final DegreeCurricularPlan degreeCurricularPlan, final Model model) {
 
         //add the results dataSet to the model
-        model.addAttribute("searchtuitionpaymentplanResultsDataSet", searchtuitionpaymentplanResultsDataSet);
+        model.addAttribute("finantialEntity", finantialEntity);
+        model.addAttribute("executionYear", executionYear);
+        model.addAttribute("degreeCurricularPlan", degreeCurricularPlan);
+
+        model.addAttribute("searchtuitionpaymentplanResultsDataSet", TuitionPaymentPlan.findSortedByPaymentPlanOrder(
+                TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), degreeCurricularPlan, executionYear).collect(Collectors.toSet()));
+
         return jspPage("search");
-    }
-
-    private Stream<TuitionPaymentPlan> getSearchUniverseSearchTuitionPaymentPlanDataSet() {
-        //
-        //The initialization of the result list must be done here
-        //
-        //
-        // return TuitionPaymentPlan.findAll(); //CHANGE_ME
-        return new ArrayList<TuitionPaymentPlan>().stream();
-    }
-
-    private List<TuitionPaymentPlan> filterSearchTuitionPaymentPlan() {
-
-        return getSearchUniverseSearchTuitionPaymentPlanDataSet().collect(Collectors.toList());
     }
 
     private static final String _SEARCH_TO_DELETE_ACTION_URI = "/search/delete/";

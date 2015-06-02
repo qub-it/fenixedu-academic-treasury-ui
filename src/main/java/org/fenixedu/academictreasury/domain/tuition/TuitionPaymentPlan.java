@@ -116,7 +116,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             result =
                     result.with(locale, BundleUtil.getString(Constants.BUNDLE, paymentPlanLabel, getDegreeCurricularPlan()
                             .getDegree().getPresentationNameI18N().getContent(locale), getExecutionYear().getQualifiedName(),
-                            getCustomizedName().getContent(locale)));
+                            isCustomized() ? getCustomizedName().getContent(locale) : null));
         }
 
         return result;

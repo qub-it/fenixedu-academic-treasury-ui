@@ -76,7 +76,8 @@ public class DegreeCurricularPlanController extends AcademicTreasuryBaseControll
             @PathVariable("degreeCurricularPlanId") final DegreeCurricularPlan degreeCurricularPlan, final Model model,
             final RedirectAttributes redirectAttributes) {
 
-        return redirect("/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/", model, redirectAttributes);
+        return redirect(String.format(TuitionPaymentPlanController.SEARCH_URL + "%s/%s/%s", finantialEntity.getExternalId(),
+                executionYear.getExternalId(), degreeCurricularPlan.getExternalId()), model, redirectAttributes);
     }
 
     private String jspPage(final String page) {

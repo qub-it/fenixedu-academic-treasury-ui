@@ -141,7 +141,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 		
 	</datatables:column>
 	<datatables:column>
-		<a  href="${pageContext.request.contextPath}<%= CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>/${finantialInstitution.externalId}/${executionYear.externalId}/${dcp.externalId}"
+		<a  href="${pageContext.request.contextPath}<%= CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>${finantialEntity.externalId}/${executionYear.externalId}/${dcp.externalId}"
 			class="btn btn-default btn-xs" >
 			<spring:message code="label.manageTuitionPaymentPlan.chooseDegreeCurricularPlan.choose"/>
 		</a>
