@@ -26,7 +26,10 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
+import java.util.stream.Collectors;
+
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
+import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
@@ -36,6 +39,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 @Component("org.fenixedu.academicTreasury.ui.manageTuitionPaymentPlan")
 @BennuSpringController(value = FinantialEntityController.class)
@@ -56,10 +61,13 @@ public class DegreeCurricularPlanController extends AcademicTreasuryBaseControll
     @RequestMapping(value = _CHOOSEDEGREECURRICULARPLAN_URI + "/{finantialEntityId}/{executionYearId}")
     public String chooseDegreeCurricularPlan(@PathVariable("finantialEntityId") FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
-        model.addAttribute("choosedegreecurricularplanResultsDataSet", DegreeCurricularPlan.readBolonhaDegreeCurricularPlans());
+        model.addAttribute("choosedegreecurricularplanResultsDataSet", ExecutionDegree.getAllByExecutionYear(executionYear)
+                .stream().map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toList()));
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
-        model.addAttribute("executionYearOptions", ExecutionYear.readOpenExecutionYears());
+        model.addAttribute("executionYearOptions",
+                ExecutionYear.readNotClosedExecutionYears().stream()
+                        .sorted(Collections.reverseOrder(ExecutionYear.COMPARATOR_BY_BEGIN_DATE)).collect(Collectors.toList()));
 
         return jspPage("choosedegreecurricularplan");
     }
@@ -79,7 +87,7 @@ public class DegreeCurricularPlanController extends AcademicTreasuryBaseControll
         return redirect(String.format(TuitionPaymentPlanController.SEARCH_URL + "%s/%s/%s", finantialEntity.getExternalId(),
                 executionYear.getExternalId(), degreeCurricularPlan.getExternalId()), model, redirectAttributes);
     }
-
+    
     private String jspPage(final String page) {
         return JSP_PATH + "/" + page;
     }

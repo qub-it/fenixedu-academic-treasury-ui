@@ -87,7 +87,63 @@ ${portal.toolkit()}
 				<div class="col-sm-10">
 					<input id="tuitionPaymentPlanGroup_name" class="form-control" type="text" name="name"  bennu-localized-string value='${not empty param.name ? param.name : "{}" } '/> 
 				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlanGroup.forRegistration"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlanGroup_forRegistration" name="forRegistration" class="form-control">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionPaymentPlanGroup_forRegistration").select2().select2('val', '<c:out value='${param.forRegistration}'/>');
+					</script>	
+				</div>
 			</div>		
+			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlanGroup.forStandalone"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlanGroup_forStandalone" name="forStandalone" class="form-control">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionPaymentPlanGroup_forStandalone").select2().select2('val', '<c:out value='${param.forStandalone}'/>');
+					</script>	
+				</div>
+			</div>		
+
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlanGroup.forExtracurricular"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlanGroup_forExtracurricular" name="forExtracurricular" class="form-control">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionPaymentPlanGroup_forExtracurricular").select2().select2('val', '<c:out value='${param.forExtracurricular}'/>');
+					</script>	
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlanGroup.currentProduct"/></div> 
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					 <select id="tuitionPaymentPlanGroup_currentProduct" class="js-example-basic-single" name="currentProduct" >
+							 <option value=""></option>
+						 <c:forEach var="p" items="${products}">
+							<option value="${p.externalId}">${p.name.content}</option>						 	
+						 </c:forEach>
+					</select>
+				</div>
+			</div>
+			<script>
+				$("#tuitionPaymentPlanGroup_currentProduct").select2().select2('val', '<c:out value='${param.currentProduct}'/>');
+			</script>	
 		</div>
 		<div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>

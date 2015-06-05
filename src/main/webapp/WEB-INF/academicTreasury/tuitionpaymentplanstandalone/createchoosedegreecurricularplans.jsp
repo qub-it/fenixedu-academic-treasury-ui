@@ -1,5 +1,4 @@
-<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.FinantialEntityController"%>
-<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.TuitionPaymentPlanController"%>
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.standalone.TuitionPaymentPlanControllerStandalone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -113,14 +112,14 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 
 <form id="form" name='form' method="post" class="form-horizontal"
 	ng-app="angularAppTuitionPaymentPlan" ng-controller="TuitionPaymentPlanController"
-	action='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATEDEFINESTUDENTCONDITIONS_URL %>/${finantialEntity.externalId}/${executionYear.externalId}'>
+	action='${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CREATEDEFINESTUDENTCONDITIONS_URL %>/${finantialEntity.externalId}/${executionYear.externalId}'>
 	
 	
 	<input id="cancelUrl" type="hidden" name="cancelUrl" 
-		value='${pageContext.request.contextPath}<%= FinantialEntityController.CHOOSEFINANTIALENTITY_TO_CHOOSE_ACTION_URL %>/${finantialEntity.externalId}' />
+		value='${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CHOOSEDEGREECURRICULARPLAN_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
 	
 	<input type="hidden" name="postback"
-		value='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATECHOOSEDEGREECURRICULARPLANSPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
+		value='${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CREATECHOOSEDEGREECURRICULARPLANSPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
 			
 	<input name="bean" type="hidden" value="{{ object }}" />
 	

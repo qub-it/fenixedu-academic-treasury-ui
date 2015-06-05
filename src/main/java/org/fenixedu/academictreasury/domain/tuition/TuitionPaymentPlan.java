@@ -8,8 +8,13 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.candidacy.Ingression;
+import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.RegistrationProtocol;
+import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -22,12 +27,15 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
-
-import com.google.common.collect.Sets;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.collect.Sets;
+
 public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
+
+    private static final String CONDITIONS_DESCRIPTION_SEPARATOR = ", ";
 
     protected TuitionPaymentPlan() {
         super();
@@ -48,10 +56,13 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         setRegistrationProtocol(tuitionPaymentPlanBean.getRegistrationProtocol());
         setIngression(tuitionPaymentPlanBean.getIngression());
         setCurricularYear(tuitionPaymentPlanBean.getCurricularYear());
-        setSemester(tuitionPaymentPlanBean.getExecutionSemester() != null ? tuitionPaymentPlanBean.getExecutionSemester().getSemester() : null);
+        setSemester(tuitionPaymentPlanBean.getExecutionSemester() != null ? tuitionPaymentPlanBean.getExecutionSemester()
+                .getSemester() : null);
         setFirstTimeStudent(tuitionPaymentPlanBean.isFirstTimeStudent());
         setCustomized(tuitionPaymentPlanBean.isCustomized());
-        setCustomizedName(tuitionPaymentPlanBean.getName());
+        setCustomizedName(new LocalizedString(CoreConfiguration.supportedLocales().iterator().next(),
+                tuitionPaymentPlanBean.getName()));
+        
         setWithLaboratorialClasses(tuitionPaymentPlanBean.isWithLaboratorialClasses());
         setPaymentPlanOrder((int) find(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear()).count() + 1);
 
@@ -98,6 +109,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         if (find(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), getPaymentPlanOrder()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.paymentPlan.with.order.already.exists");
         }
+
+        if (getTuitionInstallmentTariffsSet().isEmpty()) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.installments.must.not.be.empty");
+        }
     }
 
     private void createInstallments(final TuitionPaymentPlanBean tuitionPaymentPlanBean) {
@@ -122,6 +137,67 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         return result;
     }
 
+    public LocalizedString getConditionsDescription() {
+        LocalizedString result = new LocalizedString();
+        for (final Locale locale : CoreConfiguration.supportedLocales()) {
+            StringBuilder description = new StringBuilder();
+
+            if (isDefaultPaymentPlan()) {
+                description.append(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.defaultPaymentPlan")).append(
+                        CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
+            if (getRegistrationRegimeType() != null) {
+                description.append(getRegistrationRegimeType().getLocalizedName()).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
+            if (getRegistrationProtocol() != null) {
+                description.append(getRegistrationProtocol().getDescription().getContent(locale)).append(
+                        CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
+            if (getIngression() != null) {
+                description.append(getIngression().getLocalizedName()).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
+            if (getCurricularYear() != null) {
+                description.append(
+                        BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.curricularYear.description",
+                                String.valueOf(getCurricularYear().getYear()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
+            if (getCurricularSemester() != null) {
+                description.append(
+                        BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.curricularSemester.description",
+                                String.valueOf(getCurricularYear().getYear()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
+            if (isFirstTimeStudent()) {
+                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.firstTimeStudent"))
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
+            if (isCustomized()) {
+                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.customized"))
+                        .append(" [").append(getCustomizedName().getContent()).append("]")
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
+            if (description.toString().contains(CONDITIONS_DESCRIPTION_SEPARATOR)) {
+                description.delete(description.length() - CONDITIONS_DESCRIPTION_SEPARATOR.length(), description.length());
+            }
+
+            result = result.with(locale, description.toString());
+        }
+
+        return result;
+    }
+
+    public List<TuitionInstallmentTariff> getOrderedTuitionInstallmentTariffs() {
+        return super.getTuitionInstallmentTariffsSet().stream().sorted(TuitionInstallmentTariff.COMPARATOR_BY_INSTALLMENT_NUMBER)
+                .collect(Collectors.toList());
+    }
+
     public LocalizedString installmentName(final TuitionInstallmentTariff installmentTariff) {
         String label = "label.TuitionInstallmentTariff.debitEntry.name.";
 
@@ -136,9 +212,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             final String installmentName =
-                    BundleUtil.getString(Constants.BUNDLE, label, getDegreeCurricularPlan().getDegree().getPresentationNameI18N()
-                            .getContent(locale), getExecutionYear().getQualifiedName());
-            
+                    BundleUtil.getString(Constants.BUNDLE, label, String.valueOf(installmentTariff.getInstallmentOrder()),
+                            getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale),
+                            getExecutionYear().getQualifiedName());
+
             result = result.with(locale, installmentName);
         }
 
@@ -151,6 +228,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public boolean isDefaultPaymentPlan() {
         return getDefaultPaymentPlan();
+    }
+
+    public boolean isFirstTimeStudent() {
+        return getFirstTimeStudent();
     }
 
     public boolean isFirst() {
@@ -196,20 +277,53 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         setPaymentPlanOrder(order);
     }
 
-    public boolean createDebitEntries(final PersonCustomer personCustomer, final AcademicTreasuryEvent academicTreasuryEvent) {
+    public boolean createDebitEntriesForRegistration(final PersonCustomer personCustomer, final AcademicTreasuryEvent academicTreasuryEvent,
+            final LocalDate when) {
 
+        if(getTuitionPaymentPlanGroup().isForRegistration()) {
+            throw new RuntimeException("wrong call");
+        }
+        
         boolean createdDebitEntries = false;
         for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
             if (!academicTreasuryEvent.isChargedWithDebitEntry(tariff)) {
-                tariff.createDebitEntry(personCustomer, academicTreasuryEvent);
+                tariff.createDebitEntryForRegistration(personCustomer, academicTreasuryEvent, when);
                 createdDebitEntries = true;
             }
         }
-        
+
         return createdDebitEntries;
     }
+    
+    
+    public boolean createDebitEntriesForStandalone(final PersonCustomer personCustomer, final AcademicTreasuryEvent academicTreasuryEvent,
+            final LocalDate when) {
+        
+        if(getTuitionPaymentPlanGroup().isForStandalone()) {
+            throw new RuntimeException("wrong call");
+        }
+        
+        boolean createdDebitEntries = false;
+        for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
+            if (!academicTreasuryEvent.isChargedWithDebitEntry(tariff)) {
+                tariff.createDebitEntryForRegistration(personCustomer, academicTreasuryEvent, when);
+                createdDebitEntries = true;
+            }
+        }
+
+        return createdDebitEntries;
+        
+    }
+    
 
     public boolean isDeletable() {
+
+        for (final TuitionInstallmentTariff installmentTariff : getTuitionInstallmentTariffsSet()) {
+            if (!installmentTariff.getDebitEntrySet().isEmpty()) {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -234,6 +348,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         super.setExecutionYear(null);
         super.setDegreeCurricularPlan(null);
         super.setRegistrationProtocol(null);
+        super.setProduct(null);
+        this.setCurricularYear(null);
 
         super.deleteDomainObject();
     }
@@ -279,8 +395,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public static Stream<TuitionPaymentPlan> findSortedByPaymentPlanOrder(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final DegreeCurricularPlan degreeCurricularPlan, final ExecutionYear executionYear) {
-        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear).sorted(
-                (e1, e2) -> Integer.compare(e1.getPaymentPlanOrder(), e2.getPaymentPlanOrder()));
+        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear)
+                .sorted((e1, e2) -> Integer.compare(e1.getPaymentPlanOrder(), e2.getPaymentPlanOrder()))
+                .collect(Collectors.toList()).stream();
     }
 
     protected static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
@@ -308,6 +425,45 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     public static boolean isDefaultPaymentPlanDefined(final DegreeCurricularPlan degreeCurricularPlan,
             final ExecutionYear executionYear) {
         return findUniqueDefaultPaymentPlan(degreeCurricularPlan, executionYear).isPresent();
+    }
+
+    public static TuitionPaymentPlan inferTuitionPaymentPlan(final Registration registration, final ExecutionYear executionYear) {
+        final DegreeCurricularPlan degreeCurricularPlan =
+                registration.getStudentCurricularPlan(executionYear).getDegreeCurricularPlan();
+
+        final RegistrationRegimeType regimeType = registration.getRegimeType(executionYear);
+        final RegistrationProtocol registrationProtocol = registration.getRegistrationProtocol();
+        final Ingression ingression = registration.getIngression();
+        final int semesterWithFirstEnrolments = semesterWithFirstEnrolments(registration, executionYear);
+        final CurricularYear curricularYear = CurricularYear.readByYear(curricularYear(registration, executionYear));
+        final boolean firstTimeStudent = firstTimeStudent(registration, executionYear);
+
+        final Stream<TuitionPaymentPlan> stream =
+                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration()
+                        .get(), degreeCurricularPlan, executionYear);
+
+//        stream.filter(t -> t.getRegistrationRegimeType() == null || t.getRegistrationRegimeType() == regimeType);
+//        stream.filter(t -> t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol);
+//        stream.filter(t -> t.getIngression() == null || t.getIngression() == ingression);
+//        stream.filter(t -> t.getSemester() == null || t.getSemester() == semesterWithFirstEnrolments);
+//        stream.filter(t -> t.getCurricularYear() == null || t.getCurricularYear() == curricularYear);
+//        stream.filter(t -> t.getFirstTimeStudent() == firstTimeStudent);
+//        stream.filter(t -> !t.isCustomized());
+
+        return stream.findFirst().orElse(null);
+    }
+
+    private static boolean firstTimeStudent(Registration registration, ExecutionYear executionYear) {
+        return registration.isFirstTime(executionYear);
+    }
+
+    private static Integer curricularYear(Registration registration, ExecutionYear executionYear) {
+        return registration.getCurricularYear(executionYear);
+    }
+
+    private static int semesterWithFirstEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getEnrolments(executionYear).stream().map(e -> e.getExecutionPeriod().getSemester()).sorted()
+                .findFirst().get();
     }
 
     @Atomic

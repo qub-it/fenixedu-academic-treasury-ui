@@ -7,6 +7,7 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.util.LocalizedStringUtil;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.Product;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -20,7 +21,7 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     }
 
     protected TuitionPaymentPlanGroup(final String code, final LocalizedString name, boolean forRegistration,
-            boolean forStandalone, boolean forExtracurricular) {
+            boolean forStandalone, boolean forExtracurricular, final Product currentProduct) {
         this();
         setCode(code);
         setName(name);
@@ -28,7 +29,8 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
         setForRegistration(forRegistration);
         setForStandalone(forStandalone);
         setForExtracurricular(forExtracurricular);
-
+        setCurrentProduct(currentProduct);
+        
         checkRules();
     }
 
@@ -41,7 +43,7 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.name.required");
         }
         
-        if(isForRegistration() ^ isForStandalone() ^ isForExtracurricular()) {
+        if(!(isForRegistration() ^ isForStandalone() ^ isForExtracurricular())) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.only.one.type.supported");
         }
         
@@ -128,8 +130,8 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
 
     @Atomic
     public static TuitionPaymentPlanGroup create(final String code, final LocalizedString name, boolean forRegistration,
-            boolean forStandalone, boolean forExtracurricular) {
-        return new TuitionPaymentPlanGroup(code, name, forRegistration, forStandalone, forExtracurricular);
+            boolean forStandalone, boolean forExtracurricular, final Product currentProduct) {
+        return new TuitionPaymentPlanGroup(code, name, forRegistration, forStandalone, forExtracurricular, currentProduct);
     }
 
 }

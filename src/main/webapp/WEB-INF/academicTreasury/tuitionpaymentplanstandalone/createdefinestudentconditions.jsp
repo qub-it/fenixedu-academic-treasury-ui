@@ -1,12 +1,8 @@
 <%@page import="org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType"%>
-<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.TuitionPaymentPlanController"%>
-
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.standalone.TuitionPaymentPlanControllerStandalone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
-<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
-<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
-
 <spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js"/>
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
@@ -33,11 +29,11 @@ ${portal.angularToolkit()}
 <script src="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.js"></script>
 
 
-
 <%-- TITLE --%>
 <div class="page-header">
 	<h1><spring:message code="label.manageTuitionPaymentPlan.createTuitionPaymentPlan" /></h1>
-	<h3><spring:message code="label.manageTuitionPaymentPlan.createInsertInstallments" /></h3>
+
+	<h3><spring:message code="label.manageTuitionPaymentPlan.createChooseDegreeCurricularPlans" /></h3>
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -76,227 +72,93 @@ ${portal.angularToolkit()}
 
 <script>
 
-angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']).controller('TuitionInstallmentTariffController', ['$scope', function($scope) {
+angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).controller('TuitionPaymentPlanController', ['$scope', function($scope) {
 
  	$scope.object=angular.fromJson('${tuitionPaymentPlanBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
-
-	//Begin here of Custom Screen business JS - code
 	
-	$scope.submitForm = function() {
-		$("form").submit();
-	};
-	
-	$scope.createPaymentPlan = function() {
-		$("form").attr("action", $("#createPaymentPlanURL").attr("value"));
-		$("form").submit();
-	}
-	
-	$scope.backToDefineStudentConditions = function() {
-		$("form").attr("action", $("#backUrl").attr("value"));
-		$("form").submit();
+	$scope.backToChooseDegreeCurricularPlans = function() {
+		$("#form").attr("action", $("#backUrl").attr('value'));
+		$("#form").submit();
 	}
  	
 }]);
 </script>
 
-<h3><spring:message code="label.manageTuitionPaymentPlan.installments" /></h3>
-
-<c:if test="${empty bean.tuitionInstallmentBeans}">
-	<p><em><spring:message code="label.TuitionInstallmentTariff.installments.empty" /></em></p>
-</c:if>
-
-<c:if test="${not empty bean.tuitionInstallmentBeans}">
-
-	<datatables:table id="installments" row="installment" data="${bean.tuitionInstallmentBeans}" 
-		cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
-		
-		<datatables:column cssStyle="width:8%">
-			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.installmentOrder" /></datatables:columnHead>
-			<c:out value="${installment.installmentOrder}" />
-		</datatables:column>
-		
-		<datatables:column className="dt-center" cssStyle="width:40%">
-			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.amount" /></datatables:columnHead>
+<form novalidate id="form" name='form' method="post" class="form-horizontal"
+	ng-app="angularAppTuitionPaymentPlan" ng-controller="TuitionPaymentPlanController"
+	action='${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CREATEPAYMENTPLAN_URL %>/${finantialEntity.externalId}/${executionYear.externalId}'>
 	
-			<c:choose>
-				<c:when test="${installment.tuitionCalculationType.fixedAmount}" >
-					<p><strong><spring:message code="TuitionCalculationType.FIXED_AMOUNT" /></strong></p>
-											
-					<c:out value="${finantialEntity.finantialInstitution.currency.getValueFor(installment.fixedAmount)}" />
-				</c:when>
-				<c:when test="${installment.tuitionCalculationType.ects}">
-					<p>
-						<strong>
-							<c:out value="${installment.tuitionCalculationType.descriptionI18N.content}" />
-							&nbsp;
-							[<c:out value="${installment.ectsCalculationType.descriptionI18N.content}" />]
-						</strong>
-					</p>
-	
-					<c:if test="${installment.ectsCalculationType.fixedAmount}">
-						<p>&nbsp;</p>
-						
-						<p><spring:message code="label.TuitionInstallmentTariff.amountPerEcts" 
-							arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" /></p>
-					</c:if>
-					<c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
-						<p><em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
-							arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em></p>
-					</c:if>
-				</c:when>
-				<c:when test="${installment.tuitionCalculationType.units}">
-					<p>
-						<strong>
-							<c:out value="${installment.tuitionCalculationType.descriptionI18N.content}" />
-							&nbsp;
-							[<c:out value="${installment.ectsCalculationType.descriptionI18N.content}" />]
-						</strong>
-					</p>
-	
-					<c:if test="${installment.ectsCalculationType.fixedAmount}">
-						<p>&nbsp;</p>
-						
-						<p><spring:message code="label.TuitionInstallmentTariff.amountPerUnits" 
-							arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" /></p>
-					</c:if>
-					<c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
-						<p><em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.unitsParameters"
-							arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em></p>
-					</c:if>
-				</c:when>
-			</c:choose>
-		</datatables:column>
-
-		<datatables:column cssStyle="width:10%">
-			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.beginDate" /></datatables:columnHead>
-			<joda:format value="${installment.beginDate}" style="S-" />
-		</datatables:column>
-		
-		<datatables:column cssStyle="width:15%">
-			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.dueDate" /></datatables:columnHead>
-
-			<c:choose>
-				<c:when test="${installment.dueDateCalculationType.noDueDate}">
-					<spring:message code="label.TuitionInstallmentTariff.noDueDate" />
-				</c:when>
-				<c:when test="${installment.dueDateCalculationType.fixedDate}">
-					<joda:format value="${installment.fixedDueDate}" style="S-" />
-				</c:when>
-				<c:when test="${installment.dueDateCalculationType.daysAfterCreation}">
-					<spring:message code="label.TuitionInstallmentTariff.daysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" />
-				</c:when>
-			</c:choose>
-		</datatables:column>
-	
-		<datatables:column cssStyle="width:25%">
-			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.interests" /></datatables:columnHead>
-			<c:if test="${not installment.applyInterests}">
-				<p><strong><spring:message code="label.TuitionInstallmentTariff.interests.not.applied" /></strong></p>
-			</c:if>
-			<c:if test="${installment.applyInterests}">
-				<p><strong>[<c:out value="${installment.interestType.descriptionI18N.content}" />]</strong></p>
-				
-				<c:choose>
-					<c:when test="${installment.interestType.daily}">
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.numberOfDaysAfterCreationForDueDate"  />:&nbsp;</strong>
-							<c:out value="${installment.numberOfDaysAfterDueDate}" />
-						</p>
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:&nbsp;</strong>
-							<c:if test="${installment.applyInFirstWorkday}">
-								<spring:message code="label.true" />
-							</c:if>
-							<c:if test="${not installment.applyInFirstWorkday}">
-								<spring:message code="label.false" />
-							</c:if>
-						</p>
-						
-						<c:if test="${installment.maximumDaysToApplyPenaltyApplied}">
-							<p>
-								<strong><spring:message code="label.TuitionInstallmentTariff.maximumDaysToApplyPenalty" />:&nbsp;</strong>
-								<c:out value="${installment.maximumDaysToApplyPenalty}" />
-							</p>
-						</c:if>
-						
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.rate" />:&nbsp;</strong>
-							<c:out value="${installment.rate}" />&nbsp;&#37;
-						</p>
-					</c:when>
-					<c:when test="${installment.interestType.monthly}">
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:&nbsp;</strong>
-							<c:if test="${installment.applyInFirstWorkday}">
-								<spring:message code="label.true" />
-							</c:if>
-							<c:if test="${not installment.applyInFirstWorkday}">
-								<spring:message code="label.false" />
-							</c:if>
-						</p>
-	
-						<c:if test="${installment.maximumMonthsToApplyPenaltyApplied}">
-							<p>
-								<strong><spring:message code="label.TuitionInstallmentTariff.maximumMonthsToApplyPenalty" />:&nbsp;</strong>
-								<c:out value="${installment.maximumMonthsToApplyPenalty}" />
-							</p>
-						</c:if>
-	
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.rate" />:&nbsp;</strong>
-							<c:out value="${installment.rate}" />&nbsp;&#37;
-						</p>
-					</c:when>
-					
-					<c:when test="${installment.interestType.fixedAmount}">
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.interestFixedAmount" />:&nbsp;</strong>
-							<c:out value="${finantialEntity.finantialInstitution.currency.getValueFor(installment.interestFixedAmount)}" />
-						</p>
-					</c:when>
-				</c:choose>
-			</c:if>
-		</datatables:column>
-		
-		<datatables:column>
-			<form 	id="removeform-${installment.installmentOrder}" name='removeform-${installment.installmentOrder}' 
-					method="post" class="form-horizontal"
-				action='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.REMOVEINSTALLMENT_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${installment.installmentOrder}'>
-				<input id="removebean-${installment.installmentOrder}" name="bean" type="hidden" value="" />
-				
-				<input type="submit" class="btn" role="button" value="<spring:message code="label.delete" />" 
-					onclick="$('#removebean-${installment.installmentOrder}').attr('value', $('#bean').attr('value')); "/>
-			</form>
-		</datatables:column>
-	</datatables:table>
-</c:if>
-
-<h3><spring:message code="label.manageTuitionPaymentPlan.installments.new" /></h3>
-
-<form name='form' method="post" class="form-horizontal"
-	ng-app="angularAppTuitionInstallmentTariff"
-	ng-controller="TuitionInstallmentTariffController"
-	action='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.ADDINSTALLMENTSPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}'>
-
 	<input id="backUrl" type="hidden" name="backUrl" 
-		value="${pageContext.request.contextPath}<%= TuitionPaymentPlanController.BACKTODEFINE_STUDENT_CONDITIONS_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}" />
-
-	<input id="createPaymentPlanURL" type="hidden" name="createTuitionPaymentPlan"
-		value="${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATEPAYMENTPLAN_URL %>/${finantialEntity.externalId}/${executionYear.externalId}" />
+		value="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.BACKTODEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}" />
 		
 	<input type="hidden" name="postback"
-		value='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATEINSERTINSTALLMENTSPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
-
-	<input id="bean" name="bean" type="hidden" value="{{ object }}" />
-
+		value='${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CREATEDEFINESTUDENTCONDITIONSPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
+			
+	<input name="bean" type="hidden" value="{{ object }}" />
+	
 	<div class="panel panel-default">
 		<div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><span id="executionYearLabel"><spring:message code="label.TuitionPaymentPlan.executionYear"/></span></div> 
+				
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<label for="executionYearLabel">${executionYear.qualifiedName}</label>
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.registrationProtocol"/></div> 
+				
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<ui-select id="tuitionPaymentPlan_registrationProtocol" class="form-control" name="registrationprotocol" ng-model="$parent.object.registrationProtocol" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="registrationProtocol.id as registrationProtocol in object.registrationProtocolDataSource | filter: $select.search">
+							<span ng-bind-html="registrationProtocol.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.ingression"/></div> 
+				
+				<div class="col-sm-4">
+					<ui-select id="tuitionPaymentPlan_ingression" class="form-control" name="ingression" ng-model="$parent.object.ingression" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="ingression.id as ingression in object.ingressionDataSource | filter: $select.search">
+							<span ng-bind-html="ingression.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.customized"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlan_customized" name="customized" class="form-control" ng-model="object.customized">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionPaymentPlan_customized").select2().select2('val', '<c:out value='${bean.customized}'/>');
+					</script>	
+				</div>
+			</div>
+			<div class="form-group row" ng-show="object.customized == 'true' ">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.customizedName"/></div> 
+				
+				<div class="col-sm-10">
+					<input id="tuitionPaymentPlan_customizedName" class="form-control" type="text" name="customizedname" ng-model="object.name" />
+				</div>
+			</div>		
+		
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.tuitionCalculationType" />
 				</div>
-
+	
 				<div class="col-sm-4">
 					<ui-select id="tuitionInstallmentTariff_tuitionCalculationType"
 						class="form-control" name="tuitioncalculationtype"
@@ -322,7 +184,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 							arguments="<%= TuitionCalculationType.UNITS.getDescriptionI18N().getContent() %>" />
 					</span>
 				</div>
-
+	
 				<div class="col-sm-4">
 					<ui-select id="tuitionInstallmentTariff_ectsCalculationType"
 						class="form-control" name="ectscalculationtype"
@@ -340,7 +202,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.fixedAmount" />
 				</div>
-
+	
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_fixedAmount"
 						class="form-control" type="text" ng-model="object.fixedAmount"
@@ -352,11 +214,11 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.factor" />
 				</div>
-
+	
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_factor" class="form-control"
 						type="text" ng-model="object.factor" name="factor"
-						value='<c:out value='${bean.factor}'/>' required pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.factor}'/>' required pattern="\d+(\.\d{1,2})?" />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'">
@@ -370,7 +232,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 							arguments="<%= TuitionCalculationType.UNITS.getDescriptionI18N().getContent() %>" />
 					</span>
 				</div>
-
+	
 				<div class="col-sm-10" >
 					<input id="tuitionInstallmentTariff_totalEctsOrUnits"
 						class="form-control" type="text"
@@ -382,7 +244,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.beginDate" />
 				</div>
-
+	
 				<div class="col-sm-4">
 					<input id="tuitionInstallmentTariff_beginDate" class="form-control" type="date" name="begindate" value='${bean.beginDate}' 
 						ng-model="object.beginDate" />
@@ -392,7 +254,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.dueDateCalculationType" />
 				</div>
-
+	
 				<div class="col-sm-4">
 					<ui-select id="tuitionInstallmentTariff_dueDateCalculationType"
 						class="form-control" name="duedatecalculationtype"
@@ -411,7 +273,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.fixedDueDate" />
 				</div>
-
+	
 				<div class="col-sm-4">
 					<input id="tuitionInstallmentTariff_fixedduedate" class="form-control" 
 						type="date" name="fixedduedate"  value='<c:out value='${bean.fixedDueDate}'/>' ng-model="object.fixedDueDate" required />
@@ -421,7 +283,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.numberOfDaysAfterCreationForDueDate" />
 				</div>
-
+	
 				<div class="col-sm-10">
 					<input
 						id="tuitionInstallmentTariff_numberOfDaysAfterCreationForDueDate"
@@ -435,7 +297,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.applyInterests" />
 				</div>
-
+	
 				<div class="col-sm-2">
 					<select id="tuitionInstallmentTariff_applyInterests"
 						name="applyinterests" class="form-control"
@@ -452,7 +314,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.interestType" />
 				</div>
-
+	
 				<div class="col-sm-4">
 					<ui-select id="tuitionInstallmentTariff_interestType"
 						class="form-control" name="interesttype"
@@ -470,7 +332,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.numberOfDaysAfterDueDate" />
 				</div>
-
+	
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_numberOfDaysAfterDueDate"
 						class="form-control" type="text"
@@ -483,7 +345,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />
 				</div>
-
+	
 				<div class="col-sm-2">
 					<select id="tuitionInstallmentTariff_applyInFirstWorkday"
 						name="applyinfirstworkday" class="form-control"
@@ -500,7 +362,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.maximumDaysToApplyPenalty" />
 				</div>
-
+	
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_maximumDaysToApplyPenalty"
 						class="form-control" type="text"
@@ -513,7 +375,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.maximumMonthsToApplyPenalty" />
 				</div>
-
+	
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_maximumMonthsToApplyPenalty"
 						class="form-control" type="text"
@@ -526,7 +388,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.interestFixedAmount" />
 				</div>
-
+	
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_interestFixedAmount"
 						class="form-control" type="text"
@@ -538,7 +400,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.rate" />
 				</div>
-
+	
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_rate" class="form-control"
 						type="text" ng-model="object.rate" name="rate"
@@ -546,17 +408,16 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 				</div>
 			</div>
 		</div>
-		<div style="text-align: right">
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" ng-click="submitForm()" />
-		</div>
+		
 		<div class="panel-footer">
-			<input type="button" class="btn btn-default" role="button" value="<spring:message code="label.back" />" ng-click="backToDefineStudentConditions()" />
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.create" />" ng-click="createPaymentPlan()" />
+			<input type="button" class="btn btn-default" role="button" value="<spring:message code="label.back" />" ng-click="backToChooseDegreeCurricularPlans();"/>
+			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
 		</div>
 	</div>
-	
 </form>
 
 <script>
-	$(document).ready(function() {});
+$(document).ready(function() {
+
+});
 </script>

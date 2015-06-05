@@ -90,6 +90,11 @@ public class PersonCustomer extends PersonCustomer_Base {
         return this.getCode();
     }
     
+    @Override
+    public boolean isPersonCustomer() {
+        return true;
+    }
+    
     // @formatter: off
     /************
      * SERVICES *

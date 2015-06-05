@@ -1,10 +1,12 @@
 package org.fenixedu.academictreasury.domain.tuition;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.fenixedu.academic.domain.DomainObjectUtil;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -25,6 +27,16 @@ import org.joda.time.LocalDate;
 import com.google.common.collect.Maps;
 
 public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
+
+    public static final Comparator<? super TuitionInstallmentTariff> COMPARATOR_BY_INSTALLMENT_NUMBER =
+            new Comparator<TuitionInstallmentTariff>() {
+
+                @Override
+                public int compare(final TuitionInstallmentTariff o1, final TuitionInstallmentTariff o2) {
+                    int c = Integer.compare(o1.getInstallmentOrder(), o2.getInstallmentOrder());
+                    return c != 0 ? c : DomainObjectUtil.COMPARATOR_BY_ID.compare(o1, o2);
+                }
+            };
 
     protected TuitionInstallmentTariff() {
         super();
@@ -89,32 +101,21 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.tuitionCalculationType.required");
         }
 
-        if ((getTuitionCalculationType().isEcts() || getTuitionCalculationType().isUnits()) && getEctsCalculationType() == null) {
+        if ((isTuitionCalculationByEctsOrUnits() || getTuitionCalculationType().isUnits()) && getEctsCalculationType() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.ectsCalculationType.required");
         }
 
-        if (!(getTuitionCalculationType().isEcts() && getEctsCalculationType().isDefaultPaymentPlanIndexed())
+        if (!(isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed())
                 && getFixedAmount() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixedAmount.required");
         }
 
-        if (!(getTuitionCalculationType().isEcts() && getEctsCalculationType().isDefaultPaymentPlanIndexed())
+        if (!(isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed())
                 && !isPositive(getFixedAmount())) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixedAmount.must.be.positive");
         }
 
-        if (!(getTuitionCalculationType().isUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed())
-                && getFixedAmount() == null) {
-            throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixedAmount.required");
-        }
-
-        if (!(getTuitionCalculationType().isUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed())
-                && !isPositive(getFixedAmount())) {
-            throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixedAmount.must.be.positive");
-        }
-
-        if ((getTuitionCalculationType().isEcts() || getTuitionCalculationType().isUnits())
-                && getEctsCalculationType().isDefaultPaymentPlanIndexed()) {
+        if (isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed()) {
 
             if (getFactor() == null) {
                 throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.factor.required",
@@ -136,6 +137,10 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                         getTuitionCalculationType().getDescriptionI18N().getContent());
             }
         }
+    }
+
+    private boolean isTuitionCalculationByEctsOrUnits() {
+        return getTuitionCalculationType().isEcts() || getTuitionCalculationType().isUnits();
     }
 
     public BigDecimal getAmountPerEctsOrUnit() {
@@ -160,7 +165,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 getTotalEctsOrUnits());
     }
 
-    private BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent) {
+    public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent) {
         if (getTuitionCalculationType().isFixedAmount()) {
             return getFixedAmount();
         }
@@ -184,12 +189,13 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.unknown.amountToPay");
     }
 
-    private LocalDate dueDate(final AcademicTreasuryEvent academicTreasuryEvent) {
-        return dueDate(new LocalDate());
-    }
-
-    public DebitEntry createDebitEntry(final PersonCustomer personCustomer, final AcademicTreasuryEvent academicTreasuryEvent) {
-
+    public DebitEntry createDebitEntryForRegistration(final PersonCustomer personCustomer, final AcademicTreasuryEvent academicTreasuryEvent,
+            final LocalDate when) {
+        
+        if(!getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForRegistration()) {
+            throw new RuntimeException("wrong call");
+        }
+        
         if (!DebtAccount.findUnique(getFinantialEntity().getFinantialInstitution(), personCustomer).isPresent()) {
             DebtAccount.create(getFinantialEntity().getFinantialInstitution(), personCustomer);
         }
@@ -198,16 +204,31 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 DebtAccount.findUnique(getFinantialEntity().getFinantialInstitution(), personCustomer).get();
 
         final BigDecimal amount = amountToPay(academicTreasuryEvent);
-        final LocalDate dueDate = dueDate(academicTreasuryEvent);
-        final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent);
+        final LocalDate dueDate = dueDate(when != null ? when : new LocalDate());
+        
+        updatePriceValuesInEvent(academicTreasuryEvent);
 
-        return DebitEntry.create(null, debtAccount, academicTreasuryEvent, Vat.findActiveUnique(getProduct().getVatType(),
-                getFinantialEntity().getFinantialInstitution(), new DateTime()).get(), amount, dueDate, fillPriceProperties,
-                academicTreasuryEvent.getProduct(), getTuitionPaymentPlan().installmentName(this).getContent(),
-                Constants.DEFAULT_QUANTITY, this, new DateTime());
+        final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent, dueDate);
+
+        return DebitEntry.create(null, debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
+                academicTreasuryEvent.getProduct(), installmentName().getContent(), Constants.DEFAULT_QUANTITY, this,
+                new DateTime());
     }
 
-    private Map<String, String> fillPriceProperties(final AcademicTreasuryEvent academicTreasuryEvent) {
+    private void updatePriceValuesInEvent(final AcademicTreasuryEvent academicTreasuryEvent) {
+        
+    }
+
+    public LocalizedString installmentName() {
+        return getTuitionPaymentPlan().installmentName(this);
+    }
+
+    public Vat vat(final LocalDate when) {
+        return Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(),
+                when.toDateTimeAtStartOfDay()).get();
+    }
+
+    private Map<String, String> fillPriceProperties(final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate dueDate) {
         final Map<String, String> propertiesMap = Maps.newHashMap();
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_CALCULATION_TYPE.getDescriptionI18N()
@@ -233,9 +254,16 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         }
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DUE_DATE.getDescriptionI18N().getContent(),
-                dueDate(academicTreasuryEvent).toString("dd/MM/yyyy"));
+                dueDate.toString(Constants.DATE_FORMAT));
 
         return propertiesMap;
+    }
+
+    @Override
+    public void delete() {
+        super.setTuitionPaymentPlan(null);
+
+        super.delete();
     }
 
     // @formatter:off

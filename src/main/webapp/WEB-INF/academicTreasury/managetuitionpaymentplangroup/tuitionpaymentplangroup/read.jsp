@@ -113,6 +113,50 @@ ${portal.angularToolkit()}
 		<c:out value='${tuitionPaymentPlanGroup.name.content}'/>
 	</td> 
 </tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.TuitionPaymentPlanGroup.forRegistration"/></th> 
+	<td>
+		<c:if test='${tuitionPaymentPlanGroup.forRegistration}'>
+			<spring:message code="label.true" />
+		</c:if>
+		<c:if test='${not tuitionPaymentPlanGroup.forRegistration}'>
+			<spring:message code="label.false" />
+			
+		</c:if>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.TuitionPaymentPlanGroup.forStandalone"/></th> 
+	<td>
+		<c:if test='${tuitionPaymentPlanGroup.forStandalone}'>
+			<spring:message code="label.true" />
+		</c:if>
+		<c:if test='${not tuitionPaymentPlanGroup.forStandalone}'>
+			<spring:message code="label.false" />
+			
+		</c:if>
+	</td> 
+</tr>
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.TuitionPaymentPlanGroup.forExtracurricular"/></th> 
+	<td>
+		<c:if test='${tuitionPaymentPlanGroup.forExtracurricular}'>
+			<spring:message code="label.true" />
+		</c:if>
+		<c:if test='${not tuitionPaymentPlanGroup.forExtracurricular}'>
+			<spring:message code="label.false" />
+			
+		</c:if>
+	</td> 
+</tr>
+
+<tr>
+	<th scope="row" class="col-xs-3"><spring:message code="label.TuitionPaymentPlanGroup.currentProduct"/></th> 
+	<td>
+		<c:out value='${tuitionPaymentPlanGroup.currentProduct.name.content}' />
+	</td> 
+</tr>
+
 </tbody>
 </table>
 </form>

@@ -1,27 +1,37 @@
 package org.fenixedu.academictreasury.services;
 
-import java.util.Optional;
-import java.util.stream.Stream;
+import java.math.BigDecimal;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.CurricularYear;
-import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
-import org.fenixedu.academic.domain.candidacy.Ingression;
 import org.fenixedu.academic.domain.student.Registration;
-import org.fenixedu.academic.domain.student.RegistrationProtocol;
-import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
+import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
-import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
+import org.fenixedu.academictreasury.dto.tuition.TuitionDebitEntryBean;
+import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.Vat;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+
+import com.google.common.collect.Lists;
 
 public class TuitionServices {
 
     @Atomic
-    public boolean createInferedTuitionForRegistration(final Registration registration, final ExecutionYear executionYear) {
+    public static boolean createInferedTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
+            final LocalDate when) {
+        return createTuitionForRegistration(registration, executionYear, when, null);
+    }
+
+    @Atomic
+    public static boolean createTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
+            final LocalDate when, TuitionPaymentPlan tuitionPaymentPlan) {
 
         final Person person = registration.getPerson();
         // Read person customer
@@ -31,61 +41,89 @@ public class TuitionServices {
             personCustomer = PersonCustomer.create(person);
         }
 
-        final TuitionPaymentPlan inferedTuitionPaymentPlan = inferTuitionPaymentPlan(registration, executionYear);
+        if (tuitionPaymentPlan == null) {
+            tuitionPaymentPlan = TuitionPaymentPlan.inferTuitionPaymentPlan(registration, executionYear);
+        }
 
-        if (inferedTuitionPaymentPlan == null) {
+        if (tuitionPaymentPlan == null) {
             return false;
         }
 
         if (!AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).isPresent()) {
-            AcademicTreasuryEvent.createForRegistrationTuition(inferedTuitionPaymentPlan.getProduct(), registration,
-                    executionYear);
+            AcademicTreasuryEvent.createForRegistrationTuition(tuitionPaymentPlan.getProduct(), registration, executionYear);
         };
 
         final AcademicTreasuryEvent academicTreasuryEvent =
-                AcademicTreasuryEvent.createForRegistrationTuition(inferedTuitionPaymentPlan.getProduct(), registration,
-                        executionYear);
+                AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).get();
 
-        return inferedTuitionPaymentPlan.createDebitEntries(personCustomer, academicTreasuryEvent);
-
+        return tuitionPaymentPlan.createDebitEntriesForRegistration(personCustomer, academicTreasuryEvent, when);
     }
 
-    private TuitionPaymentPlan inferTuitionPaymentPlan(Registration registration, ExecutionYear executionYear) {
-        final DegreeCurricularPlan degreeCurricularPlan =
-                registration.getStudentCurricularPlan(executionYear).getDegreeCurricularPlan();
+    public static TuitionPaymentPlan usedPaymentPlan(final Registration registration, final ExecutionYear executionYear,
+            final LocalDate debtDate) {
+        return usedPaymentPlan(registration, executionYear, debtDate, null);
+    }
+    
+    public static TuitionPaymentPlan usedPaymentPlan(final Registration registration, final ExecutionYear executionYear,
+            final LocalDate debtDate, final TuitionPaymentPlan tuitionPaymentPlan) {
+        if (tuitionPaymentPlan != null) {
+            return tuitionPaymentPlan;
+        }
 
-        final RegistrationRegimeType regimeType = registration.getRegimeType(executionYear);
-        final RegistrationProtocol registrationProtocol = registration.getRegistrationProtocol();
-        final Ingression ingression = registration.getIngression();
-        final int semesterWithFirstEnrolments = semesterWithFirstEnrolments(registration, executionYear);
-        final CurricularYear curricularYear = CurricularYear.readByYear(curricularYear(registration, executionYear));
-        final boolean firstTimeStudent = firstTimeStudent(registration, executionYear);
-
-        final Stream<TuitionPaymentPlan> stream =
-                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration()
-                        .get(), degreeCurricularPlan, executionYear);
-
-        stream.filter(t -> t.getRegistrationRegimeType() == null || t.getRegistrationRegimeType() == regimeType);
-        stream.filter(t -> t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol);
-        stream.filter(t -> t.getIngression() == null || t.getIngression() == ingression);
-        stream.filter(t -> t.getSemester() == null || t.getSemester() == semesterWithFirstEnrolments);
-        stream.filter(t -> t.getCurricularYear() == null || t.getCurricularYear() == curricularYear);
-        stream.filter(t -> t.getFirstTimeStudent() == firstTimeStudent);
-        stream.filter(t -> !t.isCustomized());
-        
-        return stream.findFirst().orElse(null);
+        return TuitionPaymentPlan.inferTuitionPaymentPlan(registration, executionYear);
     }
 
-    private boolean firstTimeStudent(Registration registration, ExecutionYear executionYear) {
-        return registration.isFirstTime(executionYear);
+    @Atomic
+    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeans(final Registration registration,
+            final ExecutionYear executionYear, final LocalDate debtDate) {
+        return calculateInstallmentDebitEntryBeans(registration, executionYear, debtDate, null);
     }
 
-    private Integer curricularYear(Registration registration, ExecutionYear executionYear) {
-        return registration.getCurricularYear(executionYear);
-    }
+    @Atomic
+    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeans(final Registration registration,
+            final ExecutionYear executionYear, final LocalDate debtDate, TuitionPaymentPlan tuitionPaymentPlan) {
 
-    private int semesterWithFirstEnrolments(final Registration registration, final ExecutionYear executionYear) {
-        return registration.getEnrolments(executionYear).stream().map(e -> e.getExecutionPeriod().getSemester()).sorted()
-                .findFirst().get();
+        final Person person = registration.getPerson();
+        // Read person customer
+        PersonCustomer personCustomer = PersonCustomer.findUnique(person).orElse(null);
+
+        if (personCustomer == null) {
+            personCustomer = PersonCustomer.create(person);
+        }
+
+        if (tuitionPaymentPlan == null) {
+            tuitionPaymentPlan = TuitionPaymentPlan.inferTuitionPaymentPlan(registration, executionYear);
+        }
+
+        if (tuitionPaymentPlan == null) {
+            return Lists.newArrayList();
+        }
+
+        if (!AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).isPresent()) {
+            AcademicTreasuryEvent.createForRegistrationTuition(tuitionPaymentPlan.getProduct(), registration, executionYear);
+        }
+
+        final AcademicTreasuryEvent academicTreasuryEvent =
+                AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).get();
+
+        final List<TuitionDebitEntryBean> entries = Lists.newArrayList();
+        for (final TuitionInstallmentTariff tuitionInstallmentTariff : tuitionPaymentPlan.getTuitionInstallmentTariffsSet()) {
+            final int installmentOrder = tuitionInstallmentTariff.getInstallmentOrder();
+            final LocalizedString installmentName = tuitionPaymentPlan.installmentName(tuitionInstallmentTariff);
+            final LocalDate dueDate = tuitionInstallmentTariff.dueDate(debtDate);
+            final Vat vat = tuitionInstallmentTariff.vat(debtDate);
+            final BigDecimal amount = tuitionInstallmentTariff.amountToPay(academicTreasuryEvent);
+
+            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount));
+        }
+
+        return entries.stream().sorted(new Comparator<TuitionDebitEntryBean>() {
+
+            @Override
+            public int compare(TuitionDebitEntryBean o1, TuitionDebitEntryBean o2) {
+                return o1.getInstallmentOrder() - o2.getInstallmentOrder();
+            }
+            
+        }).collect(Collectors.toList());
     }
 }

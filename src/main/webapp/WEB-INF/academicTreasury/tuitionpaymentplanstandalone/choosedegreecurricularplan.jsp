@@ -1,9 +1,8 @@
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.standalone.TuitionPaymentPlanControllerStandalone"%>
 <%@page import="org.fenixedu.academic.domain.ExecutionYear"%>
 <%@page import="org.fenixedu.academic.domain.DegreeCurricularPlan"%>
 <%@page import="org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup"%>
 <%@page import="org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan"%>
-<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.DegreeCurricularPlanController"%>
-<%@page import="static org.fenixedu.academictreasury.ui.managetuitionpaymentplan.DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -58,13 +57,13 @@ ${portal.angularToolkit()}
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true">
 	</span>&nbsp;
-	<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/finantialentity/choosefinantialentity">
+	<a class="" href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CHOOSEFINANTIALENTITY_URL %>">
 		<spring:message code="label.event.back"/>
 	</a>
 	|&nbsp;&nbsp;
 	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 	&nbsp;
-	<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/createchoosedegreecurricularplans/${finantialEntity.externalId}/${executionYear.externalId}">
+	<a class="" href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CREATECHOOSEDEGREECURRICULARPLANS_URL %>/${finantialEntity.externalId}/${executionYear.externalId}">
 		<spring:message code="label.event.create" />
 	</a>
 	|&nbsp;&nbsp;
@@ -117,7 +116,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 </script>
 
 <input type="hidden" name="executionYearPostback" 
-	value="${pageContext.request.contextPath}<%= DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_URL %>/${finantialEntity.externalId}/" />
+	value="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CHOOSEDEGREECURRICULARPLAN_URL %>/${finantialEntity.externalId}/" />
 
 <datatables:table id="choosedegreecurricularplanTable" row="dcp" data="${choosedegreecurricularplanResultsDataSet}" 
 	cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
@@ -134,7 +133,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 			<p><strong><c:out value="${dcp.getPresentationName(executionYear)}" /></strong></p>
 			
 			
-		<%  request.setAttribute("tuitionPaymentPlanCount", (Long) TuitionPaymentPlan.find(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), (DegreeCurricularPlan) request.getAttribute("dcp"), 
+		<%  request.setAttribute("tuitionPaymentPlanCount", (Long) TuitionPaymentPlan.find(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), (DegreeCurricularPlan) request.getAttribute("dcp"), 
 	        	(ExecutionYear) request.getAttribute("executionYear")).count());
 		
 			if((Long) request.getAttribute("tuitionPaymentPlanCount") == 0) { %>
@@ -147,7 +146,7 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 		
 	</datatables:column>
 	<datatables:column>
-		<a  href="${pageContext.request.contextPath}<%= CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>${finantialEntity.externalId}/${executionYear.externalId}/${dcp.externalId}"
+		<a  href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.SEARCH_URL %>${finantialEntity.externalId}/${executionYear.externalId}/${dcp.externalId}"
 			class="btn btn-default btn-xs" >
 			<spring:message code="label.manageTuitionPaymentPlan.chooseDegreeCurricularPlan.choose"/>
 		</a>

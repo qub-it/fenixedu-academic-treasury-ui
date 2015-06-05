@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.DegreeCurricularPlanController"%>
 <%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.TuitionPaymentPlanController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -33,15 +34,6 @@ ${portal.angularToolkit()}
 	<h1><spring:message code="label.manageTuitionPaymentPlan.createTuitionPaymentPlan" /></h1>
 
 	<h3><spring:message code="label.manageTuitionPaymentPlan.createChooseDegreeCurricularPlans" /></h3>
-</div>
-
-<%-- NAVIGATION --%>
-<div class="well well-sm" style="display:inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-	&nbsp;
-	<a class="" href="${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplan/tuitionpaymentplan/" >
-		<spring:message code="label.event.back" />
-	</a>
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -84,16 +76,22 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 
  	$scope.object=angular.fromJson('${tuitionPaymentPlanBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
-
-	//Begin here of Custom Screen business JS - code
+	
+	$scope.backToChooseDegreeCurricularPlans = function() {
+		$("#form").attr("action", $("#backUrl").attr('value'));
+		$("#form").submit();
+	}
  	
 }]);
 </script>
 
-<form name='form' method="post" class="form-horizontal"
+<form id="form" name='form' method="post" class="form-horizontal"
 	ng-app="angularAppTuitionPaymentPlan" ng-controller="TuitionPaymentPlanController"
 	action='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATEINSERTINSTALLMENTS_URL %>/${finantialEntity.externalId}/${executionYear.externalId}'>
 	
+	<input id="backUrl" type="hidden" name="backUrl" 
+		value="${pageContext.request.contextPath}<%= TuitionPaymentPlanController.BACKTODEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}" />
+		
 	<input type="hidden" name="postback"
 		value='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.CREATEINSERTINSTALLMENTSPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
 			
@@ -118,7 +116,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 						<option value="true"><spring:message code="label.yes"/></option>				
 					</select>
 					<script>
-						$("#tuitionPaymentPlan_defaultPaymentPlan").select2().val('<c:out value='${not empty tuitionPaymentPlan.defaultPaymentPlan }'/>');
+						$("#tuitionPaymentPlan_defaultPaymentPlan").select2().select2('val', '<c:out value='${bean.defaultPaymentPlan }'/>');
 					</script>	
 				</div>
 			</div>		
@@ -177,25 +175,24 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 				
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
-					<ui-select id="tuitionPaymentPlan_semester" class="form-control" name="semester" ng-model="$parent.object.semester" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_semester" class="form-control" name="semester" ng-model="$parent.object.executionSemester" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="semester.id as semester in object.semesterDataSource | filter: $select.search">
 							<span ng-bind-html="semester.text | highlight: $select.search"></span>
 						</ui-select-choices>
-					</ui-select>				
+					</ui-select>		
 				</div>
 			</div>		
 			<div class="form-group row">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.firstTimeStudent"/></div> 
 				
 				<div class="col-sm-2">
-					<select id="tuitionPaymentPlan_firstTimeStudent" name="firsttimestudent" class="form-control" ng-model="object.firsttimestudent">
+					<select id="tuitionPaymentPlan_firstTimeStudent" name="firsttimestudent" class="form-control" ng-model="object.firstTimeStudent">
 						<option value="false"><spring:message code="label.no"/></option>
 						<option value="true"><spring:message code="label.yes"/></option>				
 					</select>
 					<script>
-						$("#tuitionPaymentPlan_firstTimeStudent").select2()
-							.val('<c:out value='${not empty param.firsttimestudent ? param.firsttimestudent : tuitionPaymentPlan.firstTimeStudent }'/>');
+						$("#tuitionPaymentPlan_firstTimeStudent").select2().select2('val', '<c:out value='${bean.firstTimeStudent }'/>');
 					</script>	
 				</div>
 			</div>		
@@ -208,21 +205,21 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 						<option value="true"><spring:message code="label.yes"/></option>				
 					</select>
 					<script>
-						$("#tuitionPaymentPlan_customized").select2()
-							.val('<c:out value='${not empty param.customized ? param.customized : tuitionPaymentPlan.customized }'/>');
+						$("#tuitionPaymentPlan_customized").select2().select2('val', '<c:out value='${bean.customized}'/>');
 					</script>	
 				</div>
-			</div>		
-			<div class="form-group row" ng-show="object.customized=='true'">
+			</div>
+			<div class="form-group row" ng-show="object.customized == 'true' ">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.customizedName"/></div> 
 				
 				<div class="col-sm-10">
-					<input id="tuitionPaymentPlan_customizedName" class="form-control" type="text" name="customizedname"  ng-localized-string="object.customizedname"/>
+					<input id="tuitionPaymentPlan_customizedName" class="form-control" type="text" name="customizedname" ng-model="object.name" />
 				</div>
 			</div>		
 		</div>
 		
 		<div class="panel-footer">
+			<input type="button" class="btn btn-default" role="button" value="<spring:message code="label.back" />" ng-click="backToChooseDegreeCurricularPlans();"/>
 			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
 		</div>
 	</div>

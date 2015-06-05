@@ -28,6 +28,7 @@ package org.fenixedu.academictreasury.ui.managetuitionpaymentplangroup;
 
 import java.util.stream.Collectors;
 
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
@@ -36,6 +37,7 @@ import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.Product;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,15 +102,25 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
 
     @RequestMapping(value = "/create", method = RequestMethod.GET)
     public String create(Model model) {
+        model.addAttribute("products", AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet());
+
         return jspPage("create");
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(@RequestParam(value = "code", required = false) final String code, @RequestParam(value = "name",
-            required = false) final LocalizedString name, Model model, RedirectAttributes redirectAttributes) {
+            required = false) final LocalizedString name,
+            @RequestParam(value = "forRegistration", required = false) boolean forRegistration, 
+            @RequestParam(value = "forStandalone", required = false) boolean forStandalone, 
+            @RequestParam(value = "forExtracurricular", required = false) boolean forExtracurricular,
+            @RequestParam(value = "currentProduct", required = false) final Product currentProduct, 
+            final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         try {
-            final TuitionPaymentPlanGroup group = TuitionPaymentPlanGroup.create(code, name, true, false, false);
+            final TuitionPaymentPlanGroup group =
+                    TuitionPaymentPlanGroup
+                            .create(code, name, forRegistration, forStandalone, forExtracurricular, currentProduct);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.creation.success"), model);
             return redirect(route("/read", group.getExternalId()), model, redirectAttributes);
@@ -121,14 +133,23 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
     @RequestMapping(value = "/update/{tuitionPaymentPlanGroupId}", method = RequestMethod.GET)
     public String update(@PathVariable("tuitionPaymentPlanGroupId") TuitionPaymentPlanGroup tuitionPaymentPlanGroup, Model model) {
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup, model);
+        
+        model.addAttribute("products", AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet());
+        
         return jspPage("/update");
     }
 
     @RequestMapping(value = "/update/{tuitionPaymentPlanGroupId}", method = RequestMethod.POST)
     public String update(@PathVariable("tuitionPaymentPlanGroupId") TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             @RequestParam(value = "code", required = false) String code,
-            @RequestParam(value = "name", required = false) LocalizedString name, Model model,
-            RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "name", required = false) LocalizedString name, 
+            @RequestParam(value = "forRegistration", required = false) boolean forRegistration, 
+            @RequestParam(value = "forStandalone", required = false) boolean forStandalone, 
+            @RequestParam(value = "forExtracurricular", required = false) boolean forExtracurricular,
+            @RequestParam(value = "currentProduct", required = false) final Product currentProduct, 
+
+            final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup, model);
 

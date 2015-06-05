@@ -4,8 +4,11 @@ import java.math.BigDecimal;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
@@ -24,6 +27,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements IAcademicTreasuryEvent {
 
@@ -35,6 +39,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public AcademicTreasuryEvent(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Product product,
             final Registration registration, final ExecutionYear executionYear) {
+        init(tuitionPaymentPlanGroup, product, registration, executionYear);
 
         checkRules();
     }
@@ -60,6 +65,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup);
         setRegistration(registration);
         setExecutionYear(executionYear);
+        setPropertiesJsonMap(propertiesMapToJson(fillPropertiesMap()));
 
         checkRules();
     }
@@ -180,8 +186,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     protected static Stream<? extends AcademicTreasuryEvent> findForRegistrationTuition(final Registration registration,
             final ExecutionYear executionYear) {
-        return findAll().filter(
-                e -> e.getTuitionPaymentPlanGroup().isForRegistration() && e.getRegistration() == registration
+        return findAll()
+                .filter(e -> e.isForRegistrationTuition() && e.getRegistration() == registration
                         && e.getExecutionYear() == executionYear);
     }
 
@@ -374,7 +380,19 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public BigDecimal getEnrolledEctsUnits() {
         if (getTuitionPaymentPlanGroup().isForRegistration()) {
-            return new BigDecimal(getRegistration().getEnrolmentsEcts(getExecutionYear()));
+            final Set<Enrolment> normalEnrolments =
+                    Sets.newHashSet(getRegistration().getStudentCurricularPlan(getExecutionYear()).getRoot()
+                            .getEnrolmentsBy(getExecutionYear()));
+
+            normalEnrolments.removeAll(getRegistration().getStandaloneCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
+
+            normalEnrolments.removeAll(getRegistration().getExtraCurricularCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
+
+            return normalEnrolments.stream().map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, b) -> a.add(b))
+                    .orElse(BigDecimal.ZERO);
+
         } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
             return getRegistration().getStandaloneCurriculumLines().stream()
                     .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())

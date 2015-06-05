@@ -1,5 +1,4 @@
-<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.DegreeCurricularPlanController"%>
-<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.TuitionPaymentPlanController"%>
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.standalone.TuitionPaymentPlanControllerStandalone"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -39,7 +38,7 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display:inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
 	&nbsp;
-	<a class="" href="${pageContext.request.contextPath}<%= DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_URL %>/${finantialEntity.externalId}/${executionYear.externalId}">
+	<a class="" href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.CHOOSEDEGREECURRICULARPLAN_URL %>/${finantialEntity.externalId}/${executionYear.externalId}">
 		<spring:message code="label.event.back"/>
 	</a>
 </div>
@@ -78,6 +77,9 @@ ${portal.toolkit()}
 	</div>	
 </c:if>
 
+<c:if test="${empty searchtuitionpaymentplanResultsDataSet}">
+	<p><em><spring:message code="label.TuitionPaymentPlan.empty.for.degree.curricular.plan" /></em></p>
+</c:if>
 
 <c:forEach items="${searchtuitionpaymentplanResultsDataSet}" var="paymentPlan"  varStatus="loopStatus">
 	<p>
@@ -254,15 +256,15 @@ ${portal.toolkit()}
 	</script>
 	
 	<p>
-		<a href="${pageContext.request.contextPath}<%= TuitionPaymentPlanController.SEARCH_TO_DELETE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+		<a href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.SEARCH_TO_DELETE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
 			<spring:message code="label.TuitionPaymentPlan.delete.plan" />
 		</a>
 		&nbsp;
-		<a href="${pageContext.request.contextPath}<%= TuitionPaymentPlanController.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+		<a href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
 			<spring:message code="label.TuitionPaymentPlan.order.up" />
 		</a>
 		&nbsp;
-		<a href="${pageContext.request.contextPath}<%= TuitionPaymentPlanController.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+		<a href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
 			<spring:message code="label.TuitionPaymentPlan.order.down" />
 		</a>
 	</p>

@@ -126,11 +126,21 @@ relation AcademicTreasurySettingsBennu {
 }
 
 relation AcademicTreasurySettingsEmolumentsProductGroup {
-	settings.AcademicTreasurySettings playsRole academicTreasurySettings {
+	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForEmoluments {
 		multiplicity 0..1;
 	}
 	
 	.org.fenixedu.treasury.domain.ProductGroup playsRole emolumentsProductGroup {
+		multiplicity 0..1;
+	}
+}
+
+relation AcademicTreasurySettingsTuitionProductGroup {
+	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForTuition {
+		multiplicity 0..1;
+	}
+	
+	.org.fenixedu.treasury.domain.ProductGroup playsRole tuitionProductGroup {
 		multiplicity 0..1;
 	}
 }
