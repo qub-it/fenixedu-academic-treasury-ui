@@ -119,6 +119,12 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 		<datatables:column className="dt-center" cssStyle="width:40%">
 			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.amount" /></datatables:columnHead>
 	
+			<p>
+				<c:out value="${installment.tuitionInstallmentProduct.name.content}" />
+			</p>
+			
+			<p>&nbsp;</p>
+			
 			<c:choose>
 				<c:when test="${installment.tuitionCalculationType.fixedAmount}" >
 					<p><strong><spring:message code="TuitionCalculationType.FIXED_AMOUNT" /></strong></p>
@@ -292,6 +298,27 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select']
 
 	<div class="panel panel-default">
 		<div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.TuitionInstallmentTariff.product" />
+				</div>
+				
+				<div class="col-sm-4">
+					<ui-select id="tuitionInstallmentTariff_tuitionInstallmentProduct"
+						class="form-control" name="tuitioninstallmentproduct"
+						ng-model="$parent.object.tuitionInstallmentProduct" theme="bootstrap"
+						required>
+						<ui-select-match>{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices
+							repeat="tuitionInstallmentProduct.id as tuitionInstallmentProduct in object.tuitionInstallmentProductDataSource | filter: $select.search">
+						<span
+							ng-bind-html="tuitionInstallmentProduct.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>
+				</div>
+				
+			</div>
+					
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.tuitionCalculationType" />

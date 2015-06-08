@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.accounting.CreditNoteEntry;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academic.domain.student.Registration;
@@ -17,11 +18,14 @@ import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
+import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.joda.time.LocalDate;
@@ -31,26 +35,26 @@ import com.google.common.collect.Sets;
 
 public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements IAcademicTreasuryEvent {
 
-    protected AcademicTreasuryEvent(final AcademicServiceRequest academicServiceRequest) {
-        init(academicServiceRequest, ServiceRequestMapEntry.findProduct(academicServiceRequest));
+    protected AcademicTreasuryEvent(final DebtAccount debtAccount, final AcademicServiceRequest academicServiceRequest) {
+        init(debtAccount, academicServiceRequest, ServiceRequestMapEntry.findProduct(academicServiceRequest));
 
         checkRules();
     }
 
-    public AcademicTreasuryEvent(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Product product,
-            final Registration registration, final ExecutionYear executionYear) {
-        init(tuitionPaymentPlanGroup, product, registration, executionYear);
+    public AcademicTreasuryEvent(final DebtAccount debtAccount, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
+            final Product product, final Registration registration, final ExecutionYear executionYear) {
+        init(debtAccount, tuitionPaymentPlanGroup, product, registration, executionYear);
 
         checkRules();
     }
 
     @Override
-    protected void init(final Product product) {
+    protected void init(final DebtAccount debtAccount, final Product product) {
         throw new RuntimeException("wrong call");
     }
 
-    protected void init(final AcademicServiceRequest academicServiceRequest, final Product product) {
-        super.init(product);
+    protected void init(final DebtAccount debtAccount, final AcademicServiceRequest academicServiceRequest, final Product product) {
+        super.init(debtAccount, product);
 
         setAcademicServiceRequest(academicServiceRequest);
         setPropertiesJsonMap(propertiesMapToJson(fillPropertiesMap()));
@@ -58,9 +62,9 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         checkRules();
     }
 
-    protected void init(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Product product,
-            final Registration registration, final ExecutionYear executionYear) {
-        super.init(product);
+    protected void init(final DebtAccount debtAccount, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
+            final Product product, final Registration registration, final ExecutionYear executionYear) {
+        super.init(debtAccount, product);
 
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup);
         setRegistration(registration);
@@ -100,6 +104,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     }
 
+    @Override
+    public boolean isWithDebitEntry() {
+        return isChargedWithDebitEntry();
+    }
+
     public boolean isForAcademicServiceRequest() {
         return getAcademicServiceRequest() != null;
     }
@@ -110,10 +119,6 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public boolean isForStandaloneTuition() {
         return getTuitionPaymentPlanGroup() != null && getTuitionPaymentPlanGroup().isForStandalone();
-    }
-
-    public boolean isChargedWithDebitEntry() {
-        return getDebitEntriesSet().stream().filter(d -> !d.isEventAnnuled()).count() > 0;
     }
 
     public int getNumberOfUnits() {
@@ -158,6 +163,19 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public boolean isChargedWithDebitEntry(final TuitionInstallmentTariff tariff) {
         return DebitEntry.findActive(this).filter(d -> d.getTariff() == tariff).count() > 0;
+    }
+
+    @Override
+    public Set<Product> getPossibleProductsToExempt() {
+        if (isForRegistrationTuition()) {
+            return TuitionPaymentPlan
+                    .find(getTuitionPaymentPlanGroup(),
+                            getRegistration().getStudentCurricularPlan(getExecutionYear()).getDegreeCurricularPlan(),
+                            getExecutionYear()).map(t -> t.getTuitionInstallmentTariffsSet()).reduce((a, b) -> Sets.union(a, b))
+                    .orElse(Sets.newHashSet()).stream().map(i -> i.getProduct()).collect(Collectors.toSet());
+        }
+
+        return Sets.newHashSet(getProduct());
     }
 
     // @formatter: off
@@ -208,20 +226,21 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return findForStandaloneTuition(registration, executionYear).findFirst();
     }
 
-    public static AcademicTreasuryEvent createForAcademicServiceRequest(final AcademicServiceRequest academicServiceRequest) {
-        return new AcademicTreasuryEvent(academicServiceRequest);
+    public static AcademicTreasuryEvent createForAcademicServiceRequest(final DebtAccount debtAccount,
+            final AcademicServiceRequest academicServiceRequest) {
+        return new AcademicTreasuryEvent(debtAccount, academicServiceRequest);
     }
 
-    public static AcademicTreasuryEvent createForRegistrationTuition(final Product product, final Registration registration,
-            final ExecutionYear executionYear) {
-        return new AcademicTreasuryEvent(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), product,
-                registration, executionYear);
+    public static AcademicTreasuryEvent createForRegistrationTuition(final DebtAccount debtAccount, final Product product,
+            final Registration registration, final ExecutionYear executionYear) {
+        return new AcademicTreasuryEvent(debtAccount, TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                product, registration, executionYear);
     }
 
-    public static AcademicTreasuryEvent createForStandaloneTuition(final Product product, final Registration registration,
-            final ExecutionYear executionYear) {
-        return new AcademicTreasuryEvent(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), product,
-                registration, executionYear);
+    public static AcademicTreasuryEvent createForStandaloneTuition(final DebtAccount debtAccount, final Product product,
+            final Registration registration, final ExecutionYear executionYear) {
+        return new AcademicTreasuryEvent(debtAccount, TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                product, registration, executionYear);
     }
 
     /* -----
@@ -303,25 +322,6 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     private LocalizedString booleanLabel(final boolean detailed) {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, detailed ? "label.yes" : "label.no");
-    }
-
-    @Override
-    public boolean isWithDebitEntry() {
-        return DebitEntry.findActive(this).count() > 0;
-    }
-
-    @Override
-    public BigDecimal getAmountToPay() {
-        return DebitEntry.amountToPay(this);
-    }
-
-    public BigDecimal getPayedAmount() {
-        return DebitEntry.payedAmount(this);
-    }
-
-    @Override
-    public BigDecimal getRemainingAmountToPay() {
-        return DebitEntry.remainingAmountToPay(this);
     }
 
     @Override

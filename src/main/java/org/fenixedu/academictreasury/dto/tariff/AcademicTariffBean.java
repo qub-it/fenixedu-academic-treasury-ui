@@ -7,14 +7,12 @@ import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
-import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
-import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.bennu.IBean;
+import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 public class AcademicTariffBean implements IBean, Serializable {
@@ -56,6 +54,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     private BigDecimal languageTranslationRate;
 
     /* TuitionInstallment */
+    private Product tuitionInstallmentProduct;
     private int installmentOrder;
     private TuitionCalculationType tuitionCalculationType;
     private BigDecimal fixedAmount;
@@ -396,6 +395,14 @@ public class AcademicTariffBean implements IBean, Serializable {
 
     /* TuitionInstallmentTariff */
 
+    public Product getTuitionInstallmentProduct() {
+        return tuitionInstallmentProduct;
+    }
+    
+    public void setTuitionInstallmentProduct(Product tuitionInstallmentProduct) {
+        this.tuitionInstallmentProduct = tuitionInstallmentProduct;
+    }
+    
     public int getInstallmentOrder() {
         return installmentOrder;
     }

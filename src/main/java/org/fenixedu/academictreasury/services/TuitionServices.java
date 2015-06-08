@@ -15,6 +15,7 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.dto.tuition.TuitionDebitEntryBean;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Vat;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -49,14 +50,21 @@ public class TuitionServices {
             return false;
         }
 
+        if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer).isPresent()) {
+            DebtAccount.create(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer);
+        }
+
+        final DebtAccount debtAccount =
+                DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer).get();
+        
         if (!AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).isPresent()) {
-            AcademicTreasuryEvent.createForRegistrationTuition(tuitionPaymentPlan.getProduct(), registration, executionYear);
+            AcademicTreasuryEvent.createForRegistrationTuition(debtAccount, tuitionPaymentPlan.getProduct(), registration, executionYear);
         };
 
         final AcademicTreasuryEvent academicTreasuryEvent =
                 AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).get();
 
-        return tuitionPaymentPlan.createDebitEntriesForRegistration(personCustomer, academicTreasuryEvent, when);
+        return tuitionPaymentPlan.createDebitEntriesForRegistration(debtAccount, academicTreasuryEvent, when);
     }
 
     public static TuitionPaymentPlan usedPaymentPlan(final Registration registration, final ExecutionYear executionYear,
@@ -99,8 +107,15 @@ public class TuitionServices {
             return Lists.newArrayList();
         }
 
+        if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer).isPresent()) {
+            DebtAccount.create(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer);
+        }
+
+        final DebtAccount debtAccount =
+                DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer).get();
+        
         if (!AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).isPresent()) {
-            AcademicTreasuryEvent.createForRegistrationTuition(tuitionPaymentPlan.getProduct(), registration, executionYear);
+            AcademicTreasuryEvent.createForRegistrationTuition(debtAccount, tuitionPaymentPlan.getProduct(), registration, executionYear);
         }
 
         final AcademicTreasuryEvent academicTreasuryEvent =

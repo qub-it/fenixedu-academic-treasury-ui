@@ -62,12 +62,16 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
     protected void init(final FinantialEntity finantialEntity, final TuitionPaymentPlan tuitionPaymentPlan,
             final AcademicTariffBean bean) {
 
-        super.init(finantialEntity, tuitionPaymentPlan.getProduct(), bean.getBeginDate().toDateTimeAtStartOfDay(),
-                bean.getEndDate() != null ? bean.getEndDate().toDateTimeAtStartOfDay() : null, bean.getDueDateCalculationType(),
-                bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInterests(),
-                bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
-                bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
-                bean.getRate());
+        final Product product =
+                tuitionPaymentPlan.getTuitionPaymentPlanGroup().isForStandalone()
+                        || tuitionPaymentPlan.getTuitionPaymentPlanGroup().isForExtracurricular() ? tuitionPaymentPlan
+                        .getProduct() : bean.getTuitionInstallmentProduct();
+
+        super.init(finantialEntity, product, bean.getBeginDate().toDateTimeAtStartOfDay(), bean.getEndDate() != null ? bean
+                .getEndDate().toDateTimeAtStartOfDay() : null, bean.getDueDateCalculationType(), bean.getFixedDueDate(), bean
+                .getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInterests(), bean.getInterestType(), bean
+                .getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(), bean
+                .getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(), bean.getRate());
 
         super.setTuitionPaymentPlan(tuitionPaymentPlan);
         super.setInstallmentOrder(bean.getInstallmentOrder());
@@ -87,6 +91,11 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
         if (getTuitionPaymentPlan() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.tuitionPaymentPlan.required");
+        }
+
+        if (getFinantialEntity() != getTuitionPaymentPlan().getFinantialEntity()) {
+            throw new AcademicTreasuryDomainException(
+                    "error.TuitionInstallmentTariff.finantialEntity.different.from.payment.plan");
         }
 
         if (getInstallmentOrder() <= 0) {
@@ -189,23 +198,16 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.unknown.amountToPay");
     }
 
-    public DebitEntry createDebitEntryForRegistration(final PersonCustomer personCustomer, final AcademicTreasuryEvent academicTreasuryEvent,
-            final LocalDate when) {
-        
-        if(!getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForRegistration()) {
+    public DebitEntry createDebitEntryForRegistration(final DebtAccount debtAccount,
+            final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
+
+        if (!getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForRegistration()) {
             throw new RuntimeException("wrong call");
         }
-        
-        if (!DebtAccount.findUnique(getFinantialEntity().getFinantialInstitution(), personCustomer).isPresent()) {
-            DebtAccount.create(getFinantialEntity().getFinantialInstitution(), personCustomer);
-        }
-
-        final DebtAccount debtAccount =
-                DebtAccount.findUnique(getFinantialEntity().getFinantialInstitution(), personCustomer).get();
 
         final BigDecimal amount = amountToPay(academicTreasuryEvent);
         final LocalDate dueDate = dueDate(when != null ? when : new LocalDate());
-        
+
         updatePriceValuesInEvent(academicTreasuryEvent);
 
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent, dueDate);
@@ -216,7 +218,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
     }
 
     private void updatePriceValuesInEvent(final AcademicTreasuryEvent academicTreasuryEvent) {
-        
+
     }
 
     public LocalizedString installmentName() {

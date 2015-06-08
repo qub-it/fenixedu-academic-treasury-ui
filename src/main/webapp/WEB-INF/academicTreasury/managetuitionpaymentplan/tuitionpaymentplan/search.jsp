@@ -101,6 +101,10 @@ ${portal.toolkit()}
 		<datatables:column cssStyle="width:20%">
 			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.amount" /></datatables:columnHead>
 
+			<p><c:out value="${installment.product.name.content}" /></p>
+			
+			<p>&nbsp;</p>
+
 			<c:choose>
 				<c:when test="${installment.tuitionCalculationType.fixedAmount}" >
 					<p><strong><spring:message code="TuitionCalculationType.FIXED_AMOUNT" /></strong></p>

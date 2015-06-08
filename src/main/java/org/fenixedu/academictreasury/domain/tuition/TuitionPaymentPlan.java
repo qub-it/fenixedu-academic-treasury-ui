@@ -27,6 +27,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -46,6 +47,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             final TuitionPaymentPlanBean tuitionPaymentPlanBean) {
         this();
 
+        setFinantialEntity(tuitionPaymentPlanBean.getFinantialEntity());
         setTuitionPaymentPlanGroup(tuitionPaymentPlanBean.getTuitionPaymentPlanGroup());
         setProduct(tuitionPaymentPlanBean.getTuitionPaymentPlanGroup().getCurrentProduct());
         setExecutionYear(tuitionPaymentPlanBean.getExecutionYear());
@@ -62,7 +64,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         setCustomized(tuitionPaymentPlanBean.isCustomized());
         setCustomizedName(new LocalizedString(CoreConfiguration.supportedLocales().iterator().next(),
                 tuitionPaymentPlanBean.getName()));
-        
+
         setWithLaboratorialClasses(tuitionPaymentPlanBean.isWithLaboratorialClasses());
         setPaymentPlanOrder((int) find(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear()).count() + 1);
 
@@ -74,6 +76,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     private void checkRules() {
         if (getTuitionPaymentPlanGroup() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.tuitionPaymentPlanGroup.required");
+        }
+
+        if (getFinantialEntity() == null) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.finantialEntity.required");
         }
 
         if (getExecutionYear() == null) {
@@ -112,6 +118,12 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
         if (getTuitionInstallmentTariffsSet().isEmpty()) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.installments.must.not.be.empty");
+        }
+
+        if ((getTuitionPaymentPlanGroup().isForStandalone() || getTuitionPaymentPlanGroup().isForExtracurricular())
+                && getTuitionInstallmentTariffsSet().size() > 1) {
+            throw new AcademicTreasuryDomainException(
+                    "error.TuitionPaymentPlan.standalone.and.extracurricular.supports.only.one.installment");
         }
     }
 
@@ -183,6 +195,12 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
+            if (isWithLaboratorialClasses()) {
+                description.append(
+                        BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.withLaboratorialClasses"))
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
             if (description.toString().contains(CONDITIONS_DESCRIPTION_SEPARATOR)) {
                 description.delete(description.length() - CONDITIONS_DESCRIPTION_SEPARATOR.length(), description.length());
             }
@@ -247,6 +265,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         return list.get(list.size() - 1) == this;
     }
 
+    public boolean isWithLaboratorialClasses() {
+        return super.getWithLaboratorialClasses();
+    }
+
     @Atomic
     public void orderUp() {
         if (isFirst()) {
@@ -277,44 +299,42 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         setPaymentPlanOrder(order);
     }
 
-    public boolean createDebitEntriesForRegistration(final PersonCustomer personCustomer, final AcademicTreasuryEvent academicTreasuryEvent,
-            final LocalDate when) {
+    public boolean createDebitEntriesForRegistration(final DebtAccount debtAccount,
+            final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
 
-        if(getTuitionPaymentPlanGroup().isForRegistration()) {
+        if (getTuitionPaymentPlanGroup().isForRegistration()) {
             throw new RuntimeException("wrong call");
         }
-        
+
         boolean createdDebitEntries = false;
         for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
             if (!academicTreasuryEvent.isChargedWithDebitEntry(tariff)) {
-                tariff.createDebitEntryForRegistration(personCustomer, academicTreasuryEvent, when);
+                tariff.createDebitEntryForRegistration(debtAccount, academicTreasuryEvent, when);
                 createdDebitEntries = true;
             }
         }
 
         return createdDebitEntries;
     }
-    
-    
-    public boolean createDebitEntriesForStandalone(final PersonCustomer personCustomer, final AcademicTreasuryEvent academicTreasuryEvent,
-            final LocalDate when) {
-        
-        if(getTuitionPaymentPlanGroup().isForStandalone()) {
+
+    public boolean createDebitEntriesForStandalone(final DebtAccount debtAccount,
+            final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
+
+        if (getTuitionPaymentPlanGroup().isForStandalone()) {
             throw new RuntimeException("wrong call");
         }
-        
+
         boolean createdDebitEntries = false;
         for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
             if (!academicTreasuryEvent.isChargedWithDebitEntry(tariff)) {
-                tariff.createDebitEntryForRegistration(personCustomer, academicTreasuryEvent, when);
+                tariff.createDebitEntryForRegistration(debtAccount, academicTreasuryEvent, when);
                 createdDebitEntries = true;
             }
         }
 
         return createdDebitEntries;
-        
+
     }
-    
 
     public boolean isDeletable() {
 
@@ -350,7 +370,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         super.setRegistrationProtocol(null);
         super.setProduct(null);
         this.setCurricularYear(null);
-
+        this.setFinantialEntity(null);
+        
         super.deleteDomainObject();
     }
 

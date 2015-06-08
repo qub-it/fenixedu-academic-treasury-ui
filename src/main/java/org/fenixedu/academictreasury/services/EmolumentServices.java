@@ -98,7 +98,7 @@ public class EmolumentServices {
         
         // Find or create event if does not exists
         if(!AcademicTreasuryEvent.findUnique(academicServiceRequest).isPresent()) {
-            AcademicTreasuryEvent.createForAcademicServiceRequest(academicServiceRequest);
+            AcademicTreasuryEvent.createForAcademicServiceRequest(personDebtAccount, academicServiceRequest);
         }
 
         final AcademicTreasuryEvent academicTresuryEvent = AcademicTreasuryEvent.findUnique(academicServiceRequest).get();
