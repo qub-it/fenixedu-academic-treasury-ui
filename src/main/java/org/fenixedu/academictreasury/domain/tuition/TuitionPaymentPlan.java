@@ -11,11 +11,10 @@ import java.util.stream.Stream;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.candidacy.Ingression;
+import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
-import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
@@ -454,7 +453,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
         final RegistrationRegimeType regimeType = registration.getRegimeType(executionYear);
         final RegistrationProtocol registrationProtocol = registration.getRegistrationProtocol();
-        final Ingression ingression = registration.getIngression();
+        final IngressionType ingression = registration.getIngressionType();
         final int semesterWithFirstEnrolments = semesterWithFirstEnrolments(registration, executionYear);
         final CurricularYear curricularYear = CurricularYear.readByYear(curricularYear(registration, executionYear));
         final boolean firstTimeStudent = firstTimeStudent(registration, executionYear);

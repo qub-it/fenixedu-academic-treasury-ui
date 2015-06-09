@@ -15,8 +15,9 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
     }
 
     @Atomic
-    public void editEmolumentsProductGroup(final ProductGroup productGroup) {
-        setEmolumentsProductGroup(productGroup);
+    public void edit(final ProductGroup emolumentsProductGroup, final ProductGroup tuitionProductGroup) {
+        setEmolumentsProductGroup(emolumentsProductGroup);
+        setTuitionProductGroup(tuitionProductGroup);
     }
 
     protected static Optional<AcademicTreasurySettings> find() {

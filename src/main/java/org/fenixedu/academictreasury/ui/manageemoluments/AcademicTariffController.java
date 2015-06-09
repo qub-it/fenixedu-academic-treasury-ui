@@ -3,11 +3,13 @@ package org.fenixedu.academictreasury.ui.manageemoluments;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Degree;
+import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
@@ -105,12 +107,35 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         model.addAttribute("academicTariffBean", academicTariffBean);
         model.addAttribute("academicTariffBeanJson", getBeanJson(academicTariffBean));
 
-        model.addAttribute("AcademicTariff_administrativeOffice_options", Bennu.getInstance().getAdministrativeOfficesSet());
-        model.addAttribute("AcademicTariff_degreeType_options", DegreeType.all().collect(Collectors.<DegreeType> toSet()));
-        model.addAttribute("AcademicTariff_degree_options",
-                Degree.readAllMatching(Predicate.<DegreeType> isEqual(academicTariffBean.getDegreeType())));
+        model.addAttribute("AcademicTariff_administrativeOffice_options", Bennu.getInstance().getAdministrativeOfficesSet()
+                .stream().sorted(new Comparator<AdministrativeOffice>() {
+
+                    @Override
+                    public int compare(AdministrativeOffice o1, AdministrativeOffice o2) {
+                        int c = o1.getName().getContent().compareTo(o2.getName().getContent());
+                        return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+                    }
+                }).collect(Collectors.toList()));
+
+        model.addAttribute("AcademicTariff_degreeType_options", DegreeType.all().sorted(new Comparator<DegreeType>() {
+
+            @Override
+            public int compare(final DegreeType o1, final DegreeType o2) {
+                int c = o1.getName().getContent().compareTo(o2.getName().getContent());
+
+                return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+            }
+
+        }).collect(Collectors.<DegreeType> toList()));
+
+        model.addAttribute(
+                "AcademicTariff_degree_options",
+                Degree.readAllMatching(Predicate.<DegreeType> isEqual(academicTariffBean.getDegreeType())).stream()
+                        .sorted(Degree.COMPARATOR_BY_NAME).collect(Collectors.toList()));
+        
         model.addAttribute("AcademicTariff_cycleType_options", academicTariffBean.getDegree() != null ? academicTariffBean
                 .getDegreeType().getCycleTypes() : Collections.emptyList());
+        
         model.addAttribute("AcademicTariff_dueDateCalculationType_options", Arrays.asList(DueDateCalculationType.values()));
         model.addAttribute("AcademicTariff_interestType_options", Arrays.asList(InterestType.values()));
 

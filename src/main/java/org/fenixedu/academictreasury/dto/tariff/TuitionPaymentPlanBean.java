@@ -13,7 +13,7 @@ import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.candidacy.Ingression;
+import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
@@ -56,7 +56,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private boolean defaultPaymentPlan;
     private RegistrationRegimeType registrationRegimeType;
     private RegistrationProtocol registrationProtocol;
-    private Ingression ingression;
+    private IngressionType ingression;
     private CurricularYear curricularYear;
     private ExecutionSemester executionSemester;
     private boolean firstTimeStudent;
@@ -309,11 +309,11 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.registrationProtocol = registrationProtocol;
     }
 
-    public Ingression getIngression() {
+    public IngressionType getIngression() {
         return ingression;
     }
 
-    public void setIngression(Ingression ingression) {
+    public void setIngression(IngressionType ingression) {
         this.ingression = ingression;
     }
 
@@ -666,8 +666,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     private List<TupleDataSourceBean> ingressionDataSource() {
         final List<TupleDataSourceBean> result =
-                ((List<Ingression>) Arrays.asList(Ingression.values())).stream()
-                        .map((i) -> new TupleDataSourceBean(i.name(), i.getFullDescription())).collect(Collectors.toList());
+                Bennu.getInstance().getIngressionTypesSet().stream()
+                        .map((i) -> new TupleDataSourceBean(i.getExternalId(), i.getDescription().getContent())).collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
 

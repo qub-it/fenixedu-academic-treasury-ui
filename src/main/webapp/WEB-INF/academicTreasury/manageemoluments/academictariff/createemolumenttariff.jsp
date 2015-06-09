@@ -263,7 +263,7 @@ function registerJqueryReadyClosure(func) {
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.beginDate"/></div> 
 					
 					<div class="col-sm-4">
-						<input id="academicTariff_beginDate" class="form-control" type="text" name="begindate"  bennu-datetime
+						<input id="academicTariff_beginDate" class="form-control" type="date" name="begindate" 
 						value = '<c:out value='${not empty academicTariffBean.beginDate ? academicTariffBean.beginDate : "" }'/>' ng-model="object.beginDate" />
 					</div>
 				</div>
@@ -272,7 +272,7 @@ function registerJqueryReadyClosure(func) {
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.endDate"/></div> 
 					
 					<div class="col-sm-4">
-						<input id="academicTariff_endDate" class="form-control" type="text" name="enddate"  bennu-datetime
+						<input id="academicTariff_endDate" class="form-control" type="date" name="date" 
 						value = '<c:out value='${not empty academicTariffBean.endDate ? academicTariffBean.endDate : "" }'/>' ng-model="object.endDate" >
 					</div>
 				</div>

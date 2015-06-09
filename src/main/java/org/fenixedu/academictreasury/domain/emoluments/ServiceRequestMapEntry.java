@@ -84,15 +84,15 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
                     continue;
                 }
 
-                if (outer.positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).count() != inner
-                        .positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).count()) {
+                if (positiveServiceRequestTypeOptions(outer.getServiceRequestTypeOptionBooleanValuesSet()).count() != 
+                        positiveServiceRequestTypeOptions(inner.getServiceRequestTypeOptionBooleanValuesSet()).count()) {
                     continue;
                 }
 
                 if (Sets.difference(
-                        outer.positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).collect(
+                        positiveServiceRequestTypeOptions(outer.getServiceRequestTypeOptionBooleanValuesSet()).collect(
                                 Collectors.toSet()),
-                        outer.positiveServiceRequestTypeOptions(getServiceRequestTypeOptionBooleanValuesSet()).collect(
+                        positiveServiceRequestTypeOptions(inner.getServiceRequestTypeOptionBooleanValuesSet()).collect(
                                 Collectors.toSet())).isEmpty()) {
                     throw new AcademicTreasuryDomainException("error.ServiceRequestMapEntry.duplicate.entry");
                 }

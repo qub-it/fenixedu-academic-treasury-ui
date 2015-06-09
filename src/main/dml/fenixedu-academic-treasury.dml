@@ -2,7 +2,6 @@ package org.fenixedu.academictreasury.domain;
 
 enum org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType                   as AcademicServiceRequestSituationTypeT;
 enum org.fenixedu.academic.domain.student.RegistrationRegimeType                                        as RegistrationRegimeTypeT;
-enum org.fenixedu.academic.domain.candidacy.Ingression                                                  as IngressionT;
 enum org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType                                as TuitionCalculationType;
 enum org.fenixedu.academictreasury.domain.tuition.EctsCalculationType                                   as EctsCalculationType;
 
@@ -17,14 +16,6 @@ valueType java.math.BigDecimal as BigDecimalAT
  * ENTITIES *
  ************/
 
-
-/* --------
- * Settings
- * --------
- */
-
-class settings.AcademicTreasurySettings {
-}
 
 /* --------------
  * PersonCustomer
@@ -109,13 +100,23 @@ class tuition.TuitionPaymentPlan {
 	int paymentPlanOrder;
 	boolean defaultPaymentPlan;	
 	RegistrationRegimeTypeT registrationRegimeType;
-	IngressionT ingression;
 	Integer semester;
 	boolean firstTimeStudent;
 	boolean customized;
 	LocalizedString customizedName;
 	boolean withLaboratorialClasses;
 }
+	
+	relation TuitionPaymentPlanIngressionType {
+		
+		.org.fenixedu.academic.domain.candidacy.IngressionType playsRole ingression {
+			multiplicity 0..1;
+		}
+		
+		tuition.TuitionPaymentPlan playsRole tuitionPaymentPlan {
+			multiplicity *;
+		}
+	}
 
 	relation TuitionPaymentPlanBennu {
 		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
@@ -234,43 +235,6 @@ class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tar
  * RELATIONS *
  *************/
 
-/* -------------
- * Configuration
- * -------------
- */
-
-/* --- AcademicTreasurySettings --- */
-
-relation AcademicTreasurySettingsBennu {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
-		multiplicity 1..1;
-	}
-
-	settings.AcademicTreasurySettings playsRole academicTreasurySettings {
-		multiplicity *;
-	}
-}
-
-relation AcademicTreasurySettingsEmolumentsProductGroup {
-	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForEmoluments {
-		multiplicity 0..1;
-	}
-	
-	.org.fenixedu.treasury.domain.ProductGroup playsRole emolumentsProductGroup {
-		multiplicity 0..1;
-	}
-}
-
-relation AcademicTreasurySettingsTuitionProductGroup {
-	settings.AcademicTreasurySettings playsRole academicTreasurySettingsForTuition {
-		multiplicity 0..1;
-	}
-	
-	.org.fenixedu.treasury.domain.ProductGroup playsRole tuitionProductGroup {
-		multiplicity 0..1;
-	}
-}
-
 /* --------------
  * PersonCustomer
  * --------------*/
@@ -325,12 +289,12 @@ relation AcademicTreasuryEventExecutionYear {
 
 relation AcademicTreasuryEventTuitionPaymentPlanGroup {
 	
+	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroup {
+		multiplicity 0..1;
+	}
+
 	event.AcademicTreasuryEvent playsRole academicTreasuryEvent {
 		multiplicity *;
-	}
-	
-	tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroup {
-		multiplicity 1..1;
 	}
 }
 
@@ -447,3 +411,42 @@ relation DebitNoteGenerationRuleProduct {
 		multiplicity *;
 	}
 }
+
+
+/* --------
+ * Settings
+ * --------
+ */
+
+class settings.AcademicTreasurySettings {
+}
+
+	relation AcademicTreasurySettingsBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+	
+		settings.AcademicTreasurySettings playsRole academicTreasurySettings {
+			multiplicity *;
+		}
+	}
+	
+	relation AcademicTreasurySettingsEmolumentsProductGroup {
+		settings.AcademicTreasurySettings playsRole academicTreasurySettingsForEmoluments {
+			multiplicity 0..1;
+		}
+		
+		.org.fenixedu.treasury.domain.ProductGroup playsRole emolumentsProductGroup {
+			multiplicity 0..1;
+		}
+	}
+
+	relation AcademicTreasurySettingsTuitionProductGroup {
+		settings.AcademicTreasurySettings playsRole academicTreasurySettingsForTuition {
+			multiplicity 0..1;
+		}
+		
+		.org.fenixedu.treasury.domain.ProductGroup playsRole tuitionProductGroup {
+			multiplicity 0..1;
+		}
+	}
