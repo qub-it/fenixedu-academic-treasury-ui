@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.CustomerType;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -20,12 +21,8 @@ public class PersonCustomer extends PersonCustomer_Base {
     protected PersonCustomer(final Person person) {
         this();
 
-        this.init(person);
-    }
-
-    protected void init(Person person) {
         setPerson(person);
-
+        setCustomerType(getDefaultCustomerType());
         checkRules();
     }
 
@@ -43,13 +40,13 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public String getCode() {
-        return getExternalId();
+        return this.getExternalId();
     }
 
     @Override
     public String getFiscalNumber() {
         if (Strings.isNullOrEmpty(getPerson().getSocialSecurityNumber())) {
-            return getPerson().getDocumentIdNumber();
+            return Customer.DEFAULT_FISCAL_NUMBER;
         }
         return getPerson().getSocialSecurityNumber();
     }
@@ -59,6 +56,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         return getPerson().getName();
     }
 
+    @Override
     public String getIdentificationNumber() {
         return getPerson().getDocumentIdNumber();
     }
@@ -125,11 +123,15 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     @Atomic
-    public static PersonCustomer create(final Person person) {
+    public static PersonCustomer create(Person person) {
         return new PersonCustomer(person);
     }
 
     public static Optional<? extends PersonCustomer> findByFiscalNumber(String fiscalNumber) {
         return PersonCustomer.findAll().filter(pc -> pc.getFiscalNumber().equals(fiscalNumber)).findFirst();
+    }
+
+    public static CustomerType getDefaultCustomerType() {
+        return CustomerType.findByCode("STUDENT").findFirst().orElse(null);
     }
 }
