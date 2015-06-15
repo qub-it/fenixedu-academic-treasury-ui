@@ -116,14 +116,14 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
             return inferedPaymentPlanName;
         }
 
-        if(TuitionPaymentPlan.inferTuitionPaymentPlan(registration, executionYear) == null) {
+        if(TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear) == null) {
             inferedPaymentPlanName =
                     BundleUtil.getString(Constants.BUNDLE,
                             "label.TuitionDebtCreationBean.infer.impossible");
             return inferedPaymentPlanName;
         }
         
-        inferedPaymentPlanName = TuitionPaymentPlan.inferTuitionPaymentPlan(registration, executionYear).getConditionsDescription().getContent();
+        inferedPaymentPlanName = TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear).getConditionsDescription().getContent();
         return inferedPaymentPlanName;
     }
 

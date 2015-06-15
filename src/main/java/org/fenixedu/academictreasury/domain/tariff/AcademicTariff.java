@@ -51,8 +51,8 @@ public class AcademicTariff extends AcademicTariff_Base {
 
     protected void init(final FinantialEntity finantialEntity, final Product product, final AcademicTariffBean bean) {
 
-        super.init(finantialEntity, product, bean.getBeginDate().toDateTimeAtStartOfDay(), bean.getEndDate() != null ? bean.getEndDate()
-                .toDateTimeAtStartOfDay() : null, bean.getDueDateCalculationType(),
+        super.init(finantialEntity, product, bean.getBeginDate().toDateTimeAtStartOfDay(), bean.getEndDate() != null ? bean
+                .getEndDate().toDateTimeAtStartOfDay() : null, bean.getDueDateCalculationType(),
                 bean.getFixedDueDate() != null ? bean.getFixedDueDate() : null, bean.getNumberOfDaysAfterCreationForDueDate(),
                 bean.isApplyInterests(), bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(),
                 bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean
@@ -283,8 +283,8 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         return DebitEntry.create(null, debtAccount, academicTreasuryEvent,
                 Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(), new DateTime())
-                        .get(), amount, dueDate, fillPriceProperties, academicTreasuryEvent.getProduct(), academicTreasuryEvent
-                        .getProduct().getName().getContent(), Constants.DEFAULT_QUANTITY, this, new DateTime());
+                        .get(), amount, dueDate, fillPriceProperties, getProduct(), getProduct().getName().getContent(),
+                Constants.DEFAULT_QUANTITY, this, new DateTime());
     }
 
     private void updatePriceValuesInEvent(final AcademicTreasuryEvent academicTreasuryEvent) {

@@ -210,6 +210,27 @@ class tuition.TuitionPaymentPlan {
 		}
 	}
 	
+	relation DebitEntryCurricularCourse {
+		
+		.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntry {
+			multiplicity 0..1;
+		}
+		
+		.org.fenixedu.academic.domain.CurricularCourse playsRole curricularCourse {
+			multiplicity 0..1;
+		}
+	}
+	
+	relation DebitEntryExecutionPeriod {
+		.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntry {
+			multiplicity 0..1;
+		}
+		
+		.org.fenixedu.academic.domain.ExecutionSemester playsRole executionSemester {
+			multiplicity 0..1;
+		} 
+	}
+	
 
 class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tariff.Tariff {
 	int installmentOrder;

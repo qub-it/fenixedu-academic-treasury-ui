@@ -8,9 +8,12 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.academic.domain.Attends;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
+import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.ShiftType;
 import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
@@ -31,6 +34,7 @@ import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
@@ -298,8 +302,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         setPaymentPlanOrder(order);
     }
 
-    public boolean createDebitEntriesForRegistration(final DebtAccount debtAccount,
-            final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
+    public boolean createDebitEntriesForRegistration(final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
+        final DebtAccount debtAccount = academicTreasuryEvent.getDebtAccount();
 
         if (getTuitionPaymentPlanGroup().isForRegistration()) {
             throw new RuntimeException("wrong call");
@@ -316,17 +320,22 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         return createdDebitEntries;
     }
 
-    public boolean createDebitEntriesForStandalone(final DebtAccount debtAccount,
-            final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
+    public boolean createDebitEntriesForStandalone(final AcademicTreasuryEvent academicTreasuryEvent,
+            final Enrolment standaloneEnrolment, final LocalDate when) {
+        final DebtAccount debtAccount = academicTreasuryEvent.getDebtAccount();
 
-        if (getTuitionPaymentPlanGroup().isForStandalone()) {
+        if (!getTuitionPaymentPlanGroup().isForStandalone()) {
             throw new RuntimeException("wrong call");
+        }
+
+        if (!standaloneEnrolment.isStandalone()) {
+            throw new RuntimeException("error.TuitionPaymentPlan.enrolment.not.standalone");
         }
 
         boolean createdDebitEntries = false;
         for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
-            if (!academicTreasuryEvent.isChargedWithDebitEntry(tariff)) {
-                tariff.createDebitEntryForRegistration(debtAccount, academicTreasuryEvent, when);
+            if (!academicTreasuryEvent.isChargedWithDebitEntry(standaloneEnrolment)) {
+                tariff.createDebitEntryForStandalone(debtAccount, academicTreasuryEvent, standaloneEnrolment, when);
                 createdDebitEntries = true;
             }
         }
@@ -370,7 +379,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         super.setProduct(null);
         this.setCurricularYear(null);
         this.setFinantialEntity(null);
-        
+
         super.deleteDomainObject();
     }
 
@@ -415,9 +424,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public static Stream<TuitionPaymentPlan> findSortedByPaymentPlanOrder(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final DegreeCurricularPlan degreeCurricularPlan, final ExecutionYear executionYear) {
-        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear)
-                .sorted((e1, e2) -> Integer.compare(e1.getPaymentPlanOrder(), e2.getPaymentPlanOrder()))
-                .collect(Collectors.toList()).stream();
+        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear);
+//                .sorted((e1, e2) -> Integer.compare(e1.getPaymentPlanOrder(), e2.getPaymentPlanOrder()))
+//                .collect(Collectors.toList()).stream();
     }
 
     protected static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
@@ -447,7 +456,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         return findUniqueDefaultPaymentPlan(degreeCurricularPlan, executionYear).isPresent();
     }
 
-    public static TuitionPaymentPlan inferTuitionPaymentPlan(final Registration registration, final ExecutionYear executionYear) {
+    public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final Registration registration,
+            final ExecutionYear executionYear) {
         final DegreeCurricularPlan degreeCurricularPlan =
                 registration.getStudentCurricularPlan(executionYear).getDegreeCurricularPlan();
 
@@ -462,22 +472,59 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                 TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration()
                         .get(), degreeCurricularPlan, executionYear);
 
-//        stream.filter(t -> t.getRegistrationRegimeType() == null || t.getRegistrationRegimeType() == regimeType);
-//        stream.filter(t -> t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol);
-//        stream.filter(t -> t.getIngression() == null || t.getIngression() == ingression);
-//        stream.filter(t -> t.getSemester() == null || t.getSemester() == semesterWithFirstEnrolments);
-//        stream.filter(t -> t.getCurricularYear() == null || t.getCurricularYear() == curricularYear);
-//        stream.filter(t -> t.getFirstTimeStudent() == firstTimeStudent);
-//        stream.filter(t -> !t.isCustomized());
+        stream.filter(t -> t.getRegistrationRegimeType() == null || t.getRegistrationRegimeType() == regimeType);
+        stream.filter(t -> t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol);
+        stream.filter(t -> t.getIngression() == null || t.getIngression() == ingression);
+        stream.filter(t -> t.getSemester() == null || t.getSemester() == semesterWithFirstEnrolments);
+        stream.filter(t -> t.getCurricularYear() == null || t.getCurricularYear() == curricularYear);
+        stream.filter(t -> t.getFirstTimeStudent() == firstTimeStudent);
+        stream.filter(t -> !t.isCustomized());
 
         return stream.findFirst().orElse(null);
     }
 
-    private static boolean firstTimeStudent(Registration registration, ExecutionYear executionYear) {
+    public static TuitionPaymentPlan inferTuitionPaymentPlanForStandaloneEnrolment(final Registration registration,
+            final ExecutionYear executionYear, final Enrolment enrolment) {
+
+        if (!enrolment.isStandalone()) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.enrolment.is.not.standalone");
+        }
+
+        final DegreeCurricularPlan degreeCurricularPlan = enrolment.getCurricularCourse().getDegreeCurricularPlan();
+        final RegistrationProtocol registrationProtocol = registration.getRegistrationProtocol();
+        final IngressionType ingression = registration.getIngressionType();
+        boolean laboratorial = laboratorial(enrolment);
+
+        final Stream<TuitionPaymentPlan> stream =
+                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                        .get(), degreeCurricularPlan, executionYear);
+
+        final List<TuitionPaymentPlan> l = stream.collect(Collectors.toList());
+        
+        return Lists.newArrayList(l)
+                .stream()
+                .filter(t -> (t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol)
+                        && (t.getIngression() == null || t.getIngression() == ingression)
+                        && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial)
+                        && (!t.isCustomized())).findFirst().orElse(null);
+
+    }
+
+    private static boolean laboratorial(final Enrolment enrolment) {
+        if (enrolment.getAttendsFor(enrolment.getExecutionPeriod()) == null) {
+            return false;
+        }
+
+        final Attends attends = enrolment.getAttendsFor(enrolment.getExecutionPeriod());
+
+        return attends.getExecutionCourse().getShiftTypes().contains(ShiftType.LABORATORIAL);
+    }
+
+    private static boolean firstTimeStudent(final Registration registration, final ExecutionYear executionYear) {
         return registration.isFirstTime(executionYear);
     }
 
-    private static Integer curricularYear(Registration registration, ExecutionYear executionYear) {
+    private static Integer curricularYear(final Registration registration, final ExecutionYear executionYear) {
         return registration.getCurricularYear(executionYear);
     }
 
