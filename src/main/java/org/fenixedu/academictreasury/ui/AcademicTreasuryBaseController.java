@@ -90,7 +90,9 @@ public class AcademicTreasuryBaseController {
     @InitBinder
     public void initBinder(WebDataBinder binder) {
         GenericConversionService conversionService = (GenericConversionService) binder.getConversionService();
-        conversionService.addConverter(new BeanConverterService());
+        if (!conversionService.canConvert(String.class, IBean.class)) {
+            conversionService.addConverter(new BeanConverterService());
+        }
     }
 
     protected String getBeanJson(IBean bean) {
