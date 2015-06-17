@@ -15,6 +15,7 @@ import org.fenixedu.academic.domain.serviceRequests.RegistrationAcademicServiceR
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
+import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
@@ -37,15 +38,18 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     protected AcademicTreasuryEvent(final DebtAccount debtAccount, final AcademicServiceRequest academicServiceRequest) {
         init(debtAccount, academicServiceRequest, ServiceRequestMapEntry.findProduct(academicServiceRequest));
-
-        checkRules();
     }
 
-    public AcademicTreasuryEvent(final DebtAccount debtAccount, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
+    protected AcademicTreasuryEvent(final DebtAccount debtAccount, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final Product product, final Registration registration, final ExecutionYear executionYear) {
         init(debtAccount, tuitionPaymentPlanGroup, product, registration, executionYear);
 
         checkRules();
+    }
+
+    protected AcademicTreasuryEvent(final DebtAccount debtAccount, final AcademicTax academicTax,
+            final Registration registration, final ExecutionYear executionYear) {
+        init(debtAccount, academicTax, registration, executionYear);
     }
 
     @Override
@@ -75,12 +79,33 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         checkRules();
     }
 
+    protected void init(final DebtAccount debtAccount, final AcademicTax academicTax, final Registration registration,
+            final ExecutionYear executionYear) {
+        super.init(debtAccount, academicTax.getProduct());
+
+        setAcademicTax(academicTax);
+
+        if (academicTax.isAppliedOnRegistration()) {
+            setRegistration(registration);
+        }
+
+        setExecutionYear(executionYear);
+        setPropertiesJsonMap(propertiesMapToJson(fillPropertiesMap()));
+
+        checkRules();
+    }
+
     @Override
     protected void checkRules() {
         super.checkRules();
 
-        if (!isForAcademicServiceRequest() && !isForRegistrationTuition() && !isForStandaloneTuition()) {
-            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.not.for.service.request.nor.tuition");
+        if (!isForAcademicServiceRequest() && !isForRegistrationTuition() && !isForStandaloneTuition() && !isForAcademicTax()) {
+            throw new AcademicTreasuryDomainException(
+                    "error.AcademicTreasuryEvent.not.for.service.request.nor.tuition.nor.academic.tax");
+        }
+
+        if (isForAcademicServiceRequest() ^ isForRegistrationTuition() ^ isForStandaloneTuition() ^ isForAcademicTax()) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.for.one.type");
         }
 
         if ((isForRegistrationTuition() || isForStandaloneTuition()) && getRegistration() == null) {
@@ -103,6 +128,18 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.for.standalone.registration.duplicate");
         }
 
+        if (isForAcademicTax() && getExecutionYear() == null) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.for.academic.tax.execution.year.required");
+        }
+
+        if (isForAcademicTax() && getAcademicTax().isAppliedOnRegistration() && getRegistration() == null) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.for.academic.tax.registration.required");
+        }
+
+        if (isForAcademicTax() && findForAcademicTax(getRegistration(), getExecutionYear(), getAcademicTax()).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.for.academic.tax.duplicate");
+        }
+
     }
 
     @Override
@@ -120,6 +157,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public boolean isForStandaloneTuition() {
         return getTuitionPaymentPlanGroup() != null && getTuitionPaymentPlanGroup().isForStandalone();
+    }
+
+    public boolean isForAcademicTax() {
+        return getAcademicTax() != null;
     }
 
     public int getNumberOfUnits() {
@@ -266,6 +307,18 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return findForStandaloneTuition(registration, executionYear).findFirst();
     }
 
+    protected static Stream<? extends AcademicTreasuryEvent> findForAcademicTax(final Registration registration,
+            final ExecutionYear executionYear, final AcademicTax academicTax) {
+        return findAll().filter(
+                e -> e.isForAcademicTax() && e.getAcademicTax() == academicTax && e.getExecutionYear() == executionYear
+                        && (!e.getAcademicTax().isAppliedOnRegistration() || e.getRegistration() == registration));
+    }
+
+    public static Optional<? extends AcademicTreasuryEvent> findUniqueForAcademicTax(final Registration registration,
+            final ExecutionYear executionYear, final AcademicTax academicTax) {
+        return findForAcademicTax(registration, executionYear, academicTax).findFirst();
+    }
+
     public static AcademicTreasuryEvent createForAcademicServiceRequest(final DebtAccount debtAccount,
             final AcademicServiceRequest academicServiceRequest) {
         return new AcademicTreasuryEvent(debtAccount, academicServiceRequest);
@@ -281,6 +334,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             final Registration registration, final ExecutionYear executionYear) {
         return new AcademicTreasuryEvent(debtAccount, TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
                 product, registration, executionYear);
+    }
+
+    public static AcademicTreasuryEvent createForAcademicTax(final DebtAccount debtAccount, final AcademicTax academicTax,
+            final Registration registration, final ExecutionYear executionYear) {
+        return new AcademicTreasuryEvent(debtAccount, academicTax, registration, executionYear);
     }
 
     /* -----
@@ -358,8 +416,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                     booleanLabel(getAcademicServiceRequest().isUrgentRequest()).getContent());
             propertiesMap.put(AcademicTreasuryEventKeys.LANGUAGE.getDescriptionI18N().getContent(), getAcademicServiceRequest()
                     .getLanguage().getLanguage());
-            propertiesMap.put(AcademicTreasuryEventKeys.BASE_AMOUNT.getDescriptionI18N().getContent(),
-                    getDebtAccount().getFinantialInstitution().getCurrency().getValueFor(getBaseAmount()));
+            propertiesMap.put(AcademicTreasuryEventKeys.BASE_AMOUNT.getDescriptionI18N().getContent(), getDebtAccount()
+                    .getFinantialInstitution().getCurrency().getValueFor(getBaseAmount()));
         } else if (isForRegistrationTuition() || isForStandaloneTuition()) {
             propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(), getExecutionYear()
                     .getQualifiedName());

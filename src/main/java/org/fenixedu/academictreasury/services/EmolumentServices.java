@@ -3,8 +3,10 @@ package org.fenixedu.academictreasury.services;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Degree;
+import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
+import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
@@ -19,9 +21,9 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 
-import com.google.common.eventbus.Subscribe;
-
 import pt.ist.fenixframework.Atomic;
+
+import com.google.common.eventbus.Subscribe;
 
 public class EmolumentServices {
 
@@ -42,7 +44,7 @@ public class EmolumentServices {
 
         return AcademicTreasurySettings.getInstance().getEmolumentsProductGroup().getProductsSet().stream();
     }
-    
+
     @Subscribe
     public void newAcademicServiceRequestSituationEvent(final DomainObjectEvent<AcademicServiceRequest> event) {
         newAcademicServiceRequestSituationEvent(event.getInstance());
@@ -52,13 +54,6 @@ public class EmolumentServices {
 
         if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
             return;
-        }
-
-        // Read person customer
-        PersonCustomer personCustomer = PersonCustomer.findUnique(academicServiceRequest.getPerson()).orElse(null);
-
-        if(personCustomer == null) {
-            personCustomer = PersonCustomer.create(academicServiceRequest.getPerson());
         }
 
         // Find configured map entry for service request type
@@ -72,6 +67,43 @@ public class EmolumentServices {
         if (!(academicServiceRequest.getAcademicProgram() instanceof Degree)) {
             throw new AcademicTreasuryDomainException("error.CreateEmolumentForAcademicServiceRequest.only.degrees.are.supported");
         };
+
+        // Check if the academicServiceRequest is ready to be charged
+        if (!academicServiceRequest.getAcademicServiceRequestSituationsSet().contains(
+                serviceRequestMapEntry.getCreateEventOnSituation())) {
+
+            // It is not ready
+            return;
+        }
+
+        createAcademicServiceRequestEmolument(academicServiceRequest);
+    }
+
+    public void createAcademicServiceRequestEmolument(final AcademicServiceRequest academicServiceRequest) {
+
+        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
+            return;
+        }
+
+        // Find configured map entry for service request type
+        final ServiceRequestMapEntry serviceRequestMapEntry = ServiceRequestMapEntry.findMatch(academicServiceRequest);
+
+        if (serviceRequestMapEntry == null) {
+            throw new AcademicTreasuryDomainException(
+                    "error.CreateEmolumentForAcademicServiceRequest.cannot.find.serviceRequestMapEntry");
+        }
+
+        if (!(academicServiceRequest.getAcademicProgram() instanceof Degree)) {
+            throw new AcademicTreasuryDomainException("error.CreateEmolumentForAcademicServiceRequest.only.degrees.are.supported");
+        };
+
+        // Read person customer
+
+        if (!PersonCustomer.findUnique(academicServiceRequest.getPerson()).isPresent()) {
+            PersonCustomer.create(academicServiceRequest.getPerson());
+        }
+
+        final PersonCustomer personCustomer = PersonCustomer.findUnique(academicServiceRequest.getPerson()).get();
 
         // Find tariff
 
@@ -89,23 +121,26 @@ public class EmolumentServices {
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
         final FinantialInstitution finantialInstitution = finantialEntity.getFinantialInstitution();
-        
-        if(!DebtAccount.findUnique(finantialInstitution, personCustomer).isPresent()) {
+
+        if (!DebtAccount.findUnique(finantialInstitution, personCustomer).isPresent()) {
             DebtAccount.create(finantialInstitution, personCustomer);
         }
 
         final DebtAccount personDebtAccount = DebtAccount.findUnique(finantialInstitution, personCustomer).orElse(null);
-        
+
         // Find or create event if does not exists
-        if(!AcademicTreasuryEvent.findUnique(academicServiceRequest).isPresent()) {
+        if (!AcademicTreasuryEvent.findUnique(academicServiceRequest).isPresent()) {
             AcademicTreasuryEvent.createForAcademicServiceRequest(personDebtAccount, academicServiceRequest);
         }
 
         final AcademicTreasuryEvent academicTresuryEvent = AcademicTreasuryEvent.findUnique(academicServiceRequest).get();
-        
-        if(!academicTresuryEvent.isChargedWithDebitEntry()) {
-            academicTariff.createDebitEntry(personDebtAccount, academicTresuryEvent);
+
+        if (!academicTresuryEvent.isChargedWithDebitEntry()) {
+            academicTariff.createDebitEntry(academicTresuryEvent);
         }
+    }
+
+    public void createAcademicTax(final Registration registration, final ExecutionYear executionYear, final Product product) {
         
     }
     

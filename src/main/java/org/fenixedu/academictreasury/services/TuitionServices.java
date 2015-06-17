@@ -35,6 +35,11 @@ import com.google.common.collect.Sets;
 
 public class TuitionServices {
 
+    public static AcademicTreasuryEvent findAcademicTreasuryEventTuitionForRegistration(final Registration registration,
+            final ExecutionYear executionYear) {
+        return AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).orElse(null);
+    }
+
     @Atomic
     public static boolean createInferedTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
             final LocalDate when) {
@@ -266,7 +271,7 @@ public class TuitionServices {
 
             CreditEntry.create(creditNote, debitEntry.getDescription(), debitEntry.getProduct(), debitEntry.getVat(),
                     debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
-            
+
             return true;
         }
 

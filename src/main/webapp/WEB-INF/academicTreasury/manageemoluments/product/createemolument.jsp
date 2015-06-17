@@ -50,10 +50,11 @@ ${portal.toolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/academictreasury/manageemoluments/product/searchemoluments"><spring:message
-			code="label.event.back" /></a> |&nbsp;&nbsp;
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
+	<a class="" href="${pageContext.request.contextPath}/academictreasury/manageemoluments/product/searchemoluments/${finantialEntity.externalId}">
+			<spring:message code="label.event.back" />
+		</a> 
+	|&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -103,8 +104,7 @@ ${portal.toolkit()}
 				</div>
 
 				<div class="col-sm-10">
-					<input id="product_name" class="form-control" type="text" name="name" 
-						bennu-localized-string value='${param.name} ' />
+					<input id="product_name" class="form-control" type="text" name="name" bennu-localized-string />
 				</div>
 			</div>
 
@@ -138,7 +138,7 @@ ${portal.toolkit()}
 
 		<%-- Block for providing vatType options --%>
 		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		$("#product_vatType").select2();
+		$("#product_vatType").select2().select2('val', '<c:out value="${param.vattype}" />');
 		
 	});
 </script>

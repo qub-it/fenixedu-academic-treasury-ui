@@ -7,6 +7,7 @@ import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
+import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
 import org.fenixedu.bennu.IBean;
@@ -101,6 +102,40 @@ public class AcademicTariffBean implements IBean, Serializable {
 
     public AcademicTariffBean(final int installmentOrder) {
         setInstallmentOrder(installmentOrder);
+    }
+
+    public AcademicTariffBean(final AcademicTariff academicTariff) {
+        setBeginDate(academicTariff.getBeginDate().toLocalDate());
+        setEndDate(academicTariff.getEndDate() != null ? academicTariff.getEndDate().toLocalDate() : null);
+
+        setDueDateCalculationType(academicTariff.getDueDateCalculationType());
+        setFixedDueDate(academicTariff.getFixedDueDate());
+        setNumberOfDaysAfterCreationForDueDate(academicTariff.getNumberOfDaysAfterCreationForDueDate());
+        setApplyInterests(academicTariff.getApplyInterests());
+
+        setInterestType(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getInterestType() : null);
+        setNumberOfDaysAfterDueDate(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getNumberOfDaysAfterDueDate() : 1);
+        setApplyInFirstWorkday(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getApplyInFirstWorkday() : false);
+        setMaximumDaysToApplyPenalty(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getMaximumDaysToApplyPenalty() : 0);
+        setMaximumMonthsToApplyPenalty(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getMaximumMonthsToApplyPenalty() : 0);
+        setInterestFixedAmount(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getInterestFixedAmount() : null);
+        setRate(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getRate() : null);
+
+        setAdministrativeOffice(academicTariff.getAdministrativeOffice());
+        setDegreeType(academicTariff.getDegreeType());
+        setDegree(academicTariff.getDegree());
+        setCycleType(academicTariff.getCycleType());
+
+        setBaseAmount(academicTariff.getBaseAmount());
+        setUnitsForBase(academicTariff.getUnitsForBase());
+        setApplyUnitsAmount(academicTariff.isApplyUnitsAmount());
+        setUnitAmount(academicTariff.getUnitAmount());
+        setApplyPagesAmount(academicTariff.isApplyPagesAmount());
+        setPageAmount(academicTariff.getPageAmount());
+        setApplyMaximumAmount(academicTariff.isApplyMaximumAmount());
+        setMaximumAmount(academicTariff.getMaximumAmount());
+        setUrgencyRate(academicTariff.getUrgencyRate());
+        setLanguageTranslationRate(academicTariff.getLanguageTranslationRate());
     }
 
     public void resetFields() {

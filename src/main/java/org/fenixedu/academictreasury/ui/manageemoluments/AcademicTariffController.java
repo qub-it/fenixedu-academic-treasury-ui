@@ -132,10 +132,10 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 "AcademicTariff_degree_options",
                 Degree.readAllMatching(Predicate.<DegreeType> isEqual(academicTariffBean.getDegreeType())).stream()
                         .sorted(Degree.COMPARATOR_BY_NAME).collect(Collectors.toList()));
-        
+
         model.addAttribute("AcademicTariff_cycleType_options", academicTariffBean.getDegree() != null ? academicTariffBean
                 .getDegreeType().getCycleTypes() : Collections.emptyList());
-        
+
         model.addAttribute("AcademicTariff_dueDateCalculationType_options", Arrays.asList(DueDateCalculationType.values()));
         model.addAttribute("AcademicTariff_interestType_options", Arrays.asList(InterestType.values()));
 
@@ -161,83 +161,58 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         }
     }
 
-    @RequestMapping(value = "/viewemolumenttariff/{oid}")
-    public String viewemolumenttariff(@PathVariable("oid") AcademicTariff academicTariff, Model model) {
-        setAcademicTariff(academicTariff, model);
-        return "academicTreasury/manageemoluments/academictariff/viewemolumenttariff";
+    @RequestMapping(value = "/updateemolumenttariff/{finantialEntityId}/{productId}/{academicTariffId}",
+            method = RequestMethod.GET)
+    public String updateemolumenttariff(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
+            @PathVariable("productId") final Product product,
+            @PathVariable("academicTariffId") final AcademicTariff academicTariff, final Model model) {
+
+        return _updateemolumenttariff(finantialEntity, product, academicTariff, new AcademicTariffBean(academicTariff), model);
     }
 
-    @RequestMapping(value = "/updateemolumenttariff/{oid}", method = RequestMethod.GET)
-    public String updateemolumenttariff(@PathVariable("oid") AcademicTariff academicTariff, Model model) {
-        setAcademicTariff(academicTariff, model);
+    public String _updateemolumenttariff(final FinantialEntity finantialEntity, final Product product,
+            final AcademicTariff academicTariff, final AcademicTariffBean bean, final Model model) {
+
+        model.addAttribute("finantialEntity", finantialEntity);
+        model.addAttribute("product", product);
+        model.addAttribute("academicTariff", academicTariff);
+
+        model.addAttribute("academicTariffBean", bean);
+        model.addAttribute("academicTariffBeanJson", getBeanJson(bean));
+
+        model.addAttribute("AcademicTariff_interestType_options", Arrays.asList(InterestType.values()));
+        
         return "academicTreasury/manageemoluments/academictariff/updateemolumenttariff";
     }
 
-//				
-    @RequestMapping(value = "/updateemolumenttariff/{oid}", method = RequestMethod.POST)
-    public String updateemolumenttariff(
-            @PathVariable("oid") AcademicTariff academicTariff,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") org.joda.time.DateTime endDate,
-            Model model) {
+    @RequestMapping(value = "/updateemolumenttariffpostback/{finantialEntityId}/{productId}/{academicTariffId}",
+            method = RequestMethod.POST)
+    public String updateemolumenttariffpostback(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
+            @PathVariable("productId") final Product product,
+            @PathVariable("academicTariffId") final AcademicTariff academicTariff,
+            @RequestParam(value = "academicTariffBean", required = false) final AcademicTariffBean bean, final Model model) {
 
-        setAcademicTariff(academicTariff, model);
+        return _updateemolumenttariff(finantialEntity, product, academicTariff, bean, model);
+    }
+
+    @RequestMapping(value = "/updateemolumenttariff/{finantialEntityId}/{productId}/{academicTariffId}",
+            method = RequestMethod.POST)
+    public String updateemolumenttariff(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
+            @PathVariable("productId") final Product product,
+            @PathVariable("academicTariffId") final AcademicTariff academicTariff,
+            @RequestParam(value = "academicTariffBean", required = false) final AcademicTariffBean academicTariffBean, final Model model) {
 
         try {
-            /*
-            *  UpdateLogic here
-            */
+            academicTariff.edit(academicTariffBean);
+            
+            return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
+                    finantialEntity.getExternalId(), product.getExternalId(), academicTariff.getExternalId());
 
-            updateAcademicTariff(beginDate, endDate, model);
-
-            /*Succes Update */
-
-            return "redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariff/"
-                    + getAcademicTariff(model).getExternalId();
         } catch (DomainException de) {
-            // @formatter: off
+            addErrorMessage(de.getLocalizedMessage(), model);
 
-            /*
-            * If there is any error in validation 
-            *
-            * Add a error / warning message
-            * 
-            * addErrorMessage(" Error updating due to " + de.getLocalizedMessage(),model);
-            * addWarningMessage(" Warning updating due to " + de.getLocalizedMessage(),model);
-            */
-            // @formatter: on
-
-            addErrorMessage(" Error updating due to " + de.getLocalizedMessage(), model);
-            return updateemolumenttariff(academicTariff, model);
-
+            return _updateemolumenttariff(finantialEntity, product, academicTariff, academicTariffBean, model);
         }
-    }
-
-    @Atomic
-    public void updateAcademicTariff(org.joda.time.DateTime beginDate, org.joda.time.DateTime endDate, Model m) {
-
-        // @formatter: off				
-        /*
-         * Modify the update code here if you do not want to update
-         * the object with the default setter for each field
-         */
-
-        // CHANGE_ME It's RECOMMENDED to use "Edit service" in DomainObject
-        //getAcademicTariff(m).edit(fields_to_edit);
-
-        //Instead, use individual SETTERS and validate "CheckRules" in the end
-        // @formatter: on
-
-        getAcademicTariff(m).setBeginDate(beginDate);
-        getAcademicTariff(m).setEndDate(endDate);
-    }
-
-    private AcademicTariff getAcademicTariff(Model m) {
-        return (AcademicTariff) m.asMap().get("academicTariff");
-    }
-
-    private void setAcademicTariff(AcademicTariff academicTariff, Model m) {
-        m.addAttribute("academicTariff", academicTariff);
     }
 
 }

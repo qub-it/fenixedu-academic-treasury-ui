@@ -180,9 +180,13 @@ ${portal.toolkit()}
 								<p><strong><spring:message code="label.AcademicTariff.interests.not.applied.message" /></strong></p>
 							</c:if>
 							<c:if test="${tariff.applyInterests}">
-								<p><strong>${tariff.interestRate.interestType.descriptionI18N.content}</strong>
+								<p align="center"><strong>[${tariff.interestRate.interestType.descriptionI18N.content}]</strong>
 								
 								<c:if test="${tariff.interestRate.interestType.daily}">
+									<p>
+										<strong><spring:message code="label.AcademicTariff.rate" />:</strong>
+										<span>${tariff.interestRate.rate} %</span>
+									</p>
 									<p>
 										<strong><spring:message code="label.AcademicTariff.numberOfDaysAfterDueDate" />:</strong>
 										<span>${tariff.interestRate.numberOfDaysAfterDueDate}</span>
@@ -192,6 +196,10 @@ ${portal.toolkit()}
 									</p>
 								</c:if>
 								<c:if test="${tariff.interestRate.interestType.monthly}">
+									<p>
+										<strong><spring:message code="label.AcademicTariff.rate" />:</strong>
+										<span>${tariff.interestRate.rate} %</span>
+									</p>
 									<p>
 										<strong><spring:message code="label.AcademicTariff.maximumMonthsToApplyPenalty" />:</strong>
 										<span>${tariff.interestRate.maximumMonthsToApplyPenalty}</span>
@@ -206,6 +214,11 @@ ${portal.toolkit()}
 							</c:if>
 						</td>
 						<td>
+							<a  class="btn btn-xs btn-default"
+								href="${pageContext.request.contextPath}/academictreasury/manageemoluments/academictariff/updateemolumenttariff/${finantialEntity.externalId}/${product.externalId}/${tariff.externalId}" >
+								<span class="glyphicon" aria-hidden="true"></span> &nbsp; <spring:message code='label.edit' />
+							</a>
+							&nbsp;
 							<a  class="btn btn-xs btn-danger" href="#" 
 								onClick="javascript:processDelete('${tariff.externalId}')">
 								<span class="glyphicon glyphicon-trash" aria-hidden="true"></span> &nbsp; <spring:message code='label.delete' />

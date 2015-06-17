@@ -22,6 +22,7 @@ import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
+import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 import org.fenixedu.treasury.domain.tariff.Tariff;
 import org.joda.time.DateTime;
@@ -194,6 +195,26 @@ public class AcademicTariff extends AcademicTariff_Base {
         }
     }
 
+    @Atomic
+    public void edit(final AcademicTariffBean bean) {
+        super.edit(bean.getBeginDate().toDateTimeAtStartOfDay(), bean.getEndDate().toDateTimeAtStartOfDay().plusDays(1)
+                .minusSeconds(1));
+
+        if (bean.isApplyInterests() && getInterestRate() == null) {
+            InterestRate.create(this, bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
+                    bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
+                    bean.getRate());
+        } else if (bean.isApplyInterests()) {
+            getInterestRate().edit(bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
+                    bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
+                    bean.getRate());
+        }
+
+        super.setApplyInterests(bean.isApplyInterests());
+
+        checkRules();
+    }
+
     @Override
     public boolean isDeletable() {
         return super.isDeletable();
@@ -273,7 +294,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         return academicTreasuryEvent.getNumberOfUnits() - getUnitsForBase();
     }
 
-    public DebitEntry createDebitEntry(final DebtAccount debtAccount, final AcademicTreasuryEvent academicTreasuryEvent) {
+    public DebitEntry createDebitEntry(final AcademicTreasuryEvent academicTreasuryEvent) {
         final BigDecimal amount = amountToPay(academicTreasuryEvent);
         final LocalDate dueDate = dueDate(academicTreasuryEvent.getRequestDate());
 
@@ -281,7 +302,7 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent);
 
-        return DebitEntry.create(null, debtAccount, academicTreasuryEvent,
+        return DebitEntry.create(null, academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent,
                 Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(), new DateTime())
                         .get(), amount, dueDate, fillPriceProperties, getProduct(), getProduct().getName().getContent(),
                 Constants.DEFAULT_QUANTITY, this, new DateTime());
