@@ -105,7 +105,7 @@ ${portal.angularToolkit()}
 </c:if>
 
 <script type="text/javascript">
-angular.module('changeExample', []).controller('ExampleController', ['$scope', function($scope) {
+angular.module('changeExample', ['bennuToolkit']).controller('ExampleController', ['$scope', function($scope) {
 	$scope.change = function(newValue, oldValue) {
 
 		if(oldValue !== "" && newValue !== oldValue) {

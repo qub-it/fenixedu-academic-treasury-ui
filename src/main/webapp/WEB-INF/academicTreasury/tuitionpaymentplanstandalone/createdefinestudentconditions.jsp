@@ -72,7 +72,7 @@ ${portal.angularToolkit()}
 
 <script>
 
-angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).controller('TuitionPaymentPlanController', ['$scope', function($scope) {
+angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennuToolkit']).controller('TuitionPaymentPlanController', ['$scope', function($scope) {
 
  	$scope.object=angular.fromJson('${tuitionPaymentPlanBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
@@ -263,8 +263,8 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 				</div>
 	
 				<div class="col-sm-4">
-					<input id="tuitionInstallmentTariff_beginDate" class="form-control" type="date" name="begindate" value='${bean.beginDate}' 
-						ng-model="object.beginDate" />
+					<input id="tuitionInstallmentTariff_beginDate" class="form-control" type="text" name="begindate"  
+						bennu-date="object.beginDate" />
 				</div>
 			</div>
 			<div class="form-group row">
@@ -293,7 +293,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).cont
 	
 				<div class="col-sm-4">
 					<input id="tuitionInstallmentTariff_fixedduedate" class="form-control" 
-						type="date" name="fixedduedate"  value='<c:out value='${bean.fixedDueDate}'/>' ng-model="object.fixedDueDate" required />
+						type="text" name="fixedduedate"  bennu-date="object.fixedDueDate" required />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.dueDateCalculationType == 'DAYS_AFTER_CREATION'">

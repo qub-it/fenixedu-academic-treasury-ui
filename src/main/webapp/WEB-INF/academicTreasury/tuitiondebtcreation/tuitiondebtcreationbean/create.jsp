@@ -104,7 +104,7 @@ ${portal.angularToolkit()}
 </c:if>
 
 <script>
-	angular.module('angularAppTuitionDebtCreationBean', [ 'ngSanitize', 'ui.select' ]).controller('TuitionDebtCreationBeanController',
+	angular.module('angularAppTuitionDebtCreationBean', [ 'ngSanitize', 'ui.select','bennuToolkit' ]).controller('TuitionDebtCreationBeanController',
 		['$scope', function($scope) {
 	
 				$scope.object = angular.fromJson('${tuitionDebtCreationBeanJson}');
@@ -171,7 +171,7 @@ ${portal.angularToolkit()}
 
 				<div class="col-sm-6">
 					<input id="tuitionDebtCreationBean_debtDate" class="form-control"
-						type="date" name="debtDate" value='<c:out value='${tuitionDebtCreationBean.debtDate}'/>' ng-model="object.debtDate"/>
+						type="text" name="debtDate"  bennu-date="object.debtDate"/>
 				</div>
 			</div>
 			<div class="form-group row">

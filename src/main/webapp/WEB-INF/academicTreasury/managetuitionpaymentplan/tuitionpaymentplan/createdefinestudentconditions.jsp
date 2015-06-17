@@ -72,7 +72,7 @@ ${portal.angularToolkit()}
 
 <script>
 
-angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select']).controller('TuitionPaymentPlanController', ['$scope', function($scope) {
+angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennuToolkit']).controller('TuitionPaymentPlanController', ['$scope', function($scope) {
 
  	$scope.object=angular.fromJson('${tuitionPaymentPlanBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
