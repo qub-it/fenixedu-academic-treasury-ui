@@ -1,5 +1,6 @@
 package org.fenixedu.academictreasury.domain.debtGeneration;
 
+import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +34,16 @@ import com.google.common.collect.Sets;
 
 public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base {
 
+    public static Comparator<AcademicDebtGenerationRule> COMPARATOR_BY_EXECUTION_YEAR = new Comparator<AcademicDebtGenerationRule>() {
+
+        @Override
+        public int compare(AcademicDebtGenerationRule o1, AcademicDebtGenerationRule o2) {
+            int c = o1.getExecutionYear().compareTo(o2.getExecutionYear());
+            
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
+    
     private static class LogBean {
         private DateTime processDate = new DateTime();
         private StringBuilder log = new StringBuilder();
@@ -88,12 +99,42 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
         setActive(true);
 
+        setExecutionYear(bean.getExecutionYear());
         setAggregateOnDebitNote(bean.isAggregateOnDebitNote());
+        setAggregateAllOrNothing(bean.isAggregateAllOrNothing());
         setCloseDebitNote(bean.isCloseDebitNote());
         setCreatePaymentReferenceCode(bean.isCreatePaymentReferenceCode());
 
         for (final ProductEntry productEntry : bean.getEntries()) {
             AcademicDebtGenerationRuleEntry.create(this, productEntry.getProduct(), productEntry.isCreateDebt());
+        }
+        
+        checkRules();
+    }
+
+    private void checkRules() {
+        if(getBennu() == null) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.bennu.required");
+        }
+        
+        if(getExecutionYear() == null) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.executionYear.required");
+        }
+        
+        if(isCloseDebitNote() && !isAggregateOnDebitNote()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.closeDebitNote.requires.aggregateOnDebitNote");
+        }
+        
+        if(isAggregateAllOrNothing() && !isAggregateOnDebitNote()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.aggregateAllOrNothing.requires.aggregateOnDebitNote");
+        }
+        
+        if(isCreatePaymentReferenceCode() && !isCloseDebitNote()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.createPaymentReferenceCode.requires.closeDebitNote");
+        }
+        
+        if(getAcademicDebtGenerationRuleEntriesSet().isEmpty()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.entries.required");
         }
     }
 
@@ -104,6 +145,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     public boolean isAggregateOnDebitNote() {
         return super.getAggregateOnDebitNote();
     }
+    
+    public boolean isAggregateAllOrNothing() {
+        return super.getAggregateAllOrNothing();
+    }
 
     public boolean isCloseDebitNote() {
         return super.getCloseDebitNote();
@@ -111,6 +156,43 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     public boolean isCreatePaymentReferenceCode() {
         return super.getCreatePaymentReferenceCode();
+    }
+
+    
+    private boolean isDeletable() {
+        return true;
+    }
+    
+    @Atomic
+    public void delete() {
+        if(!isDeletable()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.delete.impossible");
+        }
+        
+        setBennu(null);
+        
+        setExecutionYear(null);
+        
+        while(getAcademicDebtGenerationRuleEntriesSet().size() > 0) {
+            getAcademicDebtGenerationRuleEntriesSet().iterator().next().delete();
+        }
+        
+        super.deleteDomainObject();
+    }
+
+    
+    @Atomic
+    public void activate() {
+        setActive(true);
+        
+        checkRules();
+    }
+
+    @Atomic
+    public void inactivate() {
+        setActive(false);
+        
+        checkRules();
     }
 
     @Atomic(mode = TxMode.READ)
@@ -132,10 +214,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             try {
                 processDebtsForRegistration(registration, logBean);
             } catch (final Exception e) {
+                e.printStackTrace();
                 logBean.registerException(registration, e);
             }
         }
-
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -170,8 +252,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
 
         if (debitEntries.isEmpty()) {
-            throw new AcademicTreasuryDomainException(
-                    "error.AcademicDebtGenerationRule.create.debit.note.but.empty.debit.entries");
+            return;
         }
 
         final DebitNote debitNote = grabPreparingOrCreateDebitEntry(registration, debitEntries, logBean);
@@ -280,12 +361,13 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
      ************/
     // @formatter: on
 
-    public Stream<AcademicDebtGenerationRule> findAll() {
+    public static Stream<AcademicDebtGenerationRule> findAll() {
         return Bennu.getInstance().getAcademicDebtGenerationRuleSet().stream();
     }
 
-    public AcademicDebtGenerationRule create(final AcademicDebtGenerationRuleBean bean) {
+    @Atomic
+    public static AcademicDebtGenerationRule create(final AcademicDebtGenerationRuleBean bean) {
         return new AcademicDebtGenerationRule(bean);
     }
-    
+
 }

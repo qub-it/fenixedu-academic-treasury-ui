@@ -1,5 +1,9 @@
 package org.fenixedu.academictreasury.services;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
@@ -9,6 +13,8 @@ import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.joda.time.DateTime;
+
+import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -21,7 +27,7 @@ public class AcademicTaxServices {
 
     @Atomic
     public static boolean createAcademicTax(final Registration registration, final ExecutionYear executionYear, final AcademicTax academicTax) {
-        if (!registration.isRegistered(executionYear)) {
+        if (normalEnrolments(registration, executionYear).isEmpty()) {
             return false;
         }
 
@@ -73,5 +79,30 @@ public class AcademicTaxServices {
 
         return true;
     }
+    
+    public static Set<Enrolment> normalEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        final Set<Enrolment> result = Sets.newHashSet(registration.getEnrolments(executionYear));
+
+        result.removeAll(registration.getStudentCurricularPlan(executionYear).getStandaloneCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
+
+        result.removeAll(registration.getStudentCurricularPlan(executionYear).getExtraCurricularCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
+
+        return result;
+    }
+
+    public static Set<Enrolment> standaloneEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getStudentCurricularPlan(executionYear).getStandaloneCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).map(l -> (Enrolment) l)
+                .collect(Collectors.<Enrolment> toSet());
+    }
+
+    public static Set<Enrolment> extracurricularEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getStudentCurricularPlan(executionYear).getExtraCurricularCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).map(l -> (Enrolment) l)
+                .collect(Collectors.<Enrolment> toSet());
+    }
+
     
 }

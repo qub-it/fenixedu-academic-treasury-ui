@@ -530,7 +530,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     private static int semesterWithFirstEnrolments(final Registration registration, final ExecutionYear executionYear) {
         return registration.getEnrolments(executionYear).stream().map(e -> e.getExecutionPeriod().getSemester()).sorted()
-                .findFirst().get();
+                .findFirst().orElse(1);
     }
 
     @Atomic

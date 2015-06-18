@@ -6,6 +6,8 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
 
+import pt.ist.fenixframework.Atomic;
+
 public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleEntry_Base {
 
     protected AcademicDebtGenerationRuleEntry() {
@@ -46,6 +48,24 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
         }
     }
 
+    private boolean isDeletable() {
+        return true;
+    }
+
+    @Atomic
+    public void delete() {
+        if(!isDeletable()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.delete.impossible");
+        }
+        
+        setBennu(null);
+        
+        setAcademicDebtGenerationRule(null);
+        setProduct(null);
+        
+        super.deleteDomainObject();
+    }
+
     // @formatter: off
     /************
      * SERVICES *
@@ -68,4 +88,5 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
             final boolean createDebt) {
         return new AcademicDebtGenerationRuleEntry(rule, product, createDebt);
     }
+    
 }

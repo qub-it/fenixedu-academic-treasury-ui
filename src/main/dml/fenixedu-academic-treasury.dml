@@ -383,9 +383,9 @@ class event.AcademicTreasuryEvent extends .org.fenixedu.treasury.domain.event.Tr
 		}
 	}
 
-/* ----------------------
- * DebitNoteGenerationRule
- * ----------------------
+/* --------------------------
+ * AcademicDebtGenerationRule
+ * --------------------------
  */
 
 class debtGeneration.AcademicDebtGenerationRule {

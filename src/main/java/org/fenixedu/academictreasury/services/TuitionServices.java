@@ -50,6 +50,10 @@ public class TuitionServices {
     public static boolean createTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
             final LocalDate when, TuitionPaymentPlan tuitionPaymentPlan) {
 
+        if(normalEnrolments(registration, executionYear).isEmpty()) {
+            return false;
+        }
+        
         final Person person = registration.getPerson();
         // Read person customer
 
@@ -277,4 +281,29 @@ public class TuitionServices {
 
         return false;
     }
+
+    public static Set<Enrolment> normalEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        final Set<Enrolment> result = Sets.newHashSet(registration.getEnrolments(executionYear));
+
+        result.removeAll(registration.getStudentCurricularPlan(executionYear).getStandaloneCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
+
+        result.removeAll(registration.getStudentCurricularPlan(executionYear).getExtraCurricularCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
+
+        return result;
+    }
+
+    public static Set<Enrolment> standaloneEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getStudentCurricularPlan(executionYear).getStandaloneCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).map(l -> (Enrolment) l)
+                .collect(Collectors.<Enrolment> toSet());
+    }
+
+    public static Set<Enrolment> extracurricularEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getStudentCurricularPlan(executionYear).getExtraCurricularCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).map(l -> (Enrolment) l)
+                .collect(Collectors.<Enrolment> toSet());
+    }
+
 }

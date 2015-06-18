@@ -293,7 +293,7 @@ function registerJqueryReadyClosure(func) {
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.fixedDueDate"/></div> 
 					
 					<div class="col-sm-4">
-						<input id="academicTariff_fixedDueDate" class="form-control" type="text" name="fixedDueDate"  bennu-datetime
+						<input id="academicTariff_fixedDueDate" class="form-control" type="text" name="fixedDueDate"  bennu-date
 						value = '<c:out value='${not empty academicTariffBean.fixedDueDate ? academicTariffBean.fixedDueDate : "" }'/>' 
 						ng-model="object.fixedDueDate" />
 					</div>
