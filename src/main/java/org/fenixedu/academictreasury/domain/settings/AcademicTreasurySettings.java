@@ -3,6 +3,7 @@ package org.fenixedu.academictreasury.domain.settings;
 import java.util.Optional;
 
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.ProductGroup;
 
 import pt.ist.fenixframework.Atomic;
@@ -19,6 +20,26 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
         setEmolumentsProductGroup(emolumentsProductGroup);
         setTuitionProductGroup(tuitionProductGroup);
     }
+    
+    @Atomic
+    public void addAcademicalActBlockingProduct(final Product product) {
+        addAcademicalActBlockingProducts(product);
+    }
+    
+    @Atomic
+    public void removeAcademicalActBlockingProduct(final Product product) {
+        removeAcademicalActBlockingProducts(product);
+    }
+
+    public boolean isAcademicalActBlocking(final Product product) {
+        return getAcademicalActBlockingProductsSet().contains(product);
+    }
+
+    // @formatter: off
+    /************
+     * SERVICES *
+     ************/
+    // @formatter: on
 
     protected static Optional<AcademicTreasurySettings> find() {
         return Bennu.getInstance().getAcademicTreasurySettingsSet().stream().findFirst();

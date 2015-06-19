@@ -247,7 +247,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             }
         }
 
-        if (!isCloseDebitNote()) {
+        if (!isAggregateOnDebitNote()) {
             return;
         }
 

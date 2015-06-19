@@ -171,6 +171,10 @@ public class TuitionServices {
      * Standalone 
      * **********
      */
+    
+    public static AcademicTreasuryEvent findAcademicTreasuryEventTuitionForStandalone(final Registration registration, final ExecutionYear executionYear) {
+        return AcademicTreasuryEvent.findUniqueForStandaloneTuition(registration, executionYear).orElse(null);
+    }
 
     public static boolean createInferedTuitionForStandalone(final Enrolment standaloneEnrolment, final LocalDate when) {
         return createInferedTuitionForStandalone(Sets.newHashSet(standaloneEnrolment), when);

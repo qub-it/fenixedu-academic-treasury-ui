@@ -1,11 +1,12 @@
-package org.fenixedu.academictreasury.services;
+package org.fenixedu.academictreasury.services.signals;
 
 import org.fenixedu.academic.domain.Enrolment;
+import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.bennu.signals.DomainObjectEvent;
 
 import com.google.common.eventbus.Subscribe;
 
-public class StandaloneEnrolment {
+public class StandaloneEnrolmentHandler {
 
     @Subscribe
     public void standaloneEnrolment(final DomainObjectEvent<Enrolment> event) {

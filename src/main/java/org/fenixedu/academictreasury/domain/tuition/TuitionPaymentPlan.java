@@ -305,7 +305,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     public boolean createDebitEntriesForRegistration(final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
         final DebtAccount debtAccount = academicTreasuryEvent.getDebtAccount();
 
-        if (getTuitionPaymentPlanGroup().isForRegistration()) {
+        if (!getTuitionPaymentPlanGroup().isForRegistration()) {
             throw new RuntimeException("wrong call");
         }
 

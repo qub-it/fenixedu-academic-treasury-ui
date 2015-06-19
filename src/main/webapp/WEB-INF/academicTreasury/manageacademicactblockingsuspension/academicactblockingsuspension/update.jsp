@@ -1,5 +1,5 @@
-<%@page import="org.fenixedu.academictreasury.ui.manageacademictreasurysettings.AcademicTreasurySettingsController"%>
-<%@page import="org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings"%>
+<%@page import="org.fenixedu.academictreasury.ui.manageacademicactblockingsuspension.AcademicActBlockingSuspensionController"%>
+<%@page import="org.fenixedu.academictreasury.domain.academicalAct.AcademicActBlockingSuspension"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -48,19 +48,17 @@ ${portal.toolkit()}
 <div class="page-header">
 	<h1>
 		<spring:message
-			code="label.manageAcademicTreasurySettings.readAcademicTreasurySettings" />
+			code="label.manageAcademicActBlockingSuspension.updateAcademicActBlockingSuspension" />
 		<small></small>
 	</h1>
 </div>
 
-<!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.UPDATE_URL %>">
-		<spring:message code="label.event.update" /></a> 
-	|&nbsp;&nbsp;
+		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.READ_URL %>${person.externalId}/${academicActBlockingSuspension.externalId}"><spring:message
+			code="label.event.back" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -99,71 +97,51 @@ ${portal.toolkit()}
 	</div>
 </c:if>
 
-<div class="panel panel-primary">
-	<div class="panel-heading">
-		<h3 class="panel-title">
-			<spring:message code="label.details" />
-		</h3>
-	</div>
-	<div class="panel-body">
-		<form method="post" class="form-horizontal">
-			<table class="table">
-				<tbody>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message
-								code="label.AcademicTreasurySettings.emolumentsProductGroup" /></th>
-						<td><c:out
-								value='${academicTreasurySettings.emolumentsProductGroup.name.content}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message
-								code="label.AcademicTreasurySettings.tuitionProductGroup" /></th>
-						<td><c:out
-								value='${academicTreasurySettings.tuitionProductGroup.name.content}' /></td>
-					</tr>
-				</tbody>
-			</table>
-		</form>
-	</div>
-</div>
+<form method="post" class="form-horizontal">
 
-<div style="margin-bottom: 50px"></div>
+	<div class="panel panel-default">
+		<div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.AcademicActBlockingSuspension.beginDate" />
+				</div>
 
-<h2  style="margin-bottom: 50px"><spring:message code="label.AcademicTreasurySettings.academicalActBlockingProducts" /></h2>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="row" class="col-xs-3"><spring:message
-					code="label.AcademicTreasurySettings.academicalActBlockingProduct" />
-			</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<c:forEach items="${products}" var="p">
-			<tr>
-				<td>
-					<p>
-						<c:out value='${p.name.content}' />
-					</p>
-				</td>
-				<td><c:if
-						test="${academicTreasurySettings.isAcademicalActBlocking(p)}">
-						<a
-							href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.REMOVEACADEMICALACTBLOCKINGPRODUCT_URL %>${p.externalId}">
-							<spring:message code="label.delete" />
-						</a>
-					</c:if> <c:if
-						test="${not academicTreasurySettings.isAcademicalActBlocking(p)}">
-						<a
-							href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.ADDACADEMICALACTBLOCKINGPRODUCT_URL %>${p.externalId}">
-							<spring:message code="label.add" />
-						</a>
-					</c:if></td>
-			</tr>
-		</c:forEach>
-	</tbody>
-</table>
+				<div class="col-sm-4">
+					<input id="academicActBlockingSuspension_beginDate"
+						class="form-control" type="text" name="begindate" bennu-datetime
+						value='<c:out value='${not empty param.begindate ? param.begindate : academicActBlockingSuspension.beginDate }'/>' />
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.AcademicActBlockingSuspension.endDate" />
+				</div>
+
+				<div class="col-sm-4">
+					<input id="academicActBlockingSuspension_endDate"
+						class="form-control" type="text" name="enddate" bennu-datetime
+						value='<c:out value='${not empty param.enddate ? param.enddate : academicActBlockingSuspension.endDate }'/>' />
+				</div>
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.AcademicActBlockingSuspension.reason" />
+				</div>
+
+				<div class="col-sm-10">
+					<input id="academicActBlockingSuspension_reason"
+						class="form-control" type="text" name="reason"
+						value='<c:out value='${not empty param.reason ? param.reason : academicActBlockingSuspension.reason }'/>' />
+				</div>
+			</div>
+		</div>
+		<div class="panel-footer">
+			<input type="submit" class="btn btn-default" role="button"
+				value="<spring:message code="label.submit" />" />
+		</div>
+	</div>
+</form>
 
 <script>
 	$(document).ready(function() {
