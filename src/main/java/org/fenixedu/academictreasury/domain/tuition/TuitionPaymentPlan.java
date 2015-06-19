@@ -424,9 +424,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public static Stream<TuitionPaymentPlan> findSortedByPaymentPlanOrder(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final DegreeCurricularPlan degreeCurricularPlan, final ExecutionYear executionYear) {
-        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear);
-//                .sorted((e1, e2) -> Integer.compare(e1.getPaymentPlanOrder(), e2.getPaymentPlanOrder()))
-//                .collect(Collectors.toList()).stream();
+        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear)
+                .sorted((e1, e2) -> Integer.compare(e1.getPaymentPlanOrder(), e2.getPaymentPlanOrder()))
+                .collect(Collectors.toList()).stream();
     }
 
     protected static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
@@ -468,19 +468,46 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         final CurricularYear curricularYear = CurricularYear.readByYear(curricularYear(registration, executionYear));
         final boolean firstTimeStudent = firstTimeStudent(registration, executionYear);
 
-        final Stream<TuitionPaymentPlan> stream =
-                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration()
-                        .get(), degreeCurricularPlan, executionYear);
+        final List<TuitionPaymentPlan> plans =
+                TuitionPaymentPlan.findSortedByPaymentPlanOrder(
+                        TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), degreeCurricularPlan,
+                        executionYear).collect(Collectors.toList());
 
-        stream.filter(t -> t.getRegistrationRegimeType() == null || t.getRegistrationRegimeType() == regimeType);
-        stream.filter(t -> t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol);
-        stream.filter(t -> t.getIngression() == null || t.getIngression() == ingression);
-        stream.filter(t -> t.getSemester() == null || t.getSemester() == semesterWithFirstEnrolments);
-        stream.filter(t -> t.getCurricularYear() == null || t.getCurricularYear() == curricularYear);
-        stream.filter(t -> t.getFirstTimeStudent() == firstTimeStudent);
-        stream.filter(t -> !t.isCustomized());
+        final List<TuitionPaymentPlan> filtered = Lists.newArrayList();
+        for (final TuitionPaymentPlan t : plans) {
+            
+            if(t.getRegistrationRegimeType() != null && t.getRegistrationRegimeType() != regimeType) {
+                continue;
+            }
+            
+            if(t.getRegistrationProtocol() != null && t.getRegistrationProtocol() != registrationProtocol) {
+                continue;
+            }
+            
+            if(t.getIngression() != null && t.getIngression() != ingression) {
+                continue;
+            }
 
-        return stream.findFirst().orElse(null);
+            if(t.getSemester() != null && t.getSemester() != semesterWithFirstEnrolments) {
+                continue;
+            }
+
+            if(t.getCurricularYear() != null && t.getCurricularYear() != curricularYear) {
+                continue;
+            }
+
+            if(t.getFirstTimeStudent() && !firstTimeStudent) {
+                continue;
+            }
+
+            if(t.isCustomized()) {
+                continue;
+            }
+            
+            filtered.add(t);
+        }
+        
+        return !filtered.isEmpty() ? filtered.get(0) : null;
     }
 
     public static TuitionPaymentPlan inferTuitionPaymentPlanForStandaloneEnrolment(final Registration registration,
@@ -500,8 +527,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                         .get(), degreeCurricularPlan, executionYear);
 
         final List<TuitionPaymentPlan> l = stream.collect(Collectors.toList());
-        
-        return Lists.newArrayList(l)
+
+        return Lists
+                .newArrayList(l)
                 .stream()
                 .filter(t -> (t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol)
                         && (t.getIngression() == null || t.getIngression() == ingression)

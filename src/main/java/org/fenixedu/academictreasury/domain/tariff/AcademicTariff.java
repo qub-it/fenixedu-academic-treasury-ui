@@ -296,7 +296,7 @@ public class AcademicTariff extends AcademicTariff_Base {
 
     public DebitEntry createDebitEntry(final AcademicTreasuryEvent academicTreasuryEvent) {
         final BigDecimal amount = amountToPay(academicTreasuryEvent);
-        final LocalDate dueDate = dueDate(academicTreasuryEvent.getRequestDate());
+        final LocalDate dueDate = dueDate(academicTreasuryEvent.isForAcademicServiceRequest() ? academicTreasuryEvent.getRequestDate() : new LocalDate());
 
         updatePriceValuesInEvent(academicTreasuryEvent);
 
@@ -314,8 +314,8 @@ public class AcademicTariff extends AcademicTariff_Base {
         final BigDecimal amountForAdditionalUnits = amountForAdditionalUnits(academicTreasuryEvent);
         final BigDecimal amountForPages = amountForPages(academicTreasuryEvent);
         final BigDecimal maximumAmount = getMaximumAmount();
-        final BigDecimal amountForLanguageTranslationRate = amountForLanguageTranslationRate(academicTreasuryEvent);
-        final BigDecimal amountForUrgencyRate = amountForUrgencyRate(academicTreasuryEvent);
+        final BigDecimal amountForLanguageTranslationRate = academicTreasuryEvent.isForAcademicServiceRequest() ? amountForLanguageTranslationRate(academicTreasuryEvent) : BigDecimal.ZERO;
+        final BigDecimal amountForUrgencyRate = academicTreasuryEvent.isForAcademicServiceRequest() ? amountForUrgencyRate(academicTreasuryEvent) : BigDecimal.ZERO;
 
         academicTreasuryEvent.updatePricingFields(baseAmount, amountForAdditionalUnits, amountForPages, maximumAmount,
                 amountForLanguageTranslationRate, amountForUrgencyRate);

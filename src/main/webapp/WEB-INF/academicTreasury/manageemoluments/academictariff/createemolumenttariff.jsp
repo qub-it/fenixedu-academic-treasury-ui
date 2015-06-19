@@ -263,8 +263,10 @@ function registerJqueryReadyClosure(func) {
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.beginDate"/></div> 
 					
 					<div class="col-sm-4">
-						<input id="academicTariff_beginDate" class="form-control" type="text" name="begindate" 
-						 bennu-date="object.beginDate" />
+						<%--<input id="academicTariff_beginDate" class="form-control" type="text" name="begindate" 
+						 bennu-date="object.beginDate" />--%>
+					
+						 <input id="academicTariff_beginDate" class="form-control" type="date" name="begindate"  />
 					</div>
 				</div>
 				
@@ -276,6 +278,7 @@ function registerJqueryReadyClosure(func) {
 						 bennu-date="object.endDate" >
 					</div>
 				</div>
+				
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.dueDateCalculationType"/></div> 
 					
@@ -500,18 +503,21 @@ registerJqueryReadyClosure(function() {
 	$("#academicTariff_dueDateCalculationType").select2({ data : dueDateCalculationType_options } );
 	$("#academicTariff_dueDateCalculationType").select2().select2('val', '${not empty academicTariffBean.dueDateCalculationType ? academicTariffBean.dueDateCalculationType : ""}');
 	
-		$("#academicTariff_applyInterests").select2().select2('val', '${academicTariffBean.applyInterests}');
+	$("#academicTariff_applyInterests").select2().select2('val', '${academicTariffBean.applyInterests}');
 
-	interestType_options = [
-    		<c:forEach items="${AcademicTariff_interestType_options}" var="element"> 
-    				{
-    					text : "${element.descriptionI18N.content}",
-    					id : "${element}"
-    				},
-    			</c:forEach>
-    		];
-	$("#academicTariff_interestType").select2({ data : interestType_options } );
-	$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestType ? academicTariffBean.interestType : ""}');
+	if($("#academicTariff_interestType").length) {
+		interestType_options = [
+	    		<c:forEach items="${AcademicTariff_interestType_options}" var="element"> 
+	    				{
+	    					text : "${element.descriptionI18N.content}",
+	    					id : "${element}"
+	    				},
+	    			</c:forEach>
+	    		];
+	
+		$("#academicTariff_interestType").select2({ data : interestType_options } );
+		$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestType ? academicTariffBean.interestType : ""}');
+	}
 
 });
 

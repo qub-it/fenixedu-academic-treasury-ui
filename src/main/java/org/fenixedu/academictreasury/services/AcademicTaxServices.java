@@ -53,7 +53,7 @@ public class AcademicTaxServices {
                 return false;
             }
 
-            if (DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(),
+            if (!DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(),
                     PersonCustomer.findUnique(registration.getPerson()).get()).isPresent()) {
 
                 DebtAccount.create(academicTariff.getFinantialEntity().getFinantialInstitution(),
@@ -75,6 +75,11 @@ public class AcademicTaxServices {
         }
         
         final AcademicTariff academicTariff = AcademicTariff.findMatch(academicTax.getProduct(), registration.getDegree(), new DateTime());
+        
+        if (academicTariff == null) {
+            return false;
+        }
+        
         academicTariff.createDebitEntry(academicTreasuryEvent);
 
         return true;

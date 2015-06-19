@@ -14,6 +14,7 @@ import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.RegistrationAcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
@@ -104,7 +105,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                     "error.AcademicTreasuryEvent.not.for.service.request.nor.tuition.nor.academic.tax");
         }
 
-        if (isForAcademicServiceRequest() ^ isForRegistrationTuition() ^ isForStandaloneTuition() ^ isForAcademicTax()) {
+        if (!(isForAcademicServiceRequest() ^ isForRegistrationTuition() ^ isForStandaloneTuition() ^ isForAcademicTax())) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.for.one.type");
         }
 
@@ -166,6 +167,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public int getNumberOfUnits() {
         if (isForAcademicServiceRequest()) {
             return getAcademicServiceRequest().getNumberOfUnits();
+        } else if(isForAcademicTax()) {
+            return 0;
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.numberOfUnits.not.applied");
@@ -174,6 +177,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public int getNumberOfPages() {
         if (isForAcademicServiceRequest()) {
             return getAcademicServiceRequest().getNumberOfPages();
+        } else if(isForAcademicTax()) {
+            return 0;
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.numberOfPages.not.applied");
@@ -182,6 +187,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public boolean isUrgentRequest() {
         if (isForAcademicServiceRequest()) {
             return getAcademicServiceRequest().isUrgentRequest();
+        } else if(isForAcademicTax()) {
+            return false;
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.urgentRequest.not.applied");
@@ -190,6 +197,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public LocalDate getRequestDate() {
         if (isForAcademicServiceRequest()) {
             return getAcademicServiceRequest().getRequestDate().toLocalDate();
+        } else if(isForAcademicTax() && getAcademicTax().isAppliedOnRegistration()) {
+            return RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear()).getEnrolmentDate();
+        } else if(isForAcademicTax() && !getAcademicTax().isAppliedOnRegistration()) {
+            // TODO Anil
+            return new LocalDate();
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.requestDate.not.applied");

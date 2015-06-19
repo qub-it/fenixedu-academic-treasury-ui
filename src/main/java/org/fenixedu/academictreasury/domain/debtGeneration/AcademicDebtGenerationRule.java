@@ -207,7 +207,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         for (final Registration registration : Bennu.getInstance().getRegistrationsSet()) {
 
             // Discard registrations not active and with no enrolments
-            if (!registration.isRegistered(getExecutionYear())) {
+            if (!registration.hasAnyActiveState(getExecutionYear()) || !registration.hasAnyEnrolmentsIn(getExecutionYear())) {
                 continue;
             }
 
@@ -258,7 +258,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         final DebitNote debitNote = grabPreparingOrCreateDebitEntry(registration, debitEntries, logBean);
 
         for (final DebitEntry debitEntry : debitEntries) {
-            if (debitEntry.getFinantialDocument() != null) {
+            if (debitEntry.getFinantialDocument() == null) {
                 debitEntry.setFinantialDocument(debitNote);
             }
         }
@@ -271,11 +271,11 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
 
         if (FinantialDocumentPaymentCode.findNewByFinantialDocument(debitNote).count() == 0) {
-            final PaymentReferenceCode paymentReferenceCode =
-                    getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(debitNote.getDebtAccount().getCustomer(),
-                            debitNote.getOpenAmount(), new LocalDate(), debitNote.getDocumentDueDate(), true);
-
-            FinantialDocumentPaymentCode.create(debitNote, paymentReferenceCode, true);
+//            final PaymentReferenceCode paymentReferenceCode =
+//                    getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(debitNote.getDebtAccount().getCustomer(),
+//                            debitNote.getOpenAmount(), new LocalDate(), debitNote.getDocumentDueDate(), true);
+//
+//            FinantialDocumentPaymentCode.create(debitNote, paymentReferenceCode, true);
         }
     }
 
