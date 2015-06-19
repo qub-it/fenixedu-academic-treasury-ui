@@ -1,5 +1,6 @@
 package org.fenixedu.academictreasury.services;
 
+import java.util.Collections;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Degree;
@@ -28,13 +29,14 @@ import com.google.common.eventbus.Subscribe;
 public class EmolumentServices {
 
     @Atomic
-    public static Product createEmolument(final String code, final LocalizedString name, final VatType vatType) {
+    public static Product createEmolument(final String code, final LocalizedString name, final VatType vatType,
+            FinantialInstitution finantialInstitution) {
         if (AcademicTreasurySettings.getInstance().getEmolumentsProductGroup() == null) {
             throw new AcademicTreasuryDomainException("error.EmolumentServices.emoluments.product.group.not.defined");
         }
 
         return Product.create(AcademicTreasurySettings.getInstance().getEmolumentsProductGroup(), code, name,
-                Product.defaultUnitOfMeasure(), true, vatType);
+                Product.defaultUnitOfMeasure(), true, vatType, Collections.singletonList(finantialInstitution));
     }
 
     public static Stream<Product> findEmoluments() {
@@ -143,5 +145,5 @@ public class EmolumentServices {
     public void createAcademicTax(final Registration registration, final ExecutionYear executionYear, final Product product) {
         
     }
-    
+
 }

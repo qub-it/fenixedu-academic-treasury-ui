@@ -75,7 +75,8 @@ public class ProductController extends AcademicTreasuryBaseController {
                     required = false) final VatType vatType, final Model model) {
 
         try {
-            final Product product = EmolumentServices.createEmolument(code, name, vatType);
+            final Product product =
+                    EmolumentServices.createEmolument(code, name, vatType, finantialEntity.getFinantialInstitution());
 
             model.addAttribute("product", product);
             return String.format("redirect:/academictreasury/manageemoluments/product/searchemoluments/%s",
