@@ -19,6 +19,7 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         final AcademicTreasuryBridgeImpl impl = new AcademicTreasuryBridgeImpl();
         impl.registerNewAcademicServiceRequestSituationHandler();
         impl.registerStandaloneEnrolmentHandler();
+        impl.registerExtracurricularEnrolmentHandler();
         
         TreasuryBridgeAPIFactory.registerImplementation(impl);
     }

@@ -341,6 +341,29 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         }
 
         return createdDebitEntries;
+    }
+
+    public boolean createDebitEntriesForExtracurricular(final AcademicTreasuryEvent academicTreasuryEvent,
+            final Enrolment extracurricularEnrolment, final LocalDate when) {
+        final DebtAccount debtAccount = academicTreasuryEvent.getDebtAccount();
+
+        if (!getTuitionPaymentPlanGroup().isForExtracurricular()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        if (!extracurricularEnrolment.isExtraCurricular()) {
+            throw new RuntimeException("error.TuitionPaymentPlan.enrolment.not.standalone");
+        }
+
+        boolean createdDebitEntries = false;
+        for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
+            if (!academicTreasuryEvent.isChargedWithDebitEntry(extracurricularEnrolment)) {
+                tariff.createDebitEntryForExtracurricular(debtAccount, academicTreasuryEvent, extracurricularEnrolment, when);
+                createdDebitEntries = true;
+            }
+        }
+
+        return createdDebitEntries;
 
     }
 
@@ -536,6 +559,33 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                         && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial)
                         && (!t.isCustomized())).findFirst().orElse(null);
 
+    }
+
+    public static TuitionPaymentPlan inferTuitionPaymentPlanForExtracurricularEnrolment(final Registration registration,
+            final ExecutionYear executionYear, final Enrolment enrolment) {
+
+        if (!enrolment.isExtraCurricular()) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.enrolment.is.not.extracurricular");
+        }
+
+        final DegreeCurricularPlan degreeCurricularPlan = enrolment.getCurricularCourse().getDegreeCurricularPlan();
+        final RegistrationProtocol registrationProtocol = registration.getRegistrationProtocol();
+        final IngressionType ingression = registration.getIngressionType();
+        boolean laboratorial = laboratorial(enrolment);
+
+        final Stream<TuitionPaymentPlan> stream =
+                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular()
+                        .get(), degreeCurricularPlan, executionYear);
+
+        final List<TuitionPaymentPlan> l = stream.collect(Collectors.toList());
+
+        return Lists
+                .newArrayList(l)
+                .stream()
+                .filter(t -> (t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol)
+                        && (t.getIngression() == null || t.getIngression() == ingression)
+                        && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial)
+                        && (!t.isCustomized())).findFirst().orElse(null);
     }
 
     private static boolean laboratorial(final Enrolment enrolment) {

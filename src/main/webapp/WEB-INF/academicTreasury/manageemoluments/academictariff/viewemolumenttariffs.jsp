@@ -120,14 +120,40 @@ ${portal.toolkit()}
 				<c:forEach items="${viewemolumenttariffsResultsDataSet}" var="tariff">
 					<tr>
 						<td>
-							<p>
-								<c:if test="${tariff.endDateDefined}">
-									<span>[${tariff.beginDate.toLocalDate()} - ${tariff.endDate.toLocalDate()}]</span>
-								</c:if>
-								<c:if test="${!tariff.endDateDefined}">
-									${tariff.beginDate.toLocalDate()}
-								</c:if>
-							</p>
+								<p>
+									<c:if test="${tariff.endDateDefined}">
+										<span>[${tariff.beginDate.toLocalDate()} - ${tariff.endDate.toLocalDate()}]</span>
+									</c:if>
+									<c:if test="${!tariff.endDateDefined}">
+										${tariff.beginDate.toLocalDate()}
+									</c:if>
+								</p>
+								
+								<p>&nbsp;</p>
+							
+							<c:if test="${not empty tariff.administrativeOffice}">
+								<p><strong>
+									<c:out value="${tariff.administrativeOffice.name.content}" />
+								</strong></p>
+							</c:if>
+							
+							<c:if test="${not empty tariff.degreeType}">
+								<p><strong>
+									<c:out value="${tariff.degreeType.name.content}" />
+								</strong></p>
+							</c:if>
+
+							<c:if test="${not empty tariff.degree}">
+								<p><strong>
+									<c:out value="${tariff.degree.nameI18N.content}" />
+								</strong></p>
+							</c:if>
+
+							<c:if test="${(not empty tariff.degree) && (not empty tariff.cycleType)}">
+								<p><strong>
+									<c:out value="${tariff.cycleType.descriptionI18N.name}" />
+								</strong></p>
+							</c:if>
 						</td>
 						<td>
 							<c:if test="${tariff.applyBaseAmount}">

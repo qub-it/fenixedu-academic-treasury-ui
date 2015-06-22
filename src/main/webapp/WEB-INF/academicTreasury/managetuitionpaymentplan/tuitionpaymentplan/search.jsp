@@ -132,7 +132,7 @@ ${portal.toolkit()}
 						<p>&nbsp;</p>
 						
 						<p><spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
-							arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" /></p>
+							arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" /></p>
 						<p><em><spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" /></em></p>
 					</c:if>
 				</c:when>

@@ -72,6 +72,7 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
 
     @Override
     public void extracurricularUnenrolment(final Enrolment extracurricularEnrolment) {
+        TuitionServices.removeDebitEntryForExtracurricularEnrolment(extracurricularEnrolment);
     }
 
     @Override

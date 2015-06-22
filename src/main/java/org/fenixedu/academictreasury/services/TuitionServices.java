@@ -259,7 +259,7 @@ public class TuitionServices {
             return false;
         }
 
-        final DebitEntry debitEntry = academicTreasuryEvent.findActiveStandaloneDebitEntry(standaloneEnrolment).get();
+        final DebitEntry debitEntry = academicTreasuryEvent.findActiveEnrolmentDebitEntry(standaloneEnrolment).get();
 
         if (!debitEntry.isProcessedInDebitNote() || ((DebitNote) debitEntry.getFinantialDocument()).isPreparing()) {
             debitEntry.setCurricularCourse(null);
@@ -285,7 +285,127 @@ public class TuitionServices {
 
         return false;
     }
+    
+    /* ***************
+     * EXTRACURRICULAR
+     * ***************
+     */
 
+    
+    public static AcademicTreasuryEvent findAcademicTreasuryEventTuitionForExtracurricular(final Registration registration, final ExecutionYear executionYear) {
+        return AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).orElse(null);
+    }
+
+    public static boolean createInferedTuitionForExtracurricular(final Enrolment extracurricularEnrolment, final LocalDate when) {
+        return createInferedTuitionForExtracurricular(Sets.newHashSet(extracurricularEnrolment), when);
+    }
+
+    public static boolean createInferedTuitionForExtracurricular(final Set<Enrolment> extracurricularEnrolments, final LocalDate when) {
+
+        boolean created = false;
+
+        // Validate all enrolments are estracurricular
+
+        for (final Enrolment extracurricularEnrolment : extracurricularEnrolments) {
+            if (!extracurricularEnrolment.isExtraCurricular()) {
+                throw new AcademicTreasuryDomainException("error.TuitionServices.enrolment.is.not.extracurricular");
+            }
+        }
+
+        for (final Enrolment extracurricularEnrolment : extracurricularEnrolments) {
+            final Registration registration = extracurricularEnrolment.getRegistration();
+
+            final Person person = registration.getPerson();
+            // Read person customer
+
+            if (!PersonCustomer.findUnique(person).isPresent()) {
+                PersonCustomer.create(person);
+            }
+
+            final PersonCustomer personCustomer = PersonCustomer.findUnique(person).get();
+
+            final ExecutionYear executionYear = extracurricularEnrolment.getExecutionYear();
+
+            if (TuitionPaymentPlan
+                    .inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear, extracurricularEnrolment) == null) {
+                continue;
+            }
+
+            final TuitionPaymentPlan tuitionPaymentPlan =
+                    TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear,
+                            extracurricularEnrolment);
+
+            if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
+                    .isPresent()) {
+                DebtAccount.create(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer);
+            }
+
+            final DebtAccount debtAccount =
+                    DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
+                            .get();
+
+            if (!AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).isPresent()) {
+                AcademicTreasuryEvent.createForExtracurricularTuition(debtAccount, tuitionPaymentPlan.getProduct(), registration,
+                        executionYear);
+            }
+
+            final AcademicTreasuryEvent academicTreasuryEvent =
+                    AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).get();
+
+            if (academicTreasuryEvent.getDebtAccount().getFinantialInstitution() != tuitionPaymentPlan.getFinantialEntity()
+                    .getFinantialInstitution()) {
+                throw new AcademicTreasuryDomainException(
+                        "error.TuitionServices.standalone.tuition.for.different.finantial.institutions.not.supported");
+            }
+
+            created |= tuitionPaymentPlan.createDebitEntriesForExtracurricular(academicTreasuryEvent, extracurricularEnrolment, when);
+        }
+
+        return created;
+    }
+
+    public static boolean removeDebitEntryForExtracurricularEnrolment(final Enrolment extracurricularEnrolment) {
+        final Registration registration = extracurricularEnrolment.getRegistration();
+        final ExecutionYear executionYear = extracurricularEnrolment.getExecutionYear();
+
+        if (!AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).isPresent()) {
+            return false;
+        }
+
+        final AcademicTreasuryEvent academicTreasuryEvent =
+                AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).get();
+
+        if (!academicTreasuryEvent.isChargedWithDebitEntry(extracurricularEnrolment)) {
+            return false;
+        }
+
+        final DebitEntry debitEntry = academicTreasuryEvent.findActiveEnrolmentDebitEntry(extracurricularEnrolment).get();
+
+        if (!debitEntry.isProcessedInDebitNote() || ((DebitNote) debitEntry.getFinantialDocument()).isPreparing()) {
+            debitEntry.setCurricularCourse(null);
+            debitEntry.setExecutionSemester(null);
+
+            debitEntry.delete();
+
+            return true;
+        } else if (((DebitNote) debitEntry.getFinantialDocument()).isClosed()) {
+            DebtAccount debtAccount = debitEntry.getDebtAccount();
+            final CreditNote creditNote =
+                    CreditNote.create(
+                            debtAccount,
+                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForCreditNote(),
+                                    debtAccount.getFinantialInstitution()).orElse(null), new DateTime(),
+                            ((DebitNote) debitEntry.getFinantialDocument()), null);
+
+            CreditEntry.create(creditNote, debitEntry.getDescription(), debitEntry.getProduct(), debitEntry.getVat(),
+                    debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
+
+            return true;
+        }
+
+        return false;
+    }
+    
     public static Set<Enrolment> normalEnrolments(final Registration registration, final ExecutionYear executionYear) {
         final Set<Enrolment> result = Sets.newHashSet(registration.getEnrolments(executionYear));
 
