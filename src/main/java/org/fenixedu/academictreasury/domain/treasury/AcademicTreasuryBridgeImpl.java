@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Enrolment;
+import org.fenixedu.academic.domain.EnrolmentEvaluation;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
@@ -75,10 +76,6 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         TuitionServices.removeDebitEntryForExtracurricularEnrolment(extracurricularEnrolment);
     }
 
-    @Override
-    public void improvementUnrenrolment(final Enrolment improvementEnrolment) {
-    }
-
     /* --------
      * TUITIONS
      * --------
@@ -101,9 +98,20 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
 
     @Override
     public IAcademicTreasuryEvent getTuitionForImprovementTreasuryEvent(final Registration registration, final ExecutionYear executionYear) {
-        return null;
+        return TuitionServices.findAcademicTreasuryEventForImprovementTax(registration, executionYear);
     }
 
+    @Override
+    public void improvementUnrenrolment(EnrolmentEvaluation improvementEnrolmentEvaluation) {
+        TuitionServices.removeDebitEntryForImprovement(improvementEnrolmentEvaluation);
+    }
+
+    @Override
+    public boolean isToPayTuition(final Registration registration, final ExecutionYear executionYear) {
+        return TuitionServices.isToPayRegistrationTuition(registration, executionYear);
+    }
+
+    
     /* --------------
      * ACADEMIC TAXES
      * --------------

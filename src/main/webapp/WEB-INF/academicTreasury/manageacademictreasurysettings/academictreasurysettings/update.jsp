@@ -131,6 +131,20 @@ ${portal.toolkit()}
 					</select>
 				</div>
 			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.AcademicTreasurySettings.tuitionProductGroup" />
+				</div>
+
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<select id="academicTreasurySettings_improvementAcademicTax"
+						class="js-example-basic-single" name="improvementacademictax">
+						<option value=""></option>
+					</select>
+				</div>			
+			</div>
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button"
@@ -160,10 +174,8 @@ $("#academicTreasurySettings_emolumentsProductGroup").select2(
 		    );
 		    
 		    
-		    $("#academicTreasurySettings_emolumentsProductGroup").select2().select2('val', '<c:out value='${not empty param.emolumentsproductgroup ? param.emolumentsproductgroup : academicTreasurySettings.emolumentsProductGroup.externalId }'/>');
-		    <%-- End block for providing emolumentsProductGroup options --%>
-<%-- Block for providing tuitionProductGroup options --%>
-<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
+$("#academicTreasurySettings_emolumentsProductGroup").select2().select2('val', '<c:out value='${not empty param.emolumentsproductgroup ? param.emolumentsproductgroup : academicTreasurySettings.emolumentsProductGroup.externalId }'/>');
+
 tuitionProductGroup_options = [
 	<c:forEach items="${AcademicTreasurySettings_tuitionProductGroup_options}" var="element"> 
 		{
@@ -183,5 +195,20 @@ $("#academicTreasurySettings_tuitionProductGroup").select2(
 		    $("#academicTreasurySettings_tuitionProductGroup").select2().select2('val', '<c:out value='${not empty param.tuitionproductgroup ? param.tuitionproductgroup : academicTreasurySettings.tuitionProductGroup.externalId }'/>');
 		    <%-- End block for providing tuitionProductGroup options --%>
 
-	});
+improvementAcademicTax_options = [
+	<c:forEach items="${AcademicTreasurySettings_improvementAcademicTax_options}" var="element"> 
+		{
+			text : "<c:out value='${element.product.name.content}'/>", 
+			id : "<c:out value='${element.externalId}'/>"
+		},
+	</c:forEach>
+];
+
+$("#academicTreasurySettings_improvementAcademicTax").select2({ data : improvementAcademicTax_options });
+			    
+			    
+$("#academicTreasurySettings_improvementAcademicTax").select2().select2('val', '<c:out value='${not empty param.improvementacademictax ? param.improvementacademictax : academicTreasurySettings.improvementAcademicTax.externalId }'/>');
+
+});
+
 </script>

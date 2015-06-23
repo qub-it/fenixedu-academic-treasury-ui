@@ -193,7 +193,7 @@ $(document).ready(function() {
     
     
     
-    $("#academicTax_product").select2().select2('val', '<c:out value='${param.product.name.content}'/>');
+    $("#academicTax_product").select2().select2('val', '<c:out value='${param.product}'/>');
 
 	<%-- End block for providing product options --%>
 

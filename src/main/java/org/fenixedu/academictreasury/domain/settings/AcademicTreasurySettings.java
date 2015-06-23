@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.domain.settings;
 
 import java.util.Optional;
 
+import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.ProductGroup;
@@ -16,9 +17,10 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
     }
 
     @Atomic
-    public void edit(final ProductGroup emolumentsProductGroup, final ProductGroup tuitionProductGroup) {
+    public void edit(final ProductGroup emolumentsProductGroup, final ProductGroup tuitionProductGroup, final AcademicTax improvementAcademicTax) {
         setEmolumentsProductGroup(emolumentsProductGroup);
         setTuitionProductGroup(tuitionProductGroup);
+        setImprovementAcademicTax(improvementAcademicTax);
     }
     
     @Atomic

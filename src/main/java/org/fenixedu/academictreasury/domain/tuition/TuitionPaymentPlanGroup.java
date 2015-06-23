@@ -79,6 +79,10 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     public boolean isForExtracurricular() {
         return getForExtracurricular();
     }
+    
+    public boolean isForImprovement() {
+        return getForImprovement();
+    }
 
     public boolean isDeletable() {
         return true;
@@ -111,6 +115,10 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     protected static Stream<TuitionPaymentPlanGroup> findDefaultGroupForStandalone() {
         return findAll().filter(t -> t.isForStandalone());
     }
+    
+    protected static Stream<TuitionPaymentPlanGroup> findDefaultGroupForImprovement() {
+        return findAll().filter(t -> t.isForImprovement());
+    }
 
     protected static Stream<TuitionPaymentPlanGroup> findDefaultGroupForExtracurricular() {
         return findAll().filter(t -> t.isForExtracurricular());
@@ -126,6 +134,10 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
 
     public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForExtracurricular() {
         return findAll().filter(t -> t.isForExtracurricular()).findFirst();
+    }
+    
+    public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForImprovement() {
+        return findAll().filter(t -> t.isForImprovement()).findFirst();
     }
 
     @Atomic

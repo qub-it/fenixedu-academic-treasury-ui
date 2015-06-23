@@ -121,6 +121,14 @@ ${portal.toolkit()}
 						<td><c:out
 								value='${academicTreasurySettings.tuitionProductGroup.name.content}' /></td>
 					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3">
+							<spring:message code="label.AcademicTreasurySettings.improvementAcademicTax" />
+						</th>
+						<td>
+							<c:out value="${academicTreasurySettings.improvementAcademicTax.product.name.content}" />
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</form>
@@ -145,6 +153,9 @@ ${portal.toolkit()}
 				<td>
 					<p>
 						<c:out value='${p.name.content}' />
+						<c:if test="${academicTreasurySettings.isAcademicalActBlocking(p)}">
+							<p class="label label-warning"><spring:message code="label.annuled" /></p>
+						</c:if>
 					</p>
 				</td>
 				<td><c:if

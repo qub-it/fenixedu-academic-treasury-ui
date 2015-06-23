@@ -28,6 +28,7 @@ package org.fenixedu.academictreasury.ui.manageacademictreasurysettings;
 
 import java.util.stream.Collectors;
 
+import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
@@ -43,7 +44,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //@Component("org.fenixedu.academictreasury.ui.manageAcademicTreasurySettings") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageAcademicTreasurySettings", accessGroup = "logged")
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageAcademicTreasurySettings",
+        accessGroup = "logged")
 @RequestMapping(AcademicTreasurySettingsController.CONTROLLER_URL)
 public class AcademicTreasurySettingsController extends AcademicTreasuryBaseController {
 
@@ -61,7 +63,7 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
     @RequestMapping(value = _READ_URI)
     public String read(final Model model) {
         model.addAttribute("products", Product.findAll().sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
-        
+
         model.addAttribute("academicTreasurySettings", AcademicTreasurySettings.getInstance());
 
         return jspPage("read");
@@ -74,6 +76,8 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
     public String update(final Model model) {
         model.addAttribute("AcademicTreasurySettings_emolumentsProductGroup_options", ProductGroup.readAll());
         model.addAttribute("AcademicTreasurySettings_tuitionProductGroup_options", ProductGroup.readAll());
+        model.addAttribute("AcademicTreasurySettings_improvementAcademicTax_options",
+                AcademicTax.findAll().sorted(AcademicTax.COMPARE_BY_PRODUCT_NAME).collect(Collectors.toList()));
 
         model.addAttribute("academicTreasurySettings", AcademicTreasurySettings.getInstance());
 
@@ -84,11 +88,12 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
     public String update(
             @RequestParam(value = "emolumentsproductgroup", required = false) final ProductGroup emolumentsProductGroup,
             @RequestParam(value = "tuitionproductgroup", required = false) final ProductGroup tuitionProductGroup,
+            @RequestParam(value = "improvementacademictax", required = false) final AcademicTax improvementAcademicTax,
             final Model model, final RedirectAttributes redirectAttributes) {
 
         try {
-            
-            AcademicTreasurySettings.getInstance().edit(emolumentsProductGroup, tuitionProductGroup);
+
+            AcademicTreasurySettings.getInstance().edit(emolumentsProductGroup, tuitionProductGroup, improvementAcademicTax);
 
             return redirect(READ_URL, model, redirectAttributes);
         } catch (final DomainException de) {
@@ -97,38 +102,38 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
             return update(model);
         }
     }
-    
+
     private static final String _ADDACADEMICALACTBLOCKINGPRODUCT_URI = "/addacademicalactblockingproduct/";
     public static final String ADDACADEMICALACTBLOCKINGPRODUCT_URL = CONTROLLER_URL + _ADDACADEMICALACTBLOCKINGPRODUCT_URI;
-    
+
     @RequestMapping(value = _ADDACADEMICALACTBLOCKINGPRODUCT_URI + "{productId}", method = RequestMethod.GET)
     public String addAcademicalActBlockingProduct(@PathVariable("productId") final Product product, Model model) {
-        
+
         try {
-            
+
             AcademicTreasurySettings.getInstance().addAcademicalActBlockingProduct(product);
-            
-        } catch(final DomainException e) {
+
+        } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
-        
+
         return read(model);
     }
 
     private static final String _REMOVEACADEMICALACTBLOCKINGPRODUCT_URI = "/removeacademicalactblockingproduct/";
     public static final String REMOVEACADEMICALACTBLOCKINGPRODUCT_URL = CONTROLLER_URL + _REMOVEACADEMICALACTBLOCKINGPRODUCT_URI;
-    
+
     @RequestMapping(value = _REMOVEACADEMICALACTBLOCKINGPRODUCT_URI + "{productId}", method = RequestMethod.GET)
     public String removeAcademicalActBlockingProduct(@PathVariable("productId") final Product product, Model model) {
-        
+
         try {
-            
+
             AcademicTreasurySettings.getInstance().removeAcademicalActBlockingProduct(product);
-            
-        } catch(final DomainException e) {
+
+        } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
-        
+
         return read(model);
     }
 

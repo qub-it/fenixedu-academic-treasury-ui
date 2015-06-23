@@ -134,6 +134,7 @@ class emoluments.AcademicTax {
 	boolean appliedOnRegistration;
 	boolean appliedOnRegistrationFirstYear;
 	boolean appliedOnRegistrationSubsequentYears;
+	boolean appliedAutomatically;
 }
 
 	relation AcademicTaxBennu {
@@ -166,6 +167,7 @@ class tuition.TuitionPaymentPlanGroup {
 	boolean forRegistration;
 	boolean forStandalone;
 	boolean forExtracurricular;
+	boolean forImprovement;
 }
 
 	relation TuitionPaymentPlanGroupBennu {
@@ -307,25 +309,34 @@ class tuition.TuitionPaymentPlan {
 	
 	relation DebitEntryCurricularCourse {
 		
-		.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntry {
-			multiplicity 0..1;
-		}
-		
 		.org.fenixedu.academic.domain.CurricularCourse playsRole curricularCourse {
 			multiplicity 0..1;
+		}
+
+		.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntry {
+			multiplicity *;
 		}
 	}
 	
 	relation DebitEntryExecutionPeriod {
-		.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntry {
-			multiplicity 0..1;
-		}
-		
 		.org.fenixedu.academic.domain.ExecutionSemester playsRole executionSemester {
 			multiplicity 0..1;
 		} 
+
+		.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntry {
+			multiplicity *;
+		}
 	}
 	
+	relation DebitEntryEvaluationSeason {
+		.org.fenixedu.academic.domain.EvaluationSeason playsRole evaluationSeason {
+			multiplicity 0..1;
+		}
+	
+		.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntry {
+			multiplicity *;
+		}
+	}
 
 class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tariff.Tariff {
 	int installmentOrder;
@@ -573,6 +584,16 @@ class settings.AcademicTreasurySettings {
 			multiplicity *;
 		}
 		
+	}
+	
+	relation AcademicTreasurySettingsImprovementAcademicTax {
+		settings.AcademicTreasurySettings playsRole academicTreasurySettingsForTuition {
+			multiplicity 0..1;
+		}
+	
+		emoluments.AcademicTax playsRole improvementAcademicTax {
+			multiplicity 0..1;
+		}
 	}
 	
 	

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Degree;
+import org.fenixedu.academic.domain.EnrolmentEvaluation;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
@@ -15,11 +16,11 @@ import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
-import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
@@ -294,9 +295,15 @@ public class AcademicTariff extends AcademicTariff_Base {
         return academicTreasuryEvent.getNumberOfUnits() - getUnitsForBase();
     }
 
+    private BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent,
+            final EnrolmentEvaluation enrolmentEvaluation) {
+        return getBaseAmount();
+    }
+
     public DebitEntry createDebitEntry(final AcademicTreasuryEvent academicTreasuryEvent) {
         final BigDecimal amount = amountToPay(academicTreasuryEvent);
-        final LocalDate dueDate = dueDate(academicTreasuryEvent.isForAcademicServiceRequest() ? academicTreasuryEvent.getRequestDate() : new LocalDate());
+        final LocalDate dueDate =
+                dueDate(academicTreasuryEvent.isForAcademicServiceRequest() ? academicTreasuryEvent.getRequestDate() : new LocalDate());
 
         updatePriceValuesInEvent(academicTreasuryEvent);
 
@@ -308,14 +315,57 @@ public class AcademicTariff extends AcademicTariff_Base {
                 Constants.DEFAULT_QUANTITY, this, new DateTime());
     }
 
+    public DebitEntry createDebitEntryForImprovement(final AcademicTreasuryEvent academicTreasuryEvent,
+            final EnrolmentEvaluation enrolmentEvaluation) {
+
+        if (!academicTreasuryEvent.isForImprovementTax()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        final BigDecimal amount = amountToPay(academicTreasuryEvent, enrolmentEvaluation);
+        final LocalDate dueDate = dueDate(enrolmentEvaluation.getWhenDateTime().toLocalDate());
+
+        updatePriceValuesInEvent(academicTreasuryEvent, enrolmentEvaluation);
+
+        final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent, enrolmentEvaluation);
+
+        final String description =
+                BundleUtil.getString(Constants.BUNDLE, "label.AcademicTax.improvement.debit.entry.description",
+                        enrolmentEvaluation.getEnrolment().getName().getContent(), enrolmentEvaluation.getExecutionPeriod()
+                                .getQualifiedName());
+
+        final DebitEntry debitEntry =
+                DebitEntry.create(
+                        null,
+                        academicTreasuryEvent.getDebtAccount(),
+                        academicTreasuryEvent,
+                        Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(),
+                                new DateTime()).get(), amount, dueDate, fillPriceProperties, getProduct(), description,
+                        Constants.DEFAULT_QUANTITY, this, new DateTime());
+
+        academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);
+
+        return debitEntry;
+    }
+
+    private void updatePriceValuesInEvent(final AcademicTreasuryEvent academicTreasuryEvent,
+            final EnrolmentEvaluation enrolmentEvaluation) {
+        final BigDecimal baseAmount = getBaseAmount();
+
+        academicTreasuryEvent.updatePricingFields(baseAmount, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+                BigDecimal.ZERO);
+    }
+
     private void updatePriceValuesInEvent(final AcademicTreasuryEvent academicTreasuryEvent) {
 
         final BigDecimal baseAmount = getBaseAmount();
         final BigDecimal amountForAdditionalUnits = amountForAdditionalUnits(academicTreasuryEvent);
         final BigDecimal amountForPages = amountForPages(academicTreasuryEvent);
         final BigDecimal maximumAmount = getMaximumAmount();
-        final BigDecimal amountForLanguageTranslationRate = academicTreasuryEvent.isForAcademicServiceRequest() ? amountForLanguageTranslationRate(academicTreasuryEvent) : BigDecimal.ZERO;
-        final BigDecimal amountForUrgencyRate = academicTreasuryEvent.isForAcademicServiceRequest() ? amountForUrgencyRate(academicTreasuryEvent) : BigDecimal.ZERO;
+        final BigDecimal amountForLanguageTranslationRate =
+                academicTreasuryEvent.isForAcademicServiceRequest() ? amountForLanguageTranslationRate(academicTreasuryEvent) : BigDecimal.ZERO;
+        final BigDecimal amountForUrgencyRate =
+                academicTreasuryEvent.isForAcademicServiceRequest() ? amountForUrgencyRate(academicTreasuryEvent) : BigDecimal.ZERO;
 
         academicTreasuryEvent.updatePricingFields(baseAmount, amountForAdditionalUnits, amountForPages, maximumAmount,
                 amountForLanguageTranslationRate, amountForUrgencyRate);
@@ -359,6 +409,34 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(),
                 amountToPay(academicTreasuryEvent).toString());
+
+        return propertiesMap;
+    }
+
+    private Map<String, String> fillPriceProperties(final AcademicTreasuryEvent academicTreasuryEvent,
+            final EnrolmentEvaluation improvementEnrolmentEvaluation) {
+        final Map<String, String> propertiesMap = Maps.newHashMap();
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.BASE_AMOUNT.getDescriptionI18N().getContent(),
+                getBaseAmount().toString());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(),
+                amountToPay(academicTreasuryEvent).toString());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ENROLMENT.getDescriptionI18N().getContent(),
+                improvementEnrolmentEvaluation.getEnrolment().getName().getContent());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N()
+                .getContent(), improvementEnrolmentEvaluation.getDegreeCurricularPlan().getName());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
+                improvementEnrolmentEvaluation.getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.EXECUTION_SEMESTER.getDescriptionI18N().getContent(),
+                improvementEnrolmentEvaluation.getExecutionPeriod().getQualifiedName());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.EVALUATION_SEASON.getDescriptionI18N().getContent(),
+                improvementEnrolmentEvaluation.getEvaluationSeason().getName().getContent());
 
         return propertiesMap;
     }
