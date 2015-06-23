@@ -263,10 +263,9 @@ function registerJqueryReadyClosure(func) {
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.beginDate"/></div> 
 					
 					<div class="col-sm-4">
-						<%-- <input id="academicTariff_beginDate" class="form-control" type="text" name="begindate" 
-						 bennu-date="object.beginDate" />--%>
+						<input id="academicTariff_beginDate" class="form-control" type="text" name="begindate" bennu-date="object.beginDate" />
 					
-						 <input id="academicTariff_beginDate" class="form-control" type="date" name="begindate" ng-model="object.beginDate"/>
+						 <%-- <input id="academicTariff_beginDate" class="form-control" type="date" name="begindate" ng-model="object.beginDate"/>--%>
 					</div>
 				</div>
 				

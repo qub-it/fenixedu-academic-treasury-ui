@@ -263,12 +263,12 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				</div>
 	
 				<div class="col-sm-4">
-					<%-- 
 					<input id="tuitionInstallmentTariff_beginDate" class="form-control" type="text" name="begindate"  
 						bennu-date="object.beginDate" ng-model="object.beginDate"/>
-					--%>
 					
+					<%-- 
  					<input id="tuitionInstallmentTariff_beginDate" class="form-control" type="text" name="begindate" ng-model="object.beginDate"/>
+ 					--%>
 				</div>
 			</div>
 			<div class="form-group row">
