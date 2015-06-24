@@ -134,4 +134,12 @@ public class PersonCustomer extends PersonCustomer_Base {
     public static CustomerType getDefaultCustomerType() {
         return CustomerType.findByCode("STUDENT").findFirst().orElse(null);
     }
+
+    @Override
+    public String getBusinessIdentification() {
+        if (this.getPerson().getStudent() != null) {
+            return this.getPerson().getStudent().getNumber().toString();
+        }
+        return this.getIdentificationNumber();
+    }
 }
