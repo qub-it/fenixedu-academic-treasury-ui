@@ -1,30 +1,23 @@
 package test.not.commit;
 
-import java.math.BigDecimal;
-import java.util.Locale;
-
-import org.fenixedu.academic.domain.EvaluationSeason;
+import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.bennu.core.groups.DynamicGroup;
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
-import org.fenixedu.commons.i18n.LocalizedString;
-import org.fenixedu.treasury.domain.FinantialEntity;
-import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
-import org.fenixedu.treasury.domain.tariff.FixedTariff;
-import org.joda.time.DateTime;
-
-import pt.ist.fenixframework.FenixFramework;
 
 public class RunCustomTask extends CustomTask {
 
-    private static final Locale PT = new Locale("PT",  "pt");
+    private static final String TREASURY_MANAGERS = "treasuryManagers";
+
+    private static final String TREASURY_BACK_OFFICE = "treasuryBackOffice";
+
+    private static final String TREASURY_FRONT_OFFICE = "treasuryFrontOffice";
+
 
     @Override
     public void runTask() throws Exception {
-        final Product product = FenixFramework.getDomainObject("848951825661959");
-        final FinantialEntity finantialEntity = FenixFramework.getDomainObject("849063494811650");
-        
-        FixedTariff.create(product, null, finantialEntity, BigDecimal.ZERO, new DateTime().minusYears(1), null, DueDateCalculationType.NO_DUE_DATE, null, 0, false);
+        DynamicGroup.get(TREASURY_FRONT_OFFICE).mutator().grant(User.findByUsername("manager"));
+        DynamicGroup.get(TREASURY_BACK_OFFICE).mutator().grant(User.findByUsername("manager"));
+        DynamicGroup.get(TREASURY_MANAGERS).mutator().grant(User.findByUsername("manager"));
     }
 
 }

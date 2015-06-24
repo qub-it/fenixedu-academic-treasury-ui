@@ -54,7 +54,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import edu.emory.mathcs.backport.java.util.Collections;
 
 //@Component("org.fenixedu.academicTreasury.ui.manageTuitionPaymentPlan") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlanStandalone",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlanStandalone",accessGroup = "treasuryBackOffice")
 @RequestMapping(TuitionPaymentPlanControllerStandalone.CONTROLLER_URL)
 public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBaseController {
 

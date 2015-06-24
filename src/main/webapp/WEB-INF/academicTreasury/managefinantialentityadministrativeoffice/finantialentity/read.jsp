@@ -1,5 +1,3 @@
-<%@page import="org.fenixedu.academictreasury.ui.manageacademictreasurysettings.AcademicTreasurySettingsController"%>
-<%@page import="org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -23,10 +21,10 @@
 ${portal.toolkit()}
 
 <link
-	href="${pageContext.request.contextPath}/static/academictreasury/css/dataTables.responsive.css"
+	href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css"
 	rel="stylesheet" />
 <script
-	src="${pageContext.request.contextPath}/static/academictreasury/js/dataTables.responsive.js"></script>
+	src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
 <link
 	href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
 	rel="stylesheet" />
@@ -40,7 +38,7 @@ ${portal.toolkit()}
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script
-	src="${pageContext.request.contextPath}/static/academictreasury/js/omnis.js"></script>
+	src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
 
 
 
@@ -48,19 +46,56 @@ ${portal.toolkit()}
 <div class="page-header">
 	<h1>
 		<spring:message
-			code="label.manageAcademicTreasurySettings.readAcademicTreasurySettings" />
+			code="label.manageFinantialEntityAdministrativeOffice.readFinantialEntity" />
 		<small></small>
 	</h1>
 </div>
-
+<div class="modal fade" id="deleteModal">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<form id="deleteForm"
+				action="${pageContext.request.contextPath}/academicTreasury/managefinantialentityadministrativeoffice/finantialentity/delete/${finantialEntity.externalId}"
+				method="POST">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title">
+						<spring:message code="label.confirmation" />
+					</h4>
+				</div>
+				<div class="modal-body">
+					<p>
+						<spring:message
+							code="label.manageFinantialEntityAdministrativeOffice.readFinantialEntity.confirmDelete" />
+					</p>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">
+						<spring:message code="label.close" />
+					</button>
+					<button id="deleteButton" class="btn btn-danger" type="submit">
+						<spring:message code="label.delete" />
+					</button>
+				</div>
+			</form>
+		</div>
+		<!-- /.modal-content -->
+	</div>
+	<!-- /.modal-dialog -->
+</div>
 <!-- /.modal -->
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.UPDATE_URL %>">
-		<spring:message code="label.event.update" /></a> 
-	|&nbsp;&nbsp;
+		href="${pageContext.request.contextPath}/academicTreasury/managefinantialentityadministrativeoffice/finantialentity/"><spring:message
+			code="label.event.back" /></a> |&nbsp;&nbsp; <span
+		class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
+		class=""
+		href="${pageContext.request.contextPath}/academicTreasury/managefinantialentityadministrativeoffice/finantialentity/update/${finantialEntity.externalId}"><spring:message
+			code="label.event.update" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -111,22 +146,13 @@ ${portal.toolkit()}
 				<tbody>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.AcademicTreasurySettings.emolumentsProductGroup" /></th>
-						<td><c:out
-								value='${academicTreasurySettings.emolumentsProductGroup.name.content}' /></td>
+								code="label.FinantialEntity.name" /></th>
+						<td><c:out value='${finantialEntity.name.content}' /></td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
-								code="label.AcademicTreasurySettings.tuitionProductGroup" /></th>
-						<td><c:out
-								value='${academicTreasurySettings.tuitionProductGroup.name.content}' /></td>
-					</tr>
-					<tr>
-						<th scope="row" class="col-xs-3">
-							<spring:message code="label.AcademicTreasurySettings.improvementAcademicTax" />
-						</th>
-						<td>
-							<c:out value="${academicTreasurySettings.improvementAcademicTax.product.name.content}" />
+								code="label.FinantialEntity.administrativeOffice" /></th>
+						<td><c:out value='${finantialEntity.administrativeOffice.name.content}' />
 						</td>
 					</tr>
 				</tbody>
@@ -134,47 +160,6 @@ ${portal.toolkit()}
 		</form>
 	</div>
 </div>
-
-<div style="margin-bottom: 50px"></div>
-
-<h2  style="margin-bottom: 50px"><spring:message code="label.AcademicTreasurySettings.academicalActBlockingProducts" /></h2>
-<table class="table">
-	<thead>
-		<tr>
-			<th scope="row" class="col-xs-3"><spring:message
-					code="label.AcademicTreasurySettings.academicalActBlockingProduct" />
-			</th>
-			<th></th>
-		</tr>
-	</thead>
-	<tbody>
-		<c:forEach items="${products}" var="p">
-			<tr>
-				<td>
-					<p>
-						<c:out value='${p.name.content}' />
-						<c:if test="${academicTreasurySettings.isAcademicalActBlocking(p)}">
-							<p class="label label-warning"><spring:message code="label.AcademicTreasurSettings.academicalActBlocking.selected" /></p>
-						</c:if>
-					</p>
-				</td>
-				<td><c:if
-						test="${academicTreasurySettings.isAcademicalActBlocking(p)}">
-						<a
-							href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.REMOVEACADEMICALACTBLOCKINGPRODUCT_URL %>${p.externalId}">
-							<spring:message code="label.delete" />
-						</a>
-					</c:if> <c:if
-						test="${not academicTreasurySettings.isAcademicalActBlocking(p)}">
-						<a
-							href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.ADDACADEMICALACTBLOCKINGPRODUCT_URL %>${p.externalId}">
-							<spring:message code="label.add" />
-						</a>
-					</c:if></td>
-			</tr>
-		</c:forEach>
-	</tbody>
-</table>
 
 <script>
 	$(document).ready(function() {

@@ -32,11 +32,11 @@ import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.dto.tuition.TuitionDebtCreationBean;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
-import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -48,9 +48,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import pt.ist.fenixframework.Atomic;
-
-@BennuSpringController(value = AcademicTreasuryController.class)
+@BennuSpringController(value = CustomerController.class)
 @RequestMapping(TuitionDebtCreationBeanController.CONTROLLER_URL)
 public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseController {
 

@@ -44,7 +44,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageAcademicTax", accessGroup = "logged")
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageAcademicTax", accessGroup = "treasuryBackOffice")
 @RequestMapping(AcademicTaxController.CONTROLLER_URL)
 public class AcademicTaxController extends AcademicTreasuryBaseController {
 

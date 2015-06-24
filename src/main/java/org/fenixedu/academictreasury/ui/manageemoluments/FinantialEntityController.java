@@ -17,8 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.academictreasury.ui.manageemoluments.FinantialEntityController")
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageEmoluments", accessGroup = "anyone")
-// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageEmoluments", accessGroup = "treasuryBackOffice")
 @RequestMapping("/academictreasury/manageemoluments/finantialentity")
 public class FinantialEntityController extends AcademicTreasuryBaseController {
 

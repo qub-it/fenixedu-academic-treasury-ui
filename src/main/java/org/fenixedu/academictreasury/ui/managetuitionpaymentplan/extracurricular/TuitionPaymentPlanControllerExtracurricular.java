@@ -53,7 +53,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlanExtracurricular",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlanExtracurricular",accessGroup = "treasuryBackOffice")
 @RequestMapping(TuitionPaymentPlanControllerExtracurricular.CONTROLLER_URL)
 public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasuryBaseController {
 

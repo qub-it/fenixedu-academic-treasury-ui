@@ -48,7 +48,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageServiceRequestMapEntry",
-        accessGroup = "logged")
+        accessGroup = "treasuryManagers")
 @RequestMapping("/academictreasury/manageservicerequestmapentry/servicerequestmapentry")
 public class ServiceRequestMapEntryController extends AcademicTreasuryBaseController {
 

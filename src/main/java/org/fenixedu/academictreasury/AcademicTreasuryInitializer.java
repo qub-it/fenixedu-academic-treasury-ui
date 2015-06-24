@@ -6,6 +6,8 @@ import javax.servlet.annotation.WebListener;
 
 import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
 import org.fenixedu.academictreasury.domain.treasury.AcademicTreasuryBridgeImpl;
+import org.fenixedu.academictreasury.services.accesscontrol.spi.AcademicTreasuryAccessControlExtension;
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 
 @WebListener
 public class AcademicTreasuryInitializer implements ServletContextListener {
@@ -23,5 +25,7 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         impl.registerImprovementEnrolmentHandler();
         
         TreasuryBridgeAPIFactory.registerImplementation(impl);
+        
+        TreasuryAccessControlAPI.registerExtension(new AcademicTreasuryAccessControlExtension());
     }
 }

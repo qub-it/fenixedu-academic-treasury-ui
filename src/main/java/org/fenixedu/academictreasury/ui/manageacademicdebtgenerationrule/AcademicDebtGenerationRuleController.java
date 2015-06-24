@@ -47,7 +47,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //@Component("org.fenixedu.academictreasury.ui.manageacademicdebtgenerationrule") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageacademicdebtgenerationrule",
-        accessGroup = "logged")
+        accessGroup = "treasuryManagers")
 // CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
 @RequestMapping(AcademicDebtGenerationRuleController.CONTROLLER_URL)
 public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseController {

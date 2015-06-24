@@ -16,6 +16,23 @@ valueType java.math.BigDecimal as BigDecimalAT
  * ENTITIES *
  ************/
 
+
+/* ----------------------------------------
+ * FinantialEntity and AdministrativeOffice
+ * ----------------------------------------
+ */
+
+	relation FinatialEntityAdministrativeOffice {
+		.org.fenixedu.treasury.domain.FinantialEntity playsRole finantialEntity {
+			multiplicity 0..1;
+		}
+		
+		.org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice playsRole administrativeOffice {
+			multiplicity 0..1;
+		}
+	}
+
+
 /* --------------
  * PersonCustomer
  * --------------*/

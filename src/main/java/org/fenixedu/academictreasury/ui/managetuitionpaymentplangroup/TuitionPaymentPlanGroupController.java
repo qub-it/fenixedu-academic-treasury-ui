@@ -47,7 +47,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //@Component("org.fenixedu.academicTreasury.ui.manageTuitionPaymentPlanGroup")
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlanGroup",
-        accessGroup = "logged")
+        accessGroup = "treasuryManagers")
 @RequestMapping(value = TuitionPaymentPlanGroupController.CONTROLLER)
 public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseController {
 
