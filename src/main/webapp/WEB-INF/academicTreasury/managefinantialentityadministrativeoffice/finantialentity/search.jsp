@@ -99,10 +99,10 @@ ${portal.toolkit()}
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-					<th><spring:message code="label.FinantialEntity.name" /></th>
 					<th><spring:message
 							code="label.FinantialEntity.administrativeOffice" /></th>
 					<%-- Operations Column --%>
+					<th><spring:message code="label.FinantialEntity.finantialEntity" /></th>
 					<th></th>
 				</tr>
 			</thead>
@@ -149,8 +149,8 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
-			{ data: 'name' },
 			{ data: 'administrativeoffice' },
+			{ data: 'name' },
 			{ data: 'actions' }
 			
 		],

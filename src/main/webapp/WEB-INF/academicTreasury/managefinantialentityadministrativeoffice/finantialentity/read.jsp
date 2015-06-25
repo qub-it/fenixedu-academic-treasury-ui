@@ -144,16 +144,18 @@ ${portal.toolkit()}
 		<form method="post" class="form-horizontal">
 			<table class="table">
 				<tbody>
-					<tr>
-						<th scope="row" class="col-xs-3"><spring:message
-								code="label.FinantialEntity.name" /></th>
-						<td><c:out value='${finantialEntity.name.content}' /></td>
-					</tr>
+					
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.FinantialEntity.administrativeOffice" /></th>
 						<td><c:out value='${finantialEntity.administrativeOffice.name.content}' />
 						</td>
+					</tr>
+					
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.FinantialEntity.finantialEntity" /></th>
+						<td><c:out value='${finantialEntity.name.content}' /></td>
 					</tr>
 				</tbody>
 			</table>
