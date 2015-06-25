@@ -369,11 +369,11 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public boolean isDeletable() {
 
-        for (final TuitionInstallmentTariff installmentTariff : getTuitionInstallmentTariffsSet()) {
-            if (!installmentTariff.getDebitEntrySet().isEmpty()) {
-                return false;
-            }
-        }
+//        for (final TuitionInstallmentTariff installmentTariff : getTuitionInstallmentTariffsSet()) {
+//            if (!installmentTariff.getDebitEntrySet().isEmpty()) {
+//                return false;
+//            }
+//        }
 
         return true;
     }
@@ -498,38 +498,38 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
         final List<TuitionPaymentPlan> filtered = Lists.newArrayList();
         for (final TuitionPaymentPlan t : plans) {
-            
-            if(t.getRegistrationRegimeType() != null && t.getRegistrationRegimeType() != regimeType) {
-                continue;
-            }
-            
-            if(t.getRegistrationProtocol() != null && t.getRegistrationProtocol() != registrationProtocol) {
-                continue;
-            }
-            
-            if(t.getIngression() != null && t.getIngression() != ingression) {
+
+            if (t.getRegistrationRegimeType() != null && t.getRegistrationRegimeType() != regimeType) {
                 continue;
             }
 
-            if(t.getSemester() != null && t.getSemester() != semesterWithFirstEnrolments) {
+            if (t.getRegistrationProtocol() != null && t.getRegistrationProtocol() != registrationProtocol) {
                 continue;
             }
 
-            if(t.getCurricularYear() != null && t.getCurricularYear() != curricularYear) {
+            if (t.getIngression() != null && t.getIngression() != ingression) {
                 continue;
             }
 
-            if(t.getFirstTimeStudent() && !firstTimeStudent) {
+            if (t.getSemester() != null && t.getSemester() != semesterWithFirstEnrolments) {
                 continue;
             }
 
-            if(t.isCustomized()) {
+            if (t.getCurricularYear() != null && t.getCurricularYear() != curricularYear) {
                 continue;
             }
-            
+
+            if (t.getFirstTimeStudent() && !firstTimeStudent) {
+                continue;
+            }
+
+            if (t.isCustomized()) {
+                continue;
+            }
+
             filtered.add(t);
         }
-        
+
         return !filtered.isEmpty() ? filtered.get(0) : null;
     }
 
@@ -556,8 +556,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                 .stream()
                 .filter(t -> (t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol)
                         && (t.getIngression() == null || t.getIngression() == ingression)
-                        && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial)
-                        && (!t.isCustomized())).findFirst().orElse(null);
+                        && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial) && !t.isCustomized())
+                .findFirst().orElse(null);
 
     }
 
@@ -574,8 +574,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         boolean laboratorial = laboratorial(enrolment);
 
         final Stream<TuitionPaymentPlan> stream =
-                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular()
-                        .get(), degreeCurricularPlan, executionYear);
+                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup
+                        .findUniqueDefaultGroupForExtracurricular().get(), degreeCurricularPlan, executionYear);
 
         final List<TuitionPaymentPlan> l = stream.collect(Collectors.toList());
 
@@ -584,8 +584,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                 .stream()
                 .filter(t -> (t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol)
                         && (t.getIngression() == null || t.getIngression() == ingression)
-                        && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial)
-                        && (!t.isCustomized())).findFirst().orElse(null);
+                        && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial) && !t.isCustomized())
+                .findFirst().orElse(null);
     }
 
     private static boolean laboratorial(final Enrolment enrolment) {

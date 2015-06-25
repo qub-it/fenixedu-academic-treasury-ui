@@ -233,9 +233,11 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent, dueDate);
 
-        final DebitEntry debitEntry = DebitEntry.create(null, debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
-                getProduct(), installmentName().getContent(), Constants.DEFAULT_QUANTITY, this, new DateTime());
-        
+        final DebitEntry debitEntry =
+                DebitEntry.create(null, debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
+                        getProduct(), installmentName().getContent(), Constants.DEFAULT_QUANTITY, this.getInterestRate(),
+                        new DateTime());
+
         return debitEntry;
     }
 
@@ -260,7 +262,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         final DebitEntry debitEntry =
                 DebitEntry.create(null, debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
                         getProduct(), standaloneDebitEntryName(standaloneEnrolment).getContent(), Constants.DEFAULT_QUANTITY,
-                        this, new DateTime());
+                        this.getInterestRate(), new DateTime());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, standaloneEnrolment);
 
@@ -289,7 +291,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         final DebitEntry debitEntry =
                 DebitEntry.create(null, debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
                         getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(),
-                        Constants.DEFAULT_QUANTITY, this, new DateTime());
+                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, extracurricularEnrolment);
 
@@ -310,9 +312,9 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
             result =
                     result.with(locale, BundleUtil.getString(Constants.BUNDLE, locale,
                             "label.TuitionPaymentPlan.standalone.debit.entry.name",
-                            standaloneEnrolment.getName().getContent(locale),
-                            standaloneEnrolment.getExecutionPeriod().getQualifiedName(),
-                            new BigDecimal(standaloneEnrolment.getCurricularCourse().getEctsCredits()).toString()));
+                            standaloneEnrolment.getName().getContent(locale), standaloneEnrolment.getExecutionPeriod()
+                                    .getQualifiedName(), new BigDecimal(standaloneEnrolment.getCurricularCourse()
+                                    .getEctsCredits()).toString()));
         }
 
         return result;
@@ -323,9 +325,8 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             result =
                     result.with(locale, BundleUtil.getString(Constants.BUNDLE, locale,
-                            "label.TuitionPaymentPlan.extracurricular.debit.entry.name", 
-                            extracurricularEnrolment.getName().getContent(locale),
-                            extracurricularEnrolment.getExecutionPeriod().getQualifiedName(),
+                            "label.TuitionPaymentPlan.extracurricular.debit.entry.name", extracurricularEnrolment.getName()
+                                    .getContent(locale), extracurricularEnrolment.getExecutionPeriod().getQualifiedName(),
                             new BigDecimal(extracurricularEnrolment.getCurricularCourse().getEctsCredits()).toString()));
         }
 
@@ -349,9 +350,11 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ENROLMENT.getDescriptionI18N().getContent(), enrolment
                 .getName().getContent());
-        
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(), enrolment.getCurricularCourse().getDegreeCurricularPlan().getName());
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), enrolment.getCurricularCourse().getDegree().getPresentationNameI18N().getContent());
+
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N()
+                .getContent(), enrolment.getCurricularCourse().getDegreeCurricularPlan().getName());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), enrolment
+                .getCurricularCourse().getDegree().getPresentationNameI18N().getContent());
 
         if (getTuitionCalculationType().isFixedAmount()) {
             propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FIXED_AMOUNT.getDescriptionI18N().getContent(),

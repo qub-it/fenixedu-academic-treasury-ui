@@ -100,6 +100,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         return isPositive(getBaseAmount());
     }
 
+    @Override
     protected void checkRules() {
         super.checkRules();
 
@@ -202,9 +203,9 @@ public class AcademicTariff extends AcademicTariff_Base {
                 .minusSeconds(1));
 
         if (bean.isApplyInterests() && getInterestRate() == null) {
-            InterestRate.create(this, bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
-                    bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
-                    bean.getRate());
+            InterestRate.createForTariff(this, bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(),
+                    bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(),
+                    bean.getInterestFixedAmount(), bean.getRate());
         } else if (bean.isApplyInterests()) {
             getInterestRate().edit(bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
                     bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
@@ -221,6 +222,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         return super.isDeletable();
     }
 
+    @Override
     @Atomic
     public void delete() {
         setAdministrativeOffice(null);
@@ -312,7 +314,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         return DebitEntry.create(null, academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent,
                 Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(), new DateTime())
                         .get(), amount, dueDate, fillPriceProperties, getProduct(), getProduct().getName().getContent(),
-                Constants.DEFAULT_QUANTITY, this, new DateTime());
+                Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
     }
 
     public DebitEntry createDebitEntryForImprovement(final AcademicTreasuryEvent academicTreasuryEvent,
@@ -341,7 +343,7 @@ public class AcademicTariff extends AcademicTariff_Base {
                         academicTreasuryEvent,
                         Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(),
                                 new DateTime()).get(), amount, dueDate, fillPriceProperties, getProduct(), description,
-                        Constants.DEFAULT_QUANTITY, this, new DateTime());
+                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
 
         academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);
 
