@@ -61,7 +61,7 @@ ${portal.angularToolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
 	&nbsp; <a class=""
-		href="${pageContext.request.contextPath}/academictreasury/tuitiondebtcreation/debtaccount/read">
+		href="${pageContext.request.contextPath}/treasury/accounting/managecustomer/debtaccount/read/${debtAccount.externalId}">
 		<spring:message code="label.event.back" />
 	</a> |&nbsp;&nbsp;
 </div>

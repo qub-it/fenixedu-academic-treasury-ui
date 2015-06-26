@@ -173,7 +173,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     public boolean isForImprovementTax() {
-        return getAcademicTax() == AcademicTreasurySettings.getInstance().getImprovementAcademicTax();
+        return getAcademicTax() != null && getAcademicTax() == AcademicTreasurySettings.getInstance().getImprovementAcademicTax();
     }
 
     public boolean isForAcademicTax() {
@@ -492,12 +492,41 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     // @formatter:off
     public static enum AcademicTreasuryEventKeys {
-        ACADEMIC_SERVICE_REQUEST_NAME, ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR, EXECUTION_YEAR, EXECUTION_SEMESTER,
-        EVALUATION_SEASON, DETAILED, URGENT, LANGUAGE, BASE_AMOUNT, UNITS_FOR_BASE, UNIT_AMOUNT, ADDITIONAL_UNITS,
-        CALCULATED_UNITS_AMOUNT, PAGE_AMOUNT, NUMBER_OF_PAGES, CALCULATED_PAGES_AMOUNT, MAXIMUM_AMOUNT, AMOUNT_WITHOUT_RATES,
-        FOREIGN_LANGUAGE_RATE, CALCULATED_FOREIGN_LANGUAGE_RATE, URGENT_PERCENTAGE, CALCULATED_URGENT_AMOUNT, FINAL_AMOUNT,
-        TUITION_CALCULATION_TYPE, FIXED_AMOUNT, ECTS_CREDITS, AMOUNT_PER_ECTS, ENROLLED_COURSES, AMOUNT_PER_COURSE, DUE_DATE,
-        DEGREE, DEGREE_CURRICULAR_PLAN, ENROLMENT;
+        ACADEMIC_SERVICE_REQUEST_NAME, 
+        ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR, 
+        EXECUTION_YEAR, 
+        EXECUTION_SEMESTER,
+        EVALUATION_SEASON, 
+        DETAILED, 
+        URGENT, 
+        LANGUAGE, 
+        BASE_AMOUNT, 
+        UNITS_FOR_BASE, 
+        UNIT_AMOUNT, 
+        ADDITIONAL_UNITS,
+        CALCULATED_UNITS_AMOUNT, 
+        PAGE_AMOUNT, 
+        NUMBER_OF_PAGES, 
+        CALCULATED_PAGES_AMOUNT, 
+        MAXIMUM_AMOUNT, 
+        AMOUNT_WITHOUT_RATES,
+        FOREIGN_LANGUAGE_RATE, 
+        CALCULATED_FOREIGN_LANGUAGE_RATE, 
+        URGENT_PERCENTAGE, 
+        CALCULATED_URGENT_AMOUNT, 
+        FINAL_AMOUNT,
+        TUITION_PAYMENT_PLAN,
+        TUITION_PAYMENT_PLAN_CONDITIONS,
+        TUITION_CALCULATION_TYPE, 
+        FIXED_AMOUNT, 
+        ECTS_CREDITS, 
+        AMOUNT_PER_ECTS, 
+        ENROLLED_COURSES, 
+        AMOUNT_PER_COURSE, 
+        DUE_DATE,
+        DEGREE, 
+        DEGREE_CURRICULAR_PLAN, 
+        ENROLMENT;
 
         public LocalizedString getDescriptionI18N() {
             return BundleUtil.getLocalizedString(Constants.BUNDLE, "label." + AcademicTreasuryEventKeys.class.getSimpleName()

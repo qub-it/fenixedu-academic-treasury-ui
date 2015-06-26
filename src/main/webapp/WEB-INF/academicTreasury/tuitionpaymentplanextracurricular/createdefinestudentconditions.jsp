@@ -315,6 +315,20 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				</div>
 			</div>
 			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.academicalActBlockingOff"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlan_academicalActBlockingOff" name="academicalactblockingoff" class="form-control" ng-model="object.academicalActBlockingOff">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionPaymentPlan_academicalActBlockingOff").select2().select2('val', '<c:out value='${bean.academicalActBlockingOff }'/>');
+					</script>	
+				</div>
+			</div>		
+			
+			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.applyInterests" />
 				</div>

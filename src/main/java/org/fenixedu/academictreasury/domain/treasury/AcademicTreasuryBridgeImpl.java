@@ -22,6 +22,7 @@ import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHa
 import org.fenixedu.academictreasury.services.signals.ImprovementEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.StandaloneEnrolmentHandler;
 import org.fenixedu.bennu.signals.Signal;
+import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Lists;
@@ -40,22 +41,21 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     }
 
     @Override
-    public IAcademicTreasuryEvent academicTreasuryEventForAcademicServiceRequest(final AcademicServiceRequest academicServiceRequest) {
+    public IAcademicTreasuryEvent academicTreasuryEventForAcademicServiceRequest(
+            final AcademicServiceRequest academicServiceRequest) {
         return academicServiceRequest.getAcademicTreasuryEvent();
     }
 
-    
     /* ----------
      * ENROLMENTS
      * ----------
      */
-    
+
     @Override
     public void registerStandaloneEnrolmentHandler() {
         Signal.register(STANDALONE_ENROLMENT, new StandaloneEnrolmentHandler());
     }
 
-    
     @Override
     public void registerExtracurricularEnrolmentHandler() {
         Signal.register(EXTRACURRICULAR_ENROLMENT, new ExtracurricularEnrolmentHandler());
@@ -82,22 +82,26 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
      */
 
     @Override
-    public IAcademicTreasuryEvent getTuitionForRegistrationTreasuryEvent(final Registration registration, final ExecutionYear executionYear) {
+    public IAcademicTreasuryEvent getTuitionForRegistrationTreasuryEvent(final Registration registration,
+            final ExecutionYear executionYear) {
         return TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear);
     }
 
     @Override
-    public IAcademicTreasuryEvent getTuitionForStandaloneTreasuryEvent(final Registration registration, final ExecutionYear executionYear) {
+    public IAcademicTreasuryEvent getTuitionForStandaloneTreasuryEvent(final Registration registration,
+            final ExecutionYear executionYear) {
         return TuitionServices.findAcademicTreasuryEventTuitionForStandalone(registration, executionYear);
     }
 
     @Override
-    public IAcademicTreasuryEvent getTuitionForExtracurricularTreasuryEvent(final Registration registration, final ExecutionYear executionYear) {
+    public IAcademicTreasuryEvent getTuitionForExtracurricularTreasuryEvent(final Registration registration,
+            final ExecutionYear executionYear) {
         return null;
     }
 
     @Override
-    public IAcademicTreasuryEvent getTuitionForImprovementTreasuryEvent(final Registration registration, final ExecutionYear executionYear) {
+    public IAcademicTreasuryEvent getTuitionForImprovementTreasuryEvent(final Registration registration,
+            final ExecutionYear executionYear) {
         return TuitionServices.findAcademicTreasuryEventForImprovementTax(registration, executionYear);
     }
 
@@ -111,7 +115,6 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         return TuitionServices.isToPayRegistrationTuition(registration, executionYear);
     }
 
-    
     /* --------------
      * ACADEMIC TAXES
      * --------------
@@ -141,23 +144,39 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
      * OTHER
      * -----
      */
-    
+
     @Override
     public List<IAcademicTreasuryEvent> getAllAcademicTreasuryEventsList(final Person person, final ExecutionYear executionYear) {
-        if(!PersonCustomer.findUnique(person).isPresent()) {
+        if (!PersonCustomer.findUnique(person).isPresent()) {
             return Lists.newArrayList();
         }
-        
-        return AcademicTreasuryEvent.find(PersonCustomer.findUnique(person).get(), executionYear).collect(Collectors.<IAcademicTreasuryEvent> toList());
+
+        return AcademicTreasuryEvent.find(PersonCustomer.findUnique(person).get(), executionYear).collect(
+                Collectors.<IAcademicTreasuryEvent> toList());
     }
 
     @Override
     public List<IAcademicTreasuryEvent> getAllAcademicTreasuryEventsList(final Person person) {
-        if(!PersonCustomer.findUnique(person).isPresent()) {
+        if (!PersonCustomer.findUnique(person).isPresent()) {
             return Lists.newArrayList();
         }
-        
-        return AcademicTreasuryEvent.find(PersonCustomer.findUnique(person).get()).collect(Collectors.<IAcademicTreasuryEvent> toList());
+
+        return AcademicTreasuryEvent.find(PersonCustomer.findUnique(person).get()).collect(
+                Collectors.<IAcademicTreasuryEvent> toList());
+    }
+
+    @Override
+    public String getPersonAccountTreasuryManagementURL(final Person person) {
+        if (!PersonCustomer.findUnique(person).isPresent()) {
+            return null;
+        }
+
+        return CustomerController.READ_URL + PersonCustomer.findUnique(person).get().getExternalId();
+    }
+
+    @Override
+    public boolean isPersonAccountTreasuryManagementAvailable(Person person) {
+        return PersonCustomer.findUnique(person).isPresent();
     }
 
 }

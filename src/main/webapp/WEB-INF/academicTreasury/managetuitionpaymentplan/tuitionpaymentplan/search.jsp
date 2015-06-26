@@ -162,6 +162,13 @@ ${portal.toolkit()}
 					</c:if>
 				</c:when>
 			</c:choose>
+			
+			<c:if test="${installment.academicalActBlockingOff}">
+				<p><span class="label label-warning">
+						<spring:message code="label.TuitionPaymentPlan.academicalActBlockingOff" />
+				</span></p>
+			</c:if>
+			
 		</datatables:column>
 		<datatables:column>
 			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.beginDate" /></datatables:columnHead>

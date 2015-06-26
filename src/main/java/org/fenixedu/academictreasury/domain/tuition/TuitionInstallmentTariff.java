@@ -160,6 +160,10 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         return getTuitionCalculationType().isEcts() || getTuitionCalculationType().isUnits();
     }
 
+    public boolean isAcademicalActBlockingOff() {
+        return super.getAcademicalActBlockingOff();
+    }
+
     public BigDecimal getAmountPerEctsOrUnit() {
         if (getTuitionCalculationType().isFixedAmount()) {
             throw new RuntimeException("invalid call");
@@ -236,7 +240,11 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         final DebitEntry debitEntry =
                 DebitEntry.create(null, debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
                         getProduct(), installmentName().getContent(), Constants.DEFAULT_QUANTITY, this.getInterestRate(),
-                        new DateTime());
+                        when.toDateTimeAtStartOfDay());
+
+        if (isAcademicalActBlockingOff()) {
+            debitEntry.markAcademicalActBlockingSuspension();
+        }
 
         return debitEntry;
     }
@@ -389,34 +397,34 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_CALCULATION_TYPE.getDescriptionI18N()
                 .getContent(), getTuitionCalculationType().getDescriptionI18N().getContent());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN.getDescriptionI18N().getContent(),
+                getTuitionPaymentPlan().getName().getContent());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN_CONDITIONS.getDescriptionI18N()
+                .getContent(), getTuitionPaymentPlan().getConditionsDescription().getContent());
 
-        if (getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForRegistration()) {
-            if (getTuitionCalculationType().isFixedAmount()) {
-                propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FIXED_AMOUNT.getDescriptionI18N().getContent(),
-                        getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(getFixedAmount()));
-            } else if (getTuitionCalculationType().isEcts()) {
-                propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ECTS_CREDITS.getDescriptionI18N().getContent(),
-                        academicTreasuryEvent.getEnrolledEctsUnits().toString());
-                propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.AMOUNT_PER_ECTS.getDescriptionI18N()
-                        .getContent(),
-                        getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(getAmountPerEctsOrUnit()));
-                propertiesMap.put(
-                        AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(),
-                        getFinantialEntity().getFinantialInstitution().getCurrency()
-                                .getValueFor(amountToPay(academicTreasuryEvent)));
-            } else if (getTuitionCalculationType().isUnits()) {
-                propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ENROLLED_COURSES.getDescriptionI18N()
-                        .getContent(), academicTreasuryEvent.getEnrolledEctsUnits().toString());
-                propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.AMOUNT_PER_COURSE.getDescriptionI18N()
-                        .getContent(),
-                        getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(getAmountPerEctsOrUnit()));
-                propertiesMap.put(
-                        AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(),
-                        getFinantialEntity().getFinantialInstitution().getCurrency()
-                                .getValueFor(amountToPay(academicTreasuryEvent)));
-            }
-        } else if (getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForStandalone()) {
-
+        if (getTuitionCalculationType().isFixedAmount()) {
+            propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FIXED_AMOUNT.getDescriptionI18N().getContent(),
+                    getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(getFixedAmount()));
+        } else if (getTuitionCalculationType().isEcts()) {
+            propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ECTS_CREDITS.getDescriptionI18N().getContent(),
+                    academicTreasuryEvent.getEnrolledEctsUnits().toString());
+            propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.AMOUNT_PER_ECTS.getDescriptionI18N()
+                    .getContent(),
+                    getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(getAmountPerEctsOrUnit()));
+            propertiesMap.put(
+                    AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(),
+                    getFinantialEntity().getFinantialInstitution().getCurrency()
+                            .getValueFor(amountToPay(academicTreasuryEvent)));
+        } else if (getTuitionCalculationType().isUnits()) {
+            propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ENROLLED_COURSES.getDescriptionI18N()
+                    .getContent(), academicTreasuryEvent.getEnrolledEctsUnits().toString());
+            propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.AMOUNT_PER_COURSE.getDescriptionI18N()
+                    .getContent(),
+                    getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(getAmountPerEctsOrUnit()));
+            propertiesMap.put(
+                    AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(),
+                    getFinantialEntity().getFinantialInstitution().getCurrency()
+                            .getValueFor(amountToPay(academicTreasuryEvent)));
         }
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DUE_DATE.getDescriptionI18N().getContent(),

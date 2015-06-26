@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
@@ -16,6 +17,8 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.joda.time.LocalDate;
+
+import pt.ist.fenixframework.Atomic;
 
 import com.google.common.collect.Lists;
 
@@ -43,11 +46,25 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         updateData();
     }
 
+    @Atomic
     public void updateData() {
+        if(executionYear != null && (registration == null || !possibleExecutionYears().contains(executionYear))) {
+            executionYear = null;
+            tuitionPaymentPlan = null;
+        }
+
         getRegistrationDataSource();
         getExecutionYearDataSource();
         getTuitionPaymentPlansDataSource();
         getInferedPaymentPlanName();
+        
+        if (registration != null && executionYear != null) {
+            debtDate =
+                    RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(registration, executionYear)
+                            .getEnrolmentDate();
+        } else {
+            debtDate = new LocalDate();
+        }
     }
 
     public List<TupleDataSourceBean> getExecutionYearDataSource() {
@@ -62,10 +79,15 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         }
 
         executionYearDataSource =
-                registration.getEnrolmentsExecutionYears().stream()
+                possibleExecutionYears().stream()
                         .map(e -> new TupleDataSourceBean(e.getExternalId(), e.getQualifiedName())).collect(Collectors.toList());
 
         return executionYearDataSource;
+    }
+
+    private List<ExecutionYear> possibleExecutionYears() {
+        return registration.getEnrolmentsExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
+                .collect(Collectors.toList());
     }
 
     public List<TupleDataSourceBean> getRegistrationDataSource() {
@@ -116,14 +138,14 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
             return inferedPaymentPlanName;
         }
 
-        if(TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear) == null) {
-            inferedPaymentPlanName =
-                    BundleUtil.getString(Constants.BUNDLE,
-                            "label.TuitionDebtCreationBean.infer.impossible");
+        if (TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear) == null) {
+            inferedPaymentPlanName = BundleUtil.getString(Constants.BUNDLE, "label.TuitionDebtCreationBean.infer.impossible");
             return inferedPaymentPlanName;
         }
-        
-        inferedPaymentPlanName = TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear).getConditionsDescription().getContent();
+
+        inferedPaymentPlanName =
+                TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear).getConditionsDescription()
+                        .getContent();
         return inferedPaymentPlanName;
     }
 

@@ -68,7 +68,15 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
         final TuitionDebtCreationBean bean = new TuitionDebtCreationBean(debtAccount);
         return _createFirstPage(debtAccount, bean, model);
     }
+    
+    private static final String _BACKTOCREATE_URI = "/backtocreate";
+    public static final String BACKTOCREATE_URL = CONTROLLER_URL + _BACKTOCREATE_URI;
 
+    @RequestMapping(value = _BACKTOCREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
+    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model) {
+        return _createFirstPage(debtAccount, bean, model);
+    }
+    
     public String _createFirstPage(final DebtAccount debtAccount, final TuitionDebtCreationBean bean, final Model model) {
         model.addAttribute("TuitionDebtCreationBean_executionYear_options", ExecutionYear.readNotClosedExecutionYears());
         model.addAttribute("TuitionDebtCreationBean_registration_options", ((PersonCustomer) debtAccount.getCustomer())
@@ -79,7 +87,6 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
         model.addAttribute("tuitionDebtCreationBeanJson", getBeanJson(bean));
 
         return jspPage("create");
-
     }
 
     private static final String _CREATEPOSTBACK_URI = "/createpostback";

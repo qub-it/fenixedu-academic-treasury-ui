@@ -27,5 +27,7 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         TreasuryBridgeAPIFactory.registerImplementation(impl);
         
         TreasuryAccessControlAPI.registerExtension(new AcademicTreasuryAccessControlExtension());
+        
+        AcademicTreasuryBootstrap.process();
     }
 }

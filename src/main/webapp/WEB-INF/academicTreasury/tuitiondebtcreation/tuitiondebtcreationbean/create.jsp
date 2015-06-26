@@ -61,7 +61,7 @@ ${portal.angularToolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
 	&nbsp; <a class=""
-		href="${pageContext.request.contextPath}/academictreasury/tuitiondebtcreation/debtaccount/read">
+		href="${pageContext.request.contextPath}/academictreasury/createdebts/operations/${debtAccount.externalId}">
 		<spring:message code="label.event.back" />
 	</a> |&nbsp;&nbsp;
 </div>
@@ -108,6 +108,8 @@ ${portal.angularToolkit()}
 		['$scope', function($scope) {
 	
 				$scope.object = angular.fromJson('${tuitionDebtCreationBeanJson}');
+				// $scope.$apply();
+				
 				$scope.postBack = createAngularPostbackFunction($scope);
 				
 				$scope.onRegistrationChange = function(model) {
@@ -134,7 +136,7 @@ ${portal.angularToolkit()}
 				<div class="col-sm-6">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<ui-select id="tuitionDebtCreationBean_registration"
-						class="form-control" name="registration"
+						name="registration"
 						ng-model="$parent.object.registration" theme="bootstrap"
 						ng-disabled="disabled" on-select="onRegistrationChange($model)" >
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>
@@ -153,7 +155,7 @@ ${portal.angularToolkit()}
 				<div class="col-sm-6">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<ui-select id="tuitionDebtCreationBean_executionYear"
-						class="form-control" name="executionyear"
+						name="executionyear"
 						ng-model="$parent.object.executionYear" theme="bootstrap"
 						ng-disabled="disabled" on-select="onRegistrationChange($model)" >
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>
@@ -186,18 +188,18 @@ ${portal.angularToolkit()}
 						<option value="true"><spring:message code="label.yes" /></option>
 					</select>
 					<script>
-						$("#tuitionDebtCreationBean_infered").val('<c:out value='${bean.infered }'/>');
+						$("#tuitionDebtCreationBean_infered").select2().select2('val', '<c:out value='${bean.infered }'/>');
 					</script>
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.infered === 'true'">
+			<div class="form-group row" ng-show="object.infered || object.infered === 'true'">
 				<div class="col-sm-2 control-label">
 				</div>
 				<div class="col-sm-6">
 					<p><em>{{object.inferedPaymentPlanName}}</em></p>
 				</div>							
 			</div>
-			<div class="form-group row" ng-show="object.infered === 'false'">
+			<div class="form-group row" ng-show="!object.infered || object.infered == 'false'">
 				<div class="col-sm-2 control-label">
 					<spring:message
 						code="label.TuitionDebtCreationBean.tuitionPaymentPlan" />
@@ -206,7 +208,7 @@ ${portal.angularToolkit()}
 				<div class="col-sm-6">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<ui-select id="tuitionDebtCreationBean_tuitionPaymentPlans"
-						class="form-control" name="tuitionpaymentplans"
+						name="tuitionpaymentplans"
 						ng-model="$parent.object.tuitionPaymentPlan" theme="bootstrap"
 						ng-disabled="disabled">
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>

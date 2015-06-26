@@ -112,7 +112,6 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 	$scope.change = function(newValue, oldValue) {
 
 		if(oldValue !== "" && newValue !== oldValue) {
-			alert(oldValue + " -> " + newValue);
 			document.location.href=$('input[name="executionYearPostback"]').attr('value') + $scope.executionYearId;
 		}
 	};

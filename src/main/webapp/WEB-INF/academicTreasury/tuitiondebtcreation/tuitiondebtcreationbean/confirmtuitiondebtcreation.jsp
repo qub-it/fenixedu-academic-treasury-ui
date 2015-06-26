@@ -62,12 +62,7 @@ ${portal.angularToolkit()}
 </div>
 
 <%-- NAVIGATION --%>
-<div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
-		class=""
-		href="${pageContext.request.contextPath}/academictreasury/tuitiondebtcreation/tuitiondebtcreationbean/create"><spring:message
-			code="label.event.back" /></a> |&nbsp;&nbsp;
-</div>
+
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
 
@@ -112,9 +107,13 @@ angular.module('angularAppTuitionDebtCreationBean', ['ngSanitize', 'ui.select','
  	$scope.object=angular.fromJson('${tuitionDebtCreationBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
 
-	//Begin here of Custom Screen business JS - code
- 	
 }]);
+
+function backToCreate() {
+	$('#form').attr('action', $("#backURL").attr('value'));
+	$('#form').submit();
+}
+
 </script>
 
 <div class="panel panel-primary">
@@ -203,15 +202,18 @@ angular.module('angularAppTuitionDebtCreationBean', ['ngSanitize', 'ui.select','
 	</div>
 </div>
 
-<form name='form' method="post" class="form-horizontal"
+<form id="form" name='form' method="post" class="form-horizontal"
 	ng-app="angularAppTuitionDebtCreationBean"
 	ng-controller="TuitionDebtCreationBeanController"
 	action='${pageContext.request.contextPath}<%= TuitionDebtCreationBeanController.CONFIRMTUITIONDEBTCREATION_URL %>/${debtAccount.externalId}'>
+	
+	<input id="backURL" type="hidden" name="backURL" value='${pageContext.request.contextPath}<%= TuitionDebtCreationBeanController.BACKTOCREATE_URL %>/${debtAccount.externalId}' />
 
 	<input name="bean" type="hidden" value="{{ object }}" />
 
 	<div class="panel panel-default">
 		<div class="panel-footer">
+			<input type="button" class="btn btn-default" role="button" value="<spring:message code="label.back" />" onclick="backToCreate()" />
 			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.confirm" />" />
 		</div>
 	</div>
