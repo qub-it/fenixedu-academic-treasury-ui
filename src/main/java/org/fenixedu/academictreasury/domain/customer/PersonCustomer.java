@@ -87,7 +87,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     @Override
     public String getCountryCode() {
         if (getPerson().getDefaultPhysicalAddress() == null
-                && getPerson().getDefaultPhysicalAddress().getCountryOfResidence() != null) {
+                || getPerson().getDefaultPhysicalAddress().getCountryOfResidence() != null) {
             return null;
         }
 
