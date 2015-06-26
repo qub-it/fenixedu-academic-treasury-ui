@@ -60,7 +60,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     private TuitionCalculationType tuitionCalculationType;
     private BigDecimal fixedAmount;
     private EctsCalculationType ectsCalculationType;
-//    private boolean academicalActBlockingOff;
+    private boolean academicalActBlockingOff;
     private BigDecimal factor;
     private BigDecimal totalEctsOrUnits;
 
@@ -474,6 +474,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     }
 
     public boolean isAcademicalActBlockingOff() {
+
         return academicalActBlockingOff;
     }
 
