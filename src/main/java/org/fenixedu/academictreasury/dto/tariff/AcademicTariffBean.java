@@ -27,7 +27,6 @@ public class AcademicTariffBean implements IBean, Serializable {
     private LocalDate fixedDueDate;
     private int numberOfDaysAfterCreationForDueDate;
 
-
     /* InterestRate */
     private boolean applyInterests;
     private InterestType interestType;
@@ -62,7 +61,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     private TuitionCalculationType tuitionCalculationType;
     private BigDecimal fixedAmount;
     private EctsCalculationType ectsCalculationType;
-    private boolean academicalActBlockingOff;
+//    private boolean academicalActBlockingOff;
     private BigDecimal factor;
     private BigDecimal totalEctsOrUnits;
 
@@ -116,10 +115,13 @@ public class AcademicTariffBean implements IBean, Serializable {
         setApplyInterests(academicTariff.getApplyInterests());
 
         setInterestType(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getInterestType() : null);
-        setNumberOfDaysAfterDueDate(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getNumberOfDaysAfterDueDate() : 1);
+        setNumberOfDaysAfterDueDate(academicTariff.isApplyInterests() ? academicTariff.getInterestRate()
+                .getNumberOfDaysAfterDueDate() : 1);
         setApplyInFirstWorkday(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getApplyInFirstWorkday() : false);
-        setMaximumDaysToApplyPenalty(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getMaximumDaysToApplyPenalty() : 0);
-        setMaximumMonthsToApplyPenalty(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getMaximumMonthsToApplyPenalty() : 0);
+        setMaximumDaysToApplyPenalty(academicTariff.isApplyInterests() ? academicTariff.getInterestRate()
+                .getMaximumDaysToApplyPenalty() : 0);
+        setMaximumMonthsToApplyPenalty(academicTariff.isApplyInterests() ? academicTariff.getInterestRate()
+                .getMaximumMonthsToApplyPenalty() : 0);
         setInterestFixedAmount(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getInterestFixedAmount() : null);
         setRate(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getRate() : null);
 
@@ -203,11 +205,11 @@ public class AcademicTariffBean implements IBean, Serializable {
     public boolean isMaximumDaysToApplyPenaltyApplied() {
         return getMaximumDaysToApplyPenalty() > 0;
     }
-    
+
     public boolean isMaximumMonthsToApplyPenaltyApplied() {
         return getMaximumMonthsToApplyPenalty() > 0;
     }
-    
+
     /*
      * GETTERS & SETTERS
      */
@@ -435,11 +437,11 @@ public class AcademicTariffBean implements IBean, Serializable {
     public Product getTuitionInstallmentProduct() {
         return tuitionInstallmentProduct;
     }
-    
+
     public void setTuitionInstallmentProduct(Product tuitionInstallmentProduct) {
         this.tuitionInstallmentProduct = tuitionInstallmentProduct;
     }
-    
+
     public int getInstallmentOrder() {
         return installmentOrder;
     }
@@ -479,19 +481,19 @@ public class AcademicTariffBean implements IBean, Serializable {
     public void setAcademicalActBlockingOff(boolean academicalActBlockingOff) {
         this.academicalActBlockingOff = academicalActBlockingOff;
     }
-    
+
     public BigDecimal getFactor() {
         return factor;
     }
-    
+
     public void setFactor(BigDecimal factor) {
         this.factor = factor;
     }
-    
+
     public BigDecimal getTotalEctsOrUnits() {
         return totalEctsOrUnits;
     }
-    
+
     public void setTotalEctsOrUnits(BigDecimal totalEctsOrUnits) {
         this.totalEctsOrUnits = totalEctsOrUnits;
     }
