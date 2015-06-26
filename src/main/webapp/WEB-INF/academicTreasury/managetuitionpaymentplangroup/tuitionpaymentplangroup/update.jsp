@@ -144,7 +144,7 @@ ${portal.toolkit()}
 				</div>
 			</div>
 			<script>
-				$("#tuitionPaymentPlanGroup_currentProduct").select2().select2('val', '<c:out value='${not empty param.currentProduct ? param.currentProduct : tuitionPaymentPlanGroup.currentProduct }'/>');
+				$("#tuitionPaymentPlanGroup_currentProduct").select2().select2('val', '<c:out value='${not empty param.currentProduct ? param.currentProduct : tuitionPaymentPlanGroup.currentProduct.externalId }'/>');
 			</script>	
   </div>
   <div class="panel-footer">

@@ -208,7 +208,7 @@ ${portal.toolkit()}
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [
 		//74
-		               { "width": "74px", "targets": 1 } 
+		               { "width": "124px", "targets": 1 } 
 		             ],
 		"data" : searchacademictaxDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
@@ -43,12 +45,14 @@ ${portal.toolkit()}
 	<a class="" href="${pageContext.request.contextPath}/academictreasury/manageemoluments/finantialentity/choosefinantialentity">
 		<spring:message code="label.event.back"/>
 	</a>
+	<% if(TreasuryAccessControlAPI.isManager(Authenticate.getUser())) { %>
 	|&nbsp;&nbsp;	
 	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
 	<a class="" href="${pageContext.request.contextPath}/academictreasury/manageemoluments/product/createemolument/${finantialEntity.externalId}">
 		<spring:message code="label.event.create" />
 	</a>
-|&nbsp;&nbsp;</div>
+	<% } %>
+	</div>
 	<c:if test="${not empty infoMessages}">
 				<div class="alert alert-info" role="alert">
 					

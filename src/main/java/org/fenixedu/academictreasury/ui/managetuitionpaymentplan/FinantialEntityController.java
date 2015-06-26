@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.springframework.stereotype.Component;
@@ -58,7 +59,8 @@ public class FinantialEntityController extends AcademicTreasuryBaseController {
 
     @RequestMapping(value = _CHOOSEFINANTIALENTITY_URI)
     public String chooseFinantialEntity(final Model model) {
-        model.addAttribute("choosefinantialentityResultsDataSet", FinantialEntity.findAll().collect(Collectors.toSet()));
+        model.addAttribute("choosefinantialentityResultsDataSet", FinantialEntity.findWithBackOfficeAccessFor(Authenticate.getUser())
+                .sorted(FinantialEntity.COMPARE_BY_NAME).collect(Collectors.toList()));
 
         return jspPage("choosefinantialentity");
     }

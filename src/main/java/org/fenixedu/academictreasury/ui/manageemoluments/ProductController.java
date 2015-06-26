@@ -36,7 +36,7 @@ public class ProductController extends AcademicTreasuryBaseController {
 
     @RequestMapping(value = "/searchemoluments/{finantialEntityId}")
     public String searchEmoluments(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity, final Model model) {
-        List<Product> searchemolumentsResultsDataSet = filterSearchEmoluments();
+        List<Product> searchemolumentsResultsDataSet = getSearchUniverseSearchEmolumentsDataSet(finantialEntity);
 
         //add the results dataSet to the model
         model.addAttribute("searchemolumentsResultsDataSet", searchemolumentsResultsDataSet);
@@ -45,12 +45,8 @@ public class ProductController extends AcademicTreasuryBaseController {
         return "academicTreasury/manageemoluments/product/searchemoluments";
     }
 
-    private List<Product> getSearchUniverseSearchEmolumentsDataSet() {
-        return new ArrayList<Product>(EmolumentServices.findEmoluments().collect(Collectors.toSet()));
-    }
-
-    private List<Product> filterSearchEmoluments() {
-        return getSearchUniverseSearchEmolumentsDataSet().stream().collect(Collectors.toList());
+    private List<Product> getSearchUniverseSearchEmolumentsDataSet(final FinantialEntity finantialEntity) {
+        return new ArrayList<Product>(EmolumentServices.findEmoluments(finantialEntity).sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
     }
 
     @RequestMapping(value = "/searchemoluments/view/{finantialEntityId}/{productId}")

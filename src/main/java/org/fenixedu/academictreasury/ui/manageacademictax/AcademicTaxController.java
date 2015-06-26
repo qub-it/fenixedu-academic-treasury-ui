@@ -44,7 +44,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageAcademicTax", accessGroup = "treasuryBackOffice")
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageAcademicTax",
+        accessGroup = "treasuryBackOffice")
 @RequestMapping(AcademicTaxController.CONTROLLER_URL)
 public class AcademicTaxController extends AcademicTreasuryBaseController {
 
@@ -115,12 +116,13 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
             @RequestParam(value = "appliedonregistration", required = false) final boolean appliedOnRegistration,
             @RequestParam(value = "appliedonregistrationfirstyear", required = false) final boolean appliedOnRegistrationFirstYear,
             @RequestParam(value = "appliedonregistrationsubsequentyears", required = false) final boolean appliedOnRegistrationSubsequentYears,
+            @RequestParam(value = "appliedautomatically", required = false) final boolean appliedAutomatically,
             final Model model, final RedirectAttributes redirectAttributes) {
         try {
 
             final AcademicTax academicTax =
                     AcademicTax.create(product, appliedOnRegistration, appliedOnRegistrationFirstYear,
-                            appliedOnRegistrationSubsequentYears);
+                            appliedOnRegistrationSubsequentYears, appliedAutomatically);
 
             return redirect(READ_URL + academicTax.getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
@@ -145,7 +147,7 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
     @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("oid") final AcademicTax academicTax, Model model) {
         model.addAttribute("academicTax", academicTax);
-        
+
         return jspPage("update");
     }
 
@@ -154,16 +156,17 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
             required = false) boolean appliedOnRegistration, @RequestParam(value = "appliedonregistrationfirstyear",
             required = false) boolean appliedOnRegistrationFirstYear, @RequestParam(
             value = "appliedonregistrationsubsequentyears", required = false) boolean appliedOnRegistrationSubsequentYears,
+            @RequestParam(value = "appliedautomatically", required = false) final boolean appliedAutomatically,
             Model model, RedirectAttributes redirectAttributes) {
 
         try {
 
-            academicTax.edit(appliedOnRegistration, appliedOnRegistrationFirstYear, appliedOnRegistrationSubsequentYears);
+            academicTax.edit(appliedOnRegistration, appliedOnRegistrationFirstYear, appliedOnRegistrationSubsequentYears, appliedAutomatically);
 
             return redirect(READ_URL + academicTax.getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
-            
+
             return update(academicTax, model);
 
         }

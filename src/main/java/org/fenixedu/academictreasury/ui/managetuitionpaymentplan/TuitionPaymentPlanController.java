@@ -53,6 +53,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.base.Strings;
+
 import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.academicTreasury.ui.manageTuitionPaymentPlan") <-- Use for duplicate controller name disambiguation
@@ -137,6 +139,12 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
                 new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
                         finantialEntity, executionYear);
 
+        return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
+    }
+
+    private String _createchoosedegreecurricularplans(final FinantialEntity finantialEntity, final ExecutionYear executionYear,
+            final Model model, final TuitionPaymentPlanBean bean) {
+
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("bean", bean);
@@ -170,6 +178,13 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
+        if (bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
+                    model);
+
+            return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
+        }
+
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("bean", bean);
@@ -199,6 +214,12 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
     public String createinsertinstallments(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
+
+        if (bean.isCustomized() && Strings.isNullOrEmpty(bean.getName())) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
+                    model);
+            return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
+        }
 
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
@@ -230,8 +251,15 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
-        bean.addInstallment();
-        bean.resetInstallmentFields();
+        final List<String> errorMessages = bean.addInstallment();
+        
+        if(!errorMessages.isEmpty()) {
+            for (final String error : errorMessages) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error) , model);
+            }
+        } else {
+            bean.resetInstallmentFields();
+        }
 
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
@@ -330,7 +358,6 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
         return jspPage("createdefinestudentconditions");
     }
 
-    
     private static final String _ORDER_UP_ACTION_URI = "/paymentplanorderup";
     public static final String ORDER_UP_ACTION_URL = CONTROLLER_URL + _ORDER_UP_ACTION_URI;
 
@@ -354,7 +381,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
         return redirect(String.format(SEARCH_URL + "/%s/%s/%s", finantialEntity.getExternalId(), executionYear.getExternalId(),
                 degreeCurricularPlan.getExternalId()), model, redirectAttributes);
     }
-    
+
     private static final String _ORDER_DOWN_ACTION_URI = "/paymentplanorderdown";
     public static final String ORDER_DOWN_ACTION_URL = CONTROLLER_URL + _ORDER_DOWN_ACTION_URI;
 
@@ -378,7 +405,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
         return redirect(String.format(SEARCH_URL + "/%s/%s/%s", finantialEntity.getExternalId(), executionYear.getExternalId(),
                 degreeCurricularPlan.getExternalId()), model, redirectAttributes);
     }
-    
+
     private String jspPage(final String page) {
         return JSP_PATH + "/" + page;
     }

@@ -77,6 +77,10 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
  	$scope.object=angular.fromJson('${tuitionPaymentPlanBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
 	
+	if(!$scope.object.registrationRegimeType) {
+		$scope.object.registrationRegimeType = "";
+	}
+	
 	$scope.backToChooseDegreeCurricularPlans = function() {
 		$("#form").attr("action", $("#backUrl").attr('value'));
 		$("#form").submit();
@@ -124,7 +128,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.registrationRegimeType"/></div> 
 				
 				<div class="col-sm-4">
-					<ui-select id="tuitionPaymentPlan_registrationRegimeType" class="form-control" name="registrationregimetype" ng-model="$parent.object.registrationRegimeType" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_registrationRegimeType" name="registrationregimetype" ng-model="$parent.object.registrationRegimeType" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="registrationRegimeType.id as registrationRegimeType in object.registrationRegimeTypeDataSource | filter: $select.search">
 							<span ng-bind-html="registrationRegimeType.text | highlight: $select.search"></span>
@@ -137,7 +141,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
-					<ui-select id="tuitionPaymentPlan_registrationProtocol" class="form-control" name="registrationprotocol" ng-model="$parent.object.registrationProtocol" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_registrationProtocol" name="registrationprotocol" ng-model="$parent.object.registrationProtocol" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="registrationProtocol.id as registrationProtocol in object.registrationProtocolDataSource | filter: $select.search">
 							<span ng-bind-html="registrationProtocol.text | highlight: $select.search"></span>
@@ -149,7 +153,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.ingression"/></div> 
 				
 				<div class="col-sm-4">
-					<ui-select id="tuitionPaymentPlan_ingression" class="form-control" name="ingression" ng-model="$parent.object.ingression" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_ingression" name="ingression" ng-model="$parent.object.ingression" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="ingression.id as ingression in object.ingressionDataSource | filter: $select.search">
 							<span ng-bind-html="ingression.text | highlight: $select.search"></span>
@@ -162,7 +166,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
-					<ui-select id="tuitionPaymentPlan_curricularYear" class="form-control" name="curricularyear" ng-model="$parent.object.curricularYear" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_curricularYear" name="curricularyear" ng-model="$parent.object.curricularYear" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="curricularYear.id as curricularYear in object.curricularYearDataSource | filter: $select.search">
 							<span ng-bind-html="curricularYear.text | highlight: $select.search"></span>
@@ -175,7 +179,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
-					<ui-select id="tuitionPaymentPlan_semester" class="form-control" name="semester" ng-model="$parent.object.executionSemester" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_semester" name="semester" ng-model="$parent.object.executionSemester" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="semester.id as semester in object.semesterDataSource | filter: $select.search">
 							<span ng-bind-html="semester.text | highlight: $select.search"></span>
@@ -220,7 +224,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 		
 		<div class="panel-footer">
 			<input type="button" class="btn btn-default" role="button" value="<spring:message code="label.back" />" ng-click="backToChooseDegreeCurricularPlans();"/>
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>
+			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.continue" />"/>
 		</div>
 	</div>
 </form>

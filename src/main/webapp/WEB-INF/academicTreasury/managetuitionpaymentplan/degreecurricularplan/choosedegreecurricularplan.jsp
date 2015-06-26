@@ -49,7 +49,10 @@ ${portal.angularToolkit()}
 	<div class="col-sm-2">
 		<select id="executionYearOptions" class="js-example-basic-single form-control" name="executionYearId" 
 			ng-change="change(executionYearId, '{{ executionYearId }}')" ng-model="executionYearId">
-			<option value=""></option>
+				<option value=""></option>
+			<c:forEach items="${executionYearOptions}" var="e">
+				<option value="${e.externalId}">${e.qualifiedName}</option>			
+			</c:forEach>
 		</select>
 	</div>
 </div>
@@ -138,13 +141,16 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 	        	(ExecutionYear) request.getAttribute("executionYear")).count());
 		
 			if((Long) request.getAttribute("tuitionPaymentPlanCount") == 0) { %>
-			<p style="color: red;"><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.zero" /></em></p>
+		<p class="label label-warning">
+			<em><spring:message
+					code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.zero" /></em>
+		</p>
 		<% } else if((Long) request.getAttribute("tuitionPaymentPlanCount") == 1) { %>
-			<p><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.only.one" /></em></p>
+			<p class="label label-info"><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.only.one" /></em></p>
 		<% } else { %>
-			<p><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan" arguments="${tuitionPaymentPlanCount}" /></em></p>
+			<p class="label label-info"><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan" arguments="${tuitionPaymentPlanCount}" /></em></p>
 		<% } %>
-		
+
 	</datatables:column>
 	<datatables:column>
 		<a  href="${pageContext.request.contextPath}<%= CHOOSEDEGREECURRICULARPLAN_TO_CHOOSE_ACTION_URL %>${finantialEntity.externalId}/${executionYear.externalId}/${dcp.externalId}"
@@ -170,7 +176,7 @@ $(document).ready(function() {
  			</c:forEach>
  		];
      		
-	$("#executionYearOptions").select2({ data : executionYear_options });
+	$("#executionYearOptions").select2();
     $("#executionYearOptions").select2().select2('val', '<c:out value='${executionYear.externalId}'/>');
 
 });

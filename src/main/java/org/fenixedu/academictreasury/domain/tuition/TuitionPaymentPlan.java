@@ -97,6 +97,12 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.customized.required.name");
         }
 
+        if (isCustomized()
+                && (getRegistrationRegimeType() != null || isDefaultPaymentPlan() || getRegistrationProtocol() != null
+                        || getIngression() != null || getCurricularYear() != null || getSemester() != null || isFirstTimeStudent())) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.customized.plan.cannot.have.other.options");
+        }
+
         if (isDefaultPaymentPlan()
                 && getTuitionPaymentPlanGroup() != TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.default.payment.plan.must.be.for.registration");

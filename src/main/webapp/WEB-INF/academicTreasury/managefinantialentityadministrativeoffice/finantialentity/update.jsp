@@ -99,6 +99,21 @@ ${portal.toolkit()}
 
 	<div class="panel panel-default">
 		<div class="panel-body">
+
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.FinantialEntity.finantialEntity" />
+				</div>
+
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<select id="finantialEntity_finantialEntity"
+						class="js-example-basic-single" name="finantialentity" disabled="disabled">
+						<option value="${finantialEntity.externalId}"><c:out value="${finantialEntity.name.content}" /></option>
+					</select>
+				</div>
+			</div>
+
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.FinantialEntity.administrativeOffice" />
@@ -146,4 +161,7 @@ $("#finantialEntity_administrativeOffice").select2(
 		    <%-- End block for providing administrativeOffice options --%>
 
 	});
+
+$("#finantialEntity_finantialEntity").select2();
+
 </script>

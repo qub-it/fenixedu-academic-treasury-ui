@@ -88,10 +88,10 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
      */
 
     /* Tariff */
-    private LocalDate beginDate;
-    private LocalDate endDate;
+    private LocalDate beginDate = new LocalDate();
+    private LocalDate endDate = new LocalDate();
     private DueDateCalculationType dueDateCalculationType;
-    private LocalDate fixedDueDate;
+    private LocalDate fixedDueDate = new LocalDate();
     private int numberOfDaysAfterCreationForDueDate;
 
     /* InterestRate */
@@ -159,9 +159,77 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 .map(t -> new TupleDataSourceBean(t.name(), t.getDescriptionI18N().getContent())).collect(Collectors.toList());
     }
 
-    public void addInstallment() {
+    public List<String> addInstallment() {
+
+        List<String> errorMessages = Lists.newArrayList();
 
         final AcademicTariffBean installmentBean = new AcademicTariffBean(tuitionInstallmentBeans.size() + 1);
+
+        if (this.tuitionInstallmentProduct == null) {
+            errorMessages.add("error.TuitionPaymentPlan.tuitionInstallmentProduct.required");
+        }
+
+        if (this.tuitionCalculationType == null) {
+            errorMessages.add("error.TuitionPaymentPlan.tuitionCalculationType.required");
+        }
+
+        if (this.tuitionCalculationType != null && this.tuitionCalculationType.isFixedAmount() && this.fixedAmount == null) {
+            errorMessages.add("error.TuitionPaymentPlan.fixedAmount.required");
+        }
+
+        if (this.tuitionCalculationType != null
+                && (this.tuitionCalculationType.isEcts() || this.tuitionCalculationType.isUnits())
+                && this.ectsCalculationType == null) {
+            errorMessages.add("error.TuitionPaymentPlan.ectsCalculationType.required");
+        }
+
+        if (this.tuitionCalculationType != null
+                && (this.tuitionCalculationType.isEcts() || this.tuitionCalculationType.isUnits())
+                && this.ectsCalculationType != null && this.ectsCalculationType.isFixedAmount() && this.fixedAmount == null) {
+            errorMessages.add("error.TuitionPaymentPlan.fixedAmount.required");
+        }
+
+        if (this.tuitionCalculationType != null
+                && (this.tuitionCalculationType.isEcts() || this.tuitionCalculationType.isUnits())
+                && this.ectsCalculationType != null && this.ectsCalculationType.isDefaultPaymentPlanIndexed()
+                && this.factor == null) {
+            errorMessages.add("error.TuitionPaymentPlan.factor.required");
+        }
+
+        if (this.tuitionCalculationType != null
+                && (this.tuitionCalculationType.isEcts() || this.tuitionCalculationType.isUnits())
+                && this.ectsCalculationType != null && this.ectsCalculationType.isDefaultPaymentPlanIndexed()
+                && this.totalEctsOrUnits == null) {
+            errorMessages.add("error.TuitionPaymentPlan.totalEctsOrUnits.required");
+        }
+
+        if (this.beginDate == null) {
+            errorMessages.add("error.TuitionPaymentPlan.beginDate.required");
+        }
+
+        if (this.dueDateCalculationType == null) {
+            errorMessages.add("error.TuitionPaymentPlan.dueDateCalculationType.required");
+        }
+
+        if (this.dueDateCalculationType != null && this.dueDateCalculationType.isFixedDate() && this.fixedDueDate == null) {
+            errorMessages.add("error.TuitionPaymentPlan.fixedDueDate.required");
+        }
+
+        if (this.applyInterests && this.interestType == null) {
+            errorMessages.add("error.TuitionPaymentPlan.interestType.required");
+        }
+
+        if (this.applyInterests && this.interestType != null && this.interestType.isFixedAmount() && this.interestFixedAmount == null) {
+            errorMessages.add("error.TuitionPaymentPlan.interestFixedAmount.required");
+        }
+
+        if (this.applyInterests && this.interestType != null && (this.interestType.isDaily() || this.interestType.isMonthly()) && this.rate == null) {
+            errorMessages.add("error.TuitionPaymentPlan.interestRate.required");
+        }
+
+        if (!errorMessages.isEmpty()) {
+            return errorMessages;
+        }
 
         installmentBean.setBeginDate(this.beginDate);
         installmentBean.setEndDate(this.endDate);
@@ -187,6 +255,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         installmentBean.setAcademicalActBlockingOff(this.academicalActBlockingOff);
 
         this.tuitionInstallmentBeans.add(installmentBean);
+        
+        return errorMessages;
     }
 
     public void removeInstallment(final int installmentNumber) {
@@ -213,10 +283,10 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     }
 
     public void resetInstallmentFields() {
-        this.beginDate = null;
-        this.endDate = null;
+        this.beginDate = new LocalDate();
+        this.endDate = new LocalDate();
         this.dueDateCalculationType = DueDateCalculationType.FIXED_DATE;
-        this.fixedDueDate = null;
+        this.fixedDueDate = new LocalDate();
         this.numberOfDaysAfterCreationForDueDate = 0;
 
         this.applyInterests = false;
@@ -645,8 +715,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private List<TupleDataSourceBean> semesterDataSource() {
         final List<TupleDataSourceBean> result =
                 getExecutionYear().getExecutionPeriodsSet().stream()
-                        .map((cs) -> new TupleDataSourceBean(cs.getExternalId(), cs.getQualifiedName()))
-                        .collect(Collectors.toList());
+                        .map((cs) -> new TupleDataSourceBean(cs.getExternalId(), cs.getName())).collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
 
@@ -667,7 +736,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private List<TupleDataSourceBean> ingressionDataSource() {
         final List<TupleDataSourceBean> result =
                 Bennu.getInstance().getIngressionTypesSet().stream()
-                        .map((i) -> new TupleDataSourceBean(i.getExternalId(), i.getDescription().getContent())).collect(Collectors.toList());
+                        .map((i) -> new TupleDataSourceBean(i.getExternalId(), i.getDescription().getContent()))
+                        .collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
 

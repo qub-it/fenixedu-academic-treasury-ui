@@ -145,10 +145,29 @@ ${portal.toolkit()}
 						<option value="true"><spring:message code="label.yes" /></option>
 					</select>
 					<script>
-		$("#academicTax_appliedOnRegistrationSubsequentYears").select2().select2('val', '<c:out value='${not empty param.appliedonregistrationsubsequentyears ? param.appliedonregistrationsubsequentyears : academicTax.appliedOnRegistrationSubsequentYears }'/>');
-	</script>
+						$("#academicTax_appliedOnRegistrationSubsequentYears").select2().select2('val', '<c:out value='${not empty param.appliedonregistrationsubsequentyears ? param.appliedonregistrationsubsequentyears : academicTax.appliedOnRegistrationSubsequentYears }'/>');
+					</script>
 				</div>
 			</div>
+			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.AcademicTax.appliedAutomatically" />
+				</div>
+
+				<div class="col-sm-2">
+					<select id="academicTax_appliedAutomatically"
+						name="appliedautomatically" class="form-control">
+						<option value="false"><spring:message code="label.no" /></option>
+						<option value="true"><spring:message code="label.yes" /></option>
+					</select>
+					<script>
+						$("#academicTax_appliedAutomatically").select2().select2('val', '<c:out value='${not empty param.appliedautomatically ? param.appliedautomatically : academicTax.appliedAutomatically }'/>');
+					</script>
+				</div>
+			</div>
+			
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button"

@@ -180,6 +180,17 @@ ${portal.toolkit()}
 								<spring:message code="label.false" />
 							</c:if></td>
 					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.AcademicTax.appliedAutomatically" /></th>
+						<td><c:if
+								test="${academicTax.appliedAutomatically}">
+								<spring:message code="label.true" />
+							</c:if> <c:if
+								test="${not academicTax.appliedAutomatically}">
+								<spring:message code="label.false" />
+							</c:if></td>
+					</tr>
 				</tbody>
 			</table>
 		</form>

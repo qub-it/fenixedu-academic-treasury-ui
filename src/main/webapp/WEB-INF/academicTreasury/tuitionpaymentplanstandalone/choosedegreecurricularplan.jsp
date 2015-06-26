@@ -137,11 +137,11 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 	        	(ExecutionYear) request.getAttribute("executionYear")).count());
 		
 			if((Long) request.getAttribute("tuitionPaymentPlanCount") == 0) { %>
-			<p style="color: red;"><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.zero" /></em></p>
+			<p class="label label-warning"><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.zero" /></em></p>
 		<% } else if((Long) request.getAttribute("tuitionPaymentPlanCount") == 1) { %>
-			<p><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.only.one" /></em></p>
+			<p class="label label-info"><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.only.one" /></em></p>
 		<% } else { %>
-			<p><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan" arguments="${tuitionPaymentPlanCount}" /></em></p>
+			<p class="label label-info"><em><spring:message code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan" arguments="${tuitionPaymentPlanCount}" /></em></p>
 		<% } %>
 		
 	</datatables:column>

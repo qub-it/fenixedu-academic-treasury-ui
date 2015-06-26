@@ -17,7 +17,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.academictreasury.ui.manageemoluments.FinantialEntityController")
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageEmoluments", accessGroup = "treasuryBackOffice")
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageEmoluments",
+        accessGroup = "treasuryBackOffice")
 @RequestMapping("/academictreasury/manageemoluments/finantialentity")
 public class FinantialEntityController extends AcademicTreasuryBaseController {
 
@@ -33,13 +34,14 @@ public class FinantialEntityController extends AcademicTreasuryBaseController {
     }
 
     private List<FinantialEntity> getSearchUniverseChooseFinantialEntityDataSet() {
-        return new ArrayList<FinantialEntity>(FinantialEntity.findWithPermissionsFor(Authenticate.getUser()).collect(
-                Collectors.toSet()));
+        return FinantialEntity.findWithBackOfficeAccessFor(Authenticate.getUser())
+                .sorted(FinantialEntity.COMPARE_BY_NAME).collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/chooseFinantialEntity/choose/{oid}")
     public String processChooseFinantialEntityToChooseAction(@PathVariable("oid") FinantialEntity finantialEntity, Model model) {
-        return String.format("redirect:/academictreasury/manageemoluments/product/searchemoluments/%s", finantialEntity.getExternalId());
+        return String.format("redirect:/academictreasury/manageemoluments/product/searchemoluments/%s",
+                finantialEntity.getExternalId());
     }
 
     private FinantialEntity getFinantialEntity(Model m) {

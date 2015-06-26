@@ -27,6 +27,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     private LocalDate fixedDueDate;
     private int numberOfDaysAfterCreationForDueDate;
 
+
     /* InterestRate */
     private boolean applyInterests;
     private InterestType interestType;
@@ -42,6 +43,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     private DegreeType degreeType;
     private Degree degree;
     private CycleType cycleType;
+    private boolean academicalActBlockingOff;
 
     private BigDecimal baseAmount;
     private int unitsForBase;

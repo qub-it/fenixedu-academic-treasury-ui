@@ -6,6 +6,7 @@ import java.util.stream.Stream;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.util.LocalizedStringUtil;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 
@@ -30,7 +31,7 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
         setForStandalone(forStandalone);
         setForExtracurricular(forExtracurricular);
         setCurrentProduct(currentProduct);
-        
+
         checkRules();
     }
 
@@ -42,28 +43,37 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
         if (LocalizedStringUtil.isTrimmedEmpty(getName())) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.name.required");
         }
-        
-        if(!(isForRegistration() ^ isForStandalone() ^ isForExtracurricular())) {
+
+        if (!(isForRegistration() ^ isForStandalone() ^ isForExtracurricular())) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.only.one.type.supported");
         }
-        
-        if(findDefaultGroupForRegistration().count() > 1) {
+
+        if (findDefaultGroupForRegistration().count() > 1) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.for.registration.already.exists");
         }
 
-        if(findDefaultGroupForStandalone().count() > 1) {
+        if (findDefaultGroupForStandalone().count() > 1) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.for.standalone.already.exists");
         }
 
-        if(findDefaultGroupForExtracurricular().count() > 1) {
+        if (findDefaultGroupForExtracurricular().count() > 1) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.for.extracurricular.already.exists");
+        }
+        
+        if(findByCode(getCode()).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.code.already.exists");
         }
     }
 
     @Atomic
-    public void edit(final String code, final LocalizedString name) {
+    public void edit(final String code, final LocalizedString name, final boolean forRegistration, final boolean forStandalone,
+            final boolean forExtracurricular, final Product currentProduct) {
         setCode(code);
         setName(name);
+        setForRegistration(forRegistration);
+        setForStandalone(forStandalone);
+        setForExtracurricular(forExtracurricular);
+        setCurrentProduct(currentProduct);
 
         checkRules();
     }
@@ -79,7 +89,7 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     public boolean isForExtracurricular() {
         return getForExtracurricular();
     }
-    
+
     public boolean isForImprovement() {
         return getForImprovement();
     }
@@ -115,7 +125,7 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     protected static Stream<TuitionPaymentPlanGroup> findDefaultGroupForStandalone() {
         return findAll().filter(t -> t.isForStandalone());
     }
-    
+
     protected static Stream<TuitionPaymentPlanGroup> findDefaultGroupForImprovement() {
         return findAll().filter(t -> t.isForImprovement());
     }
@@ -123,7 +133,13 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     protected static Stream<TuitionPaymentPlanGroup> findDefaultGroupForExtracurricular() {
         return findAll().filter(t -> t.isForExtracurricular());
     }
-    
+
+    protected static Stream<TuitionPaymentPlanGroup> findByCode(final String code) {
+        return findAll()
+                .filter(l -> StringNormalizer.normalize(l.getCode().toLowerCase()).equals(
+                        StringNormalizer.normalize(code).toLowerCase()));
+    }
+
     public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForRegistration() {
         return findAll().filter(t -> t.isForRegistration()).findFirst();
     }
@@ -135,7 +151,7 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForExtracurricular() {
         return findAll().filter(t -> t.isForExtracurricular()).findFirst();
     }
-    
+
     public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForImprovement() {
         return findAll().filter(t -> t.isForImprovement()).findFirst();
     }

@@ -28,13 +28,14 @@ public class AcademicTax extends AcademicTax_Base {
     }
 
     protected AcademicTax(final Product product, final boolean appliedOnRegistration,
-            final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears) {
+            final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears, final boolean appliedAutomatically) {
         this();
 
         setProduct(product);
         setAppliedOnRegistration(appliedOnRegistration);
         setAppliedOnRegistrationFirstYear(appliedOnRegistrationFirstYear);
         setAppliedOnRegistrationSubsequentYears(appliedOnRegistrationSubsequentYears);
+        setAppliedAutomatically(appliedAutomatically);
 
         checkRules();
     }
@@ -69,15 +70,21 @@ public class AcademicTax extends AcademicTax_Base {
         return super.getAppliedOnRegistrationSubsequentYears();
     }
     
+    public boolean isAppliedAutomatically() {
+        return super.getAppliedAutomatically();
+    }
+    
     @Atomic
     public void edit(boolean appliedOnRegistration, boolean appliedOnRegistrationFirstYear,
-            boolean appliedOnRegistrationSubsequentYears) {
+            boolean appliedOnRegistrationSubsequentYears, final boolean appliedAutomatically) {
         setAppliedOnRegistration(appliedOnRegistration);
         setAppliedOnRegistrationFirstYear(appliedOnRegistrationFirstYear);
         setAppliedOnRegistrationSubsequentYears(appliedOnRegistrationSubsequentYears);
+        setAppliedAutomatically(appliedAutomatically);
+        
+        checkRules();
     }
 
-    
     private boolean isDeletable() {
         return getAcademicTreasuryEventSet().isEmpty();
     }
@@ -114,8 +121,8 @@ public class AcademicTax extends AcademicTax_Base {
 
     @Atomic
     public static AcademicTax create(final Product product, final boolean appliedOnRegistration,
-            final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears) {
+            final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears, final boolean appliedAutomatically) {
         return new AcademicTax(product, appliedOnRegistration, appliedOnRegistrationFirstYear,
-                appliedOnRegistrationSubsequentYears);
+                appliedOnRegistrationSubsequentYears, appliedAutomatically);
     }
 }

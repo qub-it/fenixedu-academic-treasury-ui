@@ -154,7 +154,7 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup, model);
 
         try {
-            tuitionPaymentPlanGroup.edit(code, name);
+            tuitionPaymentPlanGroup.edit(code, name, forRegistration, forStandalone, forExtracurricular, currentProduct);
 
             return redirect(route("/read", tuitionPaymentPlanGroup.getExternalId()), model, redirectAttributes);
         } catch (DomainException de) {

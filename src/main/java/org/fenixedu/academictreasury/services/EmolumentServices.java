@@ -3,6 +3,7 @@ package org.fenixedu.academictreasury.services;
 import java.util.Collections;
 import java.util.stream.Stream;
 
+import org.apache.tools.ant.taskdefs.rmic.KaffeRmic;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
@@ -39,12 +40,13 @@ public class EmolumentServices {
                 Product.defaultUnitOfMeasure(), true, vatType, Collections.singletonList(finantialInstitution));
     }
 
-    public static Stream<Product> findEmoluments() {
+    public static Stream<Product> findEmoluments(final FinantialEntity finantialEntity) {
         if (AcademicTreasurySettings.getInstance().getEmolumentsProductGroup() == null) {
             throw new AcademicTreasuryDomainException("error.EmolumentServices.emoluments.product.group.not.defined");
         }
 
-        return AcademicTreasurySettings.getInstance().getEmolumentsProductGroup().getProductsSet().stream();
+        return AcademicTreasurySettings.getInstance().getEmolumentsProductGroup().getProductsSet().stream()
+                .filter(l -> l.getFinantialInstitutionsSet().contains(finantialEntity.getFinantialInstitution()));
     }
 
     @Subscribe
@@ -143,7 +145,7 @@ public class EmolumentServices {
     }
 
     public void createAcademicTax(final Registration registration, final ExecutionYear executionYear, final Product product) {
-        
+
     }
 
 }

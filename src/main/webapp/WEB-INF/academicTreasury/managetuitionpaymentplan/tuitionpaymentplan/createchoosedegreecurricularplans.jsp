@@ -136,7 +136,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.degreeType"/></div> 
 				
 				<div class="col-sm-8">
-					<ui-select id="tuitionPaymentPlan_degreeType" class="form-control" name="degreeType" ng-model="$parent.object.degreeType" theme="bootstrap" ng-disabled="disabled" 
+					<ui-select id="tuitionPaymentPlan_degreeType" name="degreeType" ng-model="$parent.object.degreeType" theme="bootstrap" ng-disabled="disabled" 
 						on-select="onDegreeTypeChange($product, $model)" >
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="degreeType.id as degreeType in object.degreeTypeDataSource | filter: $select.search">
@@ -151,7 +151,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-8">
 					<div ng-repeat="dcp in object.degreeCurricularPlanDataSource">
 						<label for="{{dcp.id}}">
-							<input class="checkbox" name="{{dcp.id}}" type="checkbox" id="{{dcp.id}}" 
+							<input class="checkbox" name="{{dcp.id}}" type="checkbox" id="{{dcp.id}}"
 							ng-checked="object.degreeCurricularPlans.indexOf(dcp.id) > -1"
 							ng-click="toggleDegreeCurricularPlans(dcp.id)" />
 							{{dcp.text}}

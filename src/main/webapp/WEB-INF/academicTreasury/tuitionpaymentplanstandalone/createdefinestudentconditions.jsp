@@ -112,7 +112,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
-					<ui-select id="tuitionPaymentPlan_registrationProtocol" class="form-control" name="registrationprotocol" ng-model="$parent.object.registrationProtocol" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_registrationProtocol" name="registrationprotocol" ng-model="$parent.object.registrationProtocol" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="registrationProtocol.id as registrationProtocol in object.registrationProtocolDataSource | filter: $select.search">
 							<span ng-bind-html="registrationProtocol.text | highlight: $select.search"></span>
@@ -124,7 +124,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.ingression"/></div> 
 				
 				<div class="col-sm-4">
-					<ui-select id="tuitionPaymentPlan_ingression" class="form-control" name="ingression" ng-model="$parent.object.ingression" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_ingression" name="ingression" ng-model="$parent.object.ingression" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="ingression.id as ingression in object.ingressionDataSource | filter: $select.search">
 							<span ng-bind-html="ingression.text | highlight: $select.search"></span>
@@ -178,7 +178,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 	
 				<div class="col-sm-4">
 					<ui-select id="tuitionInstallmentTariff_tuitionCalculationType"
-						class="form-control" name="tuitioncalculationtype"
+						name="tuitioncalculationtype"
 						ng-model="$parent.object.tuitionCalculationType" theme="bootstrap"
 						required>
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>
@@ -204,7 +204,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 	
 				<div class="col-sm-4">
 					<ui-select id="tuitionInstallmentTariff_ectsCalculationType"
-						class="form-control" name="ectscalculationtype"
+						name="ectscalculationtype"
 						ng-model="$parent.object.ectsCalculationType" theme="bootstrap"
 						required> 
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>
@@ -274,7 +274,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 	
 				<div class="col-sm-4">
 					<ui-select id="tuitionInstallmentTariff_dueDateCalculationType"
-						class="form-control" name="duedatecalculationtype"
+						name="duedatecalculationtype"
 						ng-model="$parent.object.dueDateCalculationType" theme="bootstrap"
 						required>
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>
@@ -334,7 +334,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 	
 				<div class="col-sm-4">
 					<ui-select id="tuitionInstallmentTariff_interestType"
-						class="form-control" name="interesttype"
+						name="interesttype"
 						ng-model="$parent.object.interestType" theme="bootstrap"
 						required >
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>

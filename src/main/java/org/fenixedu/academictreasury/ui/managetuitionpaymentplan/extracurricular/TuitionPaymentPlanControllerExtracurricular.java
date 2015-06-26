@@ -26,6 +26,9 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan.extracurricular;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
@@ -39,6 +42,7 @@ import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.springframework.http.HttpStatus;
@@ -51,9 +55,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
+
 import edu.emory.mathcs.backport.java.util.Collections;
 
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlanExtracurricular",accessGroup = "treasuryBackOffice")
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlanExtracurricular",
+        accessGroup = "treasuryBackOffice")
 @RequestMapping(TuitionPaymentPlanControllerExtracurricular.CONTROLLER_URL)
 public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasuryBaseController {
 
@@ -70,9 +78,13 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
 
     @RequestMapping(value = _CHOOSEFINANTIALENTITY_URI)
     public String chooseFinantialEntity(final Model model) {
-        model.addAttribute("choosefinantialentityResultsDataSet", FinantialEntity.findAll().collect(Collectors.toSet()));
+
+        model.addAttribute("choosefinantialentityResultsDataSet",
+                FinantialEntity.findWithBackOfficeAccessFor(Authenticate.getUser()).sorted(FinantialEntity.COMPARE_BY_NAME)
+                        .collect(Collectors.toList()));
+
         model.addAttribute("executionYear", ExecutionYear.readCurrentExecutionYear());
-        
+
         return jspPage("choosefinantialentity");
     }
 
@@ -83,15 +95,30 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
     public String chooseDegreeCurricularPlan(@PathVariable("finantialEntityId") FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
-        model.addAttribute("choosedegreecurricularplanResultsDataSet", ExecutionDegree.getAllByExecutionYear(executionYear)
-                .stream().map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toList()));
+        List<DegreeCurricularPlan> degreeCurricularPlanList =
+                Lists.newArrayList(ExecutionDegree.getAllByExecutionYear(executionYear).stream()
+                        .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toList()));
+
+        Collections.sort(degreeCurricularPlanList,
+                DegreeCurricularPlan.DEGREE_CURRICULAR_PLAN_COMPARATOR_BY_DEGREE_TYPE_AND_EXECUTION_DEGREE_AND_DEGREE_CODE);
+
+        model.addAttribute("choosedegreecurricularplanResultsDataSet", degreeCurricularPlanList);
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
-        model.addAttribute(
-                "executionYearOptions",
-                ExecutionYear.readNotClosedExecutionYears().stream()
-                        .sorted(Collections.reverseOrder(ExecutionYear.COMPARATOR_BY_BEGIN_DATE))
-                        .collect(Collectors.toList()));
+
+        final List<ExecutionYear> executionYearList = new ArrayList<ExecutionYear>(ExecutionYear.readNotClosedExecutionYears());
+
+        Collections.sort(executionYearList, Collections.reverseOrder(new Comparator<ExecutionYear>() {
+
+            @Override
+            public int compare(final ExecutionYear o1, final ExecutionYear o2) {
+                int c = o1.getBeginLocalDate().compareTo(o2.getBeginLocalDate());
+
+                return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+            }
+        }));
+
+        model.addAttribute("executionYearOptions", executionYearList);
 
         return jspPage("choosedegreecurricularplan");
     }
@@ -150,9 +177,20 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
     public String createchoosedegreecurricularplans(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
+        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().isPresent()) {
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.defaultGroupForStandalone.required"), model);
+            return chooseDegreeCurricularPlan(finantialEntity, executionYear, model);
+        }
+        
         final TuitionPaymentPlanBean bean =
                 new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get(),
                         finantialEntity, executionYear);
+
+        return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
+    }
+
+    private String _createchoosedegreecurricularplans(final FinantialEntity finantialEntity, final ExecutionYear executionYear,
+            final Model model, final TuitionPaymentPlanBean bean) {
 
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
@@ -187,6 +225,13 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
+        if(bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
+                    model);
+            
+            return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
+        }
+        
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("bean", bean);
@@ -219,8 +264,22 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
             final RedirectAttributes redirectAttributes) {
 
         try {
-            bean.addInstallment();
+            if (bean.isCustomized() && Strings.isNullOrEmpty(bean.getName())) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
+                        model);
+                return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
+            }
             
+            final List<String> errorMessages = bean.addInstallment();
+            
+            if(!errorMessages.isEmpty()) {
+                for (final String error : errorMessages) {
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error) , model);
+                }
+
+                return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
+            }
+
             TuitionPaymentPlan.create(bean);
 
             return redirect(
@@ -229,7 +288,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
         } catch (final DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
             bean.getTuitionCalculationTypeDataSource().clear();
-            
+
             return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
         }
     }

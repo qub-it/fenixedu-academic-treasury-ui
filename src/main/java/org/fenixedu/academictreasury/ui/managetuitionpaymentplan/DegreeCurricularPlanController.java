@@ -26,6 +26,9 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
@@ -39,6 +42,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.google.common.collect.Lists;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
@@ -61,13 +66,30 @@ public class DegreeCurricularPlanController extends AcademicTreasuryBaseControll
     @RequestMapping(value = _CHOOSEDEGREECURRICULARPLAN_URI + "/{finantialEntityId}/{executionYearId}")
     public String chooseDegreeCurricularPlan(@PathVariable("finantialEntityId") FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
-        model.addAttribute("choosedegreecurricularplanResultsDataSet", ExecutionDegree.getAllByExecutionYear(executionYear)
+
+        List<DegreeCurricularPlan> degreeCurricularPlanList = Lists.newArrayList(ExecutionDegree.getAllByExecutionYear(executionYear)
                 .stream().map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toList()));
+        
+        Collections.sort(degreeCurricularPlanList, DegreeCurricularPlan.DEGREE_CURRICULAR_PLAN_COMPARATOR_BY_DEGREE_TYPE_AND_EXECUTION_DEGREE_AND_DEGREE_CODE);
+        
+        model.addAttribute("choosedegreecurricularplanResultsDataSet", degreeCurricularPlanList);
+        
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
-        model.addAttribute("executionYearOptions",
-                ExecutionYear.readNotClosedExecutionYears().stream()
-                        .sorted(Collections.reverseOrder(ExecutionYear.COMPARATOR_BY_BEGIN_DATE)).collect(Collectors.toList()));
+        
+        final List<ExecutionYear> executionYearList = new ArrayList<ExecutionYear>(ExecutionYear.readNotClosedExecutionYears());
+
+        Collections.sort(executionYearList, Collections.reverseOrder(new Comparator<ExecutionYear>() {
+
+            @Override
+            public int compare(final ExecutionYear o1, final ExecutionYear o2) {
+                int c = o1.getBeginLocalDate().compareTo(o2.getBeginLocalDate());
+                
+                return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+            }
+        }));
+        
+        model.addAttribute("executionYearOptions", executionYearList);
 
         return jspPage("choosedegreecurricularplan");
     }
