@@ -1,4 +1,4 @@
-<%@page import="org.fenixedu.academictreasury.ui.tuitiondebtcreation.TuitionDebtCreationBeanController"%>
+<%@page import="org.fenixedu.academictreasury.ui.tuitiondebtcreation.standalone.OtherTuitionDebtCreationBeanController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -205,9 +205,9 @@ function backToCreate() {
 <form id="form" name='form' method="post" class="form-horizontal"
 	ng-app="angularAppTuitionDebtCreationBean"
 	ng-controller="TuitionDebtCreationBeanController"
-	action='${pageContext.request.contextPath}<%= TuitionDebtCreationBeanController.CONFIRMTUITIONDEBTCREATION_URL %>/${debtAccount.externalId}'>
+	action='${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CONFIRMTUITIONDEBTCREATION_URL %>/${debtAccount.externalId}'>
 	
-	<input id="backURL" type="hidden" name="backURL" value='${pageContext.request.contextPath}<%= TuitionDebtCreationBeanController.BACKTOCREATE_URL %>/${debtAccount.externalId}' />
+	<input id="backURL" type="hidden" name="backURL" value='${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.BACKTOCREATE_URL %>/${debtAccount.externalId}' />
 
 	<input name="bean" type="hidden" value="{{ object }}" />
 

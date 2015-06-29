@@ -29,6 +29,7 @@ package org.fenixedu.academictreasury.ui.tuitiondebtcreation;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tuition.TuitionDebtCreationBean;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
@@ -65,18 +66,20 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
 
     @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.GET)
     public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
-        final TuitionDebtCreationBean bean = new TuitionDebtCreationBean(debtAccount);
+        final TuitionDebtCreationBean bean =
+                new TuitionDebtCreationBean(debtAccount, TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get());
         return _createFirstPage(debtAccount, bean, model);
     }
-    
+
     private static final String _BACKTOCREATE_URI = "/backtocreate";
     public static final String BACKTOCREATE_URL = CONTROLLER_URL + _BACKTOCREATE_URI;
 
     @RequestMapping(value = _BACKTOCREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model) {
+    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
+            required = false) final TuitionDebtCreationBean bean, final Model model) {
         return _createFirstPage(debtAccount, bean, model);
     }
-    
+
     public String _createFirstPage(final DebtAccount debtAccount, final TuitionDebtCreationBean bean, final Model model) {
         model.addAttribute("TuitionDebtCreationBean_executionYear_options", ExecutionYear.readNotClosedExecutionYears());
         model.addAttribute("TuitionDebtCreationBean_registration_options", ((PersonCustomer) debtAccount.getCustomer())
@@ -103,9 +106,8 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
     }
 
     @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount,
-            @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model,
-            final RedirectAttributes redirectAttributes) {
+    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
+            required = false) final TuitionDebtCreationBean bean, final Model model, final RedirectAttributes redirectAttributes) {
 
         try {
             model.addAttribute("debtAccount", debtAccount);

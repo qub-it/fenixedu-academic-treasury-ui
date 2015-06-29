@@ -40,6 +40,8 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.joda.time.LocalDate;
 
+import pt.ist.fenixframework.Atomic;
+
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -62,12 +64,12 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    protected void init(final DebtAccount debtAccount, final Product product) {
+    protected void init(final DebtAccount debtAccount, final Product product, final LocalizedString name) {
         throw new RuntimeException("wrong call");
     }
 
     protected void init(final DebtAccount debtAccount, final AcademicServiceRequest academicServiceRequest, final Product product) {
-        super.init(debtAccount, product);
+        super.init(debtAccount, product, nameForAcademicServiceRequest(product, academicServiceRequest));
 
         setAcademicServiceRequest(academicServiceRequest);
         setPropertiesJsonMap(propertiesMapToJson(fillPropertiesMap()));
@@ -76,9 +78,24 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         checkRules();
     }
 
+    private LocalizedString nameForAcademicServiceRequest(final Product product,
+            final AcademicServiceRequest academicServiceRequest) {
+        LocalizedString result = new LocalizedString();
+
+        for (final Locale locale : CoreConfiguration.supportedLocales()) {
+            result =
+                    result.with(
+                            locale,
+                            String.format("%s [%s]", product.getName().getContent(locale),
+                                    academicServiceRequest.getServiceRequestNumberYear()));
+        }
+
+        return result;
+    }
+
     protected void init(final DebtAccount debtAccount, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final Product product, final Registration registration, final ExecutionYear executionYear) {
-        super.init(debtAccount, product);
+        super.init(debtAccount, product, nameForTuition(product, registration, executionYear));
 
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup);
         setRegistration(registration);
@@ -88,9 +105,23 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         checkRules();
     }
 
+    private LocalizedString nameForTuition(final Product product, final Registration registration,
+            final ExecutionYear executionYear) {
+        LocalizedString result = new LocalizedString();
+        for (final Locale locale : CoreConfiguration.supportedLocales()) {
+            final String name =
+                    String.format("%s [%s - %s]", product.getName().getContent(), registration.getDegree()
+                            .getPresentationNameI18N().getContent(), executionYear.getQualifiedName());
+
+            result = result.with(locale, name);
+        }
+
+        return result;
+    }
+
     protected void init(final DebtAccount debtAccount, final AcademicTax academicTax, final Registration registration,
             final ExecutionYear executionYear) {
-        super.init(debtAccount, academicTax.getProduct());
+        super.init(debtAccount, academicTax.getProduct(), nameForAcademicTax(academicTax, registration, executionYear));
 
         setAcademicTax(academicTax);
 
@@ -99,6 +130,25 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         setPropertiesJsonMap(propertiesMapToJson(fillPropertiesMap()));
 
         checkRules();
+    }
+
+    private LocalizedString nameForAcademicTax(final AcademicTax academicTax, final Registration registration,
+            final ExecutionYear executionYear) {
+        LocalizedString result = new LocalizedString();
+        for (final Locale locale : CoreConfiguration.supportedLocales()) {
+            String name = null;
+            if (academicTax.isAppliedOnRegistration()) {
+                name =
+                        String.format("%s [%s - %s]", academicTax.getProduct().getName().getContent(), registration.getDegree()
+                                .getPresentationNameI18N().getContent(), executionYear.getQualifiedName());
+            } else {
+                name = String.format("%s [%s]", executionYear.getQualifiedName());
+            }
+
+            result = result.with(locale, name);
+        }
+
+        return result;
     }
 
     @Override
@@ -253,6 +303,26 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
         return findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).isPresent();
+    }
+
+    @Override
+    @Atomic
+    public LocalDate getTreasuryEventDate() {
+        if (isForAcademicServiceRequest()) {
+            return getAcademicServiceRequest().getRequestDate().toLocalDate();
+        } else if (isForImprovementTax() || isForAcademicTax() || isForRegistrationTuition() || isForExtracurricularTuition()
+                || isForStandaloneTuition()) {
+
+            final RegistrationDataByExecutionYear data =
+                    RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear());
+            if (data.getEnrolmentDate() != null) {
+                return data.getEnrolmentDate();
+            }
+
+            return getExecutionYear().getBeginLocalDate();
+        }
+
+        throw new RuntimeException("dont know how to handle this!");
     }
 
     public Optional<? extends DebitEntry> findActiveEnrolmentDebitEntry(final Enrolment enrolment) {

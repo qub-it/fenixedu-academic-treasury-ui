@@ -177,14 +177,16 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
     public String createchoosedegreecurricularplans(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
-        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().isPresent()) {
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.defaultGroupForStandalone.required"), model);
+        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().isPresent()) {
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.defaultGroupForExtracurricular.required"), model);
             return chooseDegreeCurricularPlan(finantialEntity, executionYear, model);
         }
         
         final TuitionPaymentPlanBean bean =
                 new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get(),
                         finantialEntity, executionYear);
+
+        bean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get().getCurrentProduct());
 
         return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
     }

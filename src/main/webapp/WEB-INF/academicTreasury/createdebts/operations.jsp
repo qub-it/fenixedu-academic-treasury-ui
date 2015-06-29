@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.academictreasury.ui.tuitiondebtcreation.standalone.OtherTuitionDebtCreationBeanController"%>
 <%@page
 	import="org.fenixedu.academictreasury.ui.tuitiondebtcreation.TuitionDebtCreationBeanController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -108,6 +109,20 @@ ${portal.angularToolkit()}
 		<strong>
 			<a href="${pageContext.request.contextPath}<%= TuitionDebtCreationBeanController.CREATE_URL %>/${debtAccount.externalId}">
 				<spring:message code="label.TuitionDebtCreationBean.create.tuition.debts" />
+			</a>
+		</strong>
+	</p>
+	<p>
+		<strong>
+			<a href="${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATESTANDALONE_URL %>/${debtAccount.externalId}">
+				<spring:message code="label.TuitionDebtCreationBean.create.standalonetuition.debts" />
+			</a>
+		</strong>
+	</p>
+	<p>
+		<strong>
+			<a href="${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATEEXTRACURRICULAR_URL %>/${debtAccount.externalId}">
+				<spring:message code="label.TuitionDebtCreationBean.create.extracurriculartuition.debts" />
 			</a>
 		</strong>
 	</p>

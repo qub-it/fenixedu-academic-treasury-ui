@@ -206,7 +206,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.unknown.amountToPay");
     }
 
-    private BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent, final Enrolment enrolment) {
+    public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent, final Enrolment enrolment) {
         if (!(getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForStandalone() || getTuitionPaymentPlan()
                 .getTuitionPaymentPlanGroup().isForExtracurricular())) {
             throw new RuntimeException("wrong call");
@@ -314,7 +314,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         return getTuitionPaymentPlan().installmentName(this);
     }
 
-    private LocalizedString standaloneDebitEntryName(final Enrolment standaloneEnrolment) {
+    public LocalizedString standaloneDebitEntryName(final Enrolment standaloneEnrolment) {
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             result =

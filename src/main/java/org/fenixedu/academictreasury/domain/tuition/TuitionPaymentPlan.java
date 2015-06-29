@@ -168,6 +168,15 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                         CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
+            if (getTuitionPaymentPlanGroup().isForStandalone()) {
+                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.standalone")).append(
+                        CONDITIONS_DESCRIPTION_SEPARATOR);
+
+            } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
+                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.extracurricular"))
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+
             if (getRegistrationRegimeType() != null) {
                 description.append(getRegistrationRegimeType().getLocalizedName()).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
@@ -223,6 +232,22 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     public List<TuitionInstallmentTariff> getOrderedTuitionInstallmentTariffs() {
         return super.getTuitionInstallmentTariffsSet().stream().sorted(TuitionInstallmentTariff.COMPARATOR_BY_INSTALLMENT_NUMBER)
                 .collect(Collectors.toList());
+    }
+
+    public TuitionInstallmentTariff getStandaloneTuitionInstallmentTariff() {
+        if (!getTuitionPaymentPlanGroup().isForStandalone()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        return getOrderedTuitionInstallmentTariffs().get(0);
+    }
+
+    public TuitionInstallmentTariff getExtracurricularTuitionInstallmentTariff() {
+        if (!getTuitionPaymentPlanGroup().isForExtracurricular()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        return getOrderedTuitionInstallmentTariffs().get(0);
     }
 
     public LocalizedString installmentName(final TuitionInstallmentTariff installmentTariff) {
@@ -564,7 +589,6 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                         && (t.getIngression() == null || t.getIngression() == ingression)
                         && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial) && !t.isCustomized())
                 .findFirst().orElse(null);
-
     }
 
     public static TuitionPaymentPlan inferTuitionPaymentPlanForExtracurricularEnrolment(final Registration registration,

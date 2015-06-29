@@ -1,5 +1,4 @@
-<%@page
-	import="org.fenixedu.academictreasury.ui.tuitiondebtcreation.TuitionDebtCreationBeanController"%>
+<%@page import="org.fenixedu.academictreasury.ui.tuitiondebtcreation.standalone.OtherTuitionDebtCreationBeanController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -121,9 +120,9 @@ ${portal.angularToolkit()}
 <form name='form' method="post" class="form-horizontal"
 	ng-app="angularAppTuitionDebtCreationBean"
 	ng-controller="TuitionDebtCreationBeanController"
-	action='${pageContext.request.contextPath}<%= TuitionDebtCreationBeanController.CREATE_URL %>/${debtAccount.externalId}'>
+	action='${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATE_URL %>/${debtAccount.externalId}'>
 
-	<input type="hidden" name="postback" value='${pageContext.request.contextPath}<%= TuitionDebtCreationBeanController.CREATEPOSTBACK_URL  %>/${debtAccount.externalId}' />
+	<input type="hidden" name="postback" value='${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATEPOSTBACK_URL  %>/${debtAccount.externalId}' />
 
 	<input name="bean" type="hidden" value="{{ object }}" />
 	<div class="panel panel-default">
@@ -166,6 +165,51 @@ ${portal.angularToolkit()}
 					</ui-select>
 				</div>
 			</div>
+
+		<c:if test="${bean.standaloneTuition}">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.TuitionDebtCreationBean.enrolment" />
+				</div>
+
+				<div class="col-sm-6">
+					<ui-select id="tuitionDebtCreationBean_enrolments"
+						name="enrolments"
+						ng-model="$parent.object.enrolment" theme="bootstrap"
+						ng-disabled="disabled" on-select="onRegistrationChange($model)">
+						<ui-select-match>{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices
+							repeat="enrolments.id as enrolments in object.standaloneEnrolmentsDataSource | filter: $select.search">
+						<span ng-bind-html="enrolments.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>
+				</div>
+			</div>
+		</c:if>
+
+		<c:if test="${bean.extracurricularTuition}">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.TuitionDebtCreationBean.enrolment" />
+				</div>
+
+				<div class="col-sm-6">
+					<ui-select id="tuitionDebtCreationBean_enrolments"
+						name="enrolments"
+						ng-model="$parent.object.enrolment" theme="bootstrap"
+						ng-disabled="disabled" on-select="onRegistrationChange($model)">
+						<ui-select-match>{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices
+							repeat="enrolments.id as enrolments in object.extracurricularEnrolmentsDataSource | filter: $select.search">
+						<span ng-bind-html="enrolments.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>
+				</div>
+			</div>
+		</c:if>
+			
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionDebtCreationBean.debtDate" />

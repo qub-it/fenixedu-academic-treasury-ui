@@ -184,10 +184,12 @@ public class TuitionServices {
         return AcademicTreasuryEvent.findUniqueForStandaloneTuition(registration, executionYear).orElse(null);
     }
 
+    @Atomic
     public static boolean createInferedTuitionForStandalone(final Enrolment standaloneEnrolment, final LocalDate when) {
         return createInferedTuitionForStandalone(Sets.newHashSet(standaloneEnrolment), when);
     }
 
+    @Atomic
     public static boolean createInferedTuitionForStandalone(final Set<Enrolment> standaloneEnrolments, final LocalDate when) {
 
         boolean created = false;
@@ -223,6 +225,90 @@ public class TuitionServices {
                     TuitionPaymentPlan.inferTuitionPaymentPlanForStandaloneEnrolment(registration, executionYear,
                             standaloneEnrolment);
 
+            created |= createTuitionForStandalone(standaloneEnrolment, tuitionPaymentPlan, when);
+        }
+
+        return created;
+    }
+
+    @Atomic
+    public static boolean createTuitionForStandalone(final Enrolment standaloneEnrolment,
+            final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate when) {
+        final Registration registration = standaloneEnrolment.getRegistration();
+        final Person person = registration.getPerson();
+        final ExecutionYear executionYear = standaloneEnrolment.getExecutionYear();
+        final PersonCustomer personCustomer = PersonCustomer.findUnique(person).get();
+
+        if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
+                .isPresent()) {
+            DebtAccount.create(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer);
+        }
+
+        final DebtAccount debtAccount =
+                DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer).get();
+
+        if (!AcademicTreasuryEvent.findUniqueForStandaloneTuition(registration, executionYear).isPresent()) {
+            AcademicTreasuryEvent.createForStandaloneTuition(debtAccount, tuitionPaymentPlan.getProduct(), registration,
+                    executionYear);
+        }
+
+        final AcademicTreasuryEvent academicTreasuryEvent =
+                AcademicTreasuryEvent.findUniqueForStandaloneTuition(registration, executionYear).get();
+
+        if (academicTreasuryEvent.getDebtAccount().getFinantialInstitution() != tuitionPaymentPlan.getFinantialEntity()
+                .getFinantialInstitution()) {
+            throw new AcademicTreasuryDomainException(
+                    "error.TuitionServices.standalone.tuition.for.different.finantial.institutions.not.supported");
+        }
+
+        return tuitionPaymentPlan.createDebitEntriesForStandalone(academicTreasuryEvent, standaloneEnrolment, when);
+    }
+
+    public static TuitionPaymentPlan usedPaymentPlanForStandalone(final Registration registration,
+            final ExecutionYear executionYear, final Enrolment enrolment, final LocalDate debtDate) {
+        return usedPaymentPlanForStandalone(registration, executionYear, enrolment, debtDate, null);
+    }
+
+    public static TuitionPaymentPlan usedPaymentPlanForStandalone(final Registration registration,
+            final ExecutionYear executionYear, final Enrolment enrolment, final LocalDate debtDate,
+            final TuitionPaymentPlan tuitionPaymentPlan) {
+        if (tuitionPaymentPlan != null) {
+            return tuitionPaymentPlan;
+        }
+
+        return TuitionPaymentPlan.inferTuitionPaymentPlanForStandaloneEnrolment(registration, executionYear, enrolment);
+    }
+
+    @Atomic
+    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeansForStandalone(final Registration registration,
+            final ExecutionYear executionYear, final LocalDate debtDate, final Set<Enrolment> enrolments) {
+        return calculateInstallmentDebitEntryBeansForStandalone(registration, executionYear, debtDate, null, enrolments);
+    }
+
+    @Atomic
+    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeansForStandalone(final Registration registration,
+            final ExecutionYear executionYear, final LocalDate debtDate, TuitionPaymentPlan tuitionPaymentPlan,
+            final Set<Enrolment> enrolments) {
+
+        final Person person = registration.getPerson();
+        // Read person customer
+        PersonCustomer personCustomer = PersonCustomer.findUnique(person).orElse(null);
+
+        if (personCustomer == null) {
+            personCustomer = PersonCustomer.create(person);
+        }
+
+        final List<TuitionDebitEntryBean> entries = Lists.newArrayList();
+        for (final Enrolment enrolment : enrolments) {
+            if (tuitionPaymentPlan == null) {
+                tuitionPaymentPlan =
+                        TuitionPaymentPlan.inferTuitionPaymentPlanForStandaloneEnrolment(registration, executionYear, enrolment);
+            }
+
+            if (tuitionPaymentPlan == null) {
+                continue;
+            }
+
             if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
                     .isPresent()) {
                 DebtAccount.create(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer);
@@ -240,16 +326,24 @@ public class TuitionServices {
             final AcademicTreasuryEvent academicTreasuryEvent =
                     AcademicTreasuryEvent.findUniqueForStandaloneTuition(registration, executionYear).get();
 
-            if (academicTreasuryEvent.getDebtAccount().getFinantialInstitution() != tuitionPaymentPlan.getFinantialEntity()
-                    .getFinantialInstitution()) {
-                throw new AcademicTreasuryDomainException(
-                        "error.TuitionServices.standalone.tuition.for.different.finantial.institutions.not.supported");
-            }
+            final TuitionInstallmentTariff tuitionInstallmentTariff = tuitionPaymentPlan.getStandaloneTuitionInstallmentTariff();
+            final int installmentOrder = tuitionInstallmentTariff.getInstallmentOrder();
+            final LocalizedString installmentName = tuitionInstallmentTariff.standaloneDebitEntryName(enrolment);
+            final LocalDate dueDate = tuitionInstallmentTariff.dueDate(debtDate);
+            final Vat vat = tuitionInstallmentTariff.vat(debtDate);
+            final BigDecimal amount = tuitionInstallmentTariff.amountToPay(academicTreasuryEvent, enrolment);
 
-            created |= tuitionPaymentPlan.createDebitEntriesForStandalone(academicTreasuryEvent, standaloneEnrolment, when);
+            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount));
         }
 
-        return created;
+        return entries.stream().sorted(new Comparator<TuitionDebitEntryBean>() {
+
+            @Override
+            public int compare(TuitionDebitEntryBean o1, TuitionDebitEntryBean o2) {
+                return o1.getInstallmentOrder() - o2.getInstallmentOrder();
+            }
+
+        }).collect(Collectors.toList());
     }
 
     public static boolean removeDebitEntryForStandaloneEnrolment(final Enrolment standaloneEnrolment) {
@@ -289,7 +383,7 @@ public class TuitionServices {
                     debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
 
             debitEntry.annulOnEvent();
-            
+
             return true;
         }
 
@@ -306,10 +400,12 @@ public class TuitionServices {
         return AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).orElse(null);
     }
 
+    @Atomic
     public static boolean createInferedTuitionForExtracurricular(final Enrolment extracurricularEnrolment, final LocalDate when) {
         return createInferedTuitionForExtracurricular(Sets.newHashSet(extracurricularEnrolment), when);
     }
 
+    @Atomic
     public static boolean createInferedTuitionForExtracurricular(final Set<Enrolment> extracurricularEnrolments,
             final LocalDate when) {
 
@@ -333,8 +429,6 @@ public class TuitionServices {
                 PersonCustomer.create(person);
             }
 
-            final PersonCustomer personCustomer = PersonCustomer.findUnique(person).get();
-
             final ExecutionYear executionYear = extracurricularEnrolment.getExecutionYear();
 
             if (TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear,
@@ -345,6 +439,90 @@ public class TuitionServices {
             final TuitionPaymentPlan tuitionPaymentPlan =
                     TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear,
                             extracurricularEnrolment);
+
+            created |= createTuitionForExtracurricular(extracurricularEnrolment, tuitionPaymentPlan, when);
+        }
+
+        return created;
+    }
+
+    @Atomic
+    public static boolean createTuitionForExtracurricular(final Enrolment extracurricularEnrolment,
+            final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate when) {
+        final Registration registration = extracurricularEnrolment.getRegistration();
+        final Person person = registration.getPerson();
+        final ExecutionYear executionYear = extracurricularEnrolment.getExecutionYear();
+        final PersonCustomer personCustomer = PersonCustomer.findUnique(person).get();
+
+        if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
+                .isPresent()) {
+            DebtAccount.create(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer);
+        }
+
+        final DebtAccount debtAccount =
+                DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer).get();
+
+        if (!AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).isPresent()) {
+            AcademicTreasuryEvent.createForExtracurricularTuition(debtAccount, tuitionPaymentPlan.getProduct(), registration,
+                    executionYear);
+        }
+
+        final AcademicTreasuryEvent academicTreasuryEvent =
+                AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).get();
+
+        if (academicTreasuryEvent.getDebtAccount().getFinantialInstitution() != tuitionPaymentPlan.getFinantialEntity()
+                .getFinantialInstitution()) {
+            throw new AcademicTreasuryDomainException(
+                    "error.TuitionServices.standalone.tuition.for.different.finantial.institutions.not.supported");
+        }
+
+        return tuitionPaymentPlan.createDebitEntriesForExtracurricular(academicTreasuryEvent, extracurricularEnrolment, when);
+    }
+
+    public static TuitionPaymentPlan usedPaymentPlanForExtracurricular(final Registration registration,
+            final ExecutionYear executionYear, final Enrolment enrolment, final LocalDate debtDate) {
+        return usedPaymentPlanForExtracurricular(registration, executionYear, enrolment, debtDate, null);
+    }
+
+    public static TuitionPaymentPlan usedPaymentPlanForExtracurricular(final Registration registration,
+            final ExecutionYear executionYear, final Enrolment enrolment, final LocalDate debtDate,
+            final TuitionPaymentPlan tuitionPaymentPlan) {
+        if (tuitionPaymentPlan != null) {
+            return tuitionPaymentPlan;
+        }
+
+        return TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear, enrolment);
+    }
+
+    @Atomic
+    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeansForExtracurricular(final Registration registration,
+            final ExecutionYear executionYear, final LocalDate debtDate, final Set<Enrolment> enrolments) {
+        return calculateInstallmentDebitEntryBeansForExtracurricular(registration, executionYear, debtDate, null, enrolments);
+    }
+
+    @Atomic
+    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeansForExtracurricular(final Registration registration,
+            final ExecutionYear executionYear, final LocalDate debtDate, TuitionPaymentPlan tuitionPaymentPlan,
+            final Set<Enrolment> enrolments) {
+
+        final Person person = registration.getPerson();
+        // Read person customer
+        PersonCustomer personCustomer = PersonCustomer.findUnique(person).orElse(null);
+
+        if (personCustomer == null) {
+            personCustomer = PersonCustomer.create(person);
+        }
+
+        final List<TuitionDebitEntryBean> entries = Lists.newArrayList();
+        for (final Enrolment enrolment : enrolments) {
+            if (tuitionPaymentPlan == null) {
+                tuitionPaymentPlan =
+                        TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear, enrolment);
+            }
+
+            if (tuitionPaymentPlan == null) {
+                continue;
+            }
 
             if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
                     .isPresent()) {
@@ -363,20 +541,26 @@ public class TuitionServices {
             final AcademicTreasuryEvent academicTreasuryEvent =
                     AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).get();
 
-            if (academicTreasuryEvent.getDebtAccount().getFinantialInstitution() != tuitionPaymentPlan.getFinantialEntity()
-                    .getFinantialInstitution()) {
-                throw new AcademicTreasuryDomainException(
-                        "error.TuitionServices.standalone.tuition.for.different.finantial.institutions.not.supported");
-            }
+            final TuitionInstallmentTariff tuitionInstallmentTariff = tuitionPaymentPlan.getExtracurricularTuitionInstallmentTariff();
+            final int installmentOrder = tuitionInstallmentTariff.getInstallmentOrder();
+            final LocalizedString installmentName = tuitionInstallmentTariff.standaloneDebitEntryName(enrolment);
+            final LocalDate dueDate = tuitionInstallmentTariff.dueDate(debtDate);
+            final Vat vat = tuitionInstallmentTariff.vat(debtDate);
+            final BigDecimal amount = tuitionInstallmentTariff.amountToPay(academicTreasuryEvent, enrolment);
 
-            created |=
-                    tuitionPaymentPlan
-                            .createDebitEntriesForExtracurricular(academicTreasuryEvent, extracurricularEnrolment, when);
+            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount));
         }
 
-        return created;
-    }
+        return entries.stream().sorted(new Comparator<TuitionDebitEntryBean>() {
 
+            @Override
+            public int compare(TuitionDebitEntryBean o1, TuitionDebitEntryBean o2) {
+                return o1.getInstallmentOrder() - o2.getInstallmentOrder();
+            }
+
+        }).collect(Collectors.toList());
+    }
+    
     public static boolean removeDebitEntryForExtracurricularEnrolment(final Enrolment extracurricularEnrolment) {
         final Registration registration = extracurricularEnrolment.getRegistration();
         final ExecutionYear executionYear = extracurricularEnrolment.getExecutionYear();
@@ -414,7 +598,7 @@ public class TuitionServices {
                     debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
 
             debitEntry.annulOnEvent();
-            
+
             return true;
         }
 
@@ -496,7 +680,8 @@ public class TuitionServices {
             return false;
         }
 
-        final AcademicTreasuryEvent academicTreasuryEvent = findAcademicTreasuryEventForImprovementTax(registration, executionYear);
+        final AcademicTreasuryEvent academicTreasuryEvent =
+                findAcademicTreasuryEventForImprovementTax(registration, executionYear);
 
         if (!academicTreasuryEvent.isChargedWithDebitEntry(improvementEnrolmentEvaluation)) {
             return false;
@@ -526,14 +711,23 @@ public class TuitionServices {
                     debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
 
             creditNote.closeDocument();
-            
+
             debitEntry.annulOnEvent();
-            
+
             return true;
         }
 
         return false;
     }
+
+    /* ----------
+     * ENROLMENTS
+     * ----------
+     * 
+     * There should be an API to retrieve normal, standalone, extracurricular
+     * and improvement enrolments from curriculum without implementing the logic
+     * again and again...
+     */
 
     public static Set<Enrolment> normalEnrolments(final Registration registration, final ExecutionYear executionYear) {
         final Set<Enrolment> result = Sets.newHashSet(registration.getEnrolments(executionYear));
@@ -557,6 +751,13 @@ public class TuitionServices {
         return registration.getStudentCurricularPlan(executionYear).getExtraCurricularCurriculumLines().stream()
                 .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).map(l -> (Enrolment) l)
                 .collect(Collectors.<Enrolment> toSet());
+    }
+
+    public static Set<EnrolmentEvaluation> improvementEnrolments(final Registration registration,
+            final ExecutionYear executionYear) {
+        return registration.getStudentCurricularPlan(executionYear).getEnroledImprovements().stream()
+                .map(l -> l.getEvaluationsSet()).reduce((a, b) -> Sets.union(a, b)).orElse(Sets.newHashSet()).stream()
+                .filter(e -> e.getExecutionPeriod().getExecutionYear() == executionYear).collect(Collectors.toSet());
     }
 
 }
