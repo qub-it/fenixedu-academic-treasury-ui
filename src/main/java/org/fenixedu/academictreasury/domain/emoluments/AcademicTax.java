@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
 
@@ -13,11 +14,11 @@ import pt.ist.fenixframework.Atomic;
 public class AcademicTax extends AcademicTax_Base {
 
     public static final Comparator<AcademicTax> COMPARE_BY_PRODUCT_NAME = new Comparator<AcademicTax>() {
-        
+
         @Override
         public int compare(final AcademicTax o1, final AcademicTax o2) {
             int c = o1.getProduct().getName().getContent().compareTo(o2.getProduct().getName().getContent());
-            
+
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
     };
@@ -28,7 +29,8 @@ public class AcademicTax extends AcademicTax_Base {
     }
 
     protected AcademicTax(final Product product, final boolean appliedOnRegistration,
-            final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears, final boolean appliedAutomatically) {
+            final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears,
+            final boolean appliedAutomatically) {
         this();
 
         setProduct(product);
@@ -69,11 +71,15 @@ public class AcademicTax extends AcademicTax_Base {
     public boolean isAppliedOnRegistrationSubsequentYears() {
         return super.getAppliedOnRegistrationSubsequentYears();
     }
-    
+
     public boolean isAppliedAutomatically() {
         return super.getAppliedAutomatically();
     }
-    
+
+    public boolean isImprovementTax() {
+        return this == AcademicTreasurySettings.getInstance().getImprovementAcademicTax();
+    }
+
     @Atomic
     public void edit(boolean appliedOnRegistration, boolean appliedOnRegistrationFirstYear,
             boolean appliedOnRegistrationSubsequentYears, final boolean appliedAutomatically) {
@@ -81,7 +87,7 @@ public class AcademicTax extends AcademicTax_Base {
         setAppliedOnRegistrationFirstYear(appliedOnRegistrationFirstYear);
         setAppliedOnRegistrationSubsequentYears(appliedOnRegistrationSubsequentYears);
         setAppliedAutomatically(appliedAutomatically);
-        
+
         checkRules();
     }
 
@@ -91,16 +97,16 @@ public class AcademicTax extends AcademicTax_Base {
 
     @Atomic
     public void delete() {
-        if(!isDeletable()) {
+        if (!isDeletable()) {
             throw new AcademicTreasuryDomainException("error.AcademicTax.delete.impossible");
         }
-        
+
         setBennu(null);
         setProduct(null);
-        
+
         super.deleteDomainObject();
     }
-    
+
     // @formatter: off
     /************
      * SERVICES *
@@ -121,7 +127,8 @@ public class AcademicTax extends AcademicTax_Base {
 
     @Atomic
     public static AcademicTax create(final Product product, final boolean appliedOnRegistration,
-            final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears, final boolean appliedAutomatically) {
+            final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears,
+            final boolean appliedAutomatically) {
         return new AcademicTax(product, appliedOnRegistration, appliedOnRegistrationFirstYear,
                 appliedOnRegistrationSubsequentYears, appliedAutomatically);
     }

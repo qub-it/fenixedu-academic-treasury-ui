@@ -102,12 +102,12 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     @Override
     public IAcademicTreasuryEvent getTuitionForImprovementTreasuryEvent(final Registration registration,
             final ExecutionYear executionYear) {
-        return TuitionServices.findAcademicTreasuryEventForImprovementTax(registration, executionYear);
+        return AcademicTaxServices.findAcademicTreasuryEventForImprovementTax(registration, executionYear);
     }
 
     @Override
     public void improvementUnrenrolment(EnrolmentEvaluation improvementEnrolmentEvaluation) {
-        TuitionServices.removeDebitEntryForImprovement(improvementEnrolmentEvaluation);
+        AcademicTaxServices.removeDebitEntryForImprovement(improvementEnrolmentEvaluation);
     }
 
     @Override

@@ -142,7 +142,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                         String.format("%s [%s - %s]", academicTax.getProduct().getName().getContent(), registration.getDegree()
                                 .getPresentationNameI18N().getContent(), executionYear.getQualifiedName());
             } else {
-                name = String.format("%s [%s]", executionYear.getQualifiedName());
+                name = String.format("%s [%s]", academicTax.getProduct().getName().getContent(), executionYear.getQualifiedName());
             }
 
             result = result.with(locale, name);
@@ -269,9 +269,16 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public LocalDate getRequestDate() {
         if (isForAcademicServiceRequest()) {
             return getAcademicServiceRequest().getRequestDate().toLocalDate();
-        } else if (isForAcademicTax()) {
-            return RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear())
+        } else if (isForAcademicTax() && !isForImprovementTax()) {
+            final LocalDate requestDate = RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear())
                     .getEnrolmentDate();
+            
+            return requestDate != null ? requestDate : new LocalDate();
+        } else if(isForImprovementTax()) {
+            final LocalDate requestDate = RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear())
+                    .getEnrolmentDate();
+            
+            return requestDate != null ? requestDate : new LocalDate();
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.requestDate.not.applied");
@@ -636,8 +643,6 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                     booleanLabel(getAcademicServiceRequest().isUrgentRequest()).getContent());
             propertiesMap.put(AcademicTreasuryEventKeys.LANGUAGE.getDescriptionI18N().getContent(), getAcademicServiceRequest()
                     .getLanguage().getLanguage());
-            propertiesMap.put(AcademicTreasuryEventKeys.BASE_AMOUNT.getDescriptionI18N().getContent(), getDebtAccount()
-                    .getFinantialInstitution().getCurrency().getValueFor(getBaseAmount()));
         } else if (isForRegistrationTuition() || isForStandaloneTuition() || isForExtracurricularTuition()) {
             propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(), getExecutionYear()
                     .getQualifiedName());

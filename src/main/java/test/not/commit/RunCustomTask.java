@@ -1,23 +1,40 @@
 package test.not.commit;
 
-import org.fenixedu.bennu.core.domain.User;
-import org.fenixedu.bennu.core.groups.DynamicGroup;
+import java.util.Locale;
+
+import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
+import org.fenixedu.academic.domain.serviceRequests.ServiceRequestTypeOption;
+import org.fenixedu.academic.domain.serviceRequests.documentRequests.AcademicServiceRequestType;
+import org.fenixedu.academic.domain.serviceRequests.documentRequests.DocumentRequestType;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
+import org.fenixedu.commons.i18n.LocalizedString;
 
 public class RunCustomTask extends CustomTask {
 
-    private static final String TREASURY_MANAGERS = "treasuryManagers";
-
-    private static final String TREASURY_BACK_OFFICE = "treasuryBackOffice";
-
-    private static final String TREASURY_FRONT_OFFICE = "treasuryFrontOffice";
-
-
     @Override
     public void runTask() throws Exception {
-        DynamicGroup.get(TREASURY_FRONT_OFFICE).mutator().grant(User.findByUsername("manager"));
-        DynamicGroup.get(TREASURY_BACK_OFFICE).mutator().grant(User.findByUsername("manager"));
-        DynamicGroup.get(TREASURY_MANAGERS).mutator().grant(User.findByUsername("manager"));
+        ServiceRequestTypeOption.create(
+                "DETAILED",
+                BundleUtil.getLocalizedString("resources.AcademicOfficeResources", ServiceRequestTypeOption.class.getSimpleName()
+                        + ".detailed"), true);
+
+        for (final AcademicServiceRequestType academicServiceRequestType : AcademicServiceRequestType.values()) {
+            if (academicServiceRequestType == AcademicServiceRequestType.DOCUMENT) {
+                continue;
+            }
+
+            ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
+                    academicServiceRequestType.getLocalizedName()), academicServiceRequestType, null, true);
+        }
+
+        for (final DocumentRequestType documentRequestType : DocumentRequestType.values()) {
+            ServiceRequestType.createLegacy(
+                    documentRequestType.name(),
+                    BundleUtil.getLocalizedString("resources.EnumerationResources",
+                            "DocumentRequestType." + documentRequestType.name()), AcademicServiceRequestType.DOCUMENT,
+                    documentRequestType, true);
+        }
     }
 
 }

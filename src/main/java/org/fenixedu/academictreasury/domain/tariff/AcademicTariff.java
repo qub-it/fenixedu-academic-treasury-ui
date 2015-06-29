@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.domain.tariff;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
@@ -297,53 +299,129 @@ public class AcademicTariff extends AcademicTariff_Base {
         return academicTreasuryEvent.getNumberOfUnits() - getUnitsForBase();
     }
 
-    private BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent,
+    public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent,
             final EnrolmentEvaluation enrolmentEvaluation) {
         return getBaseAmount();
     }
 
-    public DebitEntry createDebitEntry(final AcademicTreasuryEvent academicTreasuryEvent) {
+    public Vat vat(final LocalDate when) {
+        return Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(),
+                when.toDateTimeAtStartOfDay()).get();
+    }
+
+    public LocalizedString academicServiceRequestDebitEntryName(final AcademicTreasuryEvent academicTreasuryEvent) {
+        if (!academicTreasuryEvent.isForAcademicServiceRequest()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        return academicTreasuryEvent.getDescription();
+    }
+
+    public LocalizedString academicTaxDebitEntryName(final AcademicTreasuryEvent academicTreasuryEvent) {
+        if (!academicTreasuryEvent.isForAcademicTax()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        return academicTreasuryEvent.getDescription();
+    }
+
+    public LocalizedString improvementDebitEntryName(final AcademicTreasuryEvent academicTreasuryEvent,
+            final EnrolmentEvaluation enrolmentEvaluation) {
+        if (!academicTreasuryEvent.isImprovementTax()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        LocalizedString result = new LocalizedString();
+
+        for (final Locale locale : CoreConfiguration.supportedLocales()) {
+            result =
+                    result.with(
+                            locale,
+                            academicTreasuryEvent.getDescription().getContent(locale)
+                                    + String.format(" (%s - %s)", enrolmentEvaluation.getEnrolment().getName().getContent(locale),
+                                            enrolmentEvaluation.getExecutionPeriod().getQualifiedName()));
+        }
+
+        return result;
+    }
+
+    public DebitEntry createDebitEntryForAcademicServiceRequest(final AcademicTreasuryEvent academicTreasuryEvent) {
+        final LocalDate when = academicTreasuryEvent.getRequestDate();
+
+        return createDebitEntryForAcademicServiceRequest(academicTreasuryEvent, when);
+    }
+
+    public DebitEntry createDebitEntryForAcademicServiceRequest(final AcademicTreasuryEvent academicTreasuryEvent,
+            final LocalDate when) {
+        if (!academicTreasuryEvent.isForAcademicServiceRequest()) {
+            throw new RuntimeException("wrong call");
+        }
+
         final BigDecimal amount = amountToPay(academicTreasuryEvent);
-        final LocalDate dueDate =
-                dueDate(academicTreasuryEvent.isForAcademicServiceRequest() ? academicTreasuryEvent.getRequestDate() : new LocalDate());
+        final LocalDate dueDate = dueDate(when);
+        final LocalizedString debitEntryName = academicServiceRequestDebitEntryName(academicTreasuryEvent);
+        final Vat vat = vat(when);
 
         updatePriceValuesInEvent(academicTreasuryEvent);
 
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent);
 
-        return DebitEntry.create(null, academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent,
-                Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(), new DateTime())
-                        .get(), amount, dueDate, fillPriceProperties, getProduct(), getProduct().getName().getContent(),
-                Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
+        return DebitEntry.create(null, academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent, vat, amount, dueDate,
+                fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
+                this.getInterestRate(), when.toDateTimeAtStartOfDay());
+    }
+
+    public DebitEntry createDebitEntryForAcademicTax(final AcademicTreasuryEvent academicTreasuryEvent) {
+        final LocalDate when = academicTreasuryEvent.getRequestDate();
+
+        return createDebitEntryForAcademicTax(academicTreasuryEvent, when);
+    }
+
+    public DebitEntry createDebitEntryForAcademicTax(final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
+        if (!academicTreasuryEvent.isForAcademicTax() || academicTreasuryEvent.isImprovementTax()) {
+            throw new RuntimeException("wrong call");
+        }
+
+        final LocalDate dueDate = dueDate(when);
+        final LocalizedString debitEntryName = academicTaxDebitEntryName(academicTreasuryEvent);
+        final Vat vat = vat(when);
+        final BigDecimal amount = amountToPay(academicTreasuryEvent);
+
+        updatePriceValuesInEvent(academicTreasuryEvent);
+
+        final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent);
+
+        return DebitEntry.create(null, academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent, vat, amount, dueDate,
+                fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
+                this.getInterestRate(), when.toDateTimeAtStartOfDay());
     }
 
     public DebitEntry createDebitEntryForImprovement(final AcademicTreasuryEvent academicTreasuryEvent,
             final EnrolmentEvaluation enrolmentEvaluation) {
+        return createDebitEntryForImprovement(academicTreasuryEvent, enrolmentEvaluation, enrolmentEvaluation.getWhenDateTime()
+                .toLocalDate());
+    }
+
+    public DebitEntry createDebitEntryForImprovement(final AcademicTreasuryEvent academicTreasuryEvent,
+            final EnrolmentEvaluation enrolmentEvaluation, final LocalDate when) {
 
         if (!academicTreasuryEvent.isForImprovementTax()) {
             throw new RuntimeException("wrong call");
         }
 
+        final LocalizedString debitEntryName = improvementDebitEntryName(academicTreasuryEvent, enrolmentEvaluation);
+        final LocalDate dueDate = dueDate(when);
+        final Vat vat = vat(when);
         final BigDecimal amount = amountToPay(academicTreasuryEvent, enrolmentEvaluation);
-        final LocalDate dueDate = dueDate(enrolmentEvaluation.getWhenDateTime().toLocalDate());
 
         updatePriceValuesInEvent(academicTreasuryEvent, enrolmentEvaluation);
 
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent, enrolmentEvaluation);
 
-        final String description =
-                BundleUtil.getString(Constants.BUNDLE, "label.AcademicTax.improvement.debit.entry.description",
-                        enrolmentEvaluation.getEnrolment().getName().getContent(), enrolmentEvaluation.getExecutionPeriod()
-                                .getQualifiedName());
-
         final DebitEntry debitEntry =
-                DebitEntry.create(
-                        null,
-                        academicTreasuryEvent.getDebtAccount(),
-                        academicTreasuryEvent,
-                        Vat.findActiveUnique(getProduct().getVatType(), getFinantialEntity().getFinantialInstitution(),
-                                new DateTime()).get(), amount, dueDate, fillPriceProperties, getProduct(), description,
-                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
+                DebitEntry.create(null, academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent, vat, amount, dueDate,
+                        fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
+                        this.getInterestRate(), new DateTime());
 
         academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);
 

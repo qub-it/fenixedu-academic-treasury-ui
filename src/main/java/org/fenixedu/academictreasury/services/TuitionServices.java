@@ -495,15 +495,16 @@ public class TuitionServices {
     }
 
     @Atomic
-    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeansForExtracurricular(final Registration registration,
-            final ExecutionYear executionYear, final LocalDate debtDate, final Set<Enrolment> enrolments) {
+    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeansForExtracurricular(
+            final Registration registration, final ExecutionYear executionYear, final LocalDate debtDate,
+            final Set<Enrolment> enrolments) {
         return calculateInstallmentDebitEntryBeansForExtracurricular(registration, executionYear, debtDate, null, enrolments);
     }
 
     @Atomic
-    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeansForExtracurricular(final Registration registration,
-            final ExecutionYear executionYear, final LocalDate debtDate, TuitionPaymentPlan tuitionPaymentPlan,
-            final Set<Enrolment> enrolments) {
+    public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeansForExtracurricular(
+            final Registration registration, final ExecutionYear executionYear, final LocalDate debtDate,
+            TuitionPaymentPlan tuitionPaymentPlan, final Set<Enrolment> enrolments) {
 
         final Person person = registration.getPerson();
         // Read person customer
@@ -517,7 +518,8 @@ public class TuitionServices {
         for (final Enrolment enrolment : enrolments) {
             if (tuitionPaymentPlan == null) {
                 tuitionPaymentPlan =
-                        TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear, enrolment);
+                        TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear,
+                                enrolment);
             }
 
             if (tuitionPaymentPlan == null) {
@@ -541,9 +543,10 @@ public class TuitionServices {
             final AcademicTreasuryEvent academicTreasuryEvent =
                     AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).get();
 
-            final TuitionInstallmentTariff tuitionInstallmentTariff = tuitionPaymentPlan.getExtracurricularTuitionInstallmentTariff();
+            final TuitionInstallmentTariff tuitionInstallmentTariff =
+                    tuitionPaymentPlan.getExtracurricularTuitionInstallmentTariff();
             final int installmentOrder = tuitionInstallmentTariff.getInstallmentOrder();
-            final LocalizedString installmentName = tuitionInstallmentTariff.standaloneDebitEntryName(enrolment);
+            final LocalizedString installmentName = tuitionInstallmentTariff.extracurricularDebitEntryName(enrolment);
             final LocalDate dueDate = tuitionInstallmentTariff.dueDate(debtDate);
             final Vat vat = tuitionInstallmentTariff.vat(debtDate);
             final BigDecimal amount = tuitionInstallmentTariff.amountToPay(academicTreasuryEvent, enrolment);
@@ -560,7 +563,7 @@ public class TuitionServices {
 
         }).collect(Collectors.toList());
     }
-    
+
     public static boolean removeDebitEntryForExtracurricularEnrolment(final Enrolment extracurricularEnrolment) {
         final Registration registration = extracurricularEnrolment.getRegistration();
         final ExecutionYear executionYear = extracurricularEnrolment.getExecutionYear();
@@ -605,129 +608,29 @@ public class TuitionServices {
         return false;
     }
 
-    /* ***********
-     * IMPROVEMENT
-     * ***********
-     */
-
-    public static AcademicTreasuryEvent findAcademicTreasuryEventForImprovementTax(final Registration registration,
-            final ExecutionYear executionYear) {
-        return AcademicTreasuryEvent.findUniqueForImprovementTuition(registration, executionYear).orElse(null);
-    }
-
-    public static boolean createImprovementTax(final EnrolmentEvaluation enrolmentEvaluation, final LocalDate when) {
-
-        if (!enrolmentEvaluation.getEvaluationSeason().isImprovement()) {
-            throw new AcademicTreasuryDomainException("error.TuitionServices.enrolmentEvaluation.is.not.improvement");
-        }
-
-        final Registration registration = enrolmentEvaluation.getRegistration();
-        final ExecutionYear executionYear = enrolmentEvaluation.getExecutionPeriod().getExecutionYear();
-
-        if (findAcademicTreasuryEventForImprovementTax(registration, executionYear) == null) {
-            final Person person = registration.getPerson();
-
-            if (!PersonCustomer.findUnique(person).isPresent()) {
-                PersonCustomer.create(person);
-            }
-
-            final PersonCustomer personCustomer = PersonCustomer.findUnique(person).get();
-
-            final AcademicTariff academicTariff =
-                    AcademicTariff.findMatch(AcademicTreasurySettings.getInstance().getImprovementAcademicTax().getProduct(),
-                            registration.getDegree(), when.toDateTimeAtStartOfDay());
-
-            if (academicTariff == null) {
-                return false;
-            }
-
-            if (!DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(), personCustomer)
-                    .isPresent()) {
-                DebtAccount.create(academicTariff.getFinantialEntity().getFinantialInstitution(), personCustomer);
-            }
-
-            final DebtAccount debtAccount =
-                    DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(), personCustomer).get();
-
-            AcademicTreasuryEvent.createForImprovementTuition(debtAccount, registration, executionYear);
-        }
-
-        final AcademicTreasuryEvent academicTreasuryEvent =
-                findAcademicTreasuryEventForImprovementTax(registration, executionYear);
-
-        if (academicTreasuryEvent.isChargedWithDebitEntry(enrolmentEvaluation)) {
-            return false;
-        }
-
-        final AcademicTariff academicTariff =
-                AcademicTariff.findMatch(AcademicTreasurySettings.getInstance().getImprovementAcademicTax().getProduct(),
-                        registration.getDegree(), when.toDateTimeAtStartOfDay());
-
-        if (academicTariff == null) {
-            return false;
-        }
-
-        final DebitEntry debitEntry = academicTariff.createDebitEntryForImprovement(academicTreasuryEvent, enrolmentEvaluation);
-
-        return debitEntry != null;
-    }
-
-    public static boolean removeDebitEntryForImprovement(final EnrolmentEvaluation improvementEnrolmentEvaluation) {
-        final Registration registration = improvementEnrolmentEvaluation.getRegistration();
-        final ExecutionYear executionYear = improvementEnrolmentEvaluation.getExecutionPeriod().getExecutionYear();
-
-        if (findAcademicTreasuryEventForImprovementTax(registration, executionYear) == null) {
-            return false;
-        }
-
-        final AcademicTreasuryEvent academicTreasuryEvent =
-                findAcademicTreasuryEventForImprovementTax(registration, executionYear);
-
-        if (!academicTreasuryEvent.isChargedWithDebitEntry(improvementEnrolmentEvaluation)) {
-            return false;
-        }
-
-        final DebitEntry debitEntry =
-                academicTreasuryEvent.findActiveEnrolmentEvaluationDebitEntry(improvementEnrolmentEvaluation).get();
-
-        if (!debitEntry.isProcessedInDebitNote() || ((DebitNote) debitEntry.getFinantialDocument()).isPreparing()) {
-            debitEntry.setCurricularCourse(null);
-            debitEntry.setExecutionSemester(null);
-            debitEntry.setEvaluationSeason(null);
-
-            debitEntry.delete();
-
-            return true;
-        } else if (((DebitNote) debitEntry.getFinantialDocument()).isClosed() && debitEntry.getCreditEntriesSet().isEmpty()) {
-            DebtAccount debtAccount = debitEntry.getDebtAccount();
-            final CreditNote creditNote =
-                    CreditNote.create(
-                            debtAccount,
-                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForCreditNote(),
-                                    debtAccount.getFinantialInstitution()).orElse(null), new DateTime(),
-                            ((DebitNote) debitEntry.getFinantialDocument()), null);
-
-            CreditEntry.create(creditNote, debitEntry.getDescription(), debitEntry.getProduct(), debitEntry.getVat(),
-                    debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
-
-            creditNote.closeDocument();
-
-            debitEntry.annulOnEvent();
-
-            return true;
-        }
-
-        return false;
-    }
-
     /* ----------
      * ENROLMENTS
      * ----------
-     * 
-     * There should be an API to retrieve normal, standalone, extracurricular
-     * and improvement enrolments from curriculum without implementing the logic
-     * again and again...
      */
+
+    public static List<ExecutionYear> orderedEnrolledExecutionYears(final Registration registration) {
+        return registration.getEnrolmentsExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
+                .collect(Collectors.toList());
+    }
+
+    public static List<ExecutionYear> orderedEnrolledAndImprovementExecutionYears(final Registration registration) {
+        Set<ExecutionYear> result = Sets.newHashSet();
+
+        result.addAll(registration.getEnrolmentsExecutionYears().stream().collect(Collectors.toSet()));
+
+        result.addAll(registration.getStudentCurricularPlansSet().stream().map(l -> l.getEnrolmentsSet())
+                .reduce((a, b) -> Sets.union(a, b)).orElse(Sets.newHashSet()).stream().map(l -> l.getEvaluationsSet())
+                .reduce((a, b) -> Sets.union(a, b)).orElse(Sets.newHashSet()).stream()
+                .filter(l -> l.getEvaluationSeason().isImprovement() && l.getExecutionPeriod() != null)
+                .map(l -> l.getExecutionPeriod().getExecutionYear()).collect(Collectors.toSet()));
+
+        return result.stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR).collect(Collectors.toList());
+    }
 
     public static Set<Enrolment> normalEnrolments(final Registration registration, final ExecutionYear executionYear) {
         final Set<Enrolment> result = Sets.newHashSet(registration.getEnrolments(executionYear));
@@ -755,9 +658,27 @@ public class TuitionServices {
 
     public static Set<EnrolmentEvaluation> improvementEnrolments(final Registration registration,
             final ExecutionYear executionYear) {
-        return registration.getStudentCurricularPlan(executionYear).getEnroledImprovements().stream()
-                .map(l -> l.getEvaluationsSet()).reduce((a, b) -> Sets.union(a, b)).orElse(Sets.newHashSet()).stream()
-                .filter(e -> e.getExecutionPeriod().getExecutionYear() == executionYear).collect(Collectors.toSet());
+        final Set<EnrolmentEvaluation> result = Sets.newHashSet();
+
+        for (final Enrolment enrolment : registration.getStudentCurricularPlan(executionYear).getEnroledImprovements()) {
+            for (final EnrolmentEvaluation enrolmentEvaluation : enrolment.getEvaluationsSet()) {
+                if(!enrolmentEvaluation.getEvaluationSeason().isImprovement()) {
+                    continue;
+                }
+                
+                if(enrolmentEvaluation.getExecutionPeriod() == null) {
+                    continue;
+                }
+                
+                if(enrolmentEvaluation.getExecutionPeriod().getExecutionYear() != executionYear) {
+                    continue;
+                }
+                
+                result.add(enrolmentEvaluation);
+            }
+        }
+
+        return result;
     }
 
 }

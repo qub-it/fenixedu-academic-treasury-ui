@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.academictreasury.ui.academicservicerequestdebtcreation.AcademicServiceRequestDebtCreationBeanController"%>
+<%@page import="org.fenixedu.academictreasury.ui.academictaxdebtcreation.AcademicTaxDebtCreationBeanController"%>
 <%@page import="org.fenixedu.academictreasury.ui.tuitiondebtcreation.standalone.OtherTuitionDebtCreationBeanController"%>
 <%@page
 	import="org.fenixedu.academictreasury.ui.tuitiondebtcreation.TuitionDebtCreationBeanController"%>
@@ -123,6 +125,20 @@ ${portal.angularToolkit()}
 		<strong>
 			<a href="${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATEEXTRACURRICULAR_URL %>/${debtAccount.externalId}">
 				<spring:message code="label.TuitionDebtCreationBean.create.extracurriculartuition.debts" />
+			</a>
+		</strong>
+	</p>
+	<p>
+		<strong>
+			<a href="${pageContext.request.contextPath}<%= AcademicTaxDebtCreationBeanController.CREATE_URL %>/${debtAccount.externalId}">
+				<spring:message code="label.AcademicTaxDebtCreationBean.create.academictax.debts" />
+			</a>
+		</strong>
+	</p>
+	<p>
+		<strong>
+			<a href="${pageContext.request.contextPath}<%= AcademicServiceRequestDebtCreationBeanController.CREATE_URL %>/${debtAccount.externalId}">
+				<spring:message code="label.AcademicServiceRequestDebtCreationBean.create.academicservicerequest.debts" />
 			</a>
 		</strong>
 	</p>

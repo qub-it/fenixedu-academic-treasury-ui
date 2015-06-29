@@ -315,6 +315,10 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
     }
 
     public LocalizedString standaloneDebitEntryName(final Enrolment standaloneEnrolment) {
+        if(!standaloneEnrolment.isStandalone()) {
+            throw new RuntimeException("wrong call");
+        }
+        
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             result =
@@ -328,7 +332,12 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         return result;
     }
 
-    private LocalizedString extracurricularDebitEntryName(final Enrolment extracurricularEnrolment) {
+    public LocalizedString extracurricularDebitEntryName(final Enrolment extracurricularEnrolment) {
+        
+        if(extracurricularEnrolment.isExtraCurricular()) {
+            throw new RuntimeException("wrong call");
+        }
+        
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             result =
