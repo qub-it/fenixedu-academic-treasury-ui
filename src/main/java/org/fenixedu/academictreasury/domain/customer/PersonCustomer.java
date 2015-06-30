@@ -14,6 +14,8 @@ import com.google.common.base.Strings;
 
 public class PersonCustomer extends PersonCustomer_Base {
 
+    private static final String STUDENT_CODE = "STUDENT";
+
     protected PersonCustomer() {
         super();
     }
@@ -132,7 +134,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     public static CustomerType getDefaultCustomerType() {
-        return CustomerType.findByCode("STUDENT").findFirst().orElse(null);
+        return CustomerType.findByCode(STUDENT_CODE).findFirst().orElse(null);
     }
 
     @Override

@@ -9,16 +9,19 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 public class AcademicTreasuryBootstrap {
+    static final private String LOG_CONTEXT = AcademicTreasuryBootstrap.class.getSimpleName();
 
     public static void process() {
 
         final CustomersPersonThread customersPersonThread = new CustomersPersonThread();
         customersPersonThread.start();
 
-        try {
-            customersPersonThread.join();
-        } catch (InterruptedException e) {
-        }
+        System.out.println("TreasuryAcademicBoot - Validating Students and Customers DebtAccount");
+//        try {
+//            customersPersonThread.join();
+//        } catch (InterruptedException e) {
+//        }
+//        System.out.println("TreasuryAcademicBoot - Finished Validating Students and Customers DebtAccount");
 
     }
 
@@ -32,7 +35,14 @@ public class AcademicTreasuryBootstrap {
         @Atomic(mode = TxMode.READ)
         private void createMissingPersonCustomersForStudents() {
 
+            int count = 0;
+            int totalCount = Bennu.getInstance().getPartysSet().size();
             for (Party party : Bennu.getInstance().getPartysSet()) {
+                if (count % 1000 == 0) {
+                    System.out.println("TreasuryAcademicBoot - Processing " + count + "/" + totalCount + " parties.");
+                }
+                count++;
+
                 if (!party.isPerson()) {
                     continue;
                 }
@@ -43,21 +53,22 @@ public class AcademicTreasuryBootstrap {
                     continue;
                 }
 
+                if (person.getPersonCustomer() != null) {
+                    continue;
+                }
+
                 try {
                     createMissingPersonCustomer(person);
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
             }
+            System.out.println("TreasuryAcademicBoot - Finished Validating Students and Customers DebtAccount");
 
         }
 
         @Atomic(mode = TxMode.WRITE)
         private void createMissingPersonCustomer(final Person person) {
-            if (PersonCustomer.findUnique(person).isPresent()) {
-                return;
-            }
-
             PersonCustomer.create(person);
         }
 
