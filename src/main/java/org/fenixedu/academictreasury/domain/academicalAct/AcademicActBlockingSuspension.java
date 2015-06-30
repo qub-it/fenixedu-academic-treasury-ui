@@ -124,6 +124,7 @@ public class AcademicActBlockingSuspension extends AcademicActBlockingSuspension
         return find(person, when).count() > 0;
     }
     
+    @Atomic
     public static AcademicActBlockingSuspension create(final Person person, final LocalDate beginDate, final LocalDate endDate, final String reason) {
         return new AcademicActBlockingSuspension(person, beginDate, endDate, reason);
     }

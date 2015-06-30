@@ -52,37 +52,18 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
     public static final String CONTROLLER_URL =
             "/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension";
 
-    private static final String JSP_PATH = "academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension";
+    private static final String JSP_PATH = "academicTreasury/manageacademicactblockingsuspension/academicactblockingsuspension";
 
     @RequestMapping
     public String home(Model model) {
         return "forward:" + CONTROLLER_URL + "/";
     }
 
-    // @formatter: off
-
-    /*
-    * This should be used when using AngularJS in the JSP
-    */
-
-    //private AcademicActBlockingSuspension getAcademicActBlockingSuspensionBean(Model model)
-    //{
-    //	return (AcademicActBlockingSuspension)model.asMap().get("academicActBlockingSuspensionBean");
-    //}
-    //				
-    //private void setAcademicActBlockingSuspensionBean (AcademicActBlockingSuspensionBean bean, Model model)
-    //{
-    //	model.addAttribute("academicActBlockingSuspensionBeanJson", getBeanJson(bean));
-    //	model.addAttribute("academicActBlockingSuspensionBean", bean);
-    //}
-
-    // @formatter: on
-
     private void setAcademicActBlockingSuspension(AcademicActBlockingSuspension academicActBlockingSuspension, Model model) {
         model.addAttribute("academicActBlockingSuspension", academicActBlockingSuspension);
     }
 
-    private static final String _SEARCH_URI = "/";
+    private static final String _SEARCH_URI = "/search/";
     public static final String SEARCH_URL = CONTROLLER_URL + _SEARCH_URI;
 
     @RequestMapping(value = _SEARCH_URI + "{personId}")
@@ -93,41 +74,42 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
                 AcademicActBlockingSuspension.findAll().sorted(AcademicActBlockingSuspension.COMPARE_BY_BEGIN_DATE)
                         .collect(Collectors.toList()));
 
+        model.addAttribute("person", person);
+
         return jspPage("search");
     }
 
     private static final String _SEARCH_TO_VIEW_ACTION_URI = "/search/view/";
     public static final String SEARCH_TO_VIEW_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_VIEW_ACTION_URI;
 
-    @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{oid}")
-    public String processSearchToViewAction(@PathVariable("oid") AcademicActBlockingSuspension academicActBlockingSuspension,
-            Model model, RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = _SEARCH_TO_VIEW_ACTION_URI + "{personId}/{oid}")
+    public String processSearchToViewAction(@PathVariable("personId") final Person person,
+            @PathVariable("oid") AcademicActBlockingSuspension academicActBlockingSuspension, Model model,
+            RedirectAttributes redirectAttributes) {
 
         // CHANGE_ME Insert code here for processing viewAction
         // If you selected multiple exists you must choose which one to use below	 
-        return redirect(SEARCH_URL + academicActBlockingSuspension.getPerson().getExternalId(), model, redirectAttributes);
+        return redirect(READ_URL + person.getExternalId() + "/" + academicActBlockingSuspension.getExternalId(), model, redirectAttributes);
     }
 
     private static final String _SEARCH_TO_DELETE_ACTION_URI = "/search/delete/";
     public static final String SEARCH_TO_DELETE_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_DELETE_ACTION_URI;
 
-    @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI + "{oid}", method = RequestMethod.POST)
-    public String processSearchToDeleteAction(@PathVariable("oid") AcademicActBlockingSuspension academicActBlockingSuspension,
-            Model model, RedirectAttributes redirectAttributes) {
-
-        final Person person = academicActBlockingSuspension.getPerson();
+    @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI + "{personId}/{oid}", method = RequestMethod.POST)
+    public String processSearchToDeleteAction(@PathVariable("personId") final Person person,
+            @PathVariable("oid") AcademicActBlockingSuspension academicActBlockingSuspension, Model model,
+            RedirectAttributes redirectAttributes) {
 
         try {
 
             academicActBlockingSuspension.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicActBlockingSuspension.created.success"), model);
             return redirect(SEARCH_URL + person.getExternalId(), model, redirectAttributes);
         } catch (final DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
 
-        return jspPage("search");
+        return search(person, model);
     }
 
     private static final String _CREATE_URI = "/create";
@@ -135,14 +117,17 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
 
     @RequestMapping(value = _CREATE_URI + "/{personId}", method = RequestMethod.GET)
     public String create(@PathVariable("personId") final Person person, final Model model) {
+        
+        model.addAttribute("person", person);
+        
         return jspPage("create");
     }
 
     @RequestMapping(value = _CREATE_URI + "/{personId}", method = RequestMethod.POST)
     public String create(
             @PathVariable("personId") final Person person,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate endDate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginDate,
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(value = "reason", required = false) java.lang.String reason, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -150,6 +135,7 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
 
             AcademicActBlockingSuspension.create(person, beginDate, endDate, reason);
 
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicActBlockingSuspension.created.success"), model);
             return redirect(SEARCH_URL + person.getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
@@ -161,10 +147,12 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
     private static final String _READ_URI = "/read/";
     public static final String READ_URL = CONTROLLER_URL + _READ_URI;
 
-    @RequestMapping(value = _READ_URI + "{oid}")
+    @RequestMapping(value = _READ_URI + "{personId}/{oid}")
     public String read(@PathVariable("personId") final Person person,
             @PathVariable("oid") final AcademicActBlockingSuspension academicActBlockingSuspension, final Model model) {
         setAcademicActBlockingSuspension(academicActBlockingSuspension, model);
+
+        model.addAttribute("person", person);
 
         return jspPage("read");
     }
@@ -172,7 +160,7 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
     private static final String _UPDATE_URI = "/update/";
     public static final String UPDATE_URL = CONTROLLER_URL + _UPDATE_URI;
 
-    @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.GET)
+    @RequestMapping(value = _UPDATE_URI + "{personId}/{oid}", method = RequestMethod.GET)
     public String update(@PathVariable("personId") final Person person,
             @PathVariable("oid") final AcademicActBlockingSuspension academicActBlockingSuspension, final Model model) {
         setAcademicActBlockingSuspension(academicActBlockingSuspension, model);
@@ -180,12 +168,12 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
         return jspPage("update");
     }
 
-    @RequestMapping(value = _UPDATE_URI + "{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = _UPDATE_URI + "{personId}/{oid}", method = RequestMethod.POST)
     public String update(
             @PathVariable("personId") final Person person,
             @PathVariable("oid") final AcademicActBlockingSuspension academicActBlockingSuspension,
-            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate beginDate,
-            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ") LocalDate endDate,
+            @RequestParam(value = "begindate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate beginDate,
+            @RequestParam(value = "enddate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate,
             @RequestParam(value = "reason", required = false) java.lang.String reason, Model model,
             RedirectAttributes redirectAttributes) {
 
@@ -200,7 +188,7 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
                     model, redirectAttributes);
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
-            
+
             return update(person, academicActBlockingSuspension, model);
         }
     }

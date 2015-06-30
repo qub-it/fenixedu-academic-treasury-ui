@@ -25,10 +25,10 @@
 ${portal.toolkit()}
 
 <link
-	href="${pageContext.request.contextPath}/static/academictreasury/css/dataTables.responsive.css"
+	href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css"
 	rel="stylesheet" />
 <script
-	src="${pageContext.request.contextPath}/static/academictreasury/js/dataTables.responsive.js"></script>
+	src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
 <link
 	href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
 	rel="stylesheet" />
@@ -42,7 +42,7 @@ ${portal.toolkit()}
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script
-	src="${pageContext.request.contextPath}/static/academictreasury/js/omnis.js"></script>
+	src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
 
 
 
@@ -101,7 +101,7 @@ ${portal.toolkit()}
 
 <script type="text/javascript">
 	  function processDelete(externalId) {
-	    url = "${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_TO_DELETE_ACTION_URL %>" + externalId;
+	    url = "${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_TO_DELETE_ACTION_URL %>${person.externalId}/" + externalId;
 	    $("#deleteForm").attr("action", url);
 	    $('#deleteModal').modal('toggle')
 	  }
@@ -192,7 +192,7 @@ ${portal.toolkit()}
 "enddate" : "<c:out value='${searchResult.endDate}'/>",
 "reason" : "<c:out value='${searchResult.reason}'/>",
 "actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
+" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/view/${person.externalId}/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
 " <a  class=\"btn btn-xs btn-danger\" href=\"#\" onClick=\"javascript:processDelete('${searchResult.externalId}')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>&nbsp;<spring:message code='label.delete'/></a>" +
                 "" 
 			},

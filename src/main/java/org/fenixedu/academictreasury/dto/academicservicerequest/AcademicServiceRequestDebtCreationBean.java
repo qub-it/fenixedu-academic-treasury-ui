@@ -87,7 +87,7 @@ public class AcademicServiceRequestDebtCreationBean implements Serializable, IBe
 
         academicServiceRequestesDataSource =
                 registration.getAcademicServiceRequestsSet().stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getDescription()))
+                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getDescription() + " (" + l.getServiceRequestNumberYear() + ")"))
                         .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         return academicServiceRequestesDataSource;

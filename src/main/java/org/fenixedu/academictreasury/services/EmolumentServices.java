@@ -2,10 +2,12 @@ package org.fenixedu.academictreasury.services;
 
 import java.math.BigDecimal;
 import java.util.Collections;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
+import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituation;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
@@ -15,7 +17,6 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.dto.academicservicerequest.AcademicServiceRequestDebitEntryBean;
-import org.fenixedu.academictreasury.dto.academictax.AcademicTaxDebitEntryBean;
 import org.fenixedu.bennu.signals.DomainObjectEvent;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
@@ -57,35 +58,35 @@ public class EmolumentServices {
         newAcademicServiceRequestSituationEvent(event.getInstance());
     }
 
-    public void newAcademicServiceRequestSituationEvent(final AcademicServiceRequest academicServiceRequest) {
+    public boolean newAcademicServiceRequestSituationEvent(final AcademicServiceRequest academicServiceRequest) {
 
         if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
-            return;
+            return false;
         }
 
         // Find configured map entry for service request type
         final ServiceRequestMapEntry serviceRequestMapEntry = ServiceRequestMapEntry.findMatch(academicServiceRequest);
 
         if (serviceRequestMapEntry == null) {
-            throw new AcademicTreasuryDomainException(
-                    "error.CreateEmolumentForAcademicServiceRequest.cannot.find.serviceRequestMapEntry");
+            return false;
         }
 
         if (!(academicServiceRequest.getAcademicProgram() instanceof Degree)) {
-            throw new AcademicTreasuryDomainException("error.CreateEmolumentForAcademicServiceRequest.only.degrees.are.supported");
+            return false;
         };
 
         // Check if the academicServiceRequest is ready to be charged
-        if (!academicServiceRequest.getAcademicServiceRequestSituationsSet().contains(
-                serviceRequestMapEntry.getCreateEventOnSituation())) {
+        if (!academicServiceRequest.getAcademicServiceRequestSituationsSet().stream()
+                .map(AcademicServiceRequestSituation::getAcademicServiceRequestSituationType).collect(Collectors.toSet())
+                .contains(serviceRequestMapEntry.getCreateEventOnSituation())) {
 
             // It is not ready
-            return;
+            return false;
         }
 
-        createAcademicServiceRequestEmolument(academicServiceRequest);
+        return createAcademicServiceRequestEmolument(academicServiceRequest);
     }
-    
+
     public static AcademicTreasuryEvent findAcademicTreasuryEvent(final AcademicServiceRequest academicServiceRequest) {
         return AcademicTreasuryEvent.findUnique(academicServiceRequest).orElse(null);
     }
@@ -101,7 +102,8 @@ public class EmolumentServices {
     }
 
     @Atomic
-    public static AcademicServiceRequestDebitEntryBean calculateForAcademicServiceRequest(final AcademicServiceRequest academicServiceRequest, final LocalDate debtDate) {
+    public static AcademicServiceRequestDebitEntryBean calculateForAcademicServiceRequest(
+            final AcademicServiceRequest academicServiceRequest, final LocalDate debtDate) {
         if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
             return null;
         }
@@ -156,7 +158,7 @@ public class EmolumentServices {
 
         return new AcademicServiceRequestDebitEntryBean(debitEntryName, dueDate, vat.getTaxRate(), amount);
     }
-    
+
     @Atomic
     public static boolean createAcademicServiceRequestEmolument(final AcademicServiceRequest academicServiceRequest) {
         final LocalDate when = possibleDebtDateOnAcademicService(academicServiceRequest);
@@ -176,12 +178,11 @@ public class EmolumentServices {
         final ServiceRequestMapEntry serviceRequestMapEntry = ServiceRequestMapEntry.findMatch(academicServiceRequest);
 
         if (serviceRequestMapEntry == null) {
-            throw new AcademicTreasuryDomainException(
-                    "error.CreateEmolumentForAcademicServiceRequest.cannot.find.serviceRequestMapEntry");
+            return false;
         }
 
         if (!(academicServiceRequest.getAcademicProgram() instanceof Degree)) {
-            throw new AcademicTreasuryDomainException("error.CreateEmolumentForAcademicServiceRequest.only.degrees.are.supported");
+            return false;
         };
 
         // Read person customer
@@ -197,7 +198,7 @@ public class EmolumentServices {
         final AcademicTariff academicTariff = findTariffForAcademicServiceRequest(academicServiceRequest, when);
 
         if (academicTariff == null) {
-            throw new AcademicTreasuryDomainException("error.CreateEmolumentForAcademicServiceRequest.cannot.find.tariff");
+            return false;
         }
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
@@ -219,7 +220,7 @@ public class EmolumentServices {
         if (academicTresuryEvent.isChargedWithDebitEntry()) {
             return false;
         }
-        
+
         return academicTariff.createDebitEntryForAcademicServiceRequest(academicTresuryEvent) != null;
     }
 
@@ -227,14 +228,14 @@ public class EmolumentServices {
         // Find the configured state to create debt on academic service request
 
         if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
-            throw new AcademicTreasuryDomainException("error.EmolumentServices.possibleDebtDateOnAcademicService.not.payed");
+            return null;
         }
 
         // Find configured map entry for service request type
         final ServiceRequestMapEntry serviceRequestMapEntry = ServiceRequestMapEntry.findMatch(academicServiceRequest);
 
         if (serviceRequestMapEntry == null) {
-            throw new AcademicTreasuryDomainException("error.EmolumentServices.possibleDebtDateOnAcademicService.not.configured");
+            return null;
         }
 
         AcademicServiceRequestSituationType createEventOnSituation = serviceRequestMapEntry.getCreateEventOnSituation();

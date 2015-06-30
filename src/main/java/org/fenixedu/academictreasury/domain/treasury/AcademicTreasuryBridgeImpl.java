@@ -9,8 +9,11 @@ import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.treasury.IAcademicServiceRequestAndAcademicTaxTreasuryEvent;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
+import org.fenixedu.academic.domain.treasury.IImprovementTreasuryEvent;
 import org.fenixedu.academic.domain.treasury.ITreasuryBridgeAPI;
+import org.fenixedu.academic.domain.treasury.ITuitionTreasuryEvent;
 import org.fenixedu.academictreasury.domain.academicalAct.AcademicActBlockingSuspension;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
@@ -41,7 +44,7 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     }
 
     @Override
-    public IAcademicTreasuryEvent academicTreasuryEventForAcademicServiceRequest(
+    public IAcademicServiceRequestAndAcademicTaxTreasuryEvent academicTreasuryEventForAcademicServiceRequest(
             final AcademicServiceRequest academicServiceRequest) {
         return academicServiceRequest.getAcademicTreasuryEvent();
     }
@@ -82,25 +85,25 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
      */
 
     @Override
-    public IAcademicTreasuryEvent getTuitionForRegistrationTreasuryEvent(final Registration registration,
+    public ITuitionTreasuryEvent getTuitionForRegistrationTreasuryEvent(final Registration registration,
             final ExecutionYear executionYear) {
         return TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear);
     }
 
     @Override
-    public IAcademicTreasuryEvent getTuitionForStandaloneTreasuryEvent(final Registration registration,
+    public ITuitionTreasuryEvent getTuitionForStandaloneTreasuryEvent(final Registration registration,
             final ExecutionYear executionYear) {
         return TuitionServices.findAcademicTreasuryEventTuitionForStandalone(registration, executionYear);
     }
 
     @Override
-    public IAcademicTreasuryEvent getTuitionForExtracurricularTreasuryEvent(final Registration registration,
+    public ITuitionTreasuryEvent getTuitionForExtracurricularTreasuryEvent(final Registration registration,
             final ExecutionYear executionYear) {
         return null;
     }
 
     @Override
-    public IAcademicTreasuryEvent getTuitionForImprovementTreasuryEvent(final Registration registration,
+    public ITuitionTreasuryEvent getTuitionForImprovementTreasuryEvent(final Registration registration,
             final ExecutionYear executionYear) {
         return AcademicTaxServices.findAcademicTreasuryEventForImprovementTax(registration, executionYear);
     }
@@ -125,6 +128,16 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         return AcademicTaxServices.findAllTreasuryEventsForAcademicTaxes(registration, executionYear);
     }
 
+    @Override
+    public IImprovementTreasuryEvent getImprovementTaxTreasuryEvent(Registration registration, ExecutionYear executionYear) {
+        if(!AcademicTreasuryEvent.findUniqueForImprovementTuition(registration, executionYear).isPresent()) {
+            return null;
+        }
+        
+        return AcademicTreasuryEvent.findUniqueForImprovementTuition(registration, executionYear).get();
+    }
+
+    
     /* --------------
      * ACADEMICAL ACT
      * --------------

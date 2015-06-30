@@ -180,7 +180,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
             }
         }
 
-        return candidates != null ? candidates.iterator().next() : null;
+        return candidates != null && !candidates.isEmpty() ? candidates.iterator().next() : null;
     }
 
     public static Product findProduct(final AcademicServiceRequest academicServiceRequest) {

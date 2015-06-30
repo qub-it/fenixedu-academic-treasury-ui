@@ -89,7 +89,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     /* Tariff */
     private LocalDate beginDate = new LocalDate();
-    private LocalDate endDate = new LocalDate();
+    private LocalDate endDate = Constants.INFINITY_DATE.toLocalDate();
     private DueDateCalculationType dueDateCalculationType;
     private LocalDate fixedDueDate = new LocalDate();
     private int numberOfDaysAfterCreationForDueDate;
@@ -284,7 +284,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     public void resetInstallmentFields() {
         this.beginDate = new LocalDate();
-        this.endDate = new LocalDate();
+        this.endDate = Constants.INFINITY_DATE.toLocalDate();
         this.dueDateCalculationType = DueDateCalculationType.FIXED_DATE;
         this.fixedDueDate = new LocalDate();
         this.numberOfDaysAfterCreationForDueDate = 0;

@@ -3,6 +3,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags" %>
+
 <spring:url var="datatablesUrl"
 	value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -23,10 +25,10 @@
 ${portal.toolkit()}
 
 <link
-	href="${pageContext.request.contextPath}/static/academictreasury/css/dataTables.responsive.css"
+	href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css"
 	rel="stylesheet" />
 <script
-	src="${pageContext.request.contextPath}/static/academictreasury/js/dataTables.responsive.js"></script>
+	src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
 <link
 	href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
 	rel="stylesheet" />
@@ -40,7 +42,7 @@ ${portal.toolkit()}
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script
-	src="${pageContext.request.contextPath}/static/academictreasury/js/omnis.js"></script>
+	src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
 
 
 
@@ -92,7 +94,7 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_URL %>${person.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_URL %>/${person.externalId}"><spring:message
 			code="label.event.back" /></a> |&nbsp;&nbsp; <span
 		class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
 		class=""
@@ -164,6 +166,30 @@ ${portal.toolkit()}
 						<td><c:out value='${academicActBlockingSuspension.reason}' />
 						</td>
 					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.AcademicActBlockingSuspension.versioningCreator" /></th>
+						<td><c:out value='${academicActBlockingSuspension.versioningCreator}' />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.AcademicActBlockingSuspension.versioningCreationDate" /></th>
+						<td><joda:format value="${academicActBlockingSuspension.versioningCreationDate}" style="S-" /></td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.AcademicActBlockingSuspension.versioningUpdatedBy" /></th>
+						<td><c:out value='${academicActBlockingSuspension.versioningUpdatedBy}' />
+						</td>
+					</tr>
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message
+								code="label.AcademicActBlockingSuspension.versioningUpdateDate" /></th>
+						<td><joda:format value="${academicActBlockingSuspension.versioningUpdateDate}" style="S-" /></td>
+					</tr>
+
+
 				</tbody>
 			</table>
 		</form>

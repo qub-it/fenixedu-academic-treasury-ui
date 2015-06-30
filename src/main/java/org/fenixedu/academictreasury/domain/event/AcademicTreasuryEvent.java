@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.domain.event;
 
 import java.math.BigDecimal;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -18,8 +19,11 @@ import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academic.domain.treasury.AcademicTreasuryEventPayment;
+import org.fenixedu.academic.domain.treasury.IAcademicServiceRequestAndAcademicTaxTreasuryEvent;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEventPayment;
+import org.fenixedu.academic.domain.treasury.IImprovementTreasuryEvent;
+import org.fenixedu.academic.domain.treasury.ITuitionTreasuryEvent;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
@@ -38,6 +42,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -45,7 +50,8 @@ import pt.ist.fenixframework.Atomic;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements IAcademicTreasuryEvent {
+public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements IAcademicTreasuryEvent, ITuitionTreasuryEvent,
+        IImprovementTreasuryEvent, IAcademicServiceRequestAndAcademicTaxTreasuryEvent {
 
     protected AcademicTreasuryEvent(final DebtAccount debtAccount, final AcademicServiceRequest academicServiceRequest) {
         init(debtAccount, academicServiceRequest, ServiceRequestMapEntry.findProduct(academicServiceRequest));
@@ -84,10 +90,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             result =
-                    result.with(
-                            locale,
-                            String.format("%s [%s]", product.getName().getContent(locale),
-                                    academicServiceRequest.getServiceRequestNumberYear()));
+                    result.with(locale, String.format("%s [%s - %s] (%s)", product.getName().getContent(locale),
+                            ((RegistrationAcademicServiceRequest) academicServiceRequest).getRegistration().getDegree()
+                                    .getPresentationNameI18N().getContent(), academicServiceRequest.getExecutionYear()
+                                    .getQualifiedName(), academicServiceRequest.getServiceRequestNumberYear()));
         }
 
         return result;
@@ -142,7 +148,9 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                         String.format("%s [%s - %s]", academicTax.getProduct().getName().getContent(), registration.getDegree()
                                 .getPresentationNameI18N().getContent(), executionYear.getQualifiedName());
             } else {
-                name = String.format("%s [%s]", academicTax.getProduct().getName().getContent(), executionYear.getQualifiedName());
+                name =
+                        String.format("%s [%s]", academicTax.getProduct().getName().getContent(),
+                                executionYear.getQualifiedName());
             }
 
             result = result.with(locale, name);
@@ -270,14 +278,16 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         if (isForAcademicServiceRequest()) {
             return getAcademicServiceRequest().getRequestDate().toLocalDate();
         } else if (isForAcademicTax() && !isForImprovementTax()) {
-            final LocalDate requestDate = RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear())
-                    .getEnrolmentDate();
-            
+            final LocalDate requestDate =
+                    RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear())
+                            .getEnrolmentDate();
+
             return requestDate != null ? requestDate : new LocalDate();
-        } else if(isForImprovementTax()) {
-            final LocalDate requestDate = RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear())
-                    .getEnrolmentDate();
-            
+        } else if (isForImprovementTax()) {
+            final LocalDate requestDate =
+                    RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear())
+                            .getEnrolmentDate();
+
             return requestDate != null ? requestDate : new LocalDate();
         }
 
@@ -718,6 +728,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
      * ----------------------
      */
 
+    @Override
+    public String getDebtAccountURL() {
+        return DebtAccountController.READ_URL + getDebtAccount().getExternalId();
+    }
+
     /* -------------------------
      * KIND OF EVENT INFORMATION
      * -------------------------
@@ -858,6 +873,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
      * TUITION INFORMATION
      * -------------------
      */
+    
     @Override
     public int getTuitionInstallmentSize() {
         if (!isForRegistrationTuition()) {
@@ -954,6 +970,103 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         final DebitEntry debitEntry = orderedTuitionDebitEntriesList().get(installmentOrder);
 
         return debitEntry.getSettlementEntriesSet().stream().map(l -> new AcademicTreasuryEventPayment(l))
+                .collect(Collectors.toList());
+    }
+
+    /*
+     * -----------
+     * IMPROVEMENT
+     * -----------
+     */
+
+    @Override
+    public boolean isWithDebitEntry(final EnrolmentEvaluation enrolmentEvaluation) {
+        return isChargedWithDebitEntry(enrolmentEvaluation);
+    }
+
+    @Override
+    public boolean isExempted(final EnrolmentEvaluation enrolmentEvaluation) {
+        if (!findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).isPresent()) {
+            return false;
+        }
+
+        final DebitEntry debitEntry = findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).get();
+
+        return TreasuryExemption.findUnique(this, debitEntry.getProduct()).isPresent();
+    }
+
+    @Override
+    public boolean isDueDateExpired(final EnrolmentEvaluation enrolmentEvaluation, final LocalDate when) {
+        if (!findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).isPresent()) {
+            return false;
+        }
+
+        final DebitEntry debitEntry = findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).get();
+        return debitEntry.isDueDateExpired(when);
+    }
+
+    @Override
+    public boolean isBlockingAcademicalActs(final EnrolmentEvaluation enrolmentEvaluation, final LocalDate when) {
+        if (!findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).isPresent()) {
+            return false;
+        }
+
+        final DebitEntry debitEntry = findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).get();
+        return debitEntry.isInDebt() && debitEntry.isDueDateExpired(when);
+    }
+
+    @Override
+    public BigDecimal getAmountToPay(final EnrolmentEvaluation enrolmentEvaluation) {
+        if (!findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).isPresent()) {
+            return BigDecimal.ZERO;
+        }
+
+        final DebitEntry debitEntry = findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).get();
+        return debitEntry.getAmount();
+    }
+
+    @Override
+    public BigDecimal getRemainingAmountToPay(final EnrolmentEvaluation enrolmentEvaluation) {
+        if (!findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).isPresent()) {
+            return BigDecimal.ZERO;
+        }
+
+        final DebitEntry debitEntry = findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).get();
+        return debitEntry.getOpenAmount();
+    }
+
+    @Override
+    public BigDecimal getExemptedAmount(final EnrolmentEvaluation enrolmentEvaluation) {
+        if (!isExempted(enrolmentEvaluation)) {
+            return BigDecimal.ZERO;
+        }
+
+        final DebitEntry debitEntry = findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).get();
+        return debitEntry.getOpenAmount();
+    }
+
+    @Override
+    public LocalDate getDueDate(final EnrolmentEvaluation enrolmentEvaluation) {
+        if (!isWithDebitEntry(enrolmentEvaluation)) {
+            return null;
+        }
+
+        final DebitEntry debitEntry = findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).get();
+        return debitEntry.getDueDate();
+    }
+
+    public String getExemptionReason(final EnrolmentEvaluation enrolmentEvaluation) {
+        return getExemptionReason();
+    }
+
+    @Override
+    public List<IAcademicTreasuryEventPayment> getPaymentsList(final EnrolmentEvaluation enrolmentEvaluation) {
+        if (!isWithDebitEntry(enrolmentEvaluation)) {
+            return Collections.emptyList();
+        }
+
+        return findActiveEnrolmentEvaluationDebitEntry(enrolmentEvaluation).get().getSettlementEntriesSet().stream()
+                .filter(l -> l.getFinantialDocument().isClosed()).map(l -> new AcademicTreasuryEventPayment(l))
                 .collect(Collectors.toList());
     }
 

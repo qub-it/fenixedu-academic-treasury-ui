@@ -29,8 +29,10 @@ package org.fenixedu.academictreasury.ui.tuitiondebtcreation.standalone;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.exceptions.DomainException;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tuition.TuitionDebtCreationBean;
+import org.fenixedu.academictreasury.services.AcademicTaxServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.util.Constants;
@@ -135,7 +137,35 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
             model.addAttribute("bean", bean);
             model.addAttribute("tuitionDebtCreationBeanJson", getBeanJson(bean));
 
+            boolean dataMissing = false;
+            if (bean.getRegistration() == null) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.registration.required"),
+                        model);
+                dataMissing = true;
+            }
+
+            if (bean.getExecutionYear() == null) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.executionYear.required"),
+                        model);
+                dataMissing = true;
+            }
+
+            if (bean.getDebtDate() == null) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.debtDate.required"), model);
+                dataMissing = true;
+            }
+            
+            if(bean.getEnrolment() == null) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.enrolment.required"), model);
+                dataMissing = true;
+            }
+
+            if (dataMissing) {
+                return _createFirstPage(debtAccount, bean, model);
+            }
+            
             if (bean.isRegistrationTuition()) {
+                
                 if (bean.isInfered()) {
                     model.addAttribute("tuitionPaymentPlan",
                             TuitionServices.usedPaymentPlan(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate()));
@@ -150,6 +180,15 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
                             bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
                 }
             } else if (bean.isStandaloneTuition()) {
+
+                final AcademicTreasuryEvent event =
+                        TuitionServices.findAcademicTreasuryEventTuitionForStandalone(bean.getRegistration(), bean.getExecutionYear());
+                
+                if (event != null && event.isChargedWithDebitEntry(bean.getEnrolment())) {
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.event.is.charged"), model);
+                    return _createFirstPage(debtAccount, bean, model);
+                }
+                
                 if (bean.isInfered()) {
                     model.addAttribute(
                             "tuitionPaymentPlan",
@@ -173,6 +212,14 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
                                     Sets.newHashSet(bean.getEnrolment())));
                 }
             } else if (bean.isExtracurricularTuition()) {
+                final AcademicTreasuryEvent event =
+                        TuitionServices.findAcademicTreasuryEventTuitionForExtracurricular(bean.getRegistration(), bean.getExecutionYear());
+                
+                if (event != null && event.isChargedWithDebitEntry(bean.getEnrolment())) {
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.event.is.charged"), model);
+                    return _createFirstPage(debtAccount, bean, model);
+                }
+                
                 if (bean.isInfered()) {
                     model.addAttribute("tuitionPaymentPlan", TuitionServices.usedPaymentPlanForExtracurricular(
                             bean.getRegistration(), bean.getExecutionYear(), bean.getEnrolment(), bean.getDebtDate()));

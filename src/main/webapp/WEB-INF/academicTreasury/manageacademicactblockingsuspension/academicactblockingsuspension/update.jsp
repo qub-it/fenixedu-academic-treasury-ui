@@ -23,10 +23,10 @@
 ${portal.toolkit()}
 
 <link
-	href="${pageContext.request.contextPath}/static/academictreasury/css/dataTables.responsive.css"
+	href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css"
 	rel="stylesheet" />
 <script
-	src="${pageContext.request.contextPath}/static/academictreasury/js/dataTables.responsive.js"></script>
+	src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
 <link
 	href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
 	rel="stylesheet" />
@@ -40,7 +40,7 @@ ${portal.toolkit()}
 <script type="text/javascript"
 	src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script
-	src="${pageContext.request.contextPath}/static/academictreasury/js/omnis.js"></script>
+	src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
 
 
 
@@ -109,7 +109,7 @@ ${portal.toolkit()}
 
 				<div class="col-sm-4">
 					<input id="academicActBlockingSuspension_beginDate"
-						class="form-control" type="text" name="begindate" bennu-datetime
+						class="form-control" type="text" name="begindate" bennu-date
 						value='<c:out value='${not empty param.begindate ? param.begindate : academicActBlockingSuspension.beginDate }'/>' />
 				</div>
 			</div>
@@ -120,7 +120,7 @@ ${portal.toolkit()}
 
 				<div class="col-sm-4">
 					<input id="academicActBlockingSuspension_endDate"
-						class="form-control" type="text" name="enddate" bennu-datetime
+						class="form-control" type="text" name="enddate" bennu-date
 						value='<c:out value='${not empty param.enddate ? param.enddate : academicActBlockingSuspension.endDate }'/>' />
 				</div>
 			</div>
