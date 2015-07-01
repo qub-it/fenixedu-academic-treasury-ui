@@ -66,7 +66,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public String getAddress() {
-        return null;
+        return getPerson().getAddress();
     }
 
     @Override
@@ -75,7 +75,9 @@ public class PersonCustomer extends PersonCustomer_Base {
             return null;
         }
 
-        return getPerson().getDefaultPhysicalAddress().getAddress();
+        return getPerson().getDefaultPhysicalAddress().getArea() + " "
+                + getPerson().getDefaultPhysicalAddress().getDistrictSubdivisionOfResidence() + " "
+                + getPerson().getDefaultPhysicalAddress().getDistrictOfResidence();
     }
 
     @Override
