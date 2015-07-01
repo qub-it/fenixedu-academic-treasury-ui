@@ -17,11 +17,10 @@ public class AcademicTreasuryBootstrap {
         customersPersonThread.start();
 
         System.out.println("TreasuryAcademicBoot - Validating Students and Customers DebtAccount");
-//        try {
-//            customersPersonThread.join();
-//        } catch (InterruptedException e) {
-//        }
-//        System.out.println("TreasuryAcademicBoot - Finished Validating Students and Customers DebtAccount");
+        try {
+            customersPersonThread.join();
+        } catch (InterruptedException e) {
+        }
 
     }
 

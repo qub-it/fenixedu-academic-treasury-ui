@@ -15,6 +15,7 @@ import com.google.common.base.Strings;
 public class PersonCustomer extends PersonCustomer_Base {
 
     private static final String STUDENT_CODE = "STUDENT";
+    private static final String CANDIDACY_CODE = "CANDIDATE";
 
     protected PersonCustomer() {
         super();
@@ -24,7 +25,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         this();
 
         setPerson(person);
-        setCustomerType(getDefaultCustomerType());
+        setCustomerType(getDefaultCustomerType(this));
         checkRules();
     }
 
@@ -133,8 +134,12 @@ public class PersonCustomer extends PersonCustomer_Base {
         return PersonCustomer.findAll().filter(pc -> pc.getFiscalNumber().equals(fiscalNumber)).findFirst();
     }
 
-    public static CustomerType getDefaultCustomerType() {
-        return CustomerType.findByCode(STUDENT_CODE).findFirst().orElse(null);
+    public static CustomerType getDefaultCustomerType(PersonCustomer person) {
+        if (person.getPerson().getStudent() != null) {
+            return CustomerType.findByCode(STUDENT_CODE).findFirst().orElse(null);
+        } else {
+            return CustomerType.findByCode(CANDIDACY_CODE).findFirst().orElse(null);
+        }
     }
 
     @Override
