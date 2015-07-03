@@ -324,6 +324,15 @@ class tuition.TuitionPaymentPlan {
 		}
 	}
 	
+	relation TuitionPaymentPlanStatuteType {
+		.org.fenixedu.academic.domain.student.StatuteType playsRole statuteType {
+		}
+			
+		tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
+			multiplicity *;
+		}
+	}
+	
 	relation DebitEntryCurricularCourse {
 		
 		.org.fenixedu.academic.domain.CurricularCourse playsRole curricularCourse {

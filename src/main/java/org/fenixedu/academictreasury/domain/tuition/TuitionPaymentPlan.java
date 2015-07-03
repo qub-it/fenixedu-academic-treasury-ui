@@ -18,6 +18,7 @@ import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
+import org.fenixedu.academic.domain.student.StatuteType;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
@@ -61,6 +62,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         setRegistrationProtocol(tuitionPaymentPlanBean.getRegistrationProtocol());
         setIngression(tuitionPaymentPlanBean.getIngression());
         setCurricularYear(tuitionPaymentPlanBean.getCurricularYear());
+        setStatuteType(tuitionPaymentPlanBean.getStatuteType());
         setSemester(tuitionPaymentPlanBean.getExecutionSemester() != null ? tuitionPaymentPlanBean.getExecutionSemester()
                 .getSemester() : null);
         setFirstTimeStudent(tuitionPaymentPlanBean.isFirstTimeStudent());
@@ -200,6 +202,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                 description.append(
                         BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.curricularSemester.description",
                                 String.valueOf(getCurricularYear().getYear()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+            }
+            
+            if(getStatuteType() != null) {
+                description.append(getStatuteType().getName()).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (isFirstTimeStudent()) {
@@ -521,6 +527,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         final int semesterWithFirstEnrolments = semesterWithFirstEnrolments(registration, executionYear);
         final CurricularYear curricularYear = CurricularYear.readByYear(curricularYear(registration, executionYear));
         final boolean firstTimeStudent = firstTimeStudent(registration, executionYear);
+        final Set<StatuteType> statutes =
+                Sets.newHashSet(registration.getStudent().getStatutesTypesValidOnAnyExecutionSemesterFor(executionYear));
 
         final List<TuitionPaymentPlan> plans =
                 TuitionPaymentPlan.findSortedByPaymentPlanOrder(
@@ -547,6 +555,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (t.getCurricularYear() != null && t.getCurricularYear() != curricularYear) {
+                continue;
+            }
+
+            if (t.getStatuteType() != null && !statutes.contains(t.getStatuteType())) {
                 continue;
             }
 

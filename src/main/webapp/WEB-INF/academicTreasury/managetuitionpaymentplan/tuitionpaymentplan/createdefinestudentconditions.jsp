@@ -186,7 +186,20 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 						</ui-select-choices>
 					</ui-select>		
 				</div>
-			</div>		
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.statuteType"/></div> 
+				
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<ui-select id="tuitionPaymentPlan_statuteType" name="statuteType" ng-model="$parent.object.executionStatuteType" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="statuteType.id as statuteType in object.statuteTypeDataSource | filter: $select.search">
+							<span ng-bind-html="statuteType.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>	
+				</div>
+			</div>			
 			<div class="form-group row">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.firstTimeStudent"/></div> 
 				

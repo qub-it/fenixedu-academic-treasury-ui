@@ -63,10 +63,10 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 academicTariff.getExternalId());
     }
 
-    @RequestMapping(value = "/viewEmolumentTariffs/delete/{oid}", method = RequestMethod.POST)
+    @RequestMapping(value = "/viewEmolumentTariffs/delete/{finantialEntityId}/{productId}/{academicTariffId}", method = RequestMethod.POST)
     public String processViewEmolumentTariffsToDeleteAction(
             @PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
-            @PathVariable("productId") final Product product, @PathVariable("oid") AcademicTariff academicTariff, Model model) {
+            @PathVariable("productId") final Product product, @PathVariable("academicTariffId") final AcademicTariff academicTariff, Model model) {
         try {
             academicTariff.delete();
 

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.CurricularSemester;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
@@ -17,6 +16,7 @@ import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
+import org.fenixedu.academic.domain.student.StatuteType;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
@@ -25,13 +25,10 @@ import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
-import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Lists;
@@ -61,6 +58,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private ExecutionSemester executionSemester;
     private boolean firstTimeStudent;
     private boolean customized;
+    private StatuteType statuteType;
 
     // TODO: Anil Use LocalizedString when web component is compatible with AngularJS
     private String name;
@@ -73,6 +71,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private List<TupleDataSourceBean> ingressionDataSource = null;
     private List<TupleDataSourceBean> curricularYearDataSource = null;
     private List<TupleDataSourceBean> semesterDataSource = null;
+    private List<TupleDataSourceBean> statuteTypeDataSource = null;
 
     private List<TupleDataSourceBean> tuitionCalculationTypeDataSource = null;
     private List<TupleDataSourceBean> ectsCalculationTypeDataSource = null;
@@ -152,6 +151,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         this.tuitionInstallmentProductDataSource = tuitionInstallmentProductDataSource();
 
+        this.statuteTypeDataSource = statuteTypeDataSource();
+
     }
 
     private List<TupleDataSourceBean> dueDateCalculationTypeDataSource() {
@@ -219,11 +220,13 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
             errorMessages.add("error.TuitionPaymentPlan.interestType.required");
         }
 
-        if (this.applyInterests && this.interestType != null && this.interestType.isFixedAmount() && this.interestFixedAmount == null) {
+        if (this.applyInterests && this.interestType != null && this.interestType.isFixedAmount()
+                && this.interestFixedAmount == null) {
             errorMessages.add("error.TuitionPaymentPlan.interestFixedAmount.required");
         }
 
-        if (this.applyInterests && this.interestType != null && (this.interestType.isDaily() || this.interestType.isMonthly()) && this.rate == null) {
+        if (this.applyInterests && this.interestType != null && (this.interestType.isDaily() || this.interestType.isMonthly())
+                && this.rate == null) {
             errorMessages.add("error.TuitionPaymentPlan.interestRate.required");
         }
 
@@ -255,7 +258,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         installmentBean.setAcademicalActBlockingOff(this.academicalActBlockingOff);
 
         this.tuitionInstallmentBeans.add(installmentBean);
-        
+
         return errorMessages;
     }
 
@@ -663,6 +666,14 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.academicalActBlockingOff = academicalActBlockingOff;
     }
 
+    public StatuteType getStatuteType() {
+        return statuteType;
+    }
+
+    public void setStatuteType(StatuteType statuteType) {
+        this.statuteType = statuteType;
+    }
+
     /*
      * -------------
      * Other Methods
@@ -808,4 +819,16 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
+
+    private List<TupleDataSourceBean> statuteTypeDataSource() {
+        final List<TupleDataSourceBean> result =
+                Bennu.getInstance().getStatuteTypesSet().stream()
+                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
+                        .collect(Collectors.toList());
+
+        result.add(Constants.SELECT_OPTION);
+
+        return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
+    }
+
 }

@@ -453,17 +453,17 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					</ui-select>
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.dueDateCalculationType == 'FIXED_DATE'">
+			<div class="form-group row" ng-show="object.dueDateCalculationType == 'FIXED_DATE' || object.dueDateCalculationType == 'BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION'">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.fixedDueDate" />
 				</div>
 
 				<div class="col-sm-4">
 					<input id="tuitionInstallmentTariff_fixedduedate" class="form-control" 
-						type="text" name="fixedduedate"   bennu-date="object.fixedDueDate" required />
+						type="text" name="fixedduedate"  bennu-date="object.fixedDueDate" required />
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.dueDateCalculationType == 'DAYS_AFTER_CREATION'">
+			<div class="form-group row" ng-show="object.dueDateCalculationType == 'DAYS_AFTER_CREATION' || object.dueDateCalculationType == 'BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION'">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.numberOfDaysAfterCreationForDueDate" />
 				</div>

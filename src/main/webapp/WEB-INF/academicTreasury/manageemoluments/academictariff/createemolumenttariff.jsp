@@ -296,7 +296,7 @@ function registerJqueryReadyClosure(func) {
 				</div>
 				
 		<c:choose>
-			<c:when test="${academicTariffBean.dueDateCalculationType.fixedDate}">
+			<c:when test="${academicTariffBean.dueDateCalculationType.fixedDate || academicTariffBean.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.fixedDueDate"/></div> 
 					
@@ -307,7 +307,7 @@ function registerJqueryReadyClosure(func) {
 					</div>
 				</div>
 			</c:when>
-			<c:when test="${academicTariffBean.dueDateCalculationType.daysAfterCreation}">
+			<c:when test="${academicTariffBean.dueDateCalculationType.daysAfterCreation || academicTariffBean.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.numberOfDaysAfterCreationForDueDate"/></div> 
 					
