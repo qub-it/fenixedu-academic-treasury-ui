@@ -108,6 +108,13 @@ ${portal.angularToolkit()}
 	
 				$scope.object = angular.fromJson('${tuitionDebtCreationBeanJson}');
 				// $scope.$apply();
+				$scope.booleanvalues = [ {
+                    name : '<spring:message code="label.no"/>',
+                    value : false
+                }, {
+                    name : '<spring:message code="label.yes"/>',
+                    value : true
+                } ];
 				
 				$scope.postBack = createAngularPostbackFunction($scope);
 				
@@ -225,25 +232,21 @@ ${portal.angularToolkit()}
 					<spring:message code="label.TuitionDebtCreationBean.infered" />
 				</div>
 
-				<div class="col-sm-2">
-					<select id="tuitionDebtCreationBean_infered" name="infered"
-						class="form-control" ng-model="object.infered">
-						<option value="false"><spring:message code="label.no" /></option>
-						<option value="true"><spring:message code="label.yes" /></option>
-					</select>
-					<script>
-						$("#tuitionDebtCreationBean_infered").select2().select2('val', '<c:out value='${bean.infered }'/>');
-					</script>
+				<div class="col-sm-2"> 
+                
+                <select id="tuitionDebtCreationBean_infered" name="infered" class="form-control" ng-model="object.infered"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                    </select>
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.infered || object.infered === 'true'">
+			<div class="form-group row" ng-show="object.infered">
 				<div class="col-sm-2 control-label">
 				</div>
 				<div class="col-sm-6">
 					<p><em>{{object.inferedPaymentPlanName}}</em></p>
 				</div>							
 			</div>
-			<div class="form-group row" ng-show="!object.infered || object.infered == 'false'">
+			<div class="form-group row" ng-show="!object.infered">
 				<div class="col-sm-2 control-label">
 					<spring:message
 						code="label.TuitionDebtCreationBean.tuitionPaymentPlan" />

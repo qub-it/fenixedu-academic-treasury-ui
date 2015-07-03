@@ -62,7 +62,7 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
 
     @RequestMapping(value = _READ_URI)
     public String read(final Model model) {
-        model.addAttribute("products", Product.findAll().sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
+        model.addAttribute("products", Product.findAllActive().sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
 
         model.addAttribute("academicTreasurySettings", AcademicTreasurySettings.getInstance());
 
@@ -87,8 +87,8 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
     @RequestMapping(value = _UPDATE_URI, method = RequestMethod.POST)
     public String update(
             @RequestParam(value = "emolumentsproductgroup", required = false) final ProductGroup emolumentsProductGroup,
-            @RequestParam(value = "tuitionproductgroup", required = false) final ProductGroup tuitionProductGroup,
-            @RequestParam(value = "improvementacademictax", required = false) final AcademicTax improvementAcademicTax,
+            @RequestParam(value = "tuitionproductgroup", required = false) final ProductGroup tuitionProductGroup, @RequestParam(
+                    value = "improvementacademictax", required = false) final AcademicTax improvementAcademicTax,
             final Model model, final RedirectAttributes redirectAttributes) {
 
         try {

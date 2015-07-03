@@ -87,8 +87,9 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
         model.addAttribute("ServiceRequestMapEntry_serviceRequestType_options",
                 ServiceRequestType.findAll().collect(Collectors.toList()));
 
-        model.addAttribute("ServiceRequestMapEntry_product_options", Product.findAll().collect(Collectors.toList()));
-        model.addAttribute("ServiceRequestMapEntry_serviceRequestTypeOption_options", ServiceRequestTypeOption.findAll().collect(Collectors.toList()));
+        model.addAttribute("ServiceRequestMapEntry_product_options", Product.findAllActive().collect(Collectors.toList()));
+        model.addAttribute("ServiceRequestMapEntry_serviceRequestTypeOption_options",
+                ServiceRequestTypeOption.findAll().collect(Collectors.toList()));
         model.addAttribute("ServiceRequestMapEntry_situationType_options", AcademicServiceRequestSituationType.values());
 
         return "academicTreasury/manageservicerequestmapentry/servicerequestmapentry/create";
@@ -98,9 +99,9 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
     public String create(
             @RequestParam(value = "servicerequesttype", required = false) final ServiceRequestType serviceRequestType,
             @RequestParam(value = "servicerequesttypeoptions", required = false) final Set<ServiceRequestTypeOption> serviceRequestTypeOptions,
-            @RequestParam(value = "product", required = false) final Product product, 
-            @RequestParam(value = "createEventOnSituation", required = true) final AcademicServiceRequestSituationType createEventOnSituationType, Model model,
-            RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "product", required = false) final Product product,
+            @RequestParam(value = "createEventOnSituation", required = true) final AcademicServiceRequestSituationType createEventOnSituationType,
+            Model model, RedirectAttributes redirectAttributes) {
 
         try {
 
