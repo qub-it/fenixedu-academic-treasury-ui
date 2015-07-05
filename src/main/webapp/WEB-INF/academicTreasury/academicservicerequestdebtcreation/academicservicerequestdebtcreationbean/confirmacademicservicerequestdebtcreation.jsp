@@ -161,7 +161,7 @@ function backToCreate() {
 					</tr>
 			
 					<tr className="dt-center" cssStyle="width:40%">
-						<<th scope="row" class="col-xs-3"><spring:message code="label.AcademicServiceRequestDebtCreationBean.amount" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.AcademicServiceRequestDebtCreationBean.amount" /></th>
 				
 						<td><c:out value='${debtAccount.finantialInstitution.currency.getValueFor(debt.amount)}' /></th>
 					</tr>

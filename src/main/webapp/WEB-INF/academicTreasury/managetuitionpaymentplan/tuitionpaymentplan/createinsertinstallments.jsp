@@ -375,11 +375,16 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				</div>
 
 				<div class="col-sm-4">
+                 <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
+                        </div>
 					<input id="tuitionInstallmentTariff_fixedAmount"
 						class="form-control" type="text" ng-model="object.fixedAmount"
 						name="fixedamount"
 						value='<c:out value='${bean.fixedAmount}'/>' ng-required />
 				</div>
+                </div>
 				<div class="col-sm-4" ng-show="form.fixedamount.$error.required">
 					está errado
 				</div>

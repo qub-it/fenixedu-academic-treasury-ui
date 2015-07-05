@@ -94,7 +94,7 @@ ${portal.toolkit()}
 			<c:forEach items="${choosefinantialentityResultsDataSet}" var="searchResult">
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
-				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
+				"DT_RowId" : "<c:out value='${searchResult.externalId} - ${searchResult.finantialInstitution.name}'/>",
 "name" : "<c:out value='${searchResult.name.content}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/manageemoluments/finantialentity/chooseFinantialEntity/choose/${searchResult.externalId}\"><spring:message code='label.manageEmoluments.chooseFinantialEntity.choose'/></a>" +

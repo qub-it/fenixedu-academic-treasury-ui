@@ -102,7 +102,7 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"name" : "<c:out value='${searchResult.name.content}'/>",
+"name" : "<c:out value='${searchResult.name.content} - ${searchResult.finantialInstitution.name}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/tuitionpaymentplanstandalone/choosedegreecurricularplan/${searchResult.externalId}/${executionYear.externalId}\"><spring:message code='label.manageTuitionPaymentPlan.chooseFinantialEntity.choose'/></a>" +
                 "" 

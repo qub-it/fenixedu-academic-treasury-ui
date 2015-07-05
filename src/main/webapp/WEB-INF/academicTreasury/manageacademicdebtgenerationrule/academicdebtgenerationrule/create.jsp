@@ -189,7 +189,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<ui-select id="academicDebtGenerationRule_product"
-						class="form-control" name="product"
+						class="" name="product"
 						ng-model="$parent.object.product" theme="bootstrap"
 						ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match>
 					<ui-select-choices
@@ -206,7 +206,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 
 				<div class="col-sm-2">
 					<select id="academicDebtGenerationRule_createDebt"
-						name="aggregateondebitnote" class="form-control"
+						name="aggregateondebitnote" class=""
 						ng-model="object.createDebt">
 						<option value="false"><spring:message code="label.no" /></option>
 						<option value="true"><spring:message code="label.yes" /></option>
@@ -243,7 +243,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<ui-select id="academicDebtGenerationRule_executionYear"
-						class="form-control" name="executionyear"
+						class="" name="executionyear"
 						ng-model="$parent.object.executionYear" theme="bootstrap"
 						ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match>
 					<ui-select-choices

@@ -131,7 +131,7 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"name" : "<c:out value='${searchResult.name.content}'/>",
+"name" : "<c:out value='${searchResult.name.content}  - ${searchResult.finantialInstitution.name}'/>",
 "administrativeoffice" : "<c:out value='${searchResult.administrativeOffice.name.content}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academicTreasury/managefinantialentityadministrativeoffice/finantialentity/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +

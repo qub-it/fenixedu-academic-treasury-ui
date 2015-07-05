@@ -158,9 +158,15 @@ function registerJqueryReadyClosure(func) {
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.baseAmount"/></div> 
 					
 					<div class="col-sm-10">
+                                        <div class="input-group">
+                        <div class="input-group-addon">
+                            <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
+                        </div>
+                    
 						<input id="academicTariff_baseAmount" class="form-control" type="text" name="baseAmount"  
 							value='<c:out value='${not empty academicTariffBean.baseAmount ? academicTariffBean.baseAmount : "" }'/>' ng-model="object.baseAmount" />
-					</div>	
+					</div>
+                    </div>	
 				</div>		
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.unitsForBase"/></div> 
