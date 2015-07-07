@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.services;
 
+import java.util.Optional;
+
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.academicalAct.AcademicActBlockingSuspension;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
@@ -15,6 +17,10 @@ public class PersonServices {
 
     @Atomic
     public static PersonCustomer createPersonCustomer(Person p) {
+        Optional<? extends PersonCustomer> findUnique = PersonCustomer.findUnique(p);
+        if (findUnique.isPresent()) {
+            return findUnique.get();
+        }
         return PersonCustomer.create(p);
     }
 
