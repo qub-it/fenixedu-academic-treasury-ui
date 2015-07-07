@@ -178,13 +178,19 @@ ${portal.toolkit()}
 			<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.dueDate" /></datatables:columnHead>
 			<c:choose>
 				<c:when test="${installment.dueDateCalculationType.noDueDate}">
-					<spring:message code="label.TuitionInstallmentTariff.noDueDate" />
+					<p><spring:message code="label.TuitionInstallmentTariff.noDueDate" /></p>
 				</c:when>
 				<c:when test="${installment.dueDateCalculationType.fixedDate}">
-					<joda:format value="${installment.fixedDueDate}" style="S-" />
+					<p><joda:format value="${installment.fixedDueDate}" style="S-" /></p>
 				</c:when>
 				<c:when test="${installment.dueDateCalculationType.daysAfterCreation}">
-					<spring:message code="label.TuitionInstallmentTariff.daysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" />
+					<p><spring:message code="label.TuitionInstallmentTariff.daysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" /></p>
+				</c:when>
+				<c:when test="${installment.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
+					<p>
+						<joda:format value="${installment.fixedDueDate}" style="S-" />
+						<spring:message code="label.TuitionInstallmentTariff.bestOfFixedDateAndDaysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" />
+					</p>
 				</c:when>
 			</c:choose>
 		</datatables:column>

@@ -103,9 +103,6 @@ public class RunCustomTask extends CustomTask {
 
     @Override
     public void runTask() throws Exception {
-        final Locale PT = new Locale("PT", "pt");
-        final Locale EN = new Locale("EN", "en");
-        
         
     }
 }

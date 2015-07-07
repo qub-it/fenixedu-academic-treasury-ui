@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.domain.tuition;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -42,6 +43,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     private static final String CONDITIONS_DESCRIPTION_SEPARATOR = ", ";
 
+    public static final Comparator<TuitionPaymentPlan> COMPARE_BY_PAYMENT_PLAN_ORDER = (o1, o2) -> Integer.compare(
+            o1.getPaymentPlanOrder(), o2.getPaymentPlanOrder());
+
     protected TuitionPaymentPlan() {
         super();
         setBennu(Bennu.getInstance());
@@ -71,7 +75,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                 tuitionPaymentPlanBean.getName()));
 
         setWithLaboratorialClasses(tuitionPaymentPlanBean.isWithLaboratorialClasses());
-        setPaymentPlanOrder((int) find(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear()).count() + 1);
+        setPaymentPlanOrder((int) find(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear())
+                .max(COMPARE_BY_PAYMENT_PLAN_ORDER).map(TuitionPaymentPlan::getPaymentPlanOrder).orElse(0) + 1);
 
         createInstallments(tuitionPaymentPlanBean);
 
@@ -203,8 +208,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                         BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.curricularSemester.description",
                                 String.valueOf(getCurricularYear().getYear()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
-            
-            if(getStatuteType() != null) {
+
+            if (getStatuteType() != null) {
                 description.append(getStatuteType().getName()).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
@@ -439,6 +444,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         super.setProduct(null);
         this.setCurricularYear(null);
         this.setFinantialEntity(null);
+        this.setIngression(null);
 
         super.deleteDomainObject();
     }
@@ -484,8 +490,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public static Stream<TuitionPaymentPlan> findSortedByPaymentPlanOrder(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final DegreeCurricularPlan degreeCurricularPlan, final ExecutionYear executionYear) {
-        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear)
-                .sorted((e1, e2) -> Integer.compare(e1.getPaymentPlanOrder(), e2.getPaymentPlanOrder()))
+        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear).sorted(COMPARE_BY_PAYMENT_PLAN_ORDER)
                 .collect(Collectors.toList()).stream();
     }
 
