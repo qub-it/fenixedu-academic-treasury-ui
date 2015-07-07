@@ -155,7 +155,7 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
                 dataMissing = true;
             }
             
-            if(bean.getEnrolment() == null) {
+            if(!bean.isRegistrationTuition() && bean.getEnrolment() == null) {
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.enrolment.required"), model);
                 dataMissing = true;
             }

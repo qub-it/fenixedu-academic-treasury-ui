@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
+import org.fenixedu.academic.domain.EvaluationConfiguration;
+import org.fenixedu.academic.domain.EvaluationSeason;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
@@ -73,42 +75,64 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
     @Override
     public void runTask() throws Exception {
 
-        createMissingIngressions();
-
-        createDefaultServiceRequestTypes();
-
-        defineMappingFinantialEntityAdministrativeOffice();
-
-        createDefaultProductGroups();
-
-        createProductForInterest();
-
-        createProductForAdvancePayment();
-
-        configureTreasurySettings();
-
-        createProducts_FROM_SPREADSHEET();
-
-        createAcademicTaxes_FROM_SPREADSHEET();
-
-        createTuitionPaymentPlanGroups_FROM_SPREADSHEET();
-
-        configureAcademicTreasurySettings_FROM_SPREADSHEET();
-
-        createServiceRequestTypesToProducts_FROM_SPREADSHEET();
-
-        createExemptionTypes_FROM_SPREADSHEET();
-
-        createEmolumentTariffs_FROM_SPREADSHEET();
-
-        createTuitionForRegistrationTariffs_FROM_SPREADSHEET();
-
-        createStandaloneTariffs_FROM_SPREADSHEET();
+        createMissingEvaluationSeasons();
+        
+//        createMissingIngressions();
+//
+//        createDefaultServiceRequestTypes();
+//
+//        defineMappingFinantialEntityAdministrativeOffice();
+//
+//        createDefaultProductGroups();
+//
+//        createProductForInterest();
+//
+//        createProductForAdvancePayment();
+//
+//        configureTreasurySettings();
+//
+//        createProducts_FROM_SPREADSHEET();
+//
+//        createAcademicTaxes_FROM_SPREADSHEET();
+//
+//        createTuitionPaymentPlanGroups_FROM_SPREADSHEET();
+//
+//        configureAcademicTreasurySettings_FROM_SPREADSHEET();
+//
+//        createServiceRequestTypesToProducts_FROM_SPREADSHEET();
+//
+//        createExemptionTypes_FROM_SPREADSHEET();
+//
+//        createEmolumentTariffs_FROM_SPREADSHEET();
+//
+//        createTuitionForRegistrationTariffs_FROM_SPREADSHEET();
+//
+//        createStandaloneTariffs_FROM_SPREADSHEET();
 
         
 // NOT FOR NOW
 //        createExtracurricularTariffs();
 
+    }
+
+    private void createMissingEvaluationSeasons() {
+        
+        if(EvaluationSeason.readNormalSeason() == null) {
+            EvaluationSeason season = new EvaluationSeason(new LocalizedString(pt(),  "NORMAL"), new LocalizedString(pt(),  "Normal"), true, false, false, false);        
+            season.setCode("NORMAL");
+        }
+        
+        if(EvaluationSeason.readImprovementSeason() == null) {
+            EvaluationSeason season = new EvaluationSeason(new LocalizedString(pt(),  "MELHORIA"), new LocalizedString(pt(),  "Melhoria"), false, true, false, false);        
+            season.setCode("MELHORIA");
+        }
+        
+        if(EvaluationSeason.readSpecialSeason() == null) {
+            EvaluationSeason season = new EvaluationSeason(new LocalizedString(pt(),  "EPOCA_ESPECIAL"), new LocalizedString(pt(),  "Época Especial"), false, false, false, true);        
+            season.setCode("EPOCA_ESPECIAL");
+        }
+        
+        EvaluationConfiguration.getInstance().setDefaultEvaluationSeason(EvaluationSeason.readNormalSeason());
     }
 
     private void createStandaloneTariffs_FROM_SPREADSHEET() {
