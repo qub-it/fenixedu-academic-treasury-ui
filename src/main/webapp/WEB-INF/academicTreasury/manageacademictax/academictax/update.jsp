@@ -56,7 +56,7 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}<%= AcademicTaxController.READ_URL %>${academicTax.externalId}"><spring:message
-			code="label.event.back" /></a> |&nbsp;&nbsp;
+			code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -179,6 +179,18 @@ ${portal.toolkit()}
 <script>
 $(document).ready(function() {
 
-
+    $('#academicTax_appliedOnRegistration').select2({
+        minimumResultsForSearch: Infinity
+    });
+    $('#academicTax_appliedOnRegistrationSubsequentYears').select2({
+        minimumResultsForSearch: Infinity
+    });
+    $('#academicTax_appliedAutomatically').select2({
+        minimumResultsForSearch: Infinity
+    });
+    $('#academicTax_appliedOnRegistrationFirstYear').select2({
+        minimumResultsForSearch: Infinity
+    });
+	
 	});
 </script>
