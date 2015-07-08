@@ -91,7 +91,7 @@ function createDataTables(tableid, showsearchbox, showtools,pagination, pagecont
 			"bPaginate" : pagination,
 			"dom" : dom, 
 			"tableTools" : {
-					"sSwfPath" : pagecontext + "/static/treasury/swf/copy_csv_xls_pdf.swf"
+				"sSwfPath" : pagecontext + "/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
 			}
 	});
 	table.columns.adjust().draw();
