@@ -39,6 +39,7 @@ public class PersonServices {
 
     @Subscribe
     public void newPersonEvent(final DomainObjectEvent<Person> event) {
+        Person p = event.getInstance();
         createPersonCustomer(event.getInstance());
     }
 }

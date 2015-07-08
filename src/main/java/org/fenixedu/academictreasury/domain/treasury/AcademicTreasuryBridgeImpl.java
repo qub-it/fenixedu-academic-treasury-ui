@@ -20,6 +20,7 @@ import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.services.AcademicTaxServices;
 import org.fenixedu.academictreasury.services.EmolumentServices;
 import org.fenixedu.academictreasury.services.PersonServices;
+import org.fenixedu.academictreasury.services.RegistrationServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.ImprovementEnrolmentHandler;
@@ -40,7 +41,9 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     @Override
     public void registerNewAcademicServiceRequestSituationHandler() {
         Signal.register(ACADEMIC_SERVICE_REQUEST_NEW_SITUATION_EVENT, new EmolumentServices());
-        Signal.register(Person.PERSON_CREATE_SIGNAL, new PersonServices());
+        //The PERSON CREATE SIGNAL Was replaced for the REGISTRATION CREATE SIGNAL, 
+//        Signal.register(Person.PERSON_CREATE_SIGNAL, new PersonServices());
+        Signal.register(Registration.REGISTRATION_CREATE_SIGNAL, new RegistrationServices());
     }
 
     @Override
@@ -130,14 +133,13 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
 
     @Override
     public IImprovementTreasuryEvent getImprovementTaxTreasuryEvent(Registration registration, ExecutionYear executionYear) {
-        if(!AcademicTreasuryEvent.findUniqueForImprovementTuition(registration, executionYear).isPresent()) {
+        if (!AcademicTreasuryEvent.findUniqueForImprovementTuition(registration, executionYear).isPresent()) {
             return null;
         }
-        
+
         return AcademicTreasuryEvent.findUniqueForImprovementTuition(registration, executionYear).get();
     }
 
-    
     /* --------------
      * ACADEMICAL ACT
      * --------------
