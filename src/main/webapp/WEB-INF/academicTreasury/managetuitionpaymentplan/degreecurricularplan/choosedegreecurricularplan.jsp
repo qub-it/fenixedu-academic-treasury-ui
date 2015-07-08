@@ -161,7 +161,7 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 </datatables:table>
 
 <script>
-	createDataTables("choosedegreecurricularplanTable", false, false, false, "${pageContext.request.contextPath}", "${datatablesI18NUrl}");
+	createDataTables("choosedegreecurricularplanTable", true, false, false, "${pageContext.request.contextPath}", "${datatablesI18NUrl}");
 </script>
 
 <script>

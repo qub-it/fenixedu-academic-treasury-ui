@@ -605,7 +605,9 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				</div>
 			</div>
 			<div style="text-align: right" class="col-sm-6">
-				<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" ng-click="submitForm()" />
+				<button type="submit" class="btn btn-primary" role="button"  ng-click="submitForm()" >
+                <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<spring:message code="label.add" />
+                </button>
 			</div>
 		</div>
 		<div class="panel-footer">

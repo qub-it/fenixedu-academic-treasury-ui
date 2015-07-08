@@ -84,9 +84,9 @@ ${portal.toolkit()}
         <div class="panel panel-default">
             <div class="panel-heading">
                 <p>
-                    <strong><c:out value="${paymentPlan.name.content}" /></strong> &nbsp; <em><c:if test="${paymentPlan.defaultPaymentPlan}">
+                    <span class="badge">${loopStatus.index + 1}</span>&nbsp;&nbsp;<strong><c:out value="${paymentPlan.name.content}" /></strong> &nbsp; <em><c:if test="${paymentPlan.defaultPaymentPlan}">
                             <spring:message code="label.TuitionPaymentPlan.defaultPaymentPlan" />
-                        </c:if></em><span class="badge pull-right">${paymentPlan.orderedTuitionInstallmentTariffs.size()}</span>
+                        </c:if></em>
                 </p>
                 <p style="color: blue">
                    <a data-toggle="collapse" data-target="#collapsePayment${loopStatus.index}" href="#collapsePayment${loopStatus.index}"> <strong><em><c:out value="${paymentPlan.conditionsDescription.content}" /></em></strong>
