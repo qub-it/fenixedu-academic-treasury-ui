@@ -26,9 +26,11 @@ public class Constants {
 
     public static final TupleDataSourceBean SELECT_OPTION = new TupleDataSourceBean("", BundleUtil.getString(Constants.BUNDLE,
             "label.TupleDataSourceBean.select.description"));
+    
+    public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
 
     public static boolean isForeignLanguage(final Locale language) {
-        return !language.getLanguage().equals(I18N.getLocale());
+        return !language.getLanguage().equals(DEFAULT_LANGUAGE.getLanguage());
     }
 
     // @formatter: off

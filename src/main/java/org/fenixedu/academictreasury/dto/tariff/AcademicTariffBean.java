@@ -66,7 +66,7 @@ public class AcademicTariffBean implements IBean, Serializable {
 
     public AcademicTariffBean() {
         setBeginDate(new LocalDate());
-        setEndDate(null);
+        setEndDate(new LocalDate().plusYears(1));
 
         setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
         setFixedDueDate(null);

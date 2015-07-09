@@ -113,7 +113,7 @@ function registerJqueryReadyClosure(func) {
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.beginDate"/></div> 
 					
 					<div class="col-sm-4">
-						<input id="academicTariff_beginDate" class="form-control" type="date" name="begindate" 
+						<input id="academicTariff_beginDate" class="form-control" type="text" name="begindate" 
 						value = '<c:out value='${not empty academicTariffBean.beginDate ? academicTariffBean.beginDate : "" }'/>' ng-model="object.beginDate" />
 					</div>
 				</div>
@@ -122,7 +122,7 @@ function registerJqueryReadyClosure(func) {
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicTariff.endDate"/></div> 
 					
 					<div class="col-sm-4">
-						<input id="academicTariff_endDate" class="form-control" type="date" name="date" 
+						<input id="academicTariff_endDate" class="form-control" name="enddate" type="text" 
 						value = '<c:out value='${not empty academicTariffBean.endDate ? academicTariffBean.endDate : "" }'/>' ng-model="object.endDate" >
 					</div>
 				</div>
@@ -252,8 +252,10 @@ registerJqueryReadyClosure(function() {
     			</c:forEach>
     		];
 	
-	$("#academicTariff_interestType").select2({ data : interestType_options } );
-	$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestType ? academicTariffBean.interestType : ""}');
+	if($("#academicTariff_interestType").length > 0) {
+		$("#academicTariff_interestType").select2({ data : interestType_options } );
+		$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestType ? academicTariffBean.interestType : ""}');		
+	}
 
 });
 

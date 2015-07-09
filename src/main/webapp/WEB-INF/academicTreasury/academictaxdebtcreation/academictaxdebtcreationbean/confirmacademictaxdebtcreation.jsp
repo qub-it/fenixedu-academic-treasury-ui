@@ -123,6 +123,7 @@ function backToCreate() {
         </h3>
     </div>
     <div class="panel-body">
+    	<form method="post" class="form-horizontal">
            <table class="table">
                <tbody>
                    <tr>
@@ -164,13 +165,14 @@ function backToCreate() {
 					</tr>
 			
 					<tr className="dt-center" cssStyle="width:40%">
-						<<th scope="row" class="col-xs-3"><spring:message code="label.AcademicTaxDebtCreationBean.amount" /></th>
+						<th scope="row" class="col-xs-3"><spring:message code="label.AcademicTaxDebtCreationBean.amount" /></th>
 				
 						<td><c:out value='${debtAccount.finantialInstitution.currency.getValueFor(debt.amount)}' /></th>
 					</tr>
 				</c:if>
                </body>
            </table>
+          </form>
     </div>
 </div>
 

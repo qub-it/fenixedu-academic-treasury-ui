@@ -199,6 +199,12 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				<c:when test="${installment.dueDateCalculationType.daysAfterCreation}">
 					<spring:message code="label.TuitionInstallmentTariff.daysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" />
 				</c:when>
+				<c:when test="${installment.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
+					<p>
+						<joda:format value="${installment.fixedDueDate}" style="S-" />
+						<spring:message code="label.TuitionInstallmentTariff.bestOfFixedDateAndDaysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" />
+					</p>
+				</c:when>				
 			</c:choose>
 		</datatables:column>
 	

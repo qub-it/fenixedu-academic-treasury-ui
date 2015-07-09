@@ -203,10 +203,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                                 String.valueOf(getCurricularYear().getYear()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
-            if (getCurricularSemester() != null) {
+            if (getSemester() != null) {
                 description.append(
                         BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.curricularSemester.description",
-                                String.valueOf(getCurricularYear().getYear()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+                                String.valueOf(getSemester()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getStatuteType() != null) {
@@ -636,13 +636,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     }
 
     private static boolean laboratorial(final Enrolment enrolment) {
-        if (enrolment.getAttendsFor(enrolment.getExecutionPeriod()) == null) {
-            return false;
-        }
-
-        final Attends attends = enrolment.getAttendsFor(enrolment.getExecutionPeriod());
-
-        return attends.getExecutionCourse().getShiftTypes().contains(ShiftType.LABORATORIAL);
+        return Constants.isPositive(new BigDecimal(enrolment.getCurricularCourse().getCompetenceCourse()
+                        .getLaboratorialHours(enrolment.getExecutionPeriod())));
     }
 
     private static boolean firstTimeStudent(final Registration registration, final ExecutionYear executionYear) {
