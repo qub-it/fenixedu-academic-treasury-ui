@@ -28,12 +28,12 @@ package org.fenixedu.academictreasury.ui.managetuitionpaymentplangroup;
 
 import java.util.stream.Collectors;
 
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -87,8 +87,10 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.delete.sucess"), model);
 
             return redirect(route("/"), model, redirectAttributes);
-        } catch (DomainException e) {
-            addErrorMessage(e.getLocalizedMessage(), model);
+        } catch (AcademicTreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return jspPage("search");
@@ -110,11 +112,10 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(@RequestParam(value = "code", required = false) final String code, @RequestParam(value = "name",
             required = false) final LocalizedString name,
-            @RequestParam(value = "forRegistration", required = false) boolean forRegistration, 
-            @RequestParam(value = "forStandalone", required = false) boolean forStandalone, 
-            @RequestParam(value = "forExtracurricular", required = false) boolean forExtracurricular,
-            @RequestParam(value = "currentProduct", required = false) final Product currentProduct, 
-            final Model model,
+            @RequestParam(value = "forRegistration", required = false) boolean forRegistration, @RequestParam(
+                    value = "forStandalone", required = false) boolean forStandalone, @RequestParam(value = "forExtracurricular",
+                    required = false) boolean forExtracurricular,
+            @RequestParam(value = "currentProduct", required = false) final Product currentProduct, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
@@ -124,32 +125,33 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.creation.success"), model);
             return redirect(route("/read", group.getExternalId()), model, redirectAttributes);
-        } catch (DomainException de) {
-            addErrorMessage(de.getLocalizedMessage(), model);
-            return create(model);
+        } catch (AcademicTreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return create(model);
     }
 
     @RequestMapping(value = "/update/{tuitionPaymentPlanGroupId}", method = RequestMethod.GET)
     public String update(@PathVariable("tuitionPaymentPlanGroupId") TuitionPaymentPlanGroup tuitionPaymentPlanGroup, Model model) {
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup, model);
-        
+
         model.addAttribute("products", AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet());
-        
+
         return jspPage("/update");
     }
 
     @RequestMapping(value = "/update/{tuitionPaymentPlanGroupId}", method = RequestMethod.POST)
     public String update(@PathVariable("tuitionPaymentPlanGroupId") TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             @RequestParam(value = "code", required = false) String code,
-            @RequestParam(value = "name", required = false) LocalizedString name, 
-            @RequestParam(value = "forRegistration", required = false) boolean forRegistration, 
-            @RequestParam(value = "forStandalone", required = false) boolean forStandalone, 
-            @RequestParam(value = "forExtracurricular", required = false) boolean forExtracurricular,
-            @RequestParam(value = "currentProduct", required = false) final Product currentProduct, 
+            @RequestParam(value = "name", required = false) LocalizedString name, @RequestParam(value = "forRegistration",
+                    required = false) boolean forRegistration,
+            @RequestParam(value = "forStandalone", required = false) boolean forStandalone, @RequestParam(
+                    value = "forExtracurricular", required = false) boolean forExtracurricular, @RequestParam(
+                    value = "currentProduct", required = false) final Product currentProduct,
 
-            final Model model,
-            final RedirectAttributes redirectAttributes) {
+            final Model model, final RedirectAttributes redirectAttributes) {
 
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup, model);
 
@@ -157,11 +159,12 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
             tuitionPaymentPlanGroup.edit(code, name, forRegistration, forStandalone, forExtracurricular, currentProduct);
 
             return redirect(route("/read", tuitionPaymentPlanGroup.getExternalId()), model, redirectAttributes);
-        } catch (DomainException de) {
-            addErrorMessage(de.getLocalizedMessage(), model);
-
-            return update(tuitionPaymentPlanGroup, model);
+        } catch (AcademicTreasuryDomainException tde) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(tuitionPaymentPlanGroup, model);
     }
 
     private String jspPage(final String page) {
