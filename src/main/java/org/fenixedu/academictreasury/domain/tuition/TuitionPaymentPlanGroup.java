@@ -59,8 +59,8 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
         if (findDefaultGroupForExtracurricular().count() > 1) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.for.extracurricular.already.exists");
         }
-        
-        if(findByCode(getCode()).count() > 1) {
+
+        if (findByCode(getCode()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.code.already.exists");
         }
     }
@@ -95,7 +95,8 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     }
 
     public boolean isDeletable() {
-        return true;
+        // ACFSILVA
+        return getAcademicTreasuryEventSet().isEmpty() && getTuitionPaymentPlansSet().isEmpty();
     }
 
     @Atomic
@@ -108,11 +109,6 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
 
         super.deleteDomainObject();
     }
-
-    /* --------
-     * SERVICES
-     * --------
-     */
 
     public static Stream<TuitionPaymentPlanGroup> findAll() {
         return Bennu.getInstance().getTuitionPaymentPlanGroupsSet().stream();
