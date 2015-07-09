@@ -1,5 +1,6 @@
 package org.fenixedu.academictreasury.domain.emoluments;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -7,7 +8,10 @@ import java.util.stream.Stream;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.Constants;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -91,12 +95,21 @@ public class AcademicTax extends AcademicTax_Base {
         checkRules();
     }
 
+    @Override
+    protected void checkForDeletionBlockers(Collection<String> blockers) {
+        if (!getAcademicTreasuryEventSet().isEmpty()) {
+            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTax.delete.has.treasury.events"));
+        }
+        super.checkForDeletionBlockers(blockers);
+    }
+
     private boolean isDeletable() {
         return getAcademicTreasuryEventSet().isEmpty();
     }
 
     @Atomic
     public void delete() {
+        TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
         if (!isDeletable()) {
             throw new AcademicTreasuryDomainException("error.AcademicTax.delete.impossible");
         }

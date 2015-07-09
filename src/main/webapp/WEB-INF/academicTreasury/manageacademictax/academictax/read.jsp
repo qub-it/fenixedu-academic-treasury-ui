@@ -55,7 +55,7 @@ ${portal.toolkit()}
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form id="deleteForm"
-				action="${pageContext.request.contextPath}<%= AcademicTaxController.SEARCH_TO_DELETE_ACTION_URL %>${academicTax.externalId}"
+				action="${pageContext.request.contextPath}<%= AcademicTaxController.DELETE_URL %>${academicTax.externalId}"
 				method="POST">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"
@@ -92,11 +92,14 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}<%= AcademicTaxController.SEARCH_URL %>"><spring:message
-			code="label.event.back" /></a> |&nbsp;&nbsp; <span
+			code="label.event.back" /></a> |&nbsp; <span
+        class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;<a
+        class="" href="#" data-toggle="modal" data-target="#deleteModal"><spring:message
+            code="label.event.delete" /></a> &nbsp;|&nbsp; <span
 		class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}<%= AcademicTaxController.UPDATE_URL %>${academicTax.externalId}"><spring:message
-			code="label.event.update" /></a> |&nbsp;&nbsp;
+			code="label.event.update" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">

@@ -57,7 +57,7 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
 		href="${pageContext.request.contextPath}<%= AcademicTaxController.SEARCH_URL %>"><spring:message
-			code="label.event.back" /></a> |&nbsp;&nbsp;
+			code="label.event.back" /></a> &nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
@@ -108,7 +108,7 @@ ${portal.toolkit()}
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<select id="academicTax_product" class="js-example-basic-single"
 						name="product">
-						<option value=""></option>
+						<option value="">&nbsp;</option>
 						<%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
 					</select>
 				</div>
@@ -215,6 +215,19 @@ $(document).ready(function() {
     $("#academicTax_product").select2().select2('val', '<c:out value='${param.product}'/>');
 
 	<%-- End block for providing product options --%>
+
+	$('#academicTax_appliedOnRegistration').select2({
+	    minimumResultsForSearch: Infinity
+	});
+    $('#academicTax_appliedOnRegistrationSubsequentYears').select2({
+        minimumResultsForSearch: Infinity
+    });
+    $('#academicTax_appliedAutomatically').select2({
+        minimumResultsForSearch: Infinity
+    });
+    $('#academicTax_appliedOnRegistrationFirstYear').select2({
+        minimumResultsForSearch: Infinity
+    });
 
 	});
 </script>

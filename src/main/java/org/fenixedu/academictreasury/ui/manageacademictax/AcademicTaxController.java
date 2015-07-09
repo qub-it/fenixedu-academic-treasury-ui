@@ -29,11 +29,11 @@ package org.fenixedu.academictreasury.ui.manageacademictax;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Product;
@@ -43,6 +43,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import pt.ist.fenixframework.Atomic;
 
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageAcademicTax",
         accessGroup = "treasuryBackOffice")
@@ -55,8 +57,7 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
 
     @RequestMapping
     public String home(Model model) {
-        //this is the default behaviour, for handling in a Spring Functionality
-        return "forward:" + CONTROLLER_URL + "/";
+        return "forward:" + SEARCH_URL;
     }
 
     private AcademicTax getAcademicTax(Model model) {
@@ -65,6 +66,11 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
 
     private void setAcademicTax(AcademicTax academicTax, Model model) {
         model.addAttribute("academicTax", academicTax);
+    }
+
+    @Atomic
+    public void deleteAcademicTax(AcademicTax academicTax) {
+        academicTax.delete();
     }
 
     private static final String _SEARCH_URI = "/";
@@ -84,21 +90,39 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
     @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI + "{academicTaxId}", method = RequestMethod.POST)
     public String processSearchToDeleteAction(@PathVariable("academicTaxId") AcademicTax academicTax, Model model,
             RedirectAttributes redirectAttributes) {
+        processDelete(academicTax, model, redirectAttributes);
+        return redirect(SEARCH_URL, model, redirectAttributes);
+    }
+
+    private static final String _DELETE_URI = "/delete/";
+    public static final String DELETE_URL = CONTROLLER_URL + _DELETE_URI;
+
+    @RequestMapping(value = _DELETE_URI + "{academicTaxId}", method = RequestMethod.POST)
+    public String delete(@PathVariable("academicTaxId") AcademicTax academicTax, Model model,
+            RedirectAttributes redirectAttributes) {
+        boolean success = processDelete(academicTax, model, redirectAttributes);
+        if (success) {
+            return redirect(SEARCH_URL, model, redirectAttributes);
+        }
+        return jspPage("read");
+    }
+
+    private boolean processDelete(AcademicTax academicTax, Model model, RedirectAttributes redirectAttributes) {
         setAcademicTax(academicTax, model);
         try {
             //call the Atomic delete function
-            academicTax.delete();
+            deleteAcademicTax(academicTax);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicTax.creation.success"), model);
-            return redirect("/academictreasury/manageacademictax/academictax/", model, redirectAttributes);
-        } catch (final DomainException ex) {
-            addErrorMessage(ex.getLocalizedMessage(), model);
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
+            return true;
+        } catch (AcademicTreasuryDomainException ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
         }
-
-        return jspPage("search");
+        return false;
     }
 
-//				
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
@@ -125,11 +149,12 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
                             appliedOnRegistrationSubsequentYears, appliedAutomatically);
 
             return redirect(READ_URL + academicTax.getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-            addErrorMessage(de.getLocalizedMessage(), model);
-
-            return create(model);
+        } catch (AcademicTreasuryDomainException ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
         }
+        return create(model);
     }
 
     private static final String _READ_URI = "/read/";
@@ -156,20 +181,21 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
             required = false) boolean appliedOnRegistration, @RequestParam(value = "appliedonregistrationfirstyear",
             required = false) boolean appliedOnRegistrationFirstYear, @RequestParam(
             value = "appliedonregistrationsubsequentyears", required = false) boolean appliedOnRegistrationSubsequentYears,
-            @RequestParam(value = "appliedautomatically", required = false) final boolean appliedAutomatically,
-            Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "appliedautomatically", required = false) final boolean appliedAutomatically, Model model,
+            RedirectAttributes redirectAttributes) {
 
         try {
 
-            academicTax.edit(appliedOnRegistration, appliedOnRegistrationFirstYear, appliedOnRegistrationSubsequentYears, appliedAutomatically);
+            academicTax.edit(appliedOnRegistration, appliedOnRegistrationFirstYear, appliedOnRegistrationSubsequentYears,
+                    appliedAutomatically);
 
             return redirect(READ_URL + academicTax.getExternalId(), model, redirectAttributes);
-        } catch (DomainException de) {
-            addErrorMessage(de.getLocalizedMessage(), model);
-
-            return update(academicTax, model);
-
+        } catch (AcademicTreasuryDomainException ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+        } catch (Exception ex) {
+            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
         }
+        return update(academicTax, model);
     }
 
     private String jspPage(final String page) {
