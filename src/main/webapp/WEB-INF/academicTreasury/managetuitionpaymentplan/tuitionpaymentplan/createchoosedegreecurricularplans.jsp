@@ -147,23 +147,33 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 			</div>		
 			<div class="form-group row">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.degreeCurricularPlans"/></div> 
-				
 				<div class="col-sm-8">
-					<div ng-repeat="dcp in object.degreeCurricularPlanDataSource">
-						<label for="{{dcp.id}}">
-							<input class="checkbox" name="{{dcp.id}}" type="checkbox" id="{{dcp.id}}"
-							ng-checked="object.degreeCurricularPlans.indexOf(dcp.id) > -1"
-							ng-click="toggleDegreeCurricularPlans(dcp.id)" />
-							{{dcp.text}}
-						</label>
-					</div>
+                <div ng-hide="object.degreeCurricularPlanDataSource" class="alert alert-warning">
+                    <spring:message code="label.TuitionPaymentPlan.degreeCurricularPlanDataSource.is.empty"/>
+                </div>
+					<div ng-repeat="dcp in object.degreeCurricularPlanDataSource" >
+                        <div class="checkbox">
+        					<input class="checkbox pull-left"  name="{{dcp.id}}" type="checkbox" id="{{dcp.id}}"
+        					ng-checked="object.degreeCurricularPlans.indexOf(dcp.id) > -1"
+        					ng-click="toggleDegreeCurricularPlans(dcp.id)" />
+        					<span><label for="{{dcp.id}}">{{dcp.text}}</label></span>
+                        </div>
+                    </div>
 					
 				</div>
 			</div>		
 		</div>
 		<div class="panel-footer">
-			<input type="button" class="btn btn-default" role="button" value="<spring:message code="label.cancel" />" ng-click="cancelCreatePaymentPlan();"/>
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.continue" />" />
+			<button type="button" class="btn btn-default" role="button" ng-click="cancelCreatePaymentPlan();">
+            <span class="glyphicon glyphicon-chevron-left"
+                aria-hidden="true"></span> &nbsp;
+            <spring:message code="label.back" />
+            </button>
+			<button type="submit" class="btn btn-primary" role="button">
+            <spring:message code="label.continue" />
+            &nbsp;<span class="glyphicon glyphicon-chevron-right"
+                aria-hidden="true"></span>
+            </button>
 		</div>
 	</div>
 </form>

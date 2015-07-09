@@ -12,6 +12,10 @@
 		<filter-name>dandelionFilter</filter-name>
 		<url-pattern>/academictreasury/*</url-pattern>
 	</filter-mapping>
+    <filter-mapping>
+        <filter-name>dandelionFilter</filter-name>
+        <url-pattern>/academicTreasury/*</url-pattern>
+    </filter-mapping>	
 	<!-- Dandelion servlet definition and mapping -->
 	<servlet>
 		<servlet-name>dandelionServlet</servlet-name>
