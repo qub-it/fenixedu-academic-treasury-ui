@@ -60,7 +60,7 @@ public class EmolumentServices {
 
     public boolean newAcademicServiceRequestSituationEvent(final AcademicServiceRequest academicServiceRequest) {
 
-        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
+        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayable()) {
             return false;
         }
 
@@ -104,7 +104,7 @@ public class EmolumentServices {
     @Atomic
     public static AcademicServiceRequestDebitEntryBean calculateForAcademicServiceRequest(
             final AcademicServiceRequest academicServiceRequest, final LocalDate debtDate) {
-        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
+        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayable()) {
             return null;
         }
 
@@ -170,7 +170,7 @@ public class EmolumentServices {
     public static boolean createAcademicServiceRequestEmolument(final AcademicServiceRequest academicServiceRequest,
             final LocalDate when) {
 
-        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
+        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayable()) {
             return false;
         }
 
@@ -227,7 +227,7 @@ public class EmolumentServices {
     public static LocalDate possibleDebtDateOnAcademicService(final AcademicServiceRequest academicServiceRequest) {
         // Find the configured state to create debt on academic service request
 
-        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayed()) {
+        if (!ServiceRequestType.findUnique(academicServiceRequest).isPayable()) {
             return null;
         }
 

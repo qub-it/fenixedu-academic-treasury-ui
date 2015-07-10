@@ -21,6 +21,7 @@ import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degree.degreeCurricularPlan.DegreeCurricularPlanState;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
+import org.fenixedu.academic.domain.serviceRequests.ServiceRequestCategory;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestTypeOption;
 import org.fenixedu.academic.domain.serviceRequests.documentRequests.AcademicServiceRequestType;
@@ -76,7 +77,7 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
     public void runTask() throws Exception {
 
         createMissingEvaluationSeasons();
-        
+
 //        createMissingIngressions();
 //
 //        createDefaultServiceRequestTypes();
@@ -109,47 +110,477 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
 //
 //        createStandaloneTariffs_FROM_SPREADSHEET();
 
-        
 // NOT FOR NOW
 //        createExtracurricularTariffs();
 
     }
 
     private void createMissingEvaluationSeasons() {
-        
-        if(EvaluationSeason.readNormalSeason() == null) {
-            EvaluationSeason season = new EvaluationSeason(new LocalizedString(pt(),  "NORMAL"), new LocalizedString(pt(),  "Normal"), true, false, false, false);        
+
+        if (EvaluationSeason.readNormalSeason() == null) {
+            EvaluationSeason season =
+                    new EvaluationSeason(new LocalizedString(pt(), "NORMAL"), new LocalizedString(pt(), "Normal"), true, false,
+                            false, false);
             season.setCode("NORMAL");
         }
-        
-        if(EvaluationSeason.readImprovementSeason() == null) {
-            EvaluationSeason season = new EvaluationSeason(new LocalizedString(pt(),  "MELHORIA"), new LocalizedString(pt(),  "Melhoria"), false, true, false, false);        
+
+        if (EvaluationSeason.readImprovementSeason() == null) {
+            EvaluationSeason season =
+                    new EvaluationSeason(new LocalizedString(pt(), "MELHORIA"), new LocalizedString(pt(), "Melhoria"), false,
+                            true, false, false);
             season.setCode("MELHORIA");
         }
-        
-        if(EvaluationSeason.readSpecialSeason() == null) {
-            EvaluationSeason season = new EvaluationSeason(new LocalizedString(pt(),  "EPOCA_ESPECIAL"), new LocalizedString(pt(),  "Época Especial"), false, false, false, true);        
+
+        if (EvaluationSeason.readSpecialSeason() == null) {
+            EvaluationSeason season =
+                    new EvaluationSeason(new LocalizedString(pt(), "EPOCA_ESPECIAL"),
+                            new LocalizedString(pt(), "Época Especial"), false, false, false, true);
             season.setCode("EPOCA_ESPECIAL");
         }
-        
+
         EvaluationConfiguration.getInstance().setDefaultEvaluationSeason(EvaluationSeason.readNormalSeason());
     }
 
     private void createStandaloneTariffs_FROM_SPREADSHEET() {
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(false); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("15")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(false); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("35")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(true); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("50")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(false); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("30")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(true); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("100")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(false); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("40")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(true); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("150")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(false); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("60")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(true); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("62.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(false); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("37.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(true); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("125")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(false); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("50")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(true); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("187.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName("");tuitionPaymentPlanBean.setWithLaboratorialClasses(false); tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("75")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean
+                    .setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("15"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("35"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean
+                    .setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(true);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("50"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean
+                    .setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("30"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(true);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("100"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("40"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(true);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("150"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("60"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean
+                    .setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(true);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("62.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean
+                    .setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("37.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(true);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("125"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("50"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(true);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("187.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression("ALUNOS_EXTERNOS_ULISBOA"));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setWithLaboratorialClasses(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
+                    .get().getCurrentProduct());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount("75"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("FIXED_AMOUNT"));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
     }
 
@@ -170,116 +601,1095 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
     }
 
     private void createTuitionForRegistrationTariffs_FROM_SPREADSHEET() {
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(true);
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean
+                    .setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType(""));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(true);
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("551.47")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/10/2015")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("64")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/11/2015")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("64")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/01/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("64")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/02/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("64")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/03/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_6_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("64")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/04/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_7_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("64")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/05/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_8_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("64")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/06/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_9_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("64")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("551.47"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/10/2015"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("64"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/11/2015"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("64"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/01/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("64"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/02/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("64"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/03/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_6_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("64"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/04/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_7_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("64"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/05/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_8_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("64"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/06/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_9_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("64"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
-    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(true); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(false);
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean
+                    .setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(true);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType(""));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(false);
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("367.47")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/10/2015")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/11/2015")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/01/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/02/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/03/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_6_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/04/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_7_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/05/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_8_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/06/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_9_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }    
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("367.47"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/10/2015"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/11/2015"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/01/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/02/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/03/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_6_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/04/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_7_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/05/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_8_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/06/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_9_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
-    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("PARTIAL_TIME")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(false);
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean
+                    .setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_INTEGRATED_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("PARTIAL_TIME"));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(false);
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("334.05")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/10/2015")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("44.65")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/11/2015")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("44.65")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/01/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("44.65")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/02/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("44.65")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/03/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_6_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("44.65")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/04/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_7_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("44.65")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/05/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_8_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("44.65")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/06/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_9_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("44.65")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }    
-    
-    
-        
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(true); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("334.05"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/10/2015"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("44.65"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/11/2015"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("44.65"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/01/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("44.65"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/02/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("44.65"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/03/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_6_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("44.65"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/04/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_7_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("44.65"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/05/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_8_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("44.65"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("26/06/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_9_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("44.65"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("350")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/01/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("350")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/03/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("350")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/05/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("350")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/06/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("350")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(true); tuitionPaymentPlanBean.setName("FINALISTA"); tuitionPaymentPlanBean.setFirstTimeStudent(false);                                                                                                  
-        
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS); tuitionPaymentPlanBean.setFixedAmount(amount("")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("DEFAULT_PAYMENT_PLAN_INDEXED")); tuitionPaymentPlanBean.setFactor(amount("1")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("60")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();                                                                                                 
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }                                                                                                        
-    
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(true);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType(""));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(false);
 
-        
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("PARTIAL_TIME")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(true);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("350"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/01/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("350"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/03/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("350"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/05/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("350"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/06/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("350"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("300")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/01/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("168.75")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/03/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("168.75")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/05/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("168.75")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/06/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("168.75")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
-        
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType(""));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(true);
+            tuitionPaymentPlanBean.setName("FINALISTA");
+            tuitionPaymentPlanBean.setFirstTimeStudent(false);
 
-        
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("PARTIAL_TIME")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.ECTS);
+            tuitionPaymentPlanBean.setFixedAmount(amount(""));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("DEFAULT_PAYMENT_PLAN_INDEXED"));
+            tuitionPaymentPlanBean.setFactor(amount("1"));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("60"));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("227.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/01/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("227.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/03/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("227.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/05/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("227.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/06/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("227.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("PARTIAL_TIME"));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(true);
 
-        
-        
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(true);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("300"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/01/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("168.75"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/03/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("168.75"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/05/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("168.75"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/06/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("168.75"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("500")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/01/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("250")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/03/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("250")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/05/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("250")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/06/2016")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("250")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }        
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("PARTIAL_TIME"));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(false);
 
-        
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("227.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/01/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("227.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/03/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("227.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/05/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("227.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/06/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("227.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(false); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("PARTIAL_TIME")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(false);
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_MASTER_DEGREE", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType(""));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(true);
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("446.89")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(90); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("446.87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(180); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("446.87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(270); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("446.87")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("500"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/01/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("250"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/03/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("250"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/05/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("250"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("20/06/2016"));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_5_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("250"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(false);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("PARTIAL_TIME"));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(false);
 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { TuitionPaymentPlanBean tuitionPaymentPlanBean = new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get().getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), oneOfFinantialEntity("FF"), defaultExecutionYear()); tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", "")); tuitionPaymentPlanBean.setDefaultPaymentPlan(true); tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType("")); tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol("")); tuitionPaymentPlanBean.setIngression(ingression("")); tuitionPaymentPlanBean.setCurricularYear(curricularYear("")); tuitionPaymentPlanBean.setStatuteType(statuteType("")); tuitionPaymentPlanBean.setCustomized(false); tuitionPaymentPlanBean.setName(""); tuitionPaymentPlanBean.setFirstTimeStudent(false);
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("446.89"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(90);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("446.87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(180);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("446.87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(270);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("446.87"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
 
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("687.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(90); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("687.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(180); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("687.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate()); tuitionPaymentPlanBean.setEndDate(null); tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate("")); tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(270); tuitionPaymentPlanBean.setApplyInterests(true); tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE); tuitionPaymentPlanBean.setApplyInFirstWorkday(true); tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get()); tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT); tuitionPaymentPlanBean.setFixedAmount(amount("687.5")); tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType("")); tuitionPaymentPlanBean.setFactor(amount("")); tuitionPaymentPlanBean.setTotalEctsOrUnits(amount("")); tuitionPaymentPlanBean.setAcademicalActBlockingOff(false); tuitionPaymentPlanBean.addInstallment();
-        TuitionPaymentPlan.create(tuitionPaymentPlanBean); }        
-        
-        
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                    new TuitionPaymentPlanBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get()
+                            .getCurrentProduct(), TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                            oneOfFinantialEntity("FF"), defaultExecutionYear());
+            tuitionPaymentPlanBean.setDegreeCurricularPlans(readDegreeCurricularPlans("BOLONHA_PHD", "", ""));
+            tuitionPaymentPlanBean.setDefaultPaymentPlan(true);
+            tuitionPaymentPlanBean.setRegistrationRegimeType(registrationRegimeType(""));
+            tuitionPaymentPlanBean.setRegistrationProtocol(registrationProtocol(""));
+            tuitionPaymentPlanBean.setIngression(ingression(""));
+            tuitionPaymentPlanBean.setCurricularYear(curricularYear(""));
+            tuitionPaymentPlanBean.setStatuteType(statuteType(""));
+            tuitionPaymentPlanBean.setCustomized(false);
+            tuitionPaymentPlanBean.setName("");
+            tuitionPaymentPlanBean.setFirstTimeStudent(false);
+
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(0);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_1_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("687.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(90);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_2_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("687.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(180);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_3_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("687.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            tuitionPaymentPlanBean.setBeginDate(defaultExecutionYear().getBeginLocalDate());
+            tuitionPaymentPlanBean.setEndDate(null);
+            tuitionPaymentPlanBean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            tuitionPaymentPlanBean.setFixedDueDate(fixedDueDate(""));
+            tuitionPaymentPlanBean.setNumberOfDaysAfterCreationForDueDate(270);
+            tuitionPaymentPlanBean.setApplyInterests(true);
+            tuitionPaymentPlanBean.setInterestType(InterestType.GLOBAL_RATE);
+            tuitionPaymentPlanBean.setApplyInFirstWorkday(true);
+            tuitionPaymentPlanBean.setTuitionInstallmentProduct(Product.findUniqueByCode("PROPINA_MATRICULA_4_PRESTACAO").get());
+            tuitionPaymentPlanBean.setTuitionCalculationType(TuitionCalculationType.FIXED_AMOUNT);
+            tuitionPaymentPlanBean.setFixedAmount(amount("687.5"));
+            tuitionPaymentPlanBean.setEctsCalculationType(ectsCalculationType(""));
+            tuitionPaymentPlanBean.setFactor(amount(""));
+            tuitionPaymentPlanBean.setTotalEctsOrUnits(amount(""));
+            tuitionPaymentPlanBean.setAcademicalActBlockingOff(false);
+            tuitionPaymentPlanBean.addInstallment();
+            TuitionPaymentPlan.create(tuitionPaymentPlanBean);
+        }
+
     }
 
     private EctsCalculationType ectsCalculationType(String value) {
@@ -443,168 +1853,3032 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
     }
 
     private void createEmolumentTariffs_FROM_SPREADSHEET() {
-    
-    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("SEGURO_ESCOLAR").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(6)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_CURSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(100)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_CURSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(125)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_CURSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("PHD")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(175)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_TITULO_AGREGACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(200)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_TITULO_HABILITACAO_COORDENACAO_CIENTIFICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(200)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_TITULO_2_VIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(500)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(550)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(600)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_REGISTO_GRAUS_DL_341_2007").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(26)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PROVAS_AVALIACAO_CAPACIDADE_M23_ADMISSAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PROVAS_AVALIACAO_CAPACIDADE_M23_RECLAMACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(30)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(38)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(38)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(38)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_2_VIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(25)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("SUPLEMENTO_DIPLOMA_2_VIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(25)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_CURSO_POS_GRADUADO_ESPECIALIZACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(38)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_ESPECIALIZACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(500)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO_ART_33_DL_74_2006").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(2500)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_AGREGACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(600)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_HABILITACAO_COORDENACAO_CIENTIFICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(600)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(180)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CONCLUSAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_PROVAS_APTIDAO_PEDAGOGICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_OBTENCAO_TITULO_AGREGADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_INSCRICAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_FREQUENCIA_EXAME").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CONDUTA_ACADEMICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIFICADO_NARRATIVA_TEOR").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIFICADO_AVALIACAO_CAPACIDADE_M23").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CARGAS_HORARIAS_CONTEUDOS_PROGRAMATICOS").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(7.5)); bean.setMaximumAmount(maximumAmount(150)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_FOTOCOPIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(5)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_CREDITACAO_CONHECIMENTOS_COMPETENCIAS").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(40)); bean.setUnitsForBase(6); bean.setUnitAmount(new BigDecimal(5)); bean.setMaximumAmount(maximumAmount(250)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_REINGRESSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_TRANSFERENCIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_MUDANCA_CURSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_MAIORES_23_ANOS").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_OUTRO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_REGIME_LIVRE").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(100)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_CURSO_APERFEICOAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_CURSO_B_LEARNING").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(250)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_ESPECIALIZACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(250)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(250)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(250)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PRATICA_ATOS_FORA_PRAZO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(4)); bean.setMaximumAmount(maximumAmount(120)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("AVERBAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(3)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_MELHORIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(30)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_PERMUTA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("VALIDACAO_PROCESSOS_ACESSO_M23_OUTRAS_INSTITUICOES").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("FOTOCOPIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_ENVIO_CORREIO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(3)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_DEVOLUCAO_CHEQUE").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(35)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(55)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_CURSOS_NAO_CONFERENTES_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_REINGRESSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_TRANSFERENCIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_MUDANCA_CURSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_MAIORES_23_ANOS").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_OUTRO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_EQUIVALENCIA_CREDITAÇÃO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(25)); bean.setMaximumAmount(maximumAmount(125)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(15)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_INSCRICAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(15)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_RENOVACAO_INSCRICAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(15)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(325)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO_ART_33_DL_74_2006").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(2500)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_AGREGACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(541)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_HABILITACAO_COORDENACAO_CIENTIFICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(163)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(163)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_ESPECIALIZACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CONCLUSAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_PROVAS_APTIDAO_PEDAGOGICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_OBTENCAO_TITULO_AGREGADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_INSCRICAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_FREQUENCIA_EXAME").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CONDUTA_ACADEMICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIFICADO_NARRATIVA_TEOR").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CARGAS_HORARIAS_CONTEUDOS_PROGRAMATICOS").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(7.5)); bean.setMaximumAmount(maximumAmount(150)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_CURSO_POS_GRADUADO_ESPECIALIZACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(38)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("DECLARACAO_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("PRATICA_ATOS_FORA_PRAZO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(120)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("FOTOCOPIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_MELHORIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(15)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_MUDANCA_TURMA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(7.5)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_MUDANCA_UNIDADE_CURRICULAR").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(7.5)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("REVISAO_PROVAS_CAUCAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("PLANO_INTEGRACAO_CURRICULAR_REINGRESSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(15)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_PROCESSO_ADMINISTRATIVO_APLICADO_ALUNOS_INCOMING").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FL"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(15)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_INSCRICAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(25)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_CANDIDATURA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_MAIORES_23_ANOS").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_OUTRO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(75)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(75)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CANDIDATURA_ESPECIALIZACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(50)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(25)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("RENOVACAO_INSCRICAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(75)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(75)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(500)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(550)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(600)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PROVAS_AVALIACAO_CAPACIDADE_M23_ADMISSAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PROVAS_AVALIACAO_CAPACIDADE_M23_RECLAMACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(30)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_EQUIVALENCIA_CREDITACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(40)); bean.setUnitsForBase(6); bean.setUnitAmount(new BigDecimal(5)); bean.setMaximumAmount(maximumAmount(250)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_REGISTO_GRAUS_DL_341_2007").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(26)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(500)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO_ART_33_DL_74_2006").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(2500)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_AGREGACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(600)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_HABILITACAO_COORDENACAO_CIENTIFICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(600)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(180)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(38)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_2_VIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(25)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("SUPLEMENTO_DIPLOMA_2_VIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(25)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_CURSO_POS_GRADUADO_ESPECIALIZACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(38)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CONCLUSAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_PROVAS_APTIDAO_PEDAGOGICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_OBTENCAO_TITULO_AGREGADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_INSCRICAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_FREQUENCIA_EXAME").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CONDUTA_ACADEMICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(50)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIFICADO_NARRATIVA_TEOR").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIFICADO_AVALIACAO_CAPACIDADE_M23").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_CARGAS_HORARIAS_CONTEUDOS_PROGRAMATICOS").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(7.5)); bean.setMaximumAmount(maximumAmount(150)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CERTIDAO_FOTOCOPIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(5)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(1)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("DECLARACAO_MATRICULA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("DECLARACAO_INSCRICAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_CURSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(100)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_CURSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_MASTER_DEGREE")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(125)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_CURSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(175)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_CURSO_2_VIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_DOUTORAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_MESTRADO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_ESPECIALIZACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_TITULO_AGREGACAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(200)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_TITULO_HABILITACAO_COORDENACAO_CIENTIFICA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(200)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                    
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("CARTA_TITULO_2_VIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(80)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PRATICA_ATOS_FORA_PRAZO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(0)); bean.setUnitsForBase(0); bean.setUnitAmount(new BigDecimal(4)); bean.setMaximumAmount(maximumAmount(120)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                   
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("AVERBAMENTO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(3)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("TAXA_MELHORIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(15)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_PERMUTA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("VALIDACAO_PROCESSOS_ACESSO_M23_OUTRAS_INSTITUICOES").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(60)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("FOTOCOPIA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(1)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_MUDANCA_TURMA").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                  
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PEDIDO_MUDANCA_UNIDADE_CURRICULAR").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(10)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("REVISAO_PROVAS_CAUCAO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(20)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(0)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                 
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { final Product product = Product.findUniqueByCode("PLANO_INTEGRACAO_CURRICULAR_REINGRESSO").get(); final FinantialEntity finantialEntity = oneOfFinantialEntity("FF"); final AcademicTariffBean bean = new AcademicTariffBean(); bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice()); bean.setBeginDate(parseLocalDate("1/07/2015")); bean.setDegreeType(findDegreeTypeByCode("")); bean.setDegree(findDegree("")); bean.setBaseAmount(new BigDecimal(50)); bean.setUnitsForBase(1); bean.setUnitAmount(new BigDecimal(0)); bean.setMaximumAmount(maximumAmount(-1)); bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION); bean.setFixedDueDate(fixedDueDate("")); bean.setNumberOfDaysAfterCreationForDueDate(0); bean.setUrgencyRate(new BigDecimal(100)); bean.setLanguageTranslationRate(new BigDecimal(0)); AcademicTariff.create(finantialEntity, product, bean); }                                                                                                          
-        
+
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("SEGURO_ESCOLAR").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(6));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_CURSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(100));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_CURSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(125));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_CURSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("PHD"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(175));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_TITULO_AGREGACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(200));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_TITULO_HABILITACAO_COORDENACAO_CIENTIFICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(200));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_TITULO_2_VIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(500));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(550));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(600));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_REGISTO_GRAUS_DL_341_2007").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(26));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROVAS_AVALIACAO_CAPACIDADE_M23_ADMISSAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROVAS_AVALIACAO_CAPACIDADE_M23_RECLAMACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(30));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(38));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(38));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(38));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_2_VIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(25));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("SUPLEMENTO_DIPLOMA_2_VIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(25));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_CURSO_POS_GRADUADO_ESPECIALIZACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(38));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_ESPECIALIZACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(500));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO_ART_33_DL_74_2006").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(2500));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_AGREGACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(600));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product =
+                    Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_HABILITACAO_COORDENACAO_CIENTIFICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(600));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(180));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CONCLUSAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_PROVAS_APTIDAO_PEDAGOGICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_OBTENCAO_TITULO_AGREGADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_INSCRICAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_FREQUENCIA_EXAME").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CONDUTA_ACADEMICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIFICADO_NARRATIVA_TEOR").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIFICADO_AVALIACAO_CAPACIDADE_M23").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CARGAS_HORARIAS_CONTEUDOS_PROGRAMATICOS").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(7.5));
+            bean.setMaximumAmount(maximumAmount(150));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_FOTOCOPIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(5));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_CREDITACAO_CONHECIMENTOS_COMPETENCIAS").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(40));
+            bean.setUnitsForBase(6);
+            bean.setUnitAmount(new BigDecimal(5));
+            bean.setMaximumAmount(maximumAmount(250));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_REINGRESSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_TRANSFERENCIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_MUDANCA_CURSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_MAIORES_23_ANOS").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_OUTRO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_REGIME_LIVRE").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(100));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_CURSO_APERFEICOAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_CURSO_B_LEARNING").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(250));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_ESPECIALIZACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(250));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(250));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(250));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PRATICA_ATOS_FORA_PRAZO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(4));
+            bean.setMaximumAmount(maximumAmount(120));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("AVERBAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(3));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_MELHORIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(30));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_PERMUTA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("VALIDACAO_PROCESSOS_ACESSO_M23_OUTRAS_INSTITUICOES").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("FOTOCOPIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_ENVIO_CORREIO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(3));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_DEVOLUCAO_CHEQUE").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FMD");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(35));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(55));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_CURSOS_NAO_CONFERENTES_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_REINGRESSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_TRANSFERENCIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_MUDANCA_CURSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_MAIORES_23_ANOS").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_OUTRO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_EQUIVALENCIA_CREDITAÇÃO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(25));
+            bean.setMaximumAmount(maximumAmount(125));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(15));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_INSCRICAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(15));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_RENOVACAO_INSCRICAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(15));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(325));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO_ART_33_DL_74_2006").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(2500));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_AGREGACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(541));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product =
+                    Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_HABILITACAO_COORDENACAO_CIENTIFICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(163));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(163));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_ESPECIALIZACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CONCLUSAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_PROVAS_APTIDAO_PEDAGOGICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_OBTENCAO_TITULO_AGREGADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_INSCRICAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_FREQUENCIA_EXAME").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CONDUTA_ACADEMICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIFICADO_NARRATIVA_TEOR").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CARGAS_HORARIAS_CONTEUDOS_PROGRAMATICOS").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(7.5));
+            bean.setMaximumAmount(maximumAmount(150));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_CURSO_POS_GRADUADO_ESPECIALIZACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(38));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DECLARACAO_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PRATICA_ATOS_FORA_PRAZO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(120));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("FOTOCOPIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_MELHORIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(15));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_MUDANCA_TURMA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(7.5));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_MUDANCA_UNIDADE_CURRICULAR").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(7.5));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("REVISAO_PROVAS_CAUCAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PLANO_INTEGRACAO_CURRICULAR_REINGRESSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(15));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FL").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_PROCESSO_ADMINISTRATIVO_APLICADO_ALUNOS_INCOMING").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FL");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(15));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_INSCRICAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(25));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_CANDIDATURA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_MAIORES_23_ANOS").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_OUTRO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(75));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(75));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CANDIDATURA_ESPECIALIZACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(50));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(25));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("RENOVACAO_INSCRICAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(75));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(75));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(500));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(550));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROCESSO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(600));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_EQUIVALENCIA_RECONHECIMENTO_GRAU").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROVAS_AVALIACAO_CAPACIDADE_M23_ADMISSAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PROVAS_AVALIACAO_CAPACIDADE_M23_RECLAMACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(30));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_EQUIVALENCIA_CREDITACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(40));
+            bean.setUnitsForBase(6);
+            bean.setUnitAmount(new BigDecimal(5));
+            bean.setMaximumAmount(maximumAmount(250));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_REGISTO_GRAUS_DL_341_2007").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(26));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(500));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO_ART_33_DL_74_2006").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(2500));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_AGREGACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(600));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product =
+                    Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_HABILITACAO_COORDENACAO_CIENTIFICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(600));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("ADMISSAO_PROVAS_ACADEMICAS_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(180));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(38));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_2_VIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(25));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("SUPLEMENTO_DIPLOMA_2_VIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(25));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_REGISTO_CURSO_POS_GRADUADO_ESPECIALIZACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(38));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CONCLUSAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_PROVAS_APTIDAO_PEDAGOGICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_OBTENCAO_TITULO_AGREGADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_INSCRICAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_FREQUENCIA_EXAME").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CONDUTA_ACADEMICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(50));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIFICADO_NARRATIVA_TEOR").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIFICADO_AVALIACAO_CAPACIDADE_M23").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_CARGAS_HORARIAS_CONTEUDOS_PROGRAMATICOS").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(7.5));
+            bean.setMaximumAmount(maximumAmount(150));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CERTIDAO_FOTOCOPIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(5));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(1));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DECLARACAO_MATRICULA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DECLARACAO_INSCRICAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_CURSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_INTEGRATED_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(100));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_CURSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_MASTER_DEGREE"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(125));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_CURSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode("BOLONHA_PHD"));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(175));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_CURSO_2_VIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_DOUTORAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_MESTRADO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("DIPLOMA_CURSO_ESPECIALIZACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_TITULO_AGREGACAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(200));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_TITULO_HABILITACAO_COORDENACAO_CIENTIFICA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(200));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("CARTA_TITULO_2_VIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(80));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PRATICA_ATOS_FORA_PRAZO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(0));
+            bean.setUnitsForBase(0);
+            bean.setUnitAmount(new BigDecimal(4));
+            bean.setMaximumAmount(maximumAmount(120));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("AVERBAMENTO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(3));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("TAXA_MELHORIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(15));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_PERMUTA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("VALIDACAO_PROCESSOS_ACESSO_M23_OUTRAS_INSTITUICOES").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(60));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("FOTOCOPIA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(1));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_MUDANCA_TURMA").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PEDIDO_MUDANCA_UNIDADE_CURRICULAR").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(10));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("REVISAO_PROVAS_CAUCAO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(20));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(0));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
+            final Product product = Product.findUniqueByCode("PLANO_INTEGRACAO_CURRICULAR_REINGRESSO").get();
+            final FinantialEntity finantialEntity = oneOfFinantialEntity("FF");
+            final AcademicTariffBean bean = new AcademicTariffBean();
+            bean.setAdministrativeOffice(AdministrativeOffice.readDegreeAdministrativeOffice());
+            bean.setBeginDate(parseLocalDate("1/07/2015"));
+            bean.setDegreeType(findDegreeTypeByCode(""));
+            bean.setDegree(findDegree(""));
+            bean.setBaseAmount(new BigDecimal(50));
+            bean.setUnitsForBase(1);
+            bean.setUnitAmount(new BigDecimal(0));
+            bean.setMaximumAmount(maximumAmount(-1));
+            bean.setDueDateCalculationType(DueDateCalculationType.DAYS_AFTER_CREATION);
+            bean.setFixedDueDate(fixedDueDate(""));
+            bean.setNumberOfDaysAfterCreationForDueDate(0);
+            bean.setUrgencyRate(new BigDecimal(100));
+            bean.setLanguageTranslationRate(new BigDecimal(0));
+            AcademicTariff.create(finantialEntity, product, bean);
+        }
+
     }
 
     private void createServiceRequestTypesToProducts_FROM_SPREADSHEET() {
@@ -775,23 +5049,24 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
                 continue;
             } else if (academicServiceRequestType == AcademicServiceRequestType.DIPLOMA_REQUEST) {
                 ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
-                        academicServiceRequestType.getLocalizedName()), academicServiceRequestType,
-                        DocumentRequestType.DIPLOMA_REQUEST, true);
+                        academicServiceRequestType.getLocalizedName()), false, academicServiceRequestType,
+                        DocumentRequestType.DIPLOMA_REQUEST, true, ServiceRequestCategory.CERTIFICATES);
                 continue;
             } else if (academicServiceRequestType == AcademicServiceRequestType.DIPLOMA_SUPPLEMENT_REQUEST) {
                 ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
-                        academicServiceRequestType.getLocalizedName()), academicServiceRequestType,
-                        DocumentRequestType.DIPLOMA_SUPPLEMENT_REQUEST, true);
+                        academicServiceRequestType.getLocalizedName()), false, academicServiceRequestType,
+                        DocumentRequestType.DIPLOMA_SUPPLEMENT_REQUEST, true, ServiceRequestCategory.CERTIFICATES);
                 continue;
             } else if (academicServiceRequestType == AcademicServiceRequestType.REGISTRY_DIPLOMA_REQUEST) {
                 ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
-                        academicServiceRequestType.getLocalizedName()), academicServiceRequestType,
-                        DocumentRequestType.REGISTRY_DIPLOMA_REQUEST, true);
+                        academicServiceRequestType.getLocalizedName()), false, academicServiceRequestType,
+                        DocumentRequestType.REGISTRY_DIPLOMA_REQUEST, true, ServiceRequestCategory.CERTIFICATES);
                 continue;
             }
 
             ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
-                    academicServiceRequestType.getLocalizedName()), academicServiceRequestType, null, true);
+                    academicServiceRequestType.getLocalizedName()), false, academicServiceRequestType, null, true,
+                    ServiceRequestCategory.SERVICES);
         }
 
         for (final DocumentRequestType documentRequestType : DocumentRequestType.values()) {
@@ -807,8 +5082,8 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
             ServiceRequestType.createLegacy(
                     documentRequestType.name(),
                     BundleUtil.getLocalizedString("resources.EnumerationResources",
-                            "DocumentRequestType." + documentRequestType.name()), AcademicServiceRequestType.DOCUMENT,
-                    documentRequestType, true);
+                            "DocumentRequestType." + documentRequestType.name()), false, AcademicServiceRequestType.DOCUMENT,
+                    documentRequestType, true, ServiceRequestCategory.CERTIFICATES);
         }
     }
 
