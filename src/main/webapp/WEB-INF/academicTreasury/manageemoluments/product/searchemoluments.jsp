@@ -161,8 +161,8 @@ ${portal.toolkit()}
 			url : "${datatablesI18NUrl}",			
 		},
 		"ordering": false,
-		"paging": false,
-		"info": false,		
+		"paging": true,
+		"info": true,		
 		"columns": [
 			{ data: 'name' },
 			{ data: 'actions' }
