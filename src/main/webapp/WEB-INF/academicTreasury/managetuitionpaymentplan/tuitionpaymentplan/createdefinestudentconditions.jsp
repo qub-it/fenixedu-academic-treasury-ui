@@ -160,7 +160,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 						</ui-select-choices>
 					</ui-select>				
 				</div>
-			</div>		
+			</div>	
 			<div class="form-group row">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.curricularYear"/></div> 
 				
@@ -236,8 +236,16 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 		</div>
 		
 		<div class="panel-footer">
-			<input type="button" class="btn btn-default" role="button" value="<spring:message code="label.back" />" ng-click="backToChooseDegreeCurricularPlans();"/>
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.continue" />"/>
+			<button type="button" class="btn btn-default" role="button" ng-click="backToChooseDegreeCurricularPlans();">
+            <span class="glyphicon glyphicon-chevron-left"
+                aria-hidden="true"></span> &nbsp;
+            <spring:message code="label.back" />
+            </button>
+			<button type="submit" class="btn btn-primary" role="button">
+            <spring:message code="label.continue" />
+            &nbsp;<span class="glyphicon glyphicon-chevron-right"
+                aria-hidden="true"></span>
+            </button>
 		</div>
 	</div>
 </form>

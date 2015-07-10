@@ -32,7 +32,53 @@ ${portal.angularToolkit()}
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.css" />
 <script src="${pageContext.request.contextPath}/webjars/angular-ui-select/0.11.2/select.min.js"></script>
 
+<script type="text/javascript">
+      function processDelete(externalId) {
+        url = "${pageContext.request.contextPath}<%= TuitionPaymentPlanController.REMOVEINSTALLMENT_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/" + externalId;
+        $("#deleteForm").attr("action", url);
+        $('#removebean').attr('value', $('#bean').attr('value')); 
+        $('#deleteModal').modal('toggle');
+        
+      }
+</script>
 
+<div class="modal fade" id="deleteModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="deleteForm" action="#" method="POST">
+                <input id="removebean" name="bean" type="hidden" value="" />
+                <div class="modal-header">
+                    <button type="button" class="close"
+                        data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    <h4 class="modal-title">
+                        <spring:message code="label.confirmation" />
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <p>
+                        <spring:message
+                            code="label.createinsertinstallments.confirmDelete" />
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default"
+                        data-dismiss="modal">
+                        <spring:message code="label.close" />
+                    </button>
+                    <button id="deleteButton" class="btn btn-warning"
+                        type="submit">
+                        <spring:message code="label.delete" />
+                    </button>
+                </div>
+            </form>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -279,14 +325,10 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 		</datatables:column>
 		
 		<datatables:column>
-			<form 	id="removeform-${installment.installmentOrder}" name='removeform-${installment.installmentOrder}' 
-					method="post" class="form-horizontal"
-				action='${pageContext.request.contextPath}<%= TuitionPaymentPlanController.REMOVEINSTALLMENT_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${installment.installmentOrder}'>
-				<input id="removebean-${installment.installmentOrder}" name="bean" type="hidden" value="" />
-				
-				<input type="submit" class="btn" role="button" value="<spring:message code="label.delete" />" 
-					onclick="$('#removebean-${installment.installmentOrder}').attr('value', $('#bean').attr('value')); "/>
-			</form>
+				<button type="submit" class="btn btn-warning" role="button" onClick="javascript:processDelete('${installment.installmentOrder}')">
+                        <span class="glyphicon glyphicon-trash" aria-hidden="true"></span>&nbsp;
+                        <spring:message code="label.delete" />
+                </button>
 		</datatables:column>
 	</datatables:table>
 </c:if>
@@ -366,7 +408,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<ui-select id="tuitionInstallmentTariff_ectsCalculationType"
 						name="ectscalculationtype"
 						ng-model="$parent.object.ectsCalculationType" theme="bootstrap"
-						required> 
+						ng-required='object.tuitionCalculationType == "ECTS" || object.tuitionCalculationType == "UNITS"'> 
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices
 							repeat="ectsCalculationType.id as ectsCalculationType in object.ectsCalculationTypeDataSource | filter: $select.search">
@@ -387,13 +429,10 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
                         </div>
 					<input id="tuitionInstallmentTariff_fixedAmount"
 						class="form-control" type="text" ng-model="object.fixedAmount"
-						name="fixedamount"
-						value='<c:out value='${bean.fixedAmount}'/>' ng-required />
+						name="fixedamount" pattern="[0-9]+(\.[0-9]{1,3})?"
+						value='<c:out value='${bean.fixedAmount}'/>' ng-required="object.tuitionCalculationType == 'FIXED_AMOUNT' || object.ectsCalculationType == 'FIXED_AMOUNT'" />
 				</div>
                 </div>
-				<div class="col-sm-4" ng-show="form.fixedamount.$error.required">
-					está errado
-				</div>
 			</div>
 			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'">
 				<div class="col-sm-2 control-label">
@@ -403,7 +442,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_factor" class="form-control"
 						type="text" ng-model="object.factor" name="factor"
-						value='<c:out value='${bean.factor}'/>' required pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.factor}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'" pattern="\d+(\.\d{2})?" />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'">
@@ -422,7 +461,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<input id="tuitionInstallmentTariff_totalEctsOrUnits"
 						class="form-control" type="text"
 						ng-model="object.totalEctsOrUnits" name="totalectsorunits"
-						value='<c:out value='${bean.totalEctsOrUnits}'/>' required pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.totalEctsOrUnits}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'" pattern="\d+(\.\d{2})?" />
 				</div>
 			</div>
 			<div class="form-group row">
@@ -466,7 +505,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 
 				<div class="col-sm-4">
 					<input id="tuitionInstallmentTariff_fixedduedate" class="form-control" 
-						type="text" name="fixedduedate"  bennu-date="object.fixedDueDate" required />
+						type="text" name="fixedduedate"  bennu-date="object.fixedDueDate" ng-required="object.dueDateCalculationType == 'FIXED_DATE' || object.dueDateCalculationType == 'BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION'" />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.dueDateCalculationType == 'DAYS_AFTER_CREATION' || object.dueDateCalculationType == 'BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION'">
@@ -480,7 +519,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						type="text"
 						ng-model="object.numberOfDaysAfterCreationForDueDate"
 						name="numberofdaysaftercreationforduedate"
-						value='<c:out value='${bean.numberOfDaysAfterCreationForDueDate}'/>' required pattern="\d+" />
+						value='<c:out value='${bean.numberOfDaysAfterCreationForDueDate}'/>' ng-required="object.dueDateCalculationType == 'DAYS_AFTER_CREATION' || object.dueDateCalculationType == 'BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION'" pattern="\d+" />
 				</div>
 			</div>
 			<div class="form-group row">
@@ -522,7 +561,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<ui-select id="tuitionInstallmentTariff_interestType"
 						name="interesttype"
 						ng-model="$parent.object.interestType" theme="bootstrap"
-						required >
+						ng-required="object.applyInterests == 'true'" >
 						<ui-select-match>{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices
 							repeat="interestType.id as interestType in object.interestTypeDataSource | filter: $select.search">
@@ -541,7 +580,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						class="form-control" type="text"
 						ng-model="object.numberOfDaysAfterDueDate"
 						name="numberofdaysafterduedate"
-						value='<c:out value='${tuitionInstallmentTariff.numberOfDaysAfterDueDate}'/>' required pattern="\d+" />
+						value='<c:out value='${tuitionInstallmentTariff.numberOfDaysAfterDueDate}'/>' ng-required="object.applyInterests=='true' && object.interestType == 'DAILY'" pattern="\d+" />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.applyInterests=='true' && object.interestType == 'DAILY'">
@@ -552,7 +591,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				<div class="col-sm-2">
 					<select id="tuitionInstallmentTariff_applyInFirstWorkday"
 						name="applyinfirstworkday" class="form-control"
-						ng-model="object.applyinfirstworkday" required>
+						ng-model="object.applyinfirstworkday" ng-required="object.applyInterests=='true' && object.interestType == 'DAILY'">
 						<option value="false"><spring:message code="label.no" /></option>
 						<option value="true"><spring:message code="label.yes" /></option>
 					</select>
@@ -571,7 +610,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						class="form-control" type="text"
 						ng-model="object.maximumDaysToApplyPenalty"
 						name="maximumdaystoapplypenalty"
-						value='<c:out value='${bean.maximumDaysToApplyPenalty}'/>' required pattern="\d+" />
+						value='<c:out value='${bean.maximumDaysToApplyPenalty}'/>' ng-required="object.applyInterests=='true' && object.interestType == 'DAILY'" pattern="\d+" />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.applyInterests=='true' && object.interestType == 'MONTHLY'">
@@ -596,7 +635,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<input id="tuitionInstallmentTariff_interestFixedAmount"
 						class="form-control" type="text"
 						ng-model="object.interestFixedAmount" name="interestfixedamount"
-						value='<c:out value='${bean.interestFixedAmount}'/>' required  pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.interestFixedAmount}'/>' ng-required="object.applyInterests=='true' && object.interestType == 'FIXED_AMOUNT'"  pattern="\d+(\.\d{2})?" />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.applyInterests=='true' && (object.interestType == 'DAILY' || object.interestType == 'MONTHLY')">
@@ -607,7 +646,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				<div class="col-sm-4">
 					<input id="tuitionInstallmentTariff_rate" class="form-control"
 						type="text" ng-model="object.rate" name="rate"
-						value='<c:out value='${bean.rate}'/>' required   pattern="\d+(\.\d{4})?" min="0" max="100" />
+						value='<c:out value='${bean.rate}'/>' ng-required="object.applyInterests=='true' && (object.interestType == 'DAILY' || object.interestType == 'MONTHLY')"   pattern="\d+(\.\d{4})?" min="0" max="100" />
 				</div>
 			</div>
 			<div style="text-align: right" class="col-sm-6">
@@ -617,8 +656,17 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 			</div>
 		</div>
 		<div class="panel-footer">
-			<input type="button" class="btn btn-default" role="button" value="<spring:message code="label.back" />" ng-click="backToDefineStudentConditions()" />
-			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.create" />" ng-click="createPaymentPlan()" />
+			<button type="button" class="btn btn-default" role="button" ng-click="backToDefineStudentConditions()">
+            <span class="glyphicon glyphicon-chevron-left"
+                aria-hidden="true"></span> &nbsp;
+            <spring:message code="label.back" />
+            </button>
+			<button type="submit" class="btn btn-primary" role="button" ng-click="createPaymentPlan()">
+            <span class="glyphicon glyphicon-ok"
+                aria-hidden="true"></span>&nbsp;
+                <spring:message code="label.finish" />
+            </button>
+            </button>
 		</div>
 	</div>
 	
