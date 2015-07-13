@@ -165,37 +165,35 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 		<datatables:column className="dt-center" cssStyle="width:40%">
 			<datatables:columnHead ><p style="align: center"><spring:message code="label.TuitionInstallmentTariff.amount" /></p></datatables:columnHead>
 	
-			<p>
+			<p><strong>
 				<c:out value="${installment.tuitionInstallmentProduct.name.content}" />
-			</p>
-			
-			<p>&nbsp;</p>
+			</strong></p>
 			
 			<c:choose>
 				<c:when test="${installment.tuitionCalculationType.fixedAmount}" >
-					<p><strong><spring:message code="TuitionCalculationType.FIXED_AMOUNT" /></strong></p>
-											
-					<c:out value="${finantialEntity.finantialInstitution.currency.getValueFor(installment.fixedAmount)}" />
+					<p>	
+						<em><spring:message code="TuitionCalculationType.FIXED_AMOUNT" />: </em>
+						<c:out value="${finantialEntity.finantialInstitution.currency.getValueFor(installment.fixedAmount)}" />
+					</p>
 				</c:when>
 				<c:when test="${installment.tuitionCalculationType.ects}">
 					<p>
-						<strong>
+						<em>
 							<c:out value="${installment.tuitionCalculationType.descriptionI18N.content}" />
 							&nbsp;
-							[<c:out value="${installment.ectsCalculationType.descriptionI18N.content}" />]
-						</strong>
-					</p>
+							[<c:out value="${installment.ectsCalculationType.descriptionI18N.content}" />]:
+							&nbsp;
+						</em>
 	
-					<c:if test="${installment.ectsCalculationType.fixedAmount}">
-						<p>&nbsp;</p>
-						
-						<p><spring:message code="label.TuitionInstallmentTariff.amountPerEcts" 
-							arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" /></p>
-					</c:if>
-					<c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
-						<p><em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
-							arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em></p>
-					</c:if>
+						<c:if test="${installment.ectsCalculationType.fixedAmount}">
+							<spring:message code="label.TuitionInstallmentTariff.amountPerEcts" 
+								arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
+						</c:if>
+						<c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+							<spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
+								arguments="${installment.factor},${installment.totalEctsOrUnits}" />
+						</c:if>
+					</p>
 				</c:when>
 				<c:when test="${installment.tuitionCalculationType.units}">
 					<p>

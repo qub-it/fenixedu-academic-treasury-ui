@@ -110,42 +110,31 @@ ${portal.toolkit()}
                             <spring:message code="label.TuitionInstallmentTariff.amount" />
                         </datatables:columnHead>
 
-                        <p>
-                            <c:out value="${installment.product.name.content}" />
-                        </p>
-
-                        <p>&nbsp;</p>
+                        <p><strong><c:out value="${installment.product.name.content}" /></strong></p>
 
                         <c:choose>
                             <c:when test="${installment.tuitionCalculationType.fixedAmount}">
                                 <p>
-                                    <strong><spring:message code="TuitionCalculationType.FIXED_AMOUNT" /></strong>
+                                    <em><spring:message code="TuitionCalculationType.FIXED_AMOUNT" />:&nbsp;</em>
+	                                <c:out value="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.fixedAmount)}" />
                                 </p>
-
-                                <c:out value="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.fixedAmount)}" />
                             </c:when>
                             <c:when test="${installment.tuitionCalculationType.ects}">
                                 <p>
-                                    <strong> <c:out value="${installment.tuitionCalculationType.descriptionI18N.content}" /> &nbsp; [<c:out
-                                            value="${installment.ectsCalculationType.descriptionI18N.content}" />]
-                                    </strong>
-                                </p>
+                                    <em> <c:out value="${installment.tuitionCalculationType.descriptionI18N.content}" /> &nbsp; [<c:out
+                                            value="${installment.ectsCalculationType.descriptionI18N.content}" />]:&nbsp;
+                                    </em>
 
-                                <c:if test="${installment.ectsCalculationType.fixedAmount}">
-                                    <p>&nbsp;</p>
-
-                                    <p>
+	                                <c:if test="${installment.ectsCalculationType.fixedAmount}">
                                         <spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
                                             arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
-                                    </p>
-                                </c:if>
+	                                </c:if>
+	                                <c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+                                        <spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
+                                                arguments="${installment.factor},${installment.totalEctsOrUnits}" />
+	                                </c:if>
+                                </p>
                                 <c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
-                                    <p>
-                                        <em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
-                                                arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em>
-                                    </p>
-                                    <p>&nbsp;</p>
-
                                     <p>
                                         <spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
                                             arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
