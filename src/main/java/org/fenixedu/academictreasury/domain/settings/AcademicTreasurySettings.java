@@ -17,10 +17,11 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
     }
 
     @Atomic
-    public void edit(final ProductGroup emolumentsProductGroup, final ProductGroup tuitionProductGroup, final AcademicTax improvementAcademicTax) {
+    public void edit(final ProductGroup emolumentsProductGroup, final ProductGroup tuitionProductGroup, final AcademicTax improvementAcademicTax, final boolean closeServiceRequestEmolumentsWithDebitNote) {
         setEmolumentsProductGroup(emolumentsProductGroup);
         setTuitionProductGroup(tuitionProductGroup);
         setImprovementAcademicTax(improvementAcademicTax);
+        setCloseServiceRequestEmolumentsWithDebitNote(closeServiceRequestEmolumentsWithDebitNote);
     }
     
     @Atomic
@@ -35,6 +36,10 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
 
     public boolean isAcademicalActBlocking(final Product product) {
         return getAcademicalActBlockingProductsSet().contains(product);
+    }
+    
+    public boolean isCloseServiceRequestEmolumentsWithDebitNote() {
+        return getCloseServiceRequestEmolumentsWithDebitNote();
     }
 
     // @formatter: off

@@ -46,7 +46,7 @@ public class ProductController extends AcademicTreasuryBaseController {
     }
 
     private List<Product> getSearchUniverseSearchEmolumentsDataSet(final FinantialEntity finantialEntity) {
-        return new ArrayList<Product>(EmolumentServices.findEmoluments(finantialEntity).sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
+        return new ArrayList<Product>(EmolumentServices.findEmoluments(finantialEntity).filter(l -> l.isActive()).sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
     }
 
     @RequestMapping(value = "/searchemoluments/view/{finantialEntityId}/{productId}")

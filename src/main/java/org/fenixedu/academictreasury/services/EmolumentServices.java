@@ -25,6 +25,11 @@ import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -221,7 +226,24 @@ public class EmolumentServices {
             return false;
         }
 
-        return academicTariff.createDebitEntryForAcademicServiceRequest(academicTresuryEvent) != null;
+        final DebitEntry debitEntry = academicTariff.createDebitEntryForAcademicServiceRequest(academicTresuryEvent);
+
+        if (debitEntry == null) {
+            return false;
+        }
+
+        if (AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+            final DebitNote debitNote =
+                    DebitNote.create(
+                            personDebtAccount,
+                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
+                                    personDebtAccount.getFinantialInstitution()).get(), new DateTime());
+
+            debitNote.addDebitNoteEntries(Collections.singletonList(debitEntry));
+            debitNote.closeDocument();
+        }
+
+        return true;
     }
 
     public static LocalDate possibleDebtDateOnAcademicService(final AcademicServiceRequest academicServiceRequest) {

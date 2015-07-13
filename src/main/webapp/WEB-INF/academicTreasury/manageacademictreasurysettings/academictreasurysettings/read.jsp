@@ -100,6 +100,17 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.AcademicTreasurySettings.improvementAcademicTax" /></th>
                         <td><c:out value="${academicTreasurySettings.improvementAcademicTax.product.name.content}" /></td>
                     </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.AcademicTreasurySettings.closeServiceRequestEmolumentsWithDebitNote" /></th>
+                        <td>
+                        	<c:if test="${academicTreasurySettings.closeServiceRequestEmolumentsWithDebitNote}">
+	                        	<spring:message code="label.true" />
+                        	</c:if>
+                        	<c:if test="${!academicTreasurySettings.closeServiceRequestEmolumentsWithDebitNote}">
+	                        	<spring:message code="label.false" />
+                        	</c:if>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </form>

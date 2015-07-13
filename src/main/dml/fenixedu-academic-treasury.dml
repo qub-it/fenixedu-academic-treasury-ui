@@ -568,6 +568,7 @@ class academicalAct.AcademicActBlockingSuspension {
  */
 
 class settings.AcademicTreasurySettings {
+	boolean closeServiceRequestEmolumentsWithDebitNote;
 }
 
 	relation AcademicTreasurySettingsBennu {

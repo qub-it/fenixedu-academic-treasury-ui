@@ -21,6 +21,7 @@ import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degree.degreeCurricularPlan.DegreeCurricularPlanState;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
+import org.fenixedu.academic.domain.serviceRequests.ServiceRequestCategory;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestTypeOption;
 import org.fenixedu.academic.domain.serviceRequests.documentRequests.AcademicServiceRequestType;
@@ -113,24 +114,24 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
 //
 //        getLogger().info("createProducts_FROM_SPREADSHEET()");
 //        createProducts_FROM_SPREADSHEET();
-//
-//        getLogger().info("createAcademicTaxes_FROM_SPREADSHEET()");
-//        createAcademicTaxes_FROM_SPREADSHEET();
-//
-//        getLogger().info("createTuitionPaymentPlanGroups_FROM_SPREADSHEET()");
-//        createTuitionPaymentPlanGroups_FROM_SPREADSHEET();
-//
-//        getLogger().info("configureAcademicTreasurySettings_FROM_SPREADSHEET()");
-//        configureAcademicTreasurySettings_FROM_SPREADSHEET();
-//
-//        getLogger().info("createServiceRequestTypesToProducts_FROM_SPREADSHEET()");
-//        createServiceRequestTypesToProducts_FROM_SPREADSHEET();
-//
-//        getLogger().info("createExemptionTypes_FROM_SPREADSHEET()");
-//        createExemptionTypes_FROM_SPREADSHEET();
-//
-//        getLogger().info("createEmolumentTariffs_FROM_SPREADSHEET()");
-//        createEmolumentTariffs_FROM_SPREADSHEET();
+
+        getLogger().info("createAcademicTaxes_FROM_SPREADSHEET()");
+        createAcademicTaxes_FROM_SPREADSHEET();
+
+        getLogger().info("createTuitionPaymentPlanGroups_FROM_SPREADSHEET()");
+        createTuitionPaymentPlanGroups_FROM_SPREADSHEET();
+
+        getLogger().info("configureAcademicTreasurySettings_FROM_SPREADSHEET()");
+        configureAcademicTreasurySettings_FROM_SPREADSHEET();
+
+        getLogger().info("createServiceRequestTypesToProducts_FROM_SPREADSHEET()");
+        createServiceRequestTypesToProducts_FROM_SPREADSHEET();
+
+        getLogger().info("createExemptionTypes_FROM_SPREADSHEET()");
+        createExemptionTypes_FROM_SPREADSHEET();
+
+        getLogger().info("createEmolumentTariffs_FROM_SPREADSHEET()");
+        createEmolumentTariffs_FROM_SPREADSHEET();
 
         getLogger().info("createTuitionForRegistrationTariffs_FROM_SPREADSHEET()");
         createTuitionForRegistrationTariffs_FROM_SPREADSHEET();
@@ -684,9 +685,17 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
     }
 
     private void createDefaultProductGroups() {
-        ProductGroup.create("TUITION", new LocalizedString(pt(), "Propina").with(en(), "Tuition"));
-        ProductGroup.create("EMOLUMENT", new LocalizedString(pt(), "Emolumento").with(en(), "Emolument"));
-        ProductGroup.create("OTHER", new LocalizedString(pt(), "Outro").with(en(), "Other"));
+        if(ProductGroup.findByCode("TUITION") == null) {
+            ProductGroup.create("TUITION", new LocalizedString(pt(), "Propina").with(en(), "Tuition"));
+        }
+        
+        if(ProductGroup.findByCode("EMOLUMENT") == null) {
+            ProductGroup.create("EMOLUMENT", new LocalizedString(pt(), "Emolumento").with(en(), "Emolument"));
+        }
+        
+        if(ProductGroup.findByCode("OTHER") == null) {
+            ProductGroup.create("OTHER", new LocalizedString(pt(), "Outro").with(en(), "Other"));
+        }
     }
 
     private void configureTreasurySettings() {
@@ -695,6 +704,10 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
     }
 
     private void createProductForInterest() {
+        if(Product.findUniqueByCode(INTEREST_CODE).isPresent()) {
+            return;
+        }
+        
         final ProductGroup productGroup = ProductGroup.findByCode("OTHER");
         LocalizedString productName = new LocalizedString(pt(), "Juro").with(en(), "Interest");
         Product.create(productGroup, INTEREST_CODE, productName, defaultUnitOfMeasure(), true, VatType.findByCode("ISE"),
@@ -703,6 +716,10 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
     }
 
     private void createProductForAdvancePayment() {
+        if(Product.findUniqueByCode(PAGAMENTO_EM_AVANCO).isPresent()) {
+            return;
+        }
+        
         final ProductGroup productGroup = ProductGroup.findByCode("OTHER");
         LocalizedString productName = new LocalizedString(pt(), "Pagamento em avanço").with(en(), "Advanced payment");
         Product.create(productGroup, PAGAMENTO_EM_AVANCO, productName, defaultUnitOfMeasure(), true, VatType.findByCode("ISE"),
@@ -795,28 +812,18 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
 
     private void createAcademicTaxes_FROM_SPREADSHEET() {
 
-        if (!fromAcronymsToFinantialInstitutionList("FMD, FF").isEmpty()) {
-            AcademicTax.create(Product.findUniqueByCode("SEGURO_ESCOLAR").get(), true, true, true, true);
-        }
-        if (!fromAcronymsToFinantialInstitutionList("FMD, FL, FF").isEmpty()) {
-            AcademicTax.create(Product.findUniqueByCode("TAXA_MELHORIA").get(), true, true, true, false);
-        }
-        if (!fromAcronymsToFinantialInstitutionList("FL, FF").isEmpty()) {
-            AcademicTax.create(Product.findUniqueByCode("TAXA_INSCRICAO").get(), true, true, true, true);
-        }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
-            AcademicTax.create(Product.findUniqueByCode("TAXA_CANDIDATURA").get(), true, true, false, false);
-        }
-        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) {
-            AcademicTax.create(Product.findUniqueByCode("TAXA_MATRICULA").get(), true, true, false, true);
-        }
-
+        if (!fromAcronymsToFinantialInstitutionList("FMD, FF").isEmpty()) { AcademicTax.create(Product.findUniqueByCode("SEGURO_ESCOLAR").get(), true, true, true, true);}
+        if (!fromAcronymsToFinantialInstitutionList("FMD, FF").isEmpty()) { AcademicTax.create(Product.findUniqueByCode("TAXA_MELHORIA").get(), true, true, true, false);}
+        if (!fromAcronymsToFinantialInstitutionList("FL, FF").isEmpty()) { AcademicTax.create(Product.findUniqueByCode("TAXA_INSCRICAO").get(), true, true, true, true);}
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { AcademicTax.create(Product.findUniqueByCode("TAXA_CANDIDATURA").get(), true, true, false, false);}
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { AcademicTax.create(Product.findUniqueByCode("TAXA_MATRICULA").get(), true, true, false, true);}
+        if (!fromAcronymsToFinantialInstitutionList("FF").isEmpty()) { AcademicTax.create(Product.findUniqueByCode("RENOVACAO_INSCRICAO").get(), true, false, true, true);}
     }
 
     private void configureAcademicTreasurySettings_FROM_SPREADSHEET() {
         if (!fromAcronymsToFinantialInstitutionList("FF, FL, FMD, FMV, RUL").isEmpty()) {
             AcademicTreasurySettings.getInstance().edit(ProductGroup.findByCode("EMOLUMENT"), ProductGroup.findByCode("TUITION"),
-                    AcademicTax.findUnique(Product.findUniqueByCode("TAXA_MELHORIA").get()).get());
+                    AcademicTax.findUnique(Product.findUniqueByCode("TAXA_MELHORIA").get()).get(), true);
         }
     }
 
@@ -943,23 +950,23 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
                 continue;
             } else if (academicServiceRequestType == AcademicServiceRequestType.DIPLOMA_REQUEST) {
                 ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
-                        academicServiceRequestType.getLocalizedName()), academicServiceRequestType,
-                        DocumentRequestType.DIPLOMA_REQUEST, true);
+                        academicServiceRequestType.getLocalizedName()), false, academicServiceRequestType,
+                        DocumentRequestType.DIPLOMA_REQUEST, true, ServiceRequestCategory.SERVICES);
                 continue;
             } else if (academicServiceRequestType == AcademicServiceRequestType.DIPLOMA_SUPPLEMENT_REQUEST) {
                 ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
-                        academicServiceRequestType.getLocalizedName()), academicServiceRequestType,
-                        DocumentRequestType.DIPLOMA_SUPPLEMENT_REQUEST, true);
+                        academicServiceRequestType.getLocalizedName()), false, academicServiceRequestType,
+                        DocumentRequestType.DIPLOMA_SUPPLEMENT_REQUEST, true, ServiceRequestCategory.SERVICES);
                 continue;
             } else if (academicServiceRequestType == AcademicServiceRequestType.REGISTRY_DIPLOMA_REQUEST) {
                 ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
-                        academicServiceRequestType.getLocalizedName()), academicServiceRequestType,
-                        DocumentRequestType.REGISTRY_DIPLOMA_REQUEST, true);
+                        academicServiceRequestType.getLocalizedName()), false, academicServiceRequestType,
+                        DocumentRequestType.REGISTRY_DIPLOMA_REQUEST, true, ServiceRequestCategory.SERVICES);
                 continue;
             }
 
             ServiceRequestType.createLegacy(academicServiceRequestType.name(), new LocalizedString(new Locale("PT", "pt"),
-                    academicServiceRequestType.getLocalizedName()), academicServiceRequestType, null, true);
+                    academicServiceRequestType.getLocalizedName()), false, academicServiceRequestType, null, true, ServiceRequestCategory.SERVICES);
         }
 
         for (final DocumentRequestType documentRequestType : DocumentRequestType.values()) {
@@ -975,8 +982,8 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
             ServiceRequestType.createLegacy(
                     documentRequestType.name(),
                     BundleUtil.getLocalizedString("resources.EnumerationResources",
-                            "DocumentRequestType." + documentRequestType.name()), AcademicServiceRequestType.DOCUMENT,
-                    documentRequestType, true);
+                            "DocumentRequestType." + documentRequestType.name()), false, AcademicServiceRequestType.DOCUMENT,
+                    documentRequestType, true, ServiceRequestCategory.SERVICES);
         }
     }
 
