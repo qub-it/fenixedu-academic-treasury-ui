@@ -240,7 +240,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public int getNumberOfUnits() {
         if (isForAcademicServiceRequest()) {
-            return getAcademicServiceRequest().getNumberOfUnits();
+            return getAcademicServiceRequest().getNumberOfUnits() != null ? getAcademicServiceRequest().getNumberOfUnits() : 0;
         } else if (isForAcademicTax()) {
             return 0;
         } else if (isForImprovementTax()) {
