@@ -207,9 +207,11 @@ ${portal.angularToolkit()}
                                 <c:if test="${pendingEntry.isDebitNoteEntry() }">
                                     <c:forEach var="paymentCode" items="${ pendingEntry.finantialDocument.paymentCodesSet }">
                                         <c:if test="${ paymentCode.paymentReferenceCode.isUsed() }">
-                                            <p align=right>
-                                                <c:out
-                                                    value="[${paymentCode.paymentReferenceCode.paymentCodePool.entityReferenceCode}] ${paymentCode.paymentReferenceCode.formattedCode}" />
+                                            <p align=left>
+                                                <strong><spring:message code ="label.customer.PaymentReferenceCode.entity"/>: </strong><c:out
+                                                    value="[${paymentCode.paymentReferenceCode.paymentCodePool.entityReferenceCode}]" />
+                                                    </br>
+                                                <strong><spring:message code ="label.customer.PaymentReferenceCode.reference"/>: </strong><c:out value="${paymentCode.paymentReferenceCode.formattedCode}"/>
                                             </p>
                                         </c:if>
                                     </c:forEach>
