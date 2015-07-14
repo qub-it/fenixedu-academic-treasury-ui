@@ -87,14 +87,15 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
     @RequestMapping(value = _UPDATE_URI, method = RequestMethod.POST)
     public String update(
             @RequestParam(value = "emolumentsproductgroup", required = false) final ProductGroup emolumentsProductGroup,
-            @RequestParam(value = "tuitionproductgroup", required = false) final ProductGroup tuitionProductGroup, @RequestParam(
-                    value = "improvementacademictax", required = false) final AcademicTax improvementAcademicTax,
-                    @RequestParam(value="closeServiceRequestEmolumentsWithDebitNote", required=false) final boolean closeServiceRequestEmolumentsWithDebitNote,
+            @RequestParam(value = "tuitionproductgroup", required = false) final ProductGroup tuitionProductGroup,
+            @RequestParam(value = "improvementacademictax", required = false) final AcademicTax improvementAcademicTax,
+            @RequestParam(value = "closeservicerequestemolumentswithdebitnote", required = false) final boolean closeServiceRequestEmolumentsWithDebitNote,
             final Model model, final RedirectAttributes redirectAttributes) {
 
         try {
 
-            AcademicTreasurySettings.getInstance().edit(emolumentsProductGroup, tuitionProductGroup, improvementAcademicTax, closeServiceRequestEmolumentsWithDebitNote);
+            AcademicTreasurySettings.getInstance().edit(emolumentsProductGroup, tuitionProductGroup, improvementAcademicTax,
+                    closeServiceRequestEmolumentsWithDebitNote);
 
             return redirect(READ_URL, model, redirectAttributes);
         } catch (final DomainException de) {
