@@ -23,14 +23,11 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import pt.ist.fenixframework.Atomic;
 
 @BennuSpringController(value = FinantialEntityController.class)
 @RequestMapping("/academictreasury/manageemoluments/academictariff")
@@ -63,10 +60,12 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 academicTariff.getExternalId());
     }
 
-    @RequestMapping(value = "/viewEmolumentTariffs/delete/{finantialEntityId}/{productId}/{academicTariffId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/viewEmolumentTariffs/delete/{finantialEntityId}/{productId}/{academicTariffId}",
+            method = RequestMethod.POST)
     public String processViewEmolumentTariffsToDeleteAction(
             @PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
-            @PathVariable("productId") final Product product, @PathVariable("academicTariffId") final AcademicTariff academicTariff, Model model) {
+            @PathVariable("productId") final Product product,
+            @PathVariable("academicTariffId") final AcademicTariff academicTariff, Model model) {
         try {
             academicTariff.delete();
 
@@ -137,7 +136,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 .getDegreeType().getCycleTypes() : Collections.emptyList());
 
         model.addAttribute("AcademicTariff_dueDateCalculationType_options", Arrays.asList(DueDateCalculationType.values()));
-        model.addAttribute("AcademicTariff_interestType_options", Arrays.asList(InterestType.values()));
+        model.addAttribute("AcademicTariff_interestType_options", InterestType.findAll());
 
         return "academicTreasury/manageemoluments/academictariff/createemolumenttariff";
     }
@@ -180,8 +179,8 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         model.addAttribute("academicTariffBean", bean);
         model.addAttribute("academicTariffBeanJson", getBeanJson(bean));
 
-        model.addAttribute("AcademicTariff_interestType_options", Arrays.asList(InterestType.values()));
-        
+        model.addAttribute("AcademicTariff_interestType_options", InterestType.findAll());
+
         return "academicTreasury/manageemoluments/academictariff/updateemolumenttariff";
     }
 
@@ -189,8 +188,8 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             method = RequestMethod.POST)
     public String updateemolumenttariffpostback(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("productId") final Product product,
-            @PathVariable("academicTariffId") final AcademicTariff academicTariff,
-            @RequestParam(value = "academicTariffBean", required = false) final AcademicTariffBean bean, final Model model) {
+            @PathVariable("academicTariffId") final AcademicTariff academicTariff, @RequestParam(value = "academicTariffBean",
+                    required = false) final AcademicTariffBean bean, final Model model) {
 
         return _updateemolumenttariff(finantialEntity, product, academicTariff, bean, model);
     }
@@ -199,12 +198,12 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             method = RequestMethod.POST)
     public String updateemolumenttariff(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("productId") final Product product,
-            @PathVariable("academicTariffId") final AcademicTariff academicTariff,
-            @RequestParam(value = "academicTariffBean", required = false) final AcademicTariffBean academicTariffBean, final Model model) {
+            @PathVariable("academicTariffId") final AcademicTariff academicTariff, @RequestParam(value = "academicTariffBean",
+                    required = false) final AcademicTariffBean academicTariffBean, final Model model) {
 
         try {
             academicTariff.edit(academicTariffBean);
-            
+
             return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
                     finantialEntity.getExternalId(), product.getExternalId(), academicTariff.getExternalId());
 

@@ -778,7 +778,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     private List<TupleDataSourceBean> interestTypeDataSource() {
         List<TupleDataSourceBean> result =
-                ((List<InterestType>) Arrays.asList(InterestType.values())).stream()
+                InterestType.findAll().stream()
                         .map((it) -> new TupleDataSourceBean(it.name(), it.getDescriptionI18N().getContent()))
                         .collect(Collectors.toList());
 
