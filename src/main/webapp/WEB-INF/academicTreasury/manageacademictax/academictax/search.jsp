@@ -151,7 +151,7 @@ ${portal.toolkit()}
 <c:choose>
     <c:when test="${not empty searchacademictaxResultsDataSet}">
         <table id="searchacademictaxTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -205,7 +205,7 @@ ${portal.toolkit()}
 		},
 		"columns": [
 			{ data: 'product' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

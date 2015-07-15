@@ -115,7 +115,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchemolumentsResultsDataSet}">
-		<table id="searchemolumentsTable" class="table responsive table-bordered table-hover">
+		<table id="searchemolumentsTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -165,7 +165,7 @@ ${portal.toolkit()}
 		"info": true,		
 		"columns": [
 			{ data: 'name' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

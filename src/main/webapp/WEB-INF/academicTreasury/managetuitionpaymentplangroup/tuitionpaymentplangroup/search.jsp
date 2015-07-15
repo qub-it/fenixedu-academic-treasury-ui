@@ -153,7 +153,7 @@ ${portal.angularToolkit()}
     <c:when
         test="${not empty searchtuitionpaymentplangroupResultsDataSet}">
         <table id="searchtuitionpaymentplangroupTable"
-            class="table responsive table-bordered table-hover">
+            class="table responsive table-bordered table-hover" width="100%">
             <thead>
                 <tr>
                     <%--!!!  Field names here --%>
@@ -211,7 +211,7 @@ ${portal.angularToolkit()}
 		"columns": [
 			{ data: 'code' },
 			{ data: 'name' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

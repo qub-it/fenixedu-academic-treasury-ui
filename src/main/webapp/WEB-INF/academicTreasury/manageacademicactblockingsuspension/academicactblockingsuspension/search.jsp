@@ -149,7 +149,7 @@ ${portal.toolkit()}
 	<c:when
 		test="${not empty searchacademicactblockingsuspensionResultsDataSet}">
 		<table id="searchacademicactblockingsuspensionTable"
-			class="table responsive table-bordered table-hover">
+			class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -211,7 +211,7 @@ ${portal.toolkit()}
 			{ data: 'begindate' },
 			{ data: 'enddate' },
 			{ data: 'reason' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
 		//CHANGE_ME adjust the actions column width if needed

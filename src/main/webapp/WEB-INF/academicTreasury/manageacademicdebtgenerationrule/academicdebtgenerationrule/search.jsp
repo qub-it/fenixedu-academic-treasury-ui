@@ -145,7 +145,7 @@ ${portal.toolkit()}
 <c:choose>
 	<c:when test="${not empty searchacademicdebtgenerationruleResultsDataSet}">
 		<table id="searchacademicdebtgenerationruleTable"
-			class="table responsive table-bordered table-hover">
+			class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>

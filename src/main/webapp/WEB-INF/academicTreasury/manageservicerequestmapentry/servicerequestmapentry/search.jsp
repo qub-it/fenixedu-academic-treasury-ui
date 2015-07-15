@@ -110,7 +110,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty searchservicerequestmapentryResultsDataSet}">
-		<table id="searchservicerequestmapentryTable" class="table responsive table-bordered table-hover">
+		<table id="searchservicerequestmapentryTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
@@ -160,7 +160,7 @@ ${portal.toolkit()}
 			{ data: 'servicerequesttype' },
 			{ data: 'servicerequesttypeoptionbooleanvalues' },
 			{ data: 'product' },
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 		],
 		//CHANGE_ME adjust the actions column width if needed
 		"columnDefs": [

@@ -107,7 +107,7 @@ ${portal.toolkit()}
 
 <c:choose>
 	<c:when test="${not empty viewemolumenttariffsResultsDataSet}">
-		<table id="viewemolumenttariffsTable" class="table responsive table-bordered table-hover">
+		<table id="viewemolumenttariffsTable" class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
 					<th><spring:message code="label.AcademicTariff.period"/></th>
@@ -289,7 +289,7 @@ ${portal.toolkit()}
 			{ data: 'enddate' },
 			{ data: 'baseamount' },
 			/*{ data: 'administrativeoffice' },*/
-			{ data: 'actions' }
+			{ data: 'actions',className="all" }
 			
 		],
  		//CHANGE_ME adjust the actions column width if needed
