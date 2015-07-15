@@ -1,30 +1,30 @@
 <%@page import="org.fenixedu.academictreasury.ui.customer.CustomerAccountingController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
 <%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 
-<spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js"/>
+<spring:url var="datatablesUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl" value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
 <script type="text/javascript" src="${datatablesUrl}"></script>
 <script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
-<spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css"/>
+<spring:url var="datatablesCssUrl" value="/CSS/dataTables/dataTables.bootstrap.min.css" />
 
-<link rel="stylesheet" href="${datatablesCssUrl}"/>
-<spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json"/>
-<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css"/>
+<link rel="stylesheet" href="${datatablesCssUrl}" />
+<spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
 <!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 ${portal.angularToolkit()}
 <%-- ${portal.toolkit()} --%>
 
-<link href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css" rel="stylesheet"/>
+<link href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css" rel="stylesheet" />
 <script src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
-<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet"/>
+<link href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css" rel="stylesheet" />
 <script src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
 <link href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css" rel="stylesheet" />
-<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>                        
-<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js" ></script>
+<script src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
 <script src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
 
 
@@ -39,8 +39,7 @@ ${portal.angularToolkit()}
 <c:if test="${ debtAccount.customer.debtAccountsSet.size() != 1 }">
     <div class="well well-sm" style="display: inline-block">
         <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a class=""
-            href="${pageContext.request.contextPath}<%= CustomerAccountingController.READ_CUSTOMER_URL %>"><spring:message code="label.event.back" /></a>
-        &nbsp;
+            href="${pageContext.request.contextPath}<%= CustomerAccountingController.READ_CUSTOMER_URL %>"><spring:message code="label.event.back" /></a> &nbsp;
     </div>
 </c:if>
 
@@ -109,18 +108,18 @@ ${portal.angularToolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" /> <c:if test="${debtAccount.totalInDebt < 0 }">
+                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
+                            <c:if test="${debtAccount.totalInDebt < 0 }">
                                 <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
                                 </span>
                             </c:if></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.pendingInterestAmount" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" />
-                        <c:if test = '${ debtAccount.calculatePendingInterestAmount() > 0}'>
-                        <span class="label label-info"><spring:message code = "label.DebtAccount.interestIncludedInDebtAmount"/></span>
-                        </c:if>
-                        </td>
+                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /> <c:if
+                                test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
+                                <span class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span>
+                            </c:if></td>
                     </tr>
                 </tbody>
             </table>
@@ -148,14 +147,24 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.date" />
                             </datatables:columnHead>
-                            <c:out value='${pendingEntry.entryDateTime.toString("YYYY-MM-dd")}' />
+                            <c:if test="${empty pendingEntry.finantialDocument }">
+                                <c:out value='${pendingEntry.entryDateTime.toString("YYYY-MM-dd")}' />
+                            </c:if>
+                            <c:if test="${not empty pendingEntry.finantialDocument }">
+                                <c:out value='${pendingEntry.finantialDocument.documentDate.toString("YYYY-MM-dd")}' />
+                            </c:if>
                             <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column cssStyle="width:80px;align:right">
                             <datatables:columnHead>
                                 <spring:message code="label.DebitNote.dueDate" />
                             </datatables:columnHead>
-                            <c:out value='${pendingEntry.dueDate.toString("YYYY-MM-dd")}' />
+                            <c:if test="${empty pendingEntry.finantialDocument }">
+                                <c:out value='${pendingEntry.dueDate.toString("YYYY-MM-dd")}' />
+                            </c:if>
+                            <c:if test="${not empty pendingEntry.finantialDocument }">
+                                <c:out value='${pendingEntry.finantialDocument.documentDueDate.toString("YYYY-MM-dd")}' />
+                            </c:if>
                             <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column cssStyle="width:100px;">
@@ -178,16 +187,34 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.description" />
                             </datatables:columnHead>
-                            <c:out value="${pendingEntry.description}" />
+                            <c:if test="${empty pendingEntry.finantialDocument }">
+                                <ul>
+                                    <li><c:out value="${pendingEntry.description}" /></li>
+                                </ul>
+                            </c:if>
+                            <c:if test="${not empty pendingEntry.finantialDocument }">
+                                <ul>
+                                    <c:forEach var="docEntry" items="${pendingEntry.finantialDocument.finantialDocumentEntriesSet }">
+                                        <li><c:out value="${docEntry.description}" /></li>
+                                    </c:forEach>
+                                </ul>
+                            </c:if>
                         </datatables:column>
                         <datatables:column cssStyle="width:15%;align:right">
                             <datatables:columnHead>
                                 <spring:message code="label.InvoiceEntry.totalAmount" />
                             </datatables:columnHead>
-                            <div align=right>
+                            <c:if test="${empty pendingEntry.finantialDocument }">
                                 <c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
-                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
-                            </div>
+                                <div align=right>
+                                    <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.totalAmount)}" />
+                                </div>
+                            </c:if>
+                            <c:if test="${not empty pendingEntry.finantialDocument }">
+                                <div align=right>
+                                    <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.finantialDocument.totalAmount)}" />
+                                </div>
+                            </c:if>
                         </datatables:column>
                         <datatables:column cssStyle="width:15%;align:right">
                             <datatables:columnHead>
@@ -195,38 +222,53 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <div align=right>
                                 <c:if test="${pendingEntry.isCreditNoteEntry() }">-</c:if>
-                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmountWithInterests)}" />
-<%--                                 <c:if test="${not (pendingEntry.getOpenAmountWithInterests().compareTo(pendingEntry.getOpenAmount()) == 0) }">(*)</c:if> --%>
-<%--                                 <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" /> --%>
+                                <c:if test="${empty pendingEntry.finantialDocument }">
+                                    <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmountWithInterests)}" />
+                                </c:if>
+                                <c:if test="${not empty pendingEntry.finantialDocument }">
+                                    <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.finantialDocument.openAmountWithInterests)}" />
+                                </c:if>
+                                <%--                                 <c:if test="${not (pendingEntry.getOpenAmountWithInterests().compareTo(pendingEntry.getOpenAmount()) == 0) }">(*)</c:if> --%>
+                                <%--                                 <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" /> --%>
                             </div>
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
                                 <spring:message code="label.PaymentReferenceCode" />
                             </datatables:columnHead>
-                                <c:if test="${pendingEntry.isDebitNoteEntry() }">
-                                    <c:forEach var="paymentCode" items="${ pendingEntry.finantialDocument.paymentCodesSet }">
-                                        <c:if test="${ paymentCode.paymentReferenceCode.isUsed() }">
-                                            <p align=left>
-                                                <strong><spring:message code ="label.customer.PaymentReferenceCode.entity"/>: </strong><c:out
-                                                    value="[${paymentCode.paymentReferenceCode.paymentCodePool.entityReferenceCode}]" />
-                                                    </br>
-                                                <strong><spring:message code ="label.customer.PaymentReferenceCode.reference"/>: </strong><c:out value="${paymentCode.paymentReferenceCode.formattedCode}"/>
-                                            </p>
-                                        </c:if>
-                                    </c:forEach>
-                                </c:if>
+                            <c:if test="${pendingEntry.isDebitNoteEntry() }">
+                                <c:forEach var="paymentCode" items="${ pendingEntry.finantialDocument.paymentCodesSet }">
+                                    <c:if test="${ paymentCode.paymentReferenceCode.isUsed() }">
+                                        <p align=left>
+                                            <strong><spring:message code="label.customer.PaymentReferenceCode.entity" />: </strong>
+                                            <c:out value="[${paymentCode.paymentReferenceCode.paymentCodePool.entityReferenceCode}]" />
+                                            </br> <strong><spring:message code="label.customer.PaymentReferenceCode.reference" />: </strong>
+                                            <c:out value="${paymentCode.paymentReferenceCode.formattedCode}" />
+                                            </br>
+                                            <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
+                                            <c:if test="${empty pendingEntry.finantialDocument }">
+                                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmountWithInterests)}" />
+                                            </c:if>
+                                            <c:if test="${not empty pendingEntry.finantialDocument }">
+                                                <c:out
+                                                    value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.finantialDocument.openAmountWithInterests)}" />
+                                            </c:if>
+
+                                        </p>
+                                    </c:if>
+                                </c:forEach>
+                            </c:if>
                         </datatables:column>
                     </datatables:table>
                     <script>
-    					createDataTables(
-    							'pendingDocuments',
-    							false,
-    							false,
-    							false,
-    							"${pageContext.request.contextPath}",
-    							"${datatablesI18NUrl}");
-					</script>
+																					createDataTables(
+																							'pendingDocuments',
+																							false,
+																							false,
+																							false,
+																							"${pageContext.request.contextPath}",
+																							"${datatablesI18NUrl}");
+																				</script>
                 </c:when>
                 <c:otherwise>
                     <div class="alert alert-warning" role="alert">
@@ -338,9 +380,8 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.FinantialDocument.documentDate" />
                             </datatables:columnHead>
-                            <c:out
-                                value='${payment.documentDate.toString("YYYY-MM-dd")}' />
-<%--                             <joda:format value="${payment.documentDate}" style="S-" /> --%>
+                            <c:out value='${payment.documentDate.toString("YYYY-MM-dd")}' />
+                            <%--                             <joda:format value="${payment.documentDate}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>

@@ -69,7 +69,18 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
         exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
 
-        pendingInvoiceEntries.addAll(debtAccount.getPendingInvoiceEntriesSet());
+        for (InvoiceEntry entry : debtAccount.getPendingInvoiceEntriesSet()) {
+            if (entry.getFinantialDocument() == null) {
+                pendingInvoiceEntries.add(entry);
+            } else {
+                if (pendingInvoiceEntries.stream().anyMatch(
+                        x -> x.getFinantialDocument() != null && x.getFinantialDocument().equals(entry.getFinantialDocument()))) {
+                    //if there is any entry for this document, don't add
+                } else {
+                    pendingInvoiceEntries.add(entry);
+                }
+            }
+        }
 
         model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
         model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
@@ -78,5 +89,4 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
         return "academicTreasury/customer/readDebtAccount";
     }
-
 }
