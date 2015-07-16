@@ -89,11 +89,18 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         LocalizedString result = new LocalizedString();
 
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
-            result =
-                    result.with(locale, String.format("%s [%s - %s] (%s)", product.getName().getContent(locale),
-                            ((RegistrationAcademicServiceRequest) academicServiceRequest).getRegistration().getDegree()
-                                    .getPresentationNameI18N().getContent(), academicServiceRequest.getExecutionYear()
-                                    .getQualifiedName(), academicServiceRequest.getServiceRequestNumberYear()));
+            if(academicServiceRequest.getExecutionYear() != null) {
+                result =
+                        result.with(locale, String.format("%s [%s - %s] (%s)", product.getName().getContent(locale),
+                                ((RegistrationAcademicServiceRequest) academicServiceRequest).getRegistration().getDegree()
+                                .getPresentationNameI18N().getContent(), academicServiceRequest.getExecutionYear()
+                                .getQualifiedName(), academicServiceRequest.getServiceRequestNumberYear()));
+            } else {
+                result =
+                        result.with(locale, String.format("%s [%s] (%s)", product.getName().getContent(locale),
+                                ((RegistrationAcademicServiceRequest) academicServiceRequest).getRegistration().getDegree()
+                                .getPresentationNameI18N().getContent(), academicServiceRequest.getServiceRequestNumberYear()));                
+            }
         }
 
         return result;
@@ -252,7 +259,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public int getNumberOfPages() {
         if (isForAcademicServiceRequest()) {
-            return getAcademicServiceRequest().getNumberOfPages();
+            return getAcademicServiceRequest().getNumberOfPages() != null ? getAcademicServiceRequest().getNumberOfPages() : 0;
         } else if (isForAcademicTax()) {
             return 0;
         } else if (isForImprovementTax()) {

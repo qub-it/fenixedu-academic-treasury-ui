@@ -1,22 +1,17 @@
 package test.not.commit;
 
-import java.util.stream.Collectors;
-
-import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
+import org.fenixedu.academic.domain.util.email.UnitBasedSender;
+import org.fenixedu.bennu.core.domain.Bennu;
+import org.fenixedu.bennu.core.groups.NobodyGroup;
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
-import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.AdhocCustomer;
+import org.fenixedu.treasury.domain.Customer;
 
 public class RunCustomTask extends CustomTask {
 
     @Override
     public void runTask() throws Exception {
-        
-        for (FinantialInstitution finantialInstitution : FinantialInstitution.findAll().collect(Collectors.toSet())) {
-            for (final PersonCustomer personCustomer : PersonCustomer.findAll().collect(Collectors.<PersonCustomer> toSet())) {
-                DebtAccount.create(finantialInstitution, personCustomer);
-            }
-        }
-        
+        new UnitBasedSender(AdministrativeOffice.readDegreeAdministrativeOffice().getUnit(), "noemail@noemail.z", NobodyGroup.get());
     }
 }
