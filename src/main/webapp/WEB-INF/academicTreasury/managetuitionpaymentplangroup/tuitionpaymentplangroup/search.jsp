@@ -134,7 +134,7 @@ ${portal.angularToolkit()}
                         data-dismiss="modal">
                         <spring:message code="label.close" />
                     </button>
-                    <button id="deleteButton" class="btn btn-danger"
+                    <button id="deleteButton" class="btn btn-warning"
                         type="submit">
                         <spring:message code="label.delete" />
                     </button>
@@ -194,7 +194,7 @@ ${portal.angularToolkit()}
 "name" : "<c:out value='${searchResult.name.content}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/managetuitionpaymentplangroup/tuitionpaymentplangroup/search/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
-" <a  class=\"btn btn-xs btn-danger\" href=\"#\" onClick=\"javascript:processDelete('${searchResult.externalId}')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>&nbsp;<spring:message code='label.delete'/></a>" +
+" <a  class=\"btn btn-xs btn-warning\" href=\"#\" onClick=\"javascript:processDelete('${searchResult.externalId}')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>&nbsp;<spring:message code='label.delete'/></a>" +
                 "" 
 			},
             </c:forEach>

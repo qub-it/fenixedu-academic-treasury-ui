@@ -111,7 +111,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private EctsCalculationType ectsCalculationType;
     private BigDecimal factor;
     private BigDecimal totalEctsOrUnits;
-    private boolean academicalActBlockingOff;
+    private boolean academicalActBlockingOn;
 
     /*---------------------
      * END OF TARIFF FIELDS
@@ -255,7 +255,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         installmentBean.setEctsCalculationType(this.ectsCalculationType);
         installmentBean.setFactor(this.factor);
         installmentBean.setTotalEctsOrUnits(this.totalEctsOrUnits);
-        installmentBean.setAcademicalActBlockingOff(this.academicalActBlockingOff);
+        installmentBean.setAcademicalActBlockingOff(!this.academicalActBlockingOn);
 
         this.tuitionInstallmentBeans.add(installmentBean);
 
@@ -307,7 +307,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.ectsCalculationType = EctsCalculationType.FIXED_AMOUNT;
         this.factor = null;
         this.totalEctsOrUnits = null;
-        this.academicalActBlockingOff = false;
+        this.academicalActBlockingOn = false;
     }
 
     public FinantialEntity getFinantialEntity() {
@@ -658,12 +658,12 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.totalEctsOrUnits = totalEctsOrUnits;
     }
 
-    public boolean isAcademicalActBlockingOff() {
-        return academicalActBlockingOff;
+    public boolean isAcademicalActBlockingOn() {
+        return academicalActBlockingOn;
     }
 
-    public void setAcademicalActBlockingOff(boolean academicalActBlockingOff) {
-        this.academicalActBlockingOff = academicalActBlockingOff;
+    public void setAcademicalActBlockingOn(boolean academicalActBlockingOn) {
+        this.academicalActBlockingOn = academicalActBlockingOn;
     }
 
     public StatuteType getStatuteType() {

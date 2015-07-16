@@ -177,16 +177,18 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
     public String createchoosedegreecurricularplans(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
-        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().isPresent()) {
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.defaultGroupForExtracurricular.required"), model);
+        if (!TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().isPresent()) {
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+                    "label.TuitionPaymentPlanGroup.defaultGroupForExtracurricular.required"), model);
             return chooseDegreeCurricularPlan(finantialEntity, executionYear, model);
         }
-        
+
         final TuitionPaymentPlanBean bean =
                 new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get(),
                         finantialEntity, executionYear);
 
-        bean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get().getCurrentProduct());
+        bean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get()
+                .getCurrentProduct());
 
         return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
     }
@@ -227,13 +229,13 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
-        if(bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
+        if (bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
                     model);
-            
+
             return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
         }
-        
+
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("bean", bean);
@@ -262,21 +264,22 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
     @RequestMapping(value = _CREATEPAYMENTPLAN_URI + "/{finantialEntityId}/{executionYearId}", method = RequestMethod.POST)
     public String createinsertinstallments(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
-            @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model,
+            @RequestParam(value = "bean", required = false) final TuitionPaymentPlanBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
             if (bean.isCustomized() && Strings.isNullOrEmpty(bean.getName())) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
+                addErrorMessage(
+                        BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
                         model);
                 return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
             }
-            
+
             final List<String> errorMessages = bean.addInstallment();
-            
-            if(!errorMessages.isEmpty()) {
+
+            if (!errorMessages.isEmpty()) {
                 for (final String error : errorMessages) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error) , model);
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error), model);
                 }
 
                 return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
