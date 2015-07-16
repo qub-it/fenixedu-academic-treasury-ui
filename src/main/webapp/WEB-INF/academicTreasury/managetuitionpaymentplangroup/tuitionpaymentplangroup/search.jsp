@@ -218,7 +218,7 @@ ${portal.angularToolkit()}
 		"columnDefs": [
 		//54
 		//128
-		               { "width": "128px", "targets": 2 } 
+		               { "width": "135px", "targets": 2 } 
 		             ],
 		"data" : searchtuitionpaymentplangroupDataSet,
 		//Documentation: https://datatables.net/reference/option/dom

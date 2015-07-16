@@ -88,12 +88,44 @@ ${portal.toolkit()}
     <c:forEach items="${searchtuitionpaymentplanResultsDataSet}" var="paymentPlan" varStatus="loopStatus">
         <div class="panel panel-default">
             <div class="panel-heading">
-                <p>
+                <div style="float:left; display:inline">
                     <span class="badge">${loopStatus.index + 1}</span>&nbsp;&nbsp;<strong><c:out value="${paymentPlan.name.content}" /></strong> &nbsp; <em><c:if test="${paymentPlan.defaultPaymentPlan}">
                             <spring:message code="label.TuitionPaymentPlan.defaultPaymentPlan" />
                         </c:if></em> 
-                </p>
-
+                </div>
+                <div style="float:right; display:inline">
+                    <a class="btn-xs btn-warning"
+                        href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.SEARCH_TO_DELETE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                        <span class="glyphicon glyphicon-trash" />&nbsp;</span>
+                    <spring:message code="label.TuitionPaymentPlan.delete.plan" />
+                    </a> &nbsp; 
+                    <c:if test="${loopStatus.index > 0}">
+                        <a class="btn-xs btn-default"
+                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                            <span class="glyphicon glyphicon-arrow-up" />&nbsp;</span> <spring:message code="label.TuitionPaymentPlan.order.up" />
+                        </a> &nbsp;
+                    </c:if>
+                    <c:if test="${not (loopStatus.index > 0)}">
+                    <a class="btn-xs btn disabled"
+                        href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                        <span class="glyphicon glyphicon-arrow-up" />&nbsp;</span> <spring:message code="label.TuitionPaymentPlan.order.up" />
+                    </a> &nbsp;
+                    </c:if> 
+                    <c:if test="${loopStatus.index + 1 < searchtuitionpaymentplanResultsDataSet.size()}">
+                        <a class="btn-xs btn-default"
+                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                            <span class="glyphicon glyphicon-arrow-down" />&nbsp;</span>
+                        <spring:message code="label.TuitionPaymentPlan.order.down" />
+                        </a>
+                    </c:if>
+                    <c:if test="${not (loopStatus.index + 1 < searchtuitionpaymentplanResultsDataSet.size())}">
+                        <a class="btn-xs btn disabled"
+                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                            <span class="glyphicon glyphicon-arrow-down" />&nbsp;</span>
+                        <spring:message code="label.TuitionPaymentPlan.order.down" />
+                        </a>
+                    </c:if>                    
+                </div>
                 <p style="color: blue">
                     <a data-toggle="collapse" data-target="#collapsePayment${loopStatus.index}" href="#collapsePayment${loopStatus.index}"><strong><em><c:out
                                     value="${paymentPlan.conditionsDescription.content}" /></em></strong></a>
@@ -306,22 +338,6 @@ ${portal.toolkit()}
 																			"${pageContext.request.contextPath}",
 																			"${datatablesI18NUrl}");
 																</script>
-
-                <div class="well">
-                    <a class="btn btn-danger"
-                        href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.SEARCH_TO_DELETE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
-                        <span class="glyphicon glyphicon-trash" />&nbsp;</span>
-                    <spring:message code="label.TuitionPaymentPlan.delete.plan" />
-                    </a> &nbsp; <a class="btn btn-default"
-                        href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
-                        <span class="glyphicon glyphicon-arrow-up" />&nbsp;</span> <spring:message code="label.TuitionPaymentPlan.order.up" />
-                    </a> &nbsp; <a class="btn btn-default"
-                        href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
-                        <span class="glyphicon glyphicon-arrow-down" />&nbsp;</span>
-                    <spring:message code="label.TuitionPaymentPlan.order.down" />
-                    </a>
-                </div>
-
             </div>
         </div>
 
