@@ -496,6 +496,16 @@ class debtGeneration.AcademicDebtGenerationRule {
 		}
 	}
 	
+	relation AcademicDebtGenerationRuleDegreeCurricularPlan {
+		.org.fenixedu.academic.domain.DegreeCurricularPlan playsRole degreeCurricularPlans {
+			multiplicity *;
+		}
+		
+		debtGeneration.AcademicDebtGenerationRule playsRole academicDebtGenerationRules {
+			multiplicity *;
+		}
+	}
+	
 class debtGeneration.AcademicDebtGenerationRuleEntry {
 	boolean createDebt;
 }
@@ -512,7 +522,7 @@ class debtGeneration.AcademicDebtGenerationRuleEntry {
 	
 	relation AcademicDebtGenerationRuleEntryAcademicDebtGenerationRule {
 		debtGeneration.AcademicDebtGenerationRule playsRole academicDebtGenerationRule {
-			multiplicity 0..1;
+			multiplicity 1..1;
 		}
 	
 		debtGeneration.AcademicDebtGenerationRuleEntry playsRole academicDebtGenerationRuleEntries {
@@ -530,7 +540,32 @@ class debtGeneration.AcademicDebtGenerationRuleEntry {
 		}
 	}
 	
+class debtGeneration.AcademicDebtGenerationLog {
+	String log;
+}
+
+	relation AcademicDebtGenerationLogBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
 	
+		debtGeneration.AcademicDebtGenerationLog playsRole AcademicDebtGenerationLogs {
+			multiplicity *;
+		}
+	}
+	
+
+	relation AcademicDebtGenerationLogAcademicDebtGenerationRule {
+	
+		debtGeneration.AcademicDebtGenerationRule playsRole academicDebtGenerationRule {
+			multiplicity 1..1;
+		}
+	
+		debtGeneration.AcademicDebtGenerationLog playsRole academicDebtGenerationLogs {
+			multiplicity *;
+		}
+	}
+
 /* -----------------------------
  * AcademicActBlockingSuspension
  * -----------------------------

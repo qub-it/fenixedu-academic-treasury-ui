@@ -428,13 +428,15 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				</div>
 	
 				<div class="col-sm-10">
-                    <div class="input-group-addon">
-                        <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
-                    </div>
-					<input id="tuitionInstallmentTariff_interestFixedAmount"
-						class="form-control" type="number" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
-						ng-model="object.interestFixedAmount" name="interestfixedamount"
-						value='<c:out value='${bean.interestFixedAmount}'/>' ng-required="object.applyInterests=='true' && object.interestType == 'FIXED_AMOUNT'" />
+                    <div class="input-group">
+	                    <div class="input-group-addon">
+	                        <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
+	                    </div>
+						<input id="tuitionInstallmentTariff_interestFixedAmount"
+							class="form-control" type="number" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
+							ng-model="object.interestFixedAmount" name="interestfixedamount"
+							value='<c:out value='${bean.interestFixedAmount}'/>' ng-required="object.applyInterests=='true' && object.interestType == 'FIXED_AMOUNT'" />
+					</div>
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.applyInterests=='true' && (object.interestType == 'DAILY' || object.interestType == 'MONTHLY')">

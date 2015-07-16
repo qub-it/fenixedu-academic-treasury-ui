@@ -87,54 +87,54 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
 
     @Override
     public void runTask() throws Exception {
-        getLogger().info("createMissingEvaluationSeasons()");
-        // open2015_2016();
-        
-        getLogger().info("createMissingEvaluationSeasons()");
-        createMissingEvaluationSeasons();
-        
-        getLogger().info("createMissingIngressions()");
-        createMissingIngressions();
-
-        getLogger().info("createDefaultServiceRequestTypes()");
-        createDefaultServiceRequestTypes();
-
-        getLogger().info("defineMappingFinantialEntityAdministrativeOffice()");
-        defineMappingFinantialEntityAdministrativeOffice();
-
-        getLogger().info("createDefaultProductGroups()");
-        createDefaultProductGroups();
-
-        getLogger().info("createProductForInterest()");
-        createProductForInterest();
-
-        getLogger().info("createProductForAdvancePayment()");
-        createProductForAdvancePayment();
-
-        getLogger().info("configureTreasurySettings()");
-        configureTreasurySettings();
-
-        getLogger().info("createProducts_FROM_SPREADSHEET()");
-        createProducts_FROM_SPREADSHEET();
-
-        getLogger().info("createAcademicTaxes_FROM_SPREADSHEET()");
-        createAcademicTaxes_FROM_SPREADSHEET();
-
-        getLogger().info("createTuitionPaymentPlanGroups_FROM_SPREADSHEET()");
-        createTuitionPaymentPlanGroups_FROM_SPREADSHEET();
-
-        getLogger().info("configureAcademicTreasurySettings_FROM_SPREADSHEET()");
-        configureAcademicTreasurySettings_FROM_SPREADSHEET();
-
-        getLogger().info("createServiceRequestTypesToProducts_FROM_SPREADSHEET()");
-        createServiceRequestTypesToProducts_FROM_SPREADSHEET();
-
-        getLogger().info("createExemptionTypes_FROM_SPREADSHEET()");
-        createExemptionTypes_FROM_SPREADSHEET();
-
-        getLogger().info("createEmolumentTariffs_FROM_SPREADSHEET()");
-        createEmolumentTariffs_FROM_SPREADSHEET();
-
+//        getLogger().info("createMissingEvaluationSeasons()");
+//        open2015_2016();
+//        
+//        getLogger().info("createMissingEvaluationSeasons()");
+//        createMissingEvaluationSeasons();
+//        
+//        getLogger().info("createMissingIngressions()");
+//        createMissingIngressions();
+//
+//        getLogger().info("createDefaultServiceRequestTypes()");
+//        createDefaultServiceRequestTypes();
+//
+//        getLogger().info("defineMappingFinantialEntityAdministrativeOffice()");
+//        defineMappingFinantialEntityAdministrativeOffice();
+//
+//        getLogger().info("createDefaultProductGroups()");
+//        createDefaultProductGroups();
+//
+//        getLogger().info("createProductForInterest()");
+//        createProductForInterest();
+//
+//        getLogger().info("createProductForAdvancePayment()");
+//        createProductForAdvancePayment();
+//
+//        getLogger().info("configureTreasurySettings()");
+//        configureTreasurySettings();
+//
+//        getLogger().info("createProducts_FROM_SPREADSHEET()");
+//        createProducts_FROM_SPREADSHEET();
+//
+//        getLogger().info("createAcademicTaxes_FROM_SPREADSHEET()");
+//        createAcademicTaxes_FROM_SPREADSHEET();
+//
+//        getLogger().info("createTuitionPaymentPlanGroups_FROM_SPREADSHEET()");
+//        createTuitionPaymentPlanGroups_FROM_SPREADSHEET();
+//
+//        getLogger().info("configureAcademicTreasurySettings_FROM_SPREADSHEET()");
+//        configureAcademicTreasurySettings_FROM_SPREADSHEET();
+//
+//        getLogger().info("createServiceRequestTypesToProducts_FROM_SPREADSHEET()");
+//        createServiceRequestTypesToProducts_FROM_SPREADSHEET();
+//
+//        getLogger().info("createExemptionTypes_FROM_SPREADSHEET()");
+//        createExemptionTypes_FROM_SPREADSHEET();
+//
+//        getLogger().info("createEmolumentTariffs_FROM_SPREADSHEET()");
+//        createEmolumentTariffs_FROM_SPREADSHEET();
+//
         getLogger().info("createTuitionForRegistrationTariffs_FROM_SPREADSHEET()");
         createTuitionForRegistrationTariffs_FROM_SPREADSHEET();
 
@@ -1344,9 +1344,9 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
                         + ".detailed"), true, false);
 
       ServiceRequestTypeOption.create(
-      "DETAILED",
+      "NUMBER_OF_UNITS",
       BundleUtil.getLocalizedString("resources.AcademicAdminOffice", ServiceRequestTypeOption.class.getSimpleName()
-              + ".detailed"), false, true);
+              + ".numberOfUnitsOption"), false, true);
         
 //        ServiceRequestTypeOption.create(
 //                "NUMBER_OF_UNITS",

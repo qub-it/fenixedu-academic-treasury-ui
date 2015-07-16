@@ -11,6 +11,7 @@ import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 
 import com.google.common.collect.Lists;
 
@@ -49,9 +50,12 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     private Product product;
     private boolean createDebt;
+    private PaymentCodePool paymentCodePool;
+    
 
     private List<TupleDataSourceBean> executionYearDataSource = Lists.newArrayList();
     private List<TupleDataSourceBean> productDataSource = Lists.newArrayList();
+    private List<TupleDataSourceBean> paymentCodePoolDataSource = Lists.newArrayList();
 
     public AcademicDebtGenerationRuleBean() {
         executionYearDataSource =
@@ -61,7 +65,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
         final List<Product> availableProducts = Lists.newArrayList();
 
-        availableProducts.addAll(AcademicTax.findAll().map(l -> l.getProduct()).collect(Collectors.toList()));
+        availableProducts.addAll(AcademicTax.findAll().filter(AcademicTax::isAppliedAutomatically).map(l -> l.getProduct()).collect(Collectors.toList()));
         availableProducts.addAll(AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet());
 
         productDataSource =
@@ -69,6 +73,8 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
                         .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
                         .collect(Collectors.toList());
 
+        paymentCodePoolDataSource = PaymentCodePool.findAll().filter(PaymentCodePool::getActive).map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName())).collect(Collectors.toList());
+        
         this.aggregateOnDebitNote = false;
         this.aggregateAllOrNothing = false;
         this.closeDebitNote = false;
@@ -154,6 +160,14 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     public void setAggregateAllOrNothing(boolean aggregateAllOrNothing) {
         this.aggregateAllOrNothing = aggregateAllOrNothing;
     }
+    
+    public PaymentCodePool getPaymentCodePool() {
+        return paymentCodePool;
+    }
+    
+    public void setPaymentCodePool(PaymentCodePool paymentCodePool) {
+        this.paymentCodePool = paymentCodePool;
+    }
 
     public List<TupleDataSourceBean> getExecutionYearDataSource() {
         return executionYearDataSource;
@@ -161,6 +175,10 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     public List<TupleDataSourceBean> getProductDataSource() {
         return productDataSource;
+    }
+    
+    public List<TupleDataSourceBean> getPaymentCodePoolDataSource() {
+        return paymentCodePoolDataSource;
     }
 
 }

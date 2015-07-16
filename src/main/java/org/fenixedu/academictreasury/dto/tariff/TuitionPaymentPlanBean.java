@@ -229,6 +229,11 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 && this.rate == null) {
             errorMessages.add("error.TuitionPaymentPlan.interestRate.required");
         }
+        
+        if(getTuitionInstallmentBeans().stream().filter(l -> l.getTuitionInstallmentProduct() == getTuitionInstallmentProduct()).count() > 0) {
+            errorMessages.add("error.TuitionPaymentPlan.installment.already.with.product");
+            
+        }
 
         if (!errorMessages.isEmpty()) {
             return errorMessages;
@@ -307,7 +312,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.ectsCalculationType = EctsCalculationType.FIXED_AMOUNT;
         this.factor = null;
         this.totalEctsOrUnits = null;
-        this.academicalActBlockingOn = false;
+        this.academicalActBlockingOn = true;
     }
 
     public FinantialEntity getFinantialEntity() {

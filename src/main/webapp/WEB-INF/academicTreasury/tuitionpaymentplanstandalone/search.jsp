@@ -129,7 +129,7 @@ ${portal.toolkit()}
                         </a>
                     </c:if>                    
                 </div>
-                <p style="color: blue">
+                <p style="clear: both; color: blue">
                     <a data-toggle="collapse" data-target="#collapsePayment${loopStatus.index}" href="#collapsePayment${loopStatus.index}"> <strong><em><c:out
                                     value="${paymentPlan.conditionsDescription.content}" /></em></strong></a>
                 </p>

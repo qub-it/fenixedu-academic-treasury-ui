@@ -604,14 +604,22 @@ function registerJqueryReadyClosure(func) {
                         </div>
 
                         <div class="col-sm-10">
-                            <input
-                                id="academicTariff_interestFixedAmount"
-                                class="form-control" type="number" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
-                                name="interestFixedAmount"
-                                value='<c:out value='${not empty academicTariffBean.interestFixedAmount ? academicTariffBean.interestFixedAmount : "" }'/>'
-                                ng-model="object.interestFixedAmount" />
-                        </div>
+		                    <div class="input-group">
+                        
+		                        <div class="input-group-addon">
+		                            <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
+		                        </div>
+	                        
+	                            <input
+	                                id="academicTariff_interestFixedAmount"
+	                                class="form-control" type="number" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
+	                                name="interestFixedAmount"
+	                                value='<c:out value='${not empty academicTariffBean.interestFixedAmount ? academicTariffBean.interestFixedAmount : "" }'/>'
+	                                ng-model="object.interestFixedAmount" />
+	                        </div>
+	                    </div>
                     </div>
+
                 </c:if>
 
             </c:if>

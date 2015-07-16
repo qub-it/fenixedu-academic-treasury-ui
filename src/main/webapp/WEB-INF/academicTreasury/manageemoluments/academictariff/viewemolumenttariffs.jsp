@@ -228,7 +228,7 @@ ${portal.toolkit()}
                                 <p>
                                     <strong><spring:message
                                             code="label.AcademicTariff.unitAmount" />:</strong>
-                                    <span>${tariff.baseAmount}
+                                    <span>${tariff.unitAmount}
                                         €</span>
                                 </p>
                             </c:if> <c:if test="${tariff.applyPagesAmount}">

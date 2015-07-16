@@ -117,7 +117,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 	ng-app="angularAppAcademicDebtGenerationRule"
 	ng-controller="AcademicDebtGenerationRuleController">
 
-<h2><spring:message code="label.AcademicDebtGenerationRule.associated.products" /></h2>
+<h3><spring:message code="label.AcademicDebtGenerationRule.associated.products" /></h3>
 
 
 <c:choose>
@@ -226,9 +226,9 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 
     </form>
 
-    <h2>
+    <h3>
         <spring:message code="label.AcademicDebtGenerationRule.rules" />
-    </h2>
+    </h3>
 
     <form name='form' method="post" class="form-horizontal"
         action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CREATE_URL %>'>
@@ -258,6 +258,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                         </ui-select-choices> </ui-select>
                     </div>
                 </div>
+                
                 <div class="form-group row">
                     <div class="col-sm-2 control-label">
                         <spring:message
@@ -281,7 +282,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                     </div>
                 </div>
                 <div class="form-group row"
-                    ng-show="object.aggregateOnDebitNote == 'true'">
+                    ng-show="(object.aggregateOnDebitNote === true) || (object.aggregateOnDebitNote == 'true')">
                     <div class="col-sm-2 control-label">
                         <spring:message
                             code="label.AcademicDebtGenerationRule.aggregateAllOrNothing" />
@@ -304,7 +305,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                     </div>
                 </div>
                 <div class="form-group row"
-                    ng-show="object.aggregateOnDebitNote == 'true'">
+                    ng-show="(object.aggregateOnDebitNote === true) || (object.aggregateOnDebitNote == 'true')">
                     <div class="col-sm-2 control-label">
                         <spring:message
                             code="label.AcademicDebtGenerationRule.closeDebitNote" />
@@ -348,6 +349,31 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 	</script>
                     </div>
                 </div>
+                
+                
+                <div class="form-group row"
+                	ng-show="object.createPaymentReferenceCode == 'true' && object.createPaymentReferenceCode == 'true'">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.paymentCodePool" />
+                    </div>
+
+                    <div class="col-sm-4">
+                        <%-- Relation to side 1 drop down rendered in input --%>
+                        <ui-select
+                            id="academicDebtGenerationRule_paymentCodePool"
+                            class="" name="paymentcodepool"
+                            ng-model="$parent.object.paymentCodePool"
+                            theme="bootstrap" ng-disabled="disabled">
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices
+                            repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search">
+                        <span
+                            ng-bind-html="paymentCodePool.text | highlight: $select.search"></span>
+                        </ui-select-choices> </ui-select>
+                    </div>
+                </div>
+                
             </div>
             <div class="panel-footer">
                 <input type="submit" class="btn btn-default"
