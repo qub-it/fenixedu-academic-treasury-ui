@@ -179,14 +179,14 @@ ${portal.toolkit()}
         <datatables:column>
             <c:if
                 test="${academicTreasurySettings.isAcademicalActBlocking(p)}">
-                <a class="btn btn-danger"
+                <a class="btn-xs btn-warning"
                     href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.REMOVEACADEMICALACTBLOCKINGPRODUCT_URL %>${p.externalId}">
-                    <spring:message code="label.delete" />
+                    <spring:message code="label.annul" />
                 </a>
             </c:if>
             <c:if
                 test="${not academicTreasurySettings.isAcademicalActBlocking(p)}">
-                <a class="btn btn-primary"
+                <a class="btn-xs btn-primary"
                     href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.ADDACADEMICALACTBLOCKINGPRODUCT_URL %>${p.externalId}">
                     <spring:message code="label.add" />
                 </a>

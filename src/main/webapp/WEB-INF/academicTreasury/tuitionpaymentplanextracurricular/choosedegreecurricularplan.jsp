@@ -201,7 +201,7 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
         <%
             } else {
         %>
-        <p>
+        <p class="label label-info">
             <em><spring:message
                     code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan"
                     arguments="${tuitionPaymentPlanCount}" /></em>
