@@ -148,9 +148,9 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 			<div class="form-group row">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.degreeCurricularPlans"/></div> 
 				<div class="col-sm-8">
-                <div ng-hide="object.degreeCurricularPlanDataSource" class="alert alert-warning">
-                    <spring:message code="label.TuitionPaymentPlan.degreeCurricularPlanDataSource.is.empty"/>
-                </div>
+                    <div ng-hide="object.degreeCurricularPlanDataSource" class="alert alert-warning">
+                        <spring:message code="label.TuitionPaymentPlan.degreeCurricularPlanDataSource.is.empty"/>
+                    </div>
 					<div ng-repeat="dcp in object.degreeCurricularPlanDataSource" >
                         <div class="checkbox">
         					<input class="checkbox pull-left"  name="{{dcp.id}}" type="checkbox" id="{{dcp.id}}"

@@ -252,10 +252,10 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
         final List<String> errorMessages = bean.addInstallment();
-        
-        if(!errorMessages.isEmpty()) {
+
+        if (!errorMessages.isEmpty()) {
             for (final String error : errorMessages) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error) , model);
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error), model);
             }
         } else {
             bean.resetInstallmentFields();
@@ -303,7 +303,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
     @RequestMapping(value = _CREATEPAYMENTPLAN_URI + "/{finantialEntityId}/{executionYearId}", method = RequestMethod.POST)
     public String createinsertinstallments(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
-            @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model,
+            @RequestParam(value = "bean", required = false) final TuitionPaymentPlanBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
