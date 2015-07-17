@@ -65,6 +65,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
         paymentEntries =
                 SettlementNote.findByDebtAccount(debtAccount).filter(x -> x.isClosed() || x.isPreparing())
+                        .filter(x -> !x.getPaymentEntriesSet().isEmpty() && !x.getReimbursementEntriesSet().isEmpty())
                         .collect(Collectors.toList());
 
         exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));

@@ -244,14 +244,14 @@ ${portal.angularToolkit()}
                                             <c:out value="[${paymentCode.paymentReferenceCode.paymentCodePool.entityReferenceCode}]" />
                                             </br> <strong><spring:message code="label.customer.PaymentReferenceCode.reference" />: </strong>
                                             <c:out value="${paymentCode.paymentReferenceCode.formattedCode}" />
-                                            </br>
-                                            <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
-                                            <c:if test="${empty pendingEntry.finantialDocument }">
-                                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmountWithInterests)}" />
+                                            </br> <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
+                                            <c:if test="${not paymentCode.isFixedAmount }">
+                                                <c:if test="${not empty pendingEntry.finantialDocument }">
+                                                    <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.finantialDocument.totalAmount)}" />
+                                                </c:if>
                                             </c:if>
-                                            <c:if test="${not empty pendingEntry.finantialDocument }">
-                                                <c:out
-                                                    value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.finantialDocument.openAmountWithInterests)}" />
+                                            <c:if test="${paymentCode.isFixedAmount }">
+                                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(paymentCode.payableAmount)}" />
                                             </c:if>
 
                                         </p>
