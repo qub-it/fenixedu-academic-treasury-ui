@@ -298,7 +298,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 fillPriceProperties(academicTreasuryEvent, extracurricularEnrolment, dueDate);
 
         final DebitEntry debitEntry =
-                DebitEntry.create(null, debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
+                DebitEntry.create(Optional.empty(), debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
                         getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(),
                         Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
 
@@ -335,7 +335,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
     public LocalizedString extracurricularDebitEntryName(final Enrolment extracurricularEnrolment) {
 
-        if (extracurricularEnrolment.isExtraCurricular()) {
+        if (!extracurricularEnrolment.isExtraCurricular()) {
             throw new RuntimeException("wrong call");
         }
 
