@@ -74,4 +74,32 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
                 .reduce((a, b) -> Sets.union(a, b)).orElse(Collections.emptySet());
     }
 
+    @Override
+    public boolean isAllowToModifySettlements(final User user, final FinantialInstitution finantialInstitution) {
+        return FinantialEntity.findAll().map(l -> isAllowToModifySettlements(user, l)).reduce((a, b) -> a || b).orElse(false);
+    }
+
+    private boolean isAllowToModifySettlements(final User user, final FinantialEntity finantialEntity) {
+        if (finantialEntity.getAdministrativeOffice() == null) {
+            return false;
+        }
+
+        return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_SETTLEMENTS, Collections.emptySet(),
+                Collections.singleton(finantialEntity.getAdministrativeOffice()));
+    }
+
+    @Override
+    public boolean isAllowToModifyInvoices(final User user, final FinantialInstitution finantialInstitution) {
+        return FinantialEntity.findAll().map(l -> isAllowToModifyInvoices(user, l)).reduce((a, b) -> a || b).orElse(false);
+    }
+
+    private boolean isAllowToModifyInvoices(final User user, final FinantialEntity finantialEntity) {
+        if (finantialEntity.getAdministrativeOffice() == null) {
+            return false;
+        }
+
+        return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_INVOICES, Collections.emptySet(),
+                Collections.singleton(finantialEntity.getAdministrativeOffice()));
+    }
+
 }
