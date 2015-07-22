@@ -48,7 +48,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     private static class LogBean {
         private DateTime processDate = new DateTime();
-        private StringBuilder log = new StringBuilder();
+        private final StringBuilder log = new StringBuilder();
 
         private void registerException(final Registration registration, final Exception e) {
             log.append(String.format("The registration of student '%s' [%s] has the following exception: '%s'\n", registration
@@ -97,27 +97,28 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
 
         public void registerCreatedPaymentReference(Registration registration, FinantialDocumentPaymentCode paymentCode) {
-            log.append(String.format("Created payment code '%s' [%s] with reference: '%s'", registration.getStudent().getNumber(),
-                    registration.getDegreeName(), paymentCode.getPaymentReferenceCode().getReferenceCode()));
+            log.append(String.format("Created payment code '%s' [%s] with reference: '%s'",
+                    registration.getStudent().getNumber(), registration.getDegreeName(), paymentCode.getPaymentReferenceCode()
+                            .getReferenceCode()));
             log.append("\n");
         }
 
         public void registerAllWithClosedDebitNote(Registration registration) {
-            log.append(String.format("All are in the same debit note on student '%s' [%s]", registration.getStudent().getNumber(),
-                    registration.getDegreeName()));
-            log.append("\n");            
+            log.append(String.format("All are in the same debit note on student '%s' [%s]",
+                    registration.getStudent().getNumber(), registration.getDegreeName()));
+            log.append("\n");
         }
 
         public void registerDebitEntriesWithDifferentClosedDebitNotes(Registration registration, DebitNote debitNote) {
-            log.append(String.format("Debit entries with different debit notes on student '%s' [%s]", registration.getStudent().getNumber(),
-                    registration.getDegreeName()));
-            log.append("\n");                        
+            log.append(String.format("Debit entries with different debit notes on student '%s' [%s]", registration.getStudent()
+                    .getNumber(), registration.getDegreeName()));
+            log.append("\n");
         }
 
         public void registerWithoutDebitEntriesToProcess(Registration registration) {
-            log.append(String.format("Without debit entries to process on student '%s' [%s]", registration.getStudent().getNumber(),
-                    registration.getDegreeName()));
-            log.append("\n");                        
+            log.append(String.format("Without debit entries to process on student '%s' [%s]", registration.getStudent()
+                    .getNumber(), registration.getDegreeName()));
+            log.append("\n");
         }
     }
 
@@ -268,7 +269,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     @Atomic(mode = TxMode.WRITE)
     private void writeLog(final LogBean logBean) {
-        AcademicDebtGenerationLog.create(this, logBean.log.toString());
+        AcademicDebtGenerationLog.create(this, logBean.log.toString(), DateTime.now());
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -306,66 +307,68 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
 
         if (debitEntries.isEmpty()) {
-            logBean.registerWithoutDebitEntriesToProcess(registration);                
+            logBean.registerWithoutDebitEntriesToProcess(registration);
             return;
         }
 
         DebitNote debitNote = null;
-        if(isAllWithClosedDebitNote(debitEntries)) {
+        if (isAllWithClosedDebitNote(debitEntries)) {
             logBean.registerAllWithClosedDebitNote(registration);
-            
-            if(!allWithTheSameClosedDebitNote(debitEntries)) {
-                logBean.registerDebitEntriesWithDifferentClosedDebitNotes(registration, debitNote);                
+
+            if (!allWithTheSameClosedDebitNote(debitEntries)) {
+                logBean.registerDebitEntriesWithDifferentClosedDebitNotes(registration, debitNote);
                 return;
             }
-            
+
             debitNote = (DebitNote) debitEntries.iterator().next().getFinantialDocument();
         } else {
-            
+
             debitNote = grabPreparingOrCreateDebitEntry(registration, debitEntries, logBean);
-            
+
             for (final DebitEntry debitEntry : debitEntries) {
                 if (debitEntry.getFinantialDocument() == null) {
                     debitEntry.setFinantialDocument(debitNote);
                 }
             }
-            
-            if(debitNote.getFinantialDocumentEntriesSet().isEmpty()) {
+
+            if (debitNote.getFinantialDocumentEntriesSet().isEmpty()) {
                 throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.debit.note.without.debit.entries");
             }
-            
+
             logBean.registerDebitEntriesOnDebitNote(registration, debitNote);
-            
-            
+
             if (debitNote.isPreparing() && isCloseDebitNote()) {
                 debitNote.closeDocument();
                 logBean.registerDebitNoteClosing(registration, debitNote);
             }
-            
-            if(isAggregateAllOrNothing()) {
+
+            if (isAggregateAllOrNothing()) {
                 for (final DebitEntry debitEntry : debitEntries) {
                     if (debitEntry.getFinantialDocument() != debitNote) {
-                        throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.debit.entries.not.aggregated.on.same.debit.note");
+                        throw new AcademicTreasuryDomainException(
+                                "error.AcademicDebtGenerationRule.debit.entries.not.aggregated.on.same.debit.note");
                     }
                 }
-                
+
                 // Check if all configured produts are in debitNote
-                for (final Product product : getAcademicDebtGenerationRuleEntriesSet().stream().map(AcademicDebtGenerationRuleEntry::getProduct).collect(Collectors.toSet())) {
-                    if(debitNote.getDebitEntries().filter(l -> l.getProduct() == product).count() == 0) {
-                        throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.debit.entries.not.aggregated.on.same.debit.note");                        
+                for (final Product product : getAcademicDebtGenerationRuleEntriesSet().stream()
+                        .map(AcademicDebtGenerationRuleEntry::getProduct).collect(Collectors.toSet())) {
+                    if (debitNote.getDebitEntries().filter(l -> l.getProduct() == product).count() == 0) {
+                        throw new AcademicTreasuryDomainException(
+                                "error.AcademicDebtGenerationRule.debit.entries.not.aggregated.on.same.debit.note");
                     }
                 }
             }
         }
-        
-        if (debitNote.isClosed() && isCreatePaymentReferenceCode() && FinantialDocumentPaymentCode.findNewByFinantialDocument(debitNote).count() == 0) {
+
+        if (debitNote.isClosed() && isCreatePaymentReferenceCode()
+                && FinantialDocumentPaymentCode.findNewByFinantialDocument(debitNote).count() == 0) {
             final PaymentReferenceCode paymentReferenceCode =
-                    getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(
-                            debitNote.getDebtAccount().getCustomer(), debitNote.getOpenAmount(), new LocalDate(),
-                            debitNote.getDocumentDueDate(), true);
+                    getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(debitNote.getDebtAccount().getCustomer(),
+                            debitNote.getOpenAmount(), new LocalDate(), debitNote.getDocumentDueDate(), true);
 
             FinantialDocumentPaymentCode paymentCode = FinantialDocumentPaymentCode.create(debitNote, paymentReferenceCode, true);
-            
+
             logBean.registerCreatedPaymentReference(registration, paymentCode);
         }
 
@@ -373,17 +376,17 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     private boolean allWithTheSameClosedDebitNote(final Set<DebitEntry> debitEntries) {
         FinantialDocument finantialDocument = debitEntries.iterator().next().getFinantialDocument();
-        
-        if(finantialDocument == null || !finantialDocument.isClosed()) {
+
+        if (finantialDocument == null || !finantialDocument.isClosed()) {
             throw new RuntimeException("Should not be here");
         }
-        
+
         for (final DebitEntry debitEntry : debitEntries) {
-            if(debitEntry.getFinantialDocument() != finantialDocument) {
+            if (debitEntry.getFinantialDocument() != finantialDocument) {
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -405,7 +408,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 return (DebitNote) debitEntry.getFinantialDocument();
             }
         }
-        
+
         final DebitNote debitNote =
                 DebitNote.create(
                         debitEntries.iterator().next().getDebtAccount(),
@@ -487,7 +490,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     public static Stream<AcademicDebtGenerationRule> findAll() {
         return Bennu.getInstance().getAcademicDebtGenerationRuleSet().stream();
     }
-    
+
     public static Stream<AcademicDebtGenerationRule> findActive() {
         return findAll().filter(AcademicDebtGenerationRule::isActive);
     }

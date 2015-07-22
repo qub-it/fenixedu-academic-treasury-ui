@@ -254,7 +254,7 @@ ${portal.toolkit()}
                             </c:if>
 
                         </td>
-                        <td><a class="btn btn-xs btn-danger"
+                        <td><a class="btn-xs btn-warning"
                             href="#"
                             onClick="javascript:processDelete('${rule.externalId}')">
                                 <span class="glyphicon glyphicon-trash"
@@ -262,25 +262,31 @@ ${portal.toolkit()}
                                     code='label.delete' />
                         </a> <c:if test="${rule.active}">
 
-                                <a class="btn btn-default btn-xs"
+                                <a class="btn-default btn-xs"
                                     href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.PROCESS_ACTION_URL %>${rule.externalId}">
                                     <span class="glyphicon glyphicon-cog"
                                 aria-hidden="true"></span>&nbsp;<spring:message
                                         code='label.manageacademicdebtgenerationrule.process' />
                                 </a>
 
-                                <a class="btn btn-default btn-xs"
+                                <a class="btn-default btn-xs"
                                     href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_INACTIVATE_ACTION_URL %>${rule.externalId}">
                                     <spring:message
                                         code='label.manageacademicdebtgenerationrule.inactivate' />
                                 </a>
                             </c:if> <c:if test="${not rule.active}">
-                                <a class="btn btn-default btn-xs"
+                                <a class="btn-xs btn-default"
                                     href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_ACTIVATE_ACTION_URL %>${rule.externalId}">
                                     <spring:message
                                         code='label.manageacademicdebtgenerationrule.activate' />
                                 </a>
-                            </c:if></td>
+                            </c:if>
+                            <a class="btn-default btn-xs"
+                                href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_READ_LOG_ACTION_URL %>${rule.externalId}">
+                                <spring:message
+                                    code='label.manageacademicdebtgenerationrule.readlog' />
+                            </a>
+                            </td>
                     </tr>
                 </c:forEach>
             </tbody>

@@ -542,6 +542,7 @@ class debtGeneration.AcademicDebtGenerationRuleEntry {
 	
 class debtGeneration.AcademicDebtGenerationLog {
 	String log;
+	DateTime creationDate;
 }
 
 	relation AcademicDebtGenerationLogBennu {

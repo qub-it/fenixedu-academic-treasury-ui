@@ -28,7 +28,7 @@ package org.fenixedu.academictreasury.ui.manageacademicdebtgenerationrule;
 
 import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationLog;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
@@ -42,7 +42,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //@Component("org.fenixedu.academictreasury.ui.manageacademicdebtgenerationrule") <-- Use for duplicate controller name disambiguation
@@ -118,18 +117,33 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
     @RequestMapping(value = _SEARCH_TO_ACTIVATE_ACTION_URI + "{oid}")
     public String processSearchToActivateAction(@PathVariable("oid") final AcademicDebtGenerationRule academicDebtGenerationRule,
             Model model, RedirectAttributes redirectAttributes) {
-        
+
         academicDebtGenerationRule.activate();
 
         return redirect(SEARCH_URL, model, redirectAttributes);
+    }
+
+    private static final String _SEARCH_TO_READ_LOG_ACTION_URI = "/readlog/";
+    public static final String SEARCH_TO_READ_LOG_ACTION_URL = CONTROLLER_URL + _SEARCH_TO_READ_LOG_ACTION_URI;
+
+    @RequestMapping(value = _SEARCH_TO_READ_LOG_ACTION_URI + "{oid}")
+    public String processSearchToReadLogAction(@PathVariable("oid") final AcademicDebtGenerationRule academicDebtGenerationRule,
+            Model model, RedirectAttributes redirectAttributes) {
+        model.addAttribute("academicDebtGenerationRule", academicDebtGenerationRule);
+        model.addAttribute(
+                "logSet",
+                academicDebtGenerationRule.getAcademicDebtGenerationLogsSet().stream()
+                        .sorted(AcademicDebtGenerationLog.COMPARATOR_BY_CREATION_DATE).collect(Collectors.toList()));
+
+        return jspPage("readlog");
     }
 
     private static final String _PROCESS_ACTION_URI = "/search/process/";
     public static final String PROCESS_ACTION_URL = CONTROLLER_URL + _PROCESS_ACTION_URI;
 
     @RequestMapping(value = _PROCESS_ACTION_URI + "{oid}")
-    public String processProcessAction(@PathVariable("oid") AcademicDebtGenerationRule academicDebtGenerationRule,
-            Model model, RedirectAttributes redirectAttributes) {
+    public String processProcessAction(@PathVariable("oid") AcademicDebtGenerationRule academicDebtGenerationRule, Model model,
+            RedirectAttributes redirectAttributes) {
 
         academicDebtGenerationRule.process();
 
@@ -138,7 +152,6 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
         return redirect(SEARCH_URL, model, redirectAttributes);
     }
 
-    
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
@@ -181,7 +194,6 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
 
         return jspPage("create");
     }
-    
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, Model model,
