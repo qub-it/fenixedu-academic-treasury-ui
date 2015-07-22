@@ -26,10 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
@@ -37,7 +35,6 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
-import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -54,8 +51,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
-
-import pt.ist.fenixframework.Atomic;
 
 //@Component("org.fenixedu.academicTreasury.ui.manageTuitionPaymentPlan") <-- Use for duplicate controller name disambiguation
 //@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlan",accessGroup = "logged")// CHANGE_ME accessGroup = "group1 | group2 | groupXPTO"
@@ -107,7 +102,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
 
     @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI
             + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}/{tuitionPaymentPlanId}",
-            method = RequestMethod.GET)
+            method = RequestMethod.POST)
     public String processSearchToDeleteAction(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @PathVariable("degreeCurricularPlanId") final DegreeCurricularPlan degreeCurricularPlan,

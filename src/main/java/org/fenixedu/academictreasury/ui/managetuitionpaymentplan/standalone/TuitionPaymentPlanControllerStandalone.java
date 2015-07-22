@@ -82,7 +82,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
         model.addAttribute("choosefinantialentityResultsDataSet",
                 FinantialEntity.findWithBackOfficeAccessFor(Authenticate.getUser()).sorted(FinantialEntity.COMPARE_BY_NAME)
                         .collect(Collectors.toList()));
-        
+
         model.addAttribute("executionYear", ExecutionYear.readCurrentExecutionYear());
 
         return jspPage("choosefinantialentity");
@@ -95,17 +95,18 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
     public String chooseDegreeCurricularPlan(@PathVariable("finantialEntityId") FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
-        List<DegreeCurricularPlan> degreeCurricularPlanList = Lists.newArrayList(ExecutionDegree.getAllByExecutionYear(executionYear)
-                .stream().map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toList()));
-        
-        Collections.sort(degreeCurricularPlanList, DegreeCurricularPlan.DEGREE_CURRICULAR_PLAN_COMPARATOR_BY_DEGREE_TYPE_AND_EXECUTION_DEGREE_AND_DEGREE_CODE);
-        
+        List<DegreeCurricularPlan> degreeCurricularPlanList =
+                Lists.newArrayList(ExecutionDegree.getAllByExecutionYear(executionYear).stream()
+                        .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toList()));
+
+        Collections.sort(degreeCurricularPlanList,
+                DegreeCurricularPlan.DEGREE_CURRICULAR_PLAN_COMPARATOR_BY_DEGREE_TYPE_AND_EXECUTION_DEGREE_AND_DEGREE_CODE);
+
         model.addAttribute("choosedegreecurricularplanResultsDataSet", degreeCurricularPlanList);
-        
 
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
-        
+
         final List<ExecutionYear> executionYearList = new ArrayList<ExecutionYear>(ExecutionYear.readNotClosedExecutionYears());
 
         Collections.sort(executionYearList, Collections.reverseOrder(new Comparator<ExecutionYear>() {
@@ -113,11 +114,11 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
             @Override
             public int compare(final ExecutionYear o1, final ExecutionYear o2) {
                 int c = o1.getBeginLocalDate().compareTo(o2.getBeginLocalDate());
-                
+
                 return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
             }
         }));
-        
+
         model.addAttribute("executionYearOptions", executionYearList);
 
         return jspPage("choosedegreecurricularplan");
@@ -150,7 +151,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
 
     @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI
             + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}/{tuitionPaymentPlanId}",
-            method = RequestMethod.GET)
+            method = RequestMethod.POST)
     public String processSearchToDeleteAction(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @PathVariable("degreeCurricularPlanId") final DegreeCurricularPlan degreeCurricularPlan,
@@ -176,23 +177,25 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
             method = RequestMethod.GET)
     public String createchoosedegreecurricularplans(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
-        
-        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().isPresent()) {
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.defaultGroupForStandalone.required"), model);
+
+        if (!TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().isPresent()) {
+            addInfoMessage(
+                    BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.defaultGroupForStandalone.required"),
+                    model);
             return chooseDegreeCurricularPlan(finantialEntity, executionYear, model);
         }
-        
+
         final TuitionPaymentPlanBean bean =
                 new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
                         finantialEntity, executionYear);
-        
+
         bean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct());
-        
+
         return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
     }
 
-    private String _createchoosedegreecurricularplans(final FinantialEntity finantialEntity,
-            final ExecutionYear executionYear, final Model model, final TuitionPaymentPlanBean bean) {
+    private String _createchoosedegreecurricularplans(final FinantialEntity finantialEntity, final ExecutionYear executionYear,
+            final Model model, final TuitionPaymentPlanBean bean) {
 
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
@@ -227,13 +230,13 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
-        if(bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
+        if (bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
                     model);
-            
+
             return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
         }
-        
+
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("bean", bean);
@@ -266,18 +269,19 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
             final RedirectAttributes redirectAttributes) {
 
         try {
-            
+
             if (bean.isCustomized() && Strings.isNullOrEmpty(bean.getName())) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
+                addErrorMessage(
+                        BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
                         model);
                 return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
             }
-            
+
             final List<String> errorMessages = bean.addInstallment();
-            
-            if(!errorMessages.isEmpty()) {
+
+            if (!errorMessages.isEmpty()) {
                 for (final String error : errorMessages) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error) , model);
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error), model);
                 }
 
                 return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
