@@ -28,7 +28,6 @@ package org.fenixedu.academictreasury.ui.manageacademicdebtgenerationrule;
 
 import java.util.stream.Collectors;
 
-import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationLog;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
@@ -37,6 +36,7 @@ import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
+import org.fenixedu.treasury.ui.administration.base.managelog.TreasuryOperationLogController;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -129,13 +129,8 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
     @RequestMapping(value = _SEARCH_TO_READ_LOG_ACTION_URI + "{oid}")
     public String processSearchToReadLogAction(@PathVariable("oid") final AcademicDebtGenerationRule academicDebtGenerationRule,
             Model model, RedirectAttributes redirectAttributes) {
-        model.addAttribute("academicDebtGenerationRule", academicDebtGenerationRule);
-        model.addAttribute(
-                "logSet",
-                academicDebtGenerationRule.getAcademicDebtGenerationLogsSet().stream()
-                        .sorted(AcademicDebtGenerationLog.COMPARATOR_BY_CREATION_DATE).collect(Collectors.toList()));
-
-        return jspPage("readlog");
+        return redirect(TreasuryOperationLogController.READ_URL + academicDebtGenerationRule.getExternalId(), model,
+                redirectAttributes);
     }
 
     private static final String _PROCESS_ACTION_URI = "/search/process/";

@@ -42,8 +42,8 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
         if (getProduct() == null) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.product.required");
         }
-        
-        if(find(getAcademicDebtGenerationRule(), getProduct()).count() > 1) {
+
+        if (find(getAcademicDebtGenerationRule(), getProduct()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.product.duplicated.in.rule");
         }
     }
@@ -54,15 +54,15 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
 
     @Atomic
     public void delete() {
-        if(!isDeletable()) {
+        if (!isDeletable()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.delete.impossible");
         }
-        
+
         setBennu(null);
-        
+
         setAcademicDebtGenerationRule(null);
         setProduct(null);
-        
+
         super.deleteDomainObject();
     }
 
@@ -75,18 +75,19 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
     public static Stream<AcademicDebtGenerationRuleEntry> findAll() {
         return Bennu.getInstance().getAcademicDebtGenerationRuleEntriesSet().stream();
     }
-    
+
     public static Stream<AcademicDebtGenerationRuleEntry> find(final AcademicDebtGenerationRule academicDebtGenerationRule) {
         return findAll().filter(l -> l.getAcademicDebtGenerationRule() == academicDebtGenerationRule);
     }
-    
-    public static Stream<AcademicDebtGenerationRuleEntry> find(final AcademicDebtGenerationRule academicDebtGenerationRule, final Product product) {
+
+    public static Stream<AcademicDebtGenerationRuleEntry> find(final AcademicDebtGenerationRule academicDebtGenerationRule,
+            final Product product) {
         return find(academicDebtGenerationRule).filter(l -> l.getProduct() == product);
     }
-    
+
     public static AcademicDebtGenerationRuleEntry create(final AcademicDebtGenerationRule rule, final Product product,
             final boolean createDebt) {
         return new AcademicDebtGenerationRuleEntry(rule, product, createDebt);
     }
-    
+
 }

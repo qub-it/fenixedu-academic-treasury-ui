@@ -540,33 +540,6 @@ class debtGeneration.AcademicDebtGenerationRuleEntry {
 		}
 	}
 	
-class debtGeneration.AcademicDebtGenerationLog {
-	String log;
-	DateTime creationDate;
-}
-
-	relation AcademicDebtGenerationLogBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
-			multiplicity 1..1;
-		}
-	
-		debtGeneration.AcademicDebtGenerationLog playsRole AcademicDebtGenerationLogs {
-			multiplicity *;
-		}
-	}
-	
-
-	relation AcademicDebtGenerationLogAcademicDebtGenerationRule {
-	
-		debtGeneration.AcademicDebtGenerationRule playsRole academicDebtGenerationRule {
-			multiplicity 1..1;
-		}
-	
-		debtGeneration.AcademicDebtGenerationLog playsRole academicDebtGenerationLogs {
-			multiplicity *;
-		}
-	}
-
 /* -----------------------------
  * AcademicActBlockingSuspension
  * -----------------------------
