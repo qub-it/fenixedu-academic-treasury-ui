@@ -11,6 +11,7 @@ import org.fenixedu.academic.domain.EnrolmentEvaluation;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -18,6 +19,7 @@ import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
+import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tuition.TuitionDebitEntryBean;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Vat;
@@ -49,17 +51,13 @@ public class TuitionServices {
 
     @Atomic
     public static boolean createInferedTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
-            final LocalDate when) {
-        return createTuitionForRegistration(registration, executionYear, when, null);
+            final LocalDate when, final boolean forceCreationIfNotEnrolled) {
+        return createTuitionForRegistration(registration, executionYear, when, forceCreationIfNotEnrolled, null);
     }
 
     @Atomic
     public static boolean createTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
-            final LocalDate when, TuitionPaymentPlan tuitionPaymentPlan) {
-
-        if (normalEnrolments(registration, executionYear).isEmpty()) {
-            return false;
-        }
+            final LocalDate when, final boolean forceCreationIfNotEnrolled, TuitionPaymentPlan tuitionPaymentPlan) {
 
         final Person person = registration.getPerson();
         // Read person customer
@@ -75,6 +73,11 @@ public class TuitionServices {
         }
 
         if (tuitionPaymentPlan == null) {
+            return false;
+        }
+
+        if (!forceCreationIfNotEnrolled && tuitionPaymentPlan.isStudentMustBeEnrolled()
+                && normalEnrolments(registration, executionYear).isEmpty()) {
             return false;
         }
 
@@ -192,6 +195,14 @@ public class TuitionServices {
     @Atomic
     public static boolean createInferedTuitionForStandalone(final Set<Enrolment> standaloneEnrolments, final LocalDate when) {
 
+        if(AcademicTreasurySettings.getInstance().getTuitionProductGroup() == null) {
+            return false;
+        }
+        
+        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().isPresent()) {
+            return false;
+        }
+        
         boolean created = false;
 
         // Validate all enrolments are standalone
@@ -227,13 +238,22 @@ public class TuitionServices {
 
             created |= createTuitionForStandalone(standaloneEnrolment, tuitionPaymentPlan, when);
         }
-
+        
         return created;
     }
 
     @Atomic
     public static boolean createTuitionForStandalone(final Enrolment standaloneEnrolment,
             final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate when) {
+        
+        if(AcademicTreasurySettings.getInstance().getTuitionProductGroup() == null) {
+            return false;
+        }
+        
+        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().isPresent()) {
+            return false;
+        }
+        
         final Registration registration = standaloneEnrolment.getRegistration();
         final Person person = registration.getPerson();
         final ExecutionYear executionYear = standaloneEnrolment.getExecutionYear();
@@ -261,6 +281,8 @@ public class TuitionServices {
                     "error.TuitionServices.standalone.tuition.for.different.finantial.institutions.not.supported");
         }
 
+        
+        
         return tuitionPaymentPlan.createDebitEntriesForStandalone(academicTreasuryEvent, standaloneEnrolment, when);
     }
 
@@ -409,6 +431,15 @@ public class TuitionServices {
     public static boolean createInferedTuitionForExtracurricular(final Set<Enrolment> extracurricularEnrolments,
             final LocalDate when) {
 
+
+        if(AcademicTreasurySettings.getInstance().getTuitionProductGroup() == null) {
+            return false;
+        }
+        
+        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().isPresent()) {
+            return false;
+        }
+        
         boolean created = false;
 
         // Validate all enrolments are extracurricular
@@ -449,6 +480,15 @@ public class TuitionServices {
     @Atomic
     public static boolean createTuitionForExtracurricular(final Enrolment extracurricularEnrolment,
             final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate when) {
+        
+        if(AcademicTreasurySettings.getInstance().getTuitionProductGroup() == null) {
+            return false;
+        }
+        
+        if(!TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().isPresent()) {
+            return false;
+        }
+        
         final Registration registration = extracurricularEnrolment.getRegistration();
         final Person person = registration.getPerson();
         final ExecutionYear executionYear = extracurricularEnrolment.getExecutionYear();
@@ -612,6 +652,27 @@ public class TuitionServices {
      * ENROLMENTS
      * ----------
      */
+    
+    public static LocalDate enrolmentDate(final Registration registration, final ExecutionYear executionYear, final boolean isToForceCreation) {
+        for (final RegistrationDataByExecutionYear registrationDataByExecutionYear : registration.getRegistrationDataByExecutionYearSet()) {
+            if(registrationDataByExecutionYear.getExecutionYear() == executionYear && registrationDataByExecutionYear.getEnrolmentDate() != null) {
+                return registrationDataByExecutionYear.getEnrolmentDate();
+            }
+        }
+        
+        if(isToForceCreation) {
+            // Search the enrolment dates for most recent years in which the student was enrolled
+            
+            int i = 0;
+            for(ExecutionYear it = executionYear.getPreviousExecutionYear(); it != null; it = it.getPreviousExecutionYear(), i++) {
+                if(registrationDataByExecutionYear(registration, it) != null && registrationDataByExecutionYear(registration, it).getEnrolmentDate() != null) {
+                   return registrationDataByExecutionYear(registration, it).getEnrolmentDate().plusYears(i);
+                }
+            }
+        }
+        
+        return new LocalDate();
+    }
 
     public static List<ExecutionYear> orderedEnrolledExecutionYears(final Registration registration) {
         return registration.getEnrolmentsExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
@@ -662,23 +723,28 @@ public class TuitionServices {
 
         for (final Enrolment enrolment : registration.getStudentCurricularPlan(executionYear).getEnroledImprovements()) {
             for (final EnrolmentEvaluation enrolmentEvaluation : enrolment.getEvaluationsSet()) {
-                if(!enrolmentEvaluation.getEvaluationSeason().isImprovement()) {
+                if (!enrolmentEvaluation.getEvaluationSeason().isImprovement()) {
                     continue;
                 }
-                
-                if(enrolmentEvaluation.getExecutionPeriod() == null) {
+
+                if (enrolmentEvaluation.getExecutionPeriod() == null) {
                     continue;
                 }
-                
-                if(enrolmentEvaluation.getExecutionPeriod().getExecutionYear() != executionYear) {
+
+                if (enrolmentEvaluation.getExecutionPeriod().getExecutionYear() != executionYear) {
                     continue;
                 }
-                
+
                 result.add(enrolmentEvaluation);
             }
         }
 
         return result;
+    }
+    
+    
+    private static RegistrationDataByExecutionYear registrationDataByExecutionYear(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getRegistrationDataByExecutionYearSet().stream().filter(l -> l.getExecutionYear() == executionYear).findFirst().orElse(null);
     }
 
 }

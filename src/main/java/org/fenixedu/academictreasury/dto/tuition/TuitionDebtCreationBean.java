@@ -82,9 +82,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         getImprovementEnrolmentEvaluationsDataSource();
 
         if (registration != null && executionYear != null && isRegistrationTuition()) {
-            debtDate =
-                    RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(registration, executionYear)
-                            .getEnrolmentDate();
+            debtDate = TuitionServices.enrolmentDate(registration, executionYear, false);
         } else {
             debtDate = new LocalDate();
         }

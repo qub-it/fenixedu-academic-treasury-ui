@@ -459,7 +459,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 return null;
             }
 
-            createdTuition = TuitionServices.createInferedTuitionForRegistration(registration, executionYear, new LocalDate());
+            final LocalDate enrolmentDate = TuitionServices.enrolmentDate(registration, executionYear, false);
+            createdTuition = TuitionServices.createInferedTuitionForRegistration(registration, executionYear, enrolmentDate, false);
         }
 
         if (TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear) == null) {

@@ -154,9 +154,9 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
 
             if (bean.isInfered()) {
                 TuitionServices.createInferedTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(),
-                        bean.getDebtDate());
+                        bean.getDebtDate(), false);
             } else {
-                TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate(),
+                TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate(), false,
                         bean.getTuitionPaymentPlan());
             }
 

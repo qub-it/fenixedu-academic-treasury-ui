@@ -212,8 +212,12 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 .getTuitionPaymentPlanGroup().isForExtracurricular())) {
             throw new RuntimeException("wrong call");
         }
+        
+        if(getTuitionCalculationType().isFixedAmount()) {
+            return getFixedAmount();
+        }
 
-        if (getTuitionCalculationType().isFixedAmount() || getTuitionCalculationType().isUnits()) {
+        if (getTuitionCalculationType().isUnits()) {
             return getAmountPerEctsOrUnit();
         }
 

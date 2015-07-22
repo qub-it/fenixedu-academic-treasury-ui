@@ -9,12 +9,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.fenixedu.academic.domain.Attends;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.ShiftType;
 import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
@@ -22,6 +20,7 @@ import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academic.domain.student.StatuteType;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.academictreasury.util.Constants;
@@ -32,6 +31,11 @@ import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -375,11 +379,24 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         }
 
         boolean createdDebitEntries = false;
+        final Set<DebitEntry> createdDebitEntriesSet = Sets.newHashSet();
         for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
             if (!academicTreasuryEvent.isChargedWithDebitEntry(standaloneEnrolment)) {
-                tariff.createDebitEntryForStandalone(debtAccount, academicTreasuryEvent, standaloneEnrolment, when);
+                createdDebitEntriesSet.add(tariff.createDebitEntryForStandalone(debtAccount, academicTreasuryEvent,
+                        standaloneEnrolment, when));
                 createdDebitEntries = true;
             }
+        }
+
+        if (createdDebitEntries && AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+            final DebitNote debitNote =
+                    DebitNote.create(
+                            debtAccount,
+                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
+                                    debtAccount.getFinantialInstitution()).get(), new DateTime());
+
+            debitNote.addDebitNoteEntries(Lists.newArrayList(createdDebitEntriesSet));
+            debitNote.closeDocument();
         }
 
         return createdDebitEntries;
@@ -398,11 +415,24 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         }
 
         boolean createdDebitEntries = false;
+        final Set<DebitEntry> createdDebitEntriesSet = Sets.newHashSet();
         for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
             if (!academicTreasuryEvent.isChargedWithDebitEntry(extracurricularEnrolment)) {
-                tariff.createDebitEntryForExtracurricular(debtAccount, academicTreasuryEvent, extracurricularEnrolment, when);
+                createdDebitEntriesSet.add(tariff.createDebitEntryForExtracurricular(debtAccount, academicTreasuryEvent,
+                        extracurricularEnrolment, when));
                 createdDebitEntries = true;
             }
+        }
+
+        if (createdDebitEntries && AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+            final DebitNote debitNote =
+                    DebitNote.create(
+                            debtAccount,
+                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
+                                    debtAccount.getFinantialInstitution()).get(), new DateTime());
+
+            debitNote.addDebitNoteEntries(Lists.newArrayList(createdDebitEntriesSet));
+            debitNote.closeDocument();
         }
 
         return createdDebitEntries;
@@ -459,6 +489,11 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     protected FinantialEntity finantialEntity() {
         // TODO ANIL
         return FinantialEntity.findAll().findFirst().get();
+    }
+
+    // To be extended
+    public boolean isStudentMustBeEnrolled() {
+        return true;
     }
 
     // @formatter:off
@@ -637,7 +672,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     private static boolean laboratorial(final Enrolment enrolment) {
         return Constants.isPositive(new BigDecimal(enrolment.getCurricularCourse().getCompetenceCourse()
-                        .getLaboratorialHours(enrolment.getExecutionPeriod())));
+                .getLaboratorialHours(enrolment.getExecutionPeriod())));
     }
 
     private static boolean firstTimeStudent(final Registration registration, final ExecutionYear executionYear) {
