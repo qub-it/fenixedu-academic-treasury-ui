@@ -1,5 +1,6 @@
 package org.fenixedu.academictreasury.domain.debtGeneration;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -18,11 +19,13 @@ import org.fenixedu.academictreasury.services.AcademicTaxServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.TreasuryOperationLog;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.joda.time.DateTime;
@@ -34,6 +37,8 @@ import pt.ist.fenixframework.Atomic.TxMode;
 import com.google.common.collect.Sets;
 
 public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base {
+
+    public static final String TREASURY_OPERATION_LOG_TYPE = "AcademicDebtGenerationRuleLog";
 
     public static Comparator<AcademicDebtGenerationRule> COMPARATOR_BY_EXECUTION_YEAR =
             new Comparator<AcademicDebtGenerationRule>() {
@@ -200,23 +205,25 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     }
 
     private boolean isDeletable() {
-        if (getAcademicDebtGenerationLogsSet().isEmpty()) {
-            return false;
-        }
-
         return true;
+    }
+
+    @Override
+    protected void checkForDeletionBlockers(Collection<String> blockers) {
+        super.checkForDeletionBlockers(blockers);
     }
 
     @Atomic
     public void delete() {
+        TreasuryDomainException.throwWhenDeleteBlocked(getDeletionBlockers());
         if (!isDeletable()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.delete.impossible");
         }
 
         setBennu(null);
-
+        getDegreeCurricularPlansSet().clear();
         setExecutionYear(null);
-
+        setPaymentCodePool(null);
         while (getAcademicDebtGenerationRuleEntriesSet().size() > 0) {
             getAcademicDebtGenerationRuleEntriesSet().iterator().next().delete();
         }
@@ -269,7 +276,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     @Atomic(mode = TxMode.WRITE)
     private void writeLog(final LogBean logBean) {
-        AcademicDebtGenerationLog.create(this, logBean.log.toString(), DateTime.now());
+        TreasuryOperationLog.create(logBean.log.toString(), this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
     }
 
     @Atomic(mode = TxMode.WRITE)
