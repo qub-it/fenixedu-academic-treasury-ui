@@ -133,19 +133,33 @@ ${portal.toolkit()}
     </div>
 </c:if>
 
-<c:forEach items="${academicDebtGenerationRule.academicDebtGenerationLogsSet}" var="log">
-<div class="panel panel-primary">
-    <div class="panel-heading">
-        <h3 class="panel-title">
-            <spring:message code="label.log.date" />
-            <joda:format value='${log.creationDate}' style='SM'/>
-        </h3>
+<div class="panel-group" id="accordion">
+    <c:forEach items="${academicDebtGenerationRule.academicDebtGenerationLogsSet}" var="log" varStatus="loopStatus">
+    <div class="panel panel-default">
+        <div class="panel-heading" >        
+            <div style="float:left; display:inline">
+                <strong>
+                    <spring:message code="label.log.date" />
+                    <joda:format value='${log.creationDate}' style='SM'/>
+                </strong>
+            </div>
+            <div style="float:left; display:inline">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div>
+            <div style="float:left; display:inline">
+                <p style="color: blue">
+                   <a data-toggle="collapse" data-target="#collapseLog${loopStatus.index}" href="#collapseLog${loopStatus.index}">  
+                        <strong><em><spring:message code="label.manageacademicdebtgenerationrulelog.expandcolapse" /></em></strong>
+                   </a> &nbsp; 
+                   
+                </p>
+            </div>
+        </div>
+        <div style="clear:both">&nbsp;</div>
+        <div id="collapseLog${loopStatus.index}" class="panel-collapse collapse" style="padding: 5px">
+            <pre><c:out value='${log.log}' /></pre>
+        </div>
     </div>
-    <div class="panel-body">
-        <pre><c:out value='${log.log}' /></pre>
-    </div>
+    </c:forEach>
 </div>
-</c:forEach>
 
 <script>
     $(document).ready(function() {

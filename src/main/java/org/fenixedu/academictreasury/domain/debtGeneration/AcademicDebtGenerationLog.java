@@ -35,7 +35,6 @@ public class AcademicDebtGenerationLog extends AcademicDebtGenerationLog_Base {
     }
 
     private void checkRules() {
-        //TODO ACFSILVA need to check if creationdate is null?
         if (getAcademicDebtGenerationRule() == null) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationLog.academicDebtGenerationRule.required");
         }
