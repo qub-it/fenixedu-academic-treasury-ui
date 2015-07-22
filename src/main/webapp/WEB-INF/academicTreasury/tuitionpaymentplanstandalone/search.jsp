@@ -88,7 +88,7 @@ ${portal.toolkit()}
     });
     
     function processDelete(externalId) {
-        url = "${pageContext.request.contextPath}/academictreasury/tuitionpaymentplanstandalone/search/delete/" + externalId;
+        url = "${pageContext.request.contextPath}/academictreasury/tuitionpaymentplanstandalone/search/delete/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/" + externalId;
         $("#deleteForm").attr("action", url);
         $('#deleteModal').modal('toggle')
       }
@@ -144,8 +144,11 @@ ${portal.toolkit()}
                 </div>
                 <div style="float:right; display:inline">
                     <a class="btn-xs btn-warning"
-                        href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.SEARCH_TO_DELETE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
-                        <span class="glyphicon glyphicon-trash" />&nbsp;</span>
+                        onClick="javascript:processDelete('${paymentPlan.externalId}')"
+                        href="#"
+<%--                         href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerStandalone.SEARCH_TO_DELETE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}" --%>
+                    >
+                    <span class="glyphicon glyphicon-trash" />&nbsp;</span>
                     <spring:message code="label.TuitionPaymentPlan.delete.plan" />
                     </a> &nbsp; 
                     <c:if test="${loopStatus.index > 0}">
@@ -175,7 +178,11 @@ ${portal.toolkit()}
                             <span class="glyphicon glyphicon-arrow-down" />&nbsp;</span>
                         <spring:message code="label.TuitionPaymentPlan.order.down" />
                         </a>
-                    </c:if>                    
+                    </c:if>  
+                    &nbsp;
+                    <a class="btn-xs btn-default" data-toggle="collapse" data-target="#collapsePayment${loopStatus.index}" href="#collapsePayment${loopStatus.index}">  
+                        <spring:message code="label.TuitionPaymentPlan.details" />
+                   </a>                  
                 </div>
                 <p style="clear: both; color: blue">
                     <a data-toggle="collapse" data-target="#collapsePayment${loopStatus.index}" href="#collapsePayment${loopStatus.index}"> <strong><em><c:out

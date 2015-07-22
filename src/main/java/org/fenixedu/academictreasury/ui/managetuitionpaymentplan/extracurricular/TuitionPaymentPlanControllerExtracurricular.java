@@ -150,7 +150,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
 
     @RequestMapping(value = _SEARCH_TO_DELETE_ACTION_URI
             + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}/{tuitionPaymentPlanId}",
-            method = RequestMethod.GET)
+            method = RequestMethod.POST)
     public String processSearchToDeleteAction(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @PathVariable("degreeCurricularPlanId") final DegreeCurricularPlan degreeCurricularPlan,
