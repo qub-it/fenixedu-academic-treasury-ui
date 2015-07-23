@@ -81,6 +81,14 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 		$("#form").attr("action", $("#backUrl").attr('value'));
 		$("#form").submit();
 	}
+	
+    $scope.booleanvalues = [ {
+        name : '<spring:message code="label.no"/>',
+        value : false
+    }, {
+        name : '<spring:message code="label.yes"/>',
+        value : true
+    } ];
  	
 }]);
 </script>
@@ -140,9 +148,8 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2">
 					<select id="tuitionInstallmentTariff_withLaboratorialClasses"
 						name="withLaboratorialClasses" class="form-control"
-						ng-model="object.withLaboratorialClasses" required>
-						<option value="false"><spring:message code="label.no" /></option>
-						<option value="true"><spring:message code="label.yes" /></option>
+						ng-model="object.withLaboratorialClasses" required
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">						
 					</select>
 					<script>
 						$("#tuitionInstallmentTariff_withLaboratorialClasses").select2().val('<c:out value='${bean.withLaboratorialClasses}'/>');
@@ -154,9 +161,8 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.customized"/></div> 
 				
 				<div class="col-sm-2">
-					<select id="tuitionPaymentPlan_customized" name="customized" class="form-control" ng-model="object.customized">
-						<option value="false"><spring:message code="label.no"/></option>
-						<option value="true"><spring:message code="label.yes"/></option>				
+					<select id="tuitionPaymentPlan_customized" name="customized" class="form-control" ng-model="object.customized"
+                    ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">			
 					</select>
 					<script>
 						$("#tuitionPaymentPlan_customized").select2().select2('val', '<c:out value='${bean.customized}'/>');
@@ -318,9 +324,8 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.academicalActBlockingOn"/></div> 
 				
 				<div class="col-sm-2">
-					<select id="tuitionPaymentPlan_academicalActBlockingOn" name="academicalactblockingon" class="form-control" ng-model="object.academicalActBlockingOn">
-						<option value="false"><spring:message code="label.no"/></option>
-						<option value="true"><spring:message code="label.yes"/></option>				
+					<select id="tuitionPaymentPlan_academicalActBlockingOn" name="academicalactblockingon" class="form-control" ng-model="object.academicalActBlockingOn"
+                    ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">			
 					</select>
 					<script>
 						$("#tuitionPaymentPlan_academicalActBlockingOn").select2().select2('val', '<c:out value='${bean.academicalActBlockingOn }'/>');
@@ -336,9 +341,8 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2">
 					<select id="tuitionInstallmentTariff_applyInterests"
 						name="applyinterests" class="form-control"
-						ng-model="object.applyInterests" required>
-						<option value="false"><spring:message code="label.no" /></option>
-						<option value="true"><spring:message code="label.yes" /></option>
+						ng-model="object.applyInterests" required
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
 					<script>
 						$("#tuitionInstallmentTariff_applyInterests").select2().val('<c:out value='${bean.applyInterests}'/>');
@@ -384,9 +388,8 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-2">
 					<select id="tuitionInstallmentTariff_applyInFirstWorkday"
 						name="applyinfirstworkday" class="form-control"
-						ng-model="object.applyinfirstworkday" ng-required="object.applyInterests=='true' && object.interestType == 'DAILY'">
-						<option value="false"><spring:message code="label.no" /></option>
-						<option value="true"><spring:message code="label.yes" /></option>
+						ng-model="object.applyinfirstworkday" ng-required="object.applyInterests=='true' && object.interestType == 'DAILY'"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
 					<script>
 						$("#tuitionInstallmentTariff_applyInFirstWorkday").select2().val('<c:out value='${bean.applyInFirstWorkday}'/>');
