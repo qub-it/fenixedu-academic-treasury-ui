@@ -110,6 +110,13 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
  	$scope.object=angular.fromJson('${academicDebtGenerationRuleBeanJson}');
 	$scope.postBack = createAngularPostbackFunction($scope); 
  	
+	 $scope.booleanvalues = [ {
+         name : '<spring:message code="label.no"/>',
+         value : false
+     }, {
+         name : '<spring:message code="label.yes"/>',
+         value : true
+     } ];
 }]);
 </script>
 
@@ -207,9 +214,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 				<div class="col-sm-2">
 					<select id="academicDebtGenerationRule_createDebt"
 						name="aggregateondebitnote" class=""
-						ng-model="object.createDebt">
-						<option value="false"><spring:message code="label.no" /></option>
-						<option value="true"><spring:message code="label.yes" /></option>
+						ng-model="object.createDebt" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
 					<script>
 		$("#academicDebtGenerationRule_createDebt").select2().select2('val', '<c:out value='${not empty param.createDebt ? param.createDebt : academicDebtGenerationRule.createDebt }'/>');
@@ -270,11 +275,8 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                             id="academicDebtGenerationRule_aggregateOnDebitNote"
                             name="aggregateondebitnote"
                             class="form-control"
-                            ng-model="object.aggregateOnDebitNote">
-                            <option value="false"><spring:message
-                                    code="label.no" /></option>
-                            <option value="true"><spring:message
-                                    code="label.yes" /></option>
+                            ng-model="object.aggregateOnDebitNote" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
+                           </option>
                         </select>
                         <script>
 		$("#academicDebtGenerationRule_aggregateOnDebitNote").select2().select2('val', '<c:out value='${not empty param.aggregateondebitnote ? param.aggregateondebitnote : academicDebtGenerationRuleBean.aggregateOnDebitNote }'/>');
@@ -293,11 +295,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                             id="academicDebtGenerationRule_aggregateAllOrNothing"
                             name="aggregateallornothing"
                             class="form-control"
-                            ng-model="object.aggregateAllOrNothing">
-                            <option value="false"><spring:message
-                                    code="label.no" /></option>
-                            <option value="true"><spring:message
-                                    code="label.yes" /></option>
+                            ng-model="object.aggregateAllOrNothing" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
                         </select>
                         <script>
 		$("#academicDebtGenerationRule_aggregateAllOrNothing").select2().select2('val', '<c:out value='${not empty param.aggregateallornothing ? param.aggregateallornothing : academicDebtGenerationRuleBean.aggregateAllOrNothing }'/>');
@@ -315,11 +313,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                         <select
                             id="academicDebtGenerationRule_closeDebitNote"
                             name="closedebitnote" class="form-control"
-                            ng-model="object.closeDebitNote">
-                            <option value="false"><spring:message
-                                    code="label.no" /></option>
-                            <option value="true"><spring:message
-                                    code="label.yes" /></option>
+                            ng-model="object.closeDebitNote" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
                         </select>
                         <script>
 		$("#academicDebtGenerationRule_closeDebitNote").select2().select2('val', '<c:out value='${not empty param.closedebitnote ? param.closedebitnote : academicDebtGenerationRuleBean.closeDebitNote }'/>');
@@ -338,11 +332,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                             id="academicDebtGenerationRule_createPaymentReferenceCode"
                             name="createpaymentreferencecode"
                             class="form-control"
-                            ng-model="object.createPaymentReferenceCode">
-                            <option value="false"><spring:message
-                                    code="label.no" /></option>
-                            <option value="true"><spring:message
-                                    code="label.yes" /></option>
+                            ng-model="object.createPaymentReferenceCode" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
                         </select>
                         <script>
 		$("#academicDebtGenerationRule_createPaymentReferenceCode").select2().select2('val', '<c:out value='${not empty param.createpaymentreferencecode ? param.createpaymentreferencecode : academicDebtGenerationRuleBean.createPaymentReferenceCode }'/>');

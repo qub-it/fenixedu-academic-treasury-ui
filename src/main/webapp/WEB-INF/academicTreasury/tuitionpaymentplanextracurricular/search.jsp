@@ -142,44 +142,47 @@ ${portal.toolkit()}
                         </c:if></em> 
                 </div>
                 <div style="float:right; display:inline">
-                    <a class="btn-xs btn-warning"
+                    <a class="btn btn-default" data-toggle="collapse" data-target="#collapsePayment${loopStatus.index}" href="#collapsePayment${loopStatus.index}">
+                    <span class="glyphicon glyphicon-list-alt"/>  
+    <%--                         <spring:message code="label.TuitionPaymentPlan.details" /> --%>
+                   </a>&nbsp; 
+                    <c:if test="${loopStatus.index > 0}">
+                        <a class="btn btn-default"
+                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                            <span class="glyphicon glyphicon-arrow-up" /></span> 
+<%--                             <spring:message code="label.TuitionPaymentPlan.order.up" /> --%>
+                        </a> &nbsp;
+                    </c:if>
+                    <c:if test="${not (loopStatus.index > 0)}">
+                    <a class="btn btn disabled"
+                        href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                        <span class="glyphicon glyphicon-arrow-up" /></span> 
+<%--                         <spring:message code="label.TuitionPaymentPlan.order.up" /> --%>
+                    </a> &nbsp;
+                    </c:if> 
+                    <c:if test="${loopStatus.index + 1 < searchtuitionpaymentplanResultsDataSet.size()}">
+                        <a class="btn btn-default"
+                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                            <span class="glyphicon glyphicon-arrow-down" /></span>
+<%--                         <spring:message code="label.TuitionPaymentPlan.order.down" /> --%>
+                        </a>
+                    </c:if>
+                    <c:if test="${not (loopStatus.index + 1 < searchtuitionpaymentplanResultsDataSet.size())}">
+                        <a class="btn btn disabled"
+                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                            <span class="glyphicon glyphicon-arrow-down" /></span>
+<%--                         <spring:message code="label.TuitionPaymentPlan.order.down" /> --%>
+                        </a>
+                    </c:if>
+                    &nbsp;
+                    <a class="btn btn-warning"
                         onClick="javascript:processDelete('${paymentPlan.externalId}')"
                         href="#"                    
 <%--                         href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.SEARCH_TO_DELETE_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}" --%>
                     >
-                    <span class="glyphicon glyphicon-trash" />&nbsp;</span>
-                    <spring:message code="label.TuitionPaymentPlan.delete.plan" />
-                    </a> &nbsp; 
-                    <c:if test="${loopStatus.index > 0}">
-                        <a class="btn-xs btn-default"
-                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
-                            <span class="glyphicon glyphicon-arrow-up" />&nbsp;</span> <spring:message code="label.TuitionPaymentPlan.order.up" />
-                        </a> &nbsp;
-                    </c:if>
-                    <c:if test="${not (loopStatus.index > 0)}">
-                    <a class="btn-xs btn disabled"
-                        href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_UP_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
-                        <span class="glyphicon glyphicon-arrow-up" />&nbsp;</span> <spring:message code="label.TuitionPaymentPlan.order.up" />
-                    </a> &nbsp;
-                    </c:if> 
-                    <c:if test="${loopStatus.index + 1 < searchtuitionpaymentplanResultsDataSet.size()}">
-                        <a class="btn-xs btn-default"
-                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
-                            <span class="glyphicon glyphicon-arrow-down" />&nbsp;</span>
-                        <spring:message code="label.TuitionPaymentPlan.order.down" />
-                        </a>
-                    </c:if>
-                    <c:if test="${not (loopStatus.index + 1 < searchtuitionpaymentplanResultsDataSet.size())}">
-                        <a class="btn-xs btn disabled"
-                            href="${pageContext.request.contextPath}<%= TuitionPaymentPlanControllerExtracurricular.ORDER_DOWN_ACTION_URL %>/${finantialEntity.externalId}/${executionYear.externalId}/${degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
-                            <span class="glyphicon glyphicon-arrow-down" />&nbsp;</span>
-                        <spring:message code="label.TuitionPaymentPlan.order.down" />
-                        </a>
-                    </c:if>
-                    &nbsp;
-                    <a class="btn-xs btn-default" data-toggle="collapse" data-target="#collapsePayment${loopStatus.index}" href="#collapsePayment${loopStatus.index}">  
-                        <spring:message code="label.TuitionPaymentPlan.details" />
-                   </a>                    
+                    <span class="glyphicon glyphicon-trash" /></span>
+<%--                     <spring:message code="label.TuitionPaymentPlan.delete.plan" /> --%>
+                    </a>                                       
                 </div>
                 <p style="clear: both; color: blue">
                     <a data-toggle="collapse" data-target="#collapsePayment${loopStatus.index}" href="#collapsePayment${loopStatus.index}"><strong><em><c:out
