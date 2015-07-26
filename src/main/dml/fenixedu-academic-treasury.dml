@@ -400,6 +400,11 @@ class event.AcademicTreasuryEvent extends .org.fenixedu.treasury.domain.event.Tr
 	BigDecimal amountForUrgencyRate;
 }
 
+class event.LegacyAcademicTreasuryEvent extends event.AcademicTreasuryEvent{
+    
+}
+
+
 	relation AcademicTreasuryEventAcademicServiceRequest {
 		.org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest playsRole academicServiceRequest {
 			multiplicity 0..1;
@@ -452,6 +457,17 @@ class event.AcademicTreasuryEvent extends .org.fenixedu.treasury.domain.event.Tr
 			multiplicity *;
 		}
 	}
+	
+	relation AcademicTreasuryEventDegree {
+        
+        .org.fenixedu.academic.domain.Degree playsRole degree {
+            multiplicity 0..1;
+        }
+        
+        event.AcademicTreasuryEvent playsRole academicTreasuryEvent {
+            multiplicity *;
+        }
+    }
 
 /* --------------------------
  * AcademicDebtGenerationRule

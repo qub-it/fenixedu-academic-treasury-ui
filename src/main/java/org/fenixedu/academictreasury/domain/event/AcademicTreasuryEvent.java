@@ -53,6 +53,10 @@ import com.google.common.collect.Sets;
 public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements IAcademicTreasuryEvent, ITuitionTreasuryEvent,
         IImprovementTreasuryEvent, IAcademicServiceRequestAndAcademicTaxTreasuryEvent {
 
+    public AcademicTreasuryEvent() {
+
+    }
+
     protected AcademicTreasuryEvent(final DebtAccount debtAccount, final AcademicServiceRequest academicServiceRequest) {
         init(debtAccount, academicServiceRequest, ServiceRequestMapEntry.findProduct(academicServiceRequest));
     }
@@ -89,17 +93,18 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         LocalizedString result = new LocalizedString();
 
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
-            if(academicServiceRequest.getExecutionYear() != null) {
+            if (academicServiceRequest.getExecutionYear() != null) {
                 result =
                         result.with(locale, String.format("%s [%s - %s] (%s)", product.getName().getContent(locale),
                                 ((RegistrationAcademicServiceRequest) academicServiceRequest).getRegistration().getDegree()
-                                .getPresentationNameI18N().getContent(), academicServiceRequest.getExecutionYear()
-                                .getQualifiedName(), academicServiceRequest.getServiceRequestNumberYear()));
+                                        .getPresentationNameI18N().getContent(), academicServiceRequest.getExecutionYear()
+                                        .getQualifiedName(), academicServiceRequest.getServiceRequestNumberYear()));
             } else {
                 result =
                         result.with(locale, String.format("%s [%s] (%s)", product.getName().getContent(locale),
                                 ((RegistrationAcademicServiceRequest) academicServiceRequest).getRegistration().getDegree()
-                                .getPresentationNameI18N().getContent(), academicServiceRequest.getServiceRequestNumberYear()));                
+                                        .getPresentationNameI18N().getContent(),
+                                academicServiceRequest.getServiceRequestNumberYear()));
             }
         }
 
@@ -231,6 +236,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public boolean isForStandaloneTuition() {
         return getTuitionPaymentPlanGroup() != null && getTuitionPaymentPlanGroup().isForStandalone();
+    }
+
+    public boolean isLegacy() {
+        return false;
     }
 
     public boolean isForExtracurricularTuition() {
@@ -1033,6 +1042,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return debitEntry.getDueDate();
     }
 
+    @Override
     public String getExemptionReason(final EnrolmentEvaluation enrolmentEvaluation) {
         return getExemptionReason();
     }
