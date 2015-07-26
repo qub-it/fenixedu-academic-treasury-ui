@@ -4,6 +4,7 @@ import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.joda.time.LocalDate;
 
 public class LegacyAcademicTreasuryEvent extends LegacyAcademicTreasuryEvent_Base {
 
@@ -80,4 +81,8 @@ public class LegacyAcademicTreasuryEvent extends LegacyAcademicTreasuryEvent_Bas
         return false;
     }
 
+    @Override
+    public LocalDate getTreasuryEventDate() {
+        return this.getDueDate();
+    }
 }
