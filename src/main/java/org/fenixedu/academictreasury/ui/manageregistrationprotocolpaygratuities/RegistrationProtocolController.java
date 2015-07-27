@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -114,12 +115,7 @@ public class RegistrationProtocolController extends AcademicTreasuryBaseControll
 					}
 					
 				private Stream<RegistrationProtocol> getSearchUniverseSearchRegistrationProtocolDataSet() {
-					//
-					//The initialization of the result list must be done here
-					//
-					//
-					// return RegistrationProtocol.findAll(); //CHANGE_ME
-					return new ArrayList<RegistrationProtocol>().stream();
+					return Bennu.getInstance().getRegistrationProtocolsSet().stream();
 				}
 				
 		private List<RegistrationProtocol> filterSearchRegistrationProtocol() {

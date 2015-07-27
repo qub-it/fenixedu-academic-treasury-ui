@@ -110,14 +110,6 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 			form.submit();
 		}
 	};
-	
-    $scope.booleanvalues = [ {
-        name : '<spring:message code="label.no"/>',
-        value : false
-    }, {
-        name : '<spring:message code="label.yes"/>',
-        value : true
-    } ];
 }]);
 
 window.jclosures = [];
@@ -252,8 +244,11 @@ function registerJqueryReadyClosure(func) {
                     <select id="academicTariff_applyUnitsAmount"
                         name="applyUnitsAmount"
                         ng-model="object.applyUnitsAmount"
-                        ng-change="change(object.applyUnitsAmount, '{{ object.applyUnitsAmount }}')"
-                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">                        
+                        ng-change="change(object.applyUnitsAmount, '{{ object.applyUnitsAmount }}')">
+                        <option value="true" type="radio" selected><spring:message
+                                code="label.yes" /></option>
+                        <option value="false" type="radio"><spring:message
+                                code="label.no" /></option>
                     </select>
                 </div>
             </div>
@@ -291,7 +286,11 @@ function registerJqueryReadyClosure(func) {
                     <select id="academicTariff_applyPagesAmount"
                         name="applyPagesAmount"
                         ng-model="object.applyPagesAmount"
-                        ng-change="change(object.applyPagesAmount, '{{ object.applyPagesAmount }}')" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                        ng-change="change(object.applyPagesAmount, '{{ object.applyPagesAmount }}')">
+                        <option value="true" type="radio"><spring:message
+                                code="label.yes" /></option>
+                        <option value="false" type="radio"><spring:message
+                                code="label.no" /></option>
                     </select>
 
                 </div>
@@ -329,7 +328,11 @@ function registerJqueryReadyClosure(func) {
                     <select id="academicTariff_applyMaximumAmount"
                         name="applyMaximumAmount"
                         ng-model="object.applyMaximumAmount"
-                        ng-change="change(object.applyMaximumAmount, '{{ object.applyMaximumAmount }}')" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                        ng-change="change(object.applyMaximumAmount, '{{ object.applyMaximumAmount }}')">
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
                     </select>
 
                 </div>
@@ -489,8 +492,11 @@ function registerJqueryReadyClosure(func) {
                     <select id="academicTariff_applyInterests"
                         class="form-control" name="applyinterests"
                         ng-model="object.applyInterests"
-                        ng-change="change(object.applyInterests, '{{ object.applyInterests }}')"
-                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                        ng-change="change(object.applyInterests, '{{ object.applyInterests }}')">
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
                     </select>
                 </div>
             </div>
@@ -541,8 +547,11 @@ function registerJqueryReadyClosure(func) {
                                 id="academicTariff_applyInFirstWorkday"
                                 class="form-control"
                                 name="applyInFirstWorkday"
-                                ng-model="object.applyInFirstWorkday"
-                                ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                                ng-model="object.applyInFirstWorkday">
+                                <option value="true"><spring:message
+                                        code="label.yes" /></option>
+                                <option value="false"><spring:message
+                                        code="label.no" /></option>
                             </select>
                         </div>
                     </div>

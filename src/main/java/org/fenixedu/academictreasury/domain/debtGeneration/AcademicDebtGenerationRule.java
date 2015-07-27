@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
@@ -256,21 +257,23 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         final LogBean logBean = new LogBean();
         logBean.processDate = new DateTime();
 
-        for (final Registration registration : Bennu.getInstance().getRegistrationsSet()) {
-
-            // Discard registrations not active and with no enrolments
-            if (!registration.hasAnyActiveState(getExecutionYear()) || !registration.hasAnyEnrolmentsIn(getExecutionYear())) {
-                continue;
-            }
-
-            try {
-                processDebtsForRegistration(registration, logBean);
-            } catch (final Exception e) {
-                e.printStackTrace();
-                logBean.registerException(registration, e);
+        for (ExecutionDegree executionDegree : getExecutionYear().getExecutionDegreesSet()) {
+            for (final Registration registration : executionDegree.getDegreeCurricularPlan().getRegistrations()) {
+                
+                // Discard registrations not active and with no enrolments
+                if (!registration.hasAnyActiveState(getExecutionYear()) || !registration.hasAnyEnrolmentsIn(getExecutionYear())) {
+                    continue;
+                }
+                
+                try {
+                    processDebtsForRegistration(registration, logBean);
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    logBean.registerException(registration, e);
+                }
             }
         }
-
+        
         writeLog(logBean);
     }
 
@@ -433,13 +436,16 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         final ExecutionYear executionYear = getExecutionYear();
         final AcademicTax academicTax = AcademicTax.findUnique(product).get();
 
-        if (AcademicTaxServices.findAcademicTreasuryEvent(registration, executionYear, academicTax) == null) {
-            if (!entry.isCreateDebt()) {
-                return null;
-            }
-
-            if (AcademicTaxServices.createAcademicTax(registration, executionYear, academicTax)) {
-                logBean.registerCreatedAcademicTreasuryEvent(registration, academicTax);
+        {
+            AcademicTreasuryEvent t = AcademicTaxServices.findAcademicTreasuryEvent(registration, executionYear, academicTax);
+            if (t == null || !t.isChargedWithDebitEntry()) {
+                if (!entry.isCreateDebt()) {
+                    return null;
+                }
+    
+                if (AcademicTaxServices.createAcademicTax(registration, executionYear, academicTax)) {
+                    logBean.registerCreatedAcademicTreasuryEvent(registration, academicTax);
+                }
             }
         }
 
@@ -460,14 +466,18 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
         // Is of tuition kind try to catch the tuition event
         boolean createdTuition = false;
-        if (TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear) == null) {
-
-            if (!entry.isCreateDebt()) {
-                return null;
+        {
+            AcademicTreasuryEvent t = TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear);
+            
+            if (t == null || !t.isChargedWithDebitEntry(product)) {
+    
+                if (!entry.isCreateDebt()) {
+                    return null;
+                }
+    
+                final LocalDate enrolmentDate = TuitionServices.enrolmentDate(registration, executionYear, false);
+                createdTuition = TuitionServices.createInferedTuitionForRegistration(registration, executionYear, enrolmentDate, false);
             }
-
-            final LocalDate enrolmentDate = TuitionServices.enrolmentDate(registration, executionYear, false);
-            createdTuition = TuitionServices.createInferedTuitionForRegistration(registration, executionYear, enrolmentDate, false);
         }
 
         if (TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear) == null) {
@@ -485,7 +495,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         if (!academicTreasuryEvent.isChargedWithDebitEntry(product)) {
             return null;
         }
-
+        
         return DebitEntry.findActive(academicTreasuryEvent, product).findFirst().get();
     }
 

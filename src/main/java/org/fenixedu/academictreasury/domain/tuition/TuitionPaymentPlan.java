@@ -214,7 +214,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (getStatuteType() != null) {
-                description.append(getStatuteType().getName()).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+                description.append(getStatuteType().getName().getContent()).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (isFirstTimeStudent()) {

@@ -321,7 +321,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                     </div>
                 </div>
                 <div class="form-group row"
-                    ng-show="object.aggregateOnDebitNote == 'true' && object.closeDebitNote == 'true'">
+                    ng-show="object.aggregateOnDebitNote && object.closeDebitNote ">
                     <div class="col-sm-2 control-label">
                         <spring:message
                             code="label.AcademicDebtGenerationRule.createPaymentReferenceCode" />
@@ -342,7 +342,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                 
                 
                 <div class="form-group row"
-                	ng-show="object.createPaymentReferenceCode == 'true' && object.createPaymentReferenceCode == 'true'">
+                	ng-show="object.createPaymentReferenceCode && object.createPaymentReferenceCode">
                     <div class="col-sm-2 control-label">
                         <spring:message
                             code="label.AcademicDebtGenerationRule.paymentCodePool" />

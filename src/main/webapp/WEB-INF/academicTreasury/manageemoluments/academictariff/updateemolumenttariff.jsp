@@ -110,14 +110,6 @@ angular.module('changeExample', []).controller('ExampleController', ['$scope', f
 			form.submit();
 		}
 	};
-	
-    $scope.booleanvalues = [ {
-        name : '<spring:message code="label.no"/>',
-        value : false
-    }, {
-        name : '<spring:message code="label.yes"/>',
-        value : true
-    } ];
 }]);
 
 window.jclosures = [];
@@ -178,8 +170,11 @@ function registerJqueryReadyClosure(func) {
                     <select id="academicTariff_applyInterests"
                         class="form-control" name="applyinterests"
                         ng-model="object.applyInterests"
-                        ng-change="change(object.applyInterests, '{{ object.applyInterests }}')"
-                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
+                        ng-change="change(object.applyInterests, '{{ object.applyInterests }}')">
+                        <option value="true"><spring:message
+                                code="label.yes" /></option>
+                        <option value="false"><spring:message
+                                code="label.no" /></option>
                     </select>
                 </div>
             </div>
@@ -230,8 +225,11 @@ function registerJqueryReadyClosure(func) {
                                 id="academicTariff_applyInFirstWorkday"
                                 class="form-control"
                                 name="applyInFirstWorkday"
-                                ng-model="object.applyInFirstWorkday"
-                                ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
+                                ng-model="object.applyInFirstWorkday">
+                                <option value="true"><spring:message
+                                        code="label.yes" /></option>
+                                <option value="false"><spring:message
+                                        code="label.no" /></option>
                             </select>
                         </div>
                     </div>
