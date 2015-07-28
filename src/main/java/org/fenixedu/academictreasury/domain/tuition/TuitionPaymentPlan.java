@@ -441,11 +441,30 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public boolean isDeletable() {
 
-//        for (final TuitionInstallmentTariff installmentTariff : getTuitionInstallmentTariffsSet()) {
-//            if (!installmentTariff.getDebitEntrySet().isEmpty()) {
-//                return false;
-//            }
-//        }
+        if (getTuitionPaymentPlanGroup().isForRegistration() && isDefaultPaymentPlan()) {
+            final Set<TuitionPaymentPlan> allPlans = Sets.newHashSet();
+            allPlans.addAll(TuitionPaymentPlan.find(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                    getDegreeCurricularPlan(), getExecutionYear()).collect(Collectors.toSet()));
+            allPlans.addAll(TuitionPaymentPlan.find(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
+                    getDegreeCurricularPlan(), getExecutionYear()).collect(Collectors.toSet()));
+            allPlans.addAll(TuitionPaymentPlan.find(TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get(),
+                    getDegreeCurricularPlan(), getExecutionYear()).collect(Collectors.toSet()));
+            
+
+            for (final TuitionPaymentPlan tuitionPaymentPlan : allPlans) {
+                
+                if(tuitionPaymentPlan == this) {
+                    continue;
+                }
+                
+                for (final TuitionInstallmentTariff tuitionInstallmentTariff : tuitionPaymentPlan
+                        .getTuitionInstallmentTariffsSet()) {
+                    if (tuitionInstallmentTariff.isDefaultPaymentPlanDependent()) {
+                        return false;
+                    }
+                }
+            }
+        }
 
         return true;
     }

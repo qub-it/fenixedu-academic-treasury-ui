@@ -2,10 +2,8 @@ package org.fenixedu.academictreasury.services;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.EnrolmentEvaluation;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
@@ -31,8 +29,6 @@ import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
-
-import com.google.common.collect.Sets;
 
 public class AcademicTaxServices {
 
@@ -60,13 +56,7 @@ public class AcademicTaxServices {
             return null;
         }
 
-        if (academicTax.isAppliedOnRegistrationFirstYear() && !academicTax.isAppliedOnRegistrationSubsequentYears()
-                && registration.getStartExecutionYear() != executionYear) {
-            return null;
-        }
-
-        if (!academicTax.isAppliedOnRegistrationFirstYear() && academicTax.isAppliedOnRegistrationSubsequentYears()
-                && !registration.getStartExecutionYear().isBefore(executionYear)) {
+        if (!isAppliableOnRegistration(academicTax, registration, executionYear)) {
             return null;
         }
 
@@ -114,7 +104,7 @@ public class AcademicTaxServices {
             final AcademicTax academicTax) {
         return createAcademicTax(registration, executionYear, academicTax, new LocalDate());
     }
-
+    
     @Atomic
     public static boolean createAcademicTax(final Registration registration, final ExecutionYear executionYear,
             final AcademicTax academicTax, final LocalDate when) {
@@ -122,13 +112,7 @@ public class AcademicTaxServices {
             return false;
         }
 
-        if (academicTax.isAppliedOnRegistrationFirstYear() && !academicTax.isAppliedOnRegistrationSubsequentYears()
-                && registration.getStartExecutionYear() != executionYear) {
-            return false;
-        }
-
-        if (!academicTax.isAppliedOnRegistrationFirstYear() && academicTax.isAppliedOnRegistrationSubsequentYears()
-                && !registration.getStartExecutionYear().isBefore(executionYear)) {
+        if (!isAppliableOnRegistration(academicTax, registration, executionYear)) {
             return false;
         }
 
@@ -176,6 +160,20 @@ public class AcademicTaxServices {
         return true;
     }
 
+    public static boolean isRegistrationFirstYear(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getStartExecutionYear() == executionYear;
+    }
+    
+    public static boolean isRegistrationSubsequentYear(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getStartExecutionYear().isBefore(executionYear);
+    }
+
+    public static boolean isAppliableOnRegistration(final AcademicTax academicTax, final Registration registration,
+            final ExecutionYear executionYear) {
+        return (isRegistrationFirstYear(registration, executionYear) && academicTax.isAppliedOnRegistrationFirstYear()) ||
+                (isRegistrationSubsequentYear(registration, executionYear) && academicTax.isAppliedOnRegistrationSubsequentYears());
+    }
+    
     /* ***********
      * IMPROVEMENT
      * ***********

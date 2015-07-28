@@ -16,7 +16,6 @@ import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
-import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
@@ -59,6 +58,10 @@ public class TuitionServices {
     public static boolean createTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
             final LocalDate when, final boolean forceCreationIfNotEnrolled, TuitionPaymentPlan tuitionPaymentPlan) {
 
+        if(!isToPayRegistrationTuition(registration, executionYear)) {
+            return false;
+        }
+        
         final Person person = registration.getPerson();
         // Read person customer
 

@@ -131,7 +131,7 @@
 				<executions>
 					<execution>
 						<id>initialize</id>
-						<phase>prepare-package</phase>
+						<phase>initialize</phase>
 						<configuration>
 							<target>
 								<property name="basedir" refid="maven.project" />
@@ -139,7 +139,7 @@
 								<echo message="ANTRUN: copy resources and convert to UTF-8 to webapp/WEB-INF/resources" />
 
 								<copy todir="${basedir}/src/main/webapp/WEB-INF/resources" encoding="ISO-8859-15" outputencoding="UTF-8" overwrite="true">
-									<fileset dir="${basedir}/target/classes/META-INF/resources/WEB-INF/resources/" />
+									<fileset dir="${basedir}/src/main/resources/resources/" />
 								</copy>
 							</target>
 						</configuration>

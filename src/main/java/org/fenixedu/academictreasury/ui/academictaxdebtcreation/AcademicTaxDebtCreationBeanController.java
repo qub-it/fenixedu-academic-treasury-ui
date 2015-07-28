@@ -160,9 +160,10 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                 final AcademicTreasuryEvent event =
                         AcademicTaxServices.findAcademicTreasuryEventForImprovementTax(bean.getRegistration(),
                                 bean.getExecutionYear());
-                
+
                 if (event != null && event.isChargedWithDebitEntry(bean.getImprovementEvaluation())) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.event.is.charged"), model);
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.event.is.charged"),
+                            model);
                     return _createFirstPage(debtAccount, bean, model);
                 }
             } else {
@@ -171,9 +172,24 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                                 bean.getAcademicTax());
 
                 if (event != null && event.isChargedWithDebitEntry()) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.event.is.charged"), model);
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.event.is.charged"),
+                            model);
                     return _createFirstPage(debtAccount, bean, model);
-                }                
+                }
+            }
+
+            if (!bean.getAcademicTax().isImprovementTax()
+                    && !AcademicTaxServices.isAppliableOnRegistration(bean.getAcademicTax(), bean.getRegistration(),
+                            bean.getExecutionYear())) {
+                if(AcademicTaxServices.isRegistrationFirstYear(bean.getRegistration(), bean.getExecutionYear())) {
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.academicTax.not.for.first.year"),
+                            model);
+                } else {
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.academicTax.not.for.subsequent.years"),
+                            model);
+                }
+
+                return _createFirstPage(debtAccount, bean, model);
             }
 
             model.addAttribute("debtAccount", debtAccount);

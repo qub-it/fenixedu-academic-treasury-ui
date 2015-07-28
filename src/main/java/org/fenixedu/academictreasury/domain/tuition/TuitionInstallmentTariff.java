@@ -128,7 +128,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixedAmount.must.be.positive");
         }
 
-        if (isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed()) {
+        if (isDefaultPaymentPlanDependent()) {
 
             if (getFactor() == null) {
                 throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.factor.required",
@@ -156,11 +156,15 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
             }
         }
     }
-
+    
     private boolean isTuitionCalculationByEctsOrUnits() {
         return getTuitionCalculationType().isEcts() || getTuitionCalculationType().isUnits();
     }
 
+    public boolean isDefaultPaymentPlanDependent() {
+        return isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed();
+    }
+    
     public boolean isAcademicalActBlockingOff() {
         return super.getAcademicalActBlockingOff();
     }

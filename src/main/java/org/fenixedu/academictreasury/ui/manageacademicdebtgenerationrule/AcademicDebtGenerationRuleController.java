@@ -174,6 +174,55 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
 
         return jspPage("create");
     }
+    
+    private static final String _CHOOSEDEGREETYPEPOSTBACK_URI = "/choosedegreetypepostback";
+    public static final String CHOOSEDEGREETYPEPOSTBACK_URL = CONTROLLER_URL + _CHOOSEDEGREETYPEPOSTBACK_URI;
+    
+    @RequestMapping(value = _CHOOSEDEGREETYPEPOSTBACK_URI, method=RequestMethod.POST)
+    public String chooseDegreeTypePostback(
+            @RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, final Model model) {
+        
+        bean.chooseDegreeType();
+        
+        model.addAttribute("academicDebtGenerationRuleBean", bean);
+        model.addAttribute("academicDebtGenerationRuleBeanJson", getBeanJson(bean));
+
+        return jspPage("create");
+    }
+
+    private static final String _ADDDEGREECURRICULARPLANS_URI = "/adddegreecurricularplans";
+    public static final String ADDDEGREECURRICULARPLANS_URL = CONTROLLER_URL + _ADDDEGREECURRICULARPLANS_URI;
+
+    @RequestMapping(value = _ADDDEGREECURRICULARPLANS_URI, method = RequestMethod.POST)
+    public String adddegreeCurricularPlans(
+            @RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, final Model model) {
+
+        bean.addDegreeCurricularPlans();
+        
+        model.addAttribute("academicDebtGenerationRuleBean", bean);
+        model.addAttribute("academicDebtGenerationRuleBeanJson", getBeanJson(bean));
+
+        return jspPage("create");
+    }
+    
+    private static final String _REMOVEDEGREECURRICULARPLAN_URI = "/removedegreecurricularplan";
+    public static final String REMOVEDEGREECURRICULARPLAN_URL = CONTROLLER_URL + _REMOVEDEGREECURRICULARPLAN_URI;
+    
+    @RequestMapping(value = _REMOVEDEGREECURRICULARPLAN_URI + "/{entryIndex}", method=RequestMethod.POST)
+    public String removeDegreeCurricularPlan(@PathVariable("entryIndex") int entryIndex,
+            @RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, final Model model) {
+        
+        bean.removeDegreeCurricularPlan(entryIndex);
+        
+        model.addAttribute("academicDebtGenerationRuleBean", bean);
+        model.addAttribute("academicDebtGenerationRuleBeanJson", getBeanJson(bean));
+
+        
+        
+        return jspPage("create");
+        
+        
+    }
 
     private static final String _REMOVEPRODUCT_URI = "/removeproduct";
     public static final String REMOVEPRODUCT_URL = CONTROLLER_URL + _REMOVEPRODUCT_URI;

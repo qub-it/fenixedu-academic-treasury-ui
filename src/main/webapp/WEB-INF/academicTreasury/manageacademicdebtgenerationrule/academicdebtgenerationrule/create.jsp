@@ -117,6 +117,27 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
          name : '<spring:message code="label.yes"/>',
          value : true
      } ];
+	 
+	 
+	$scope.onDegreeTypeChange = function(degreeType, model) {
+		$scope.postBack(model);
+	}
+ 	
+	$scope.toggleDegreeCurricularPlans = function toggleSelection(dcpId) {
+		var idx = $scope.object.degreeCurricularPlansToAdd.indexOf(dcpId);
+		
+		// is currently selected
+		if (idx > -1) {
+		  $scope.object.degreeCurricularPlansToAdd.splice(idx, 1);
+		} else {
+			// is newly selected
+		  $scope.object.degreeCurricularPlansToAdd.push(dcpId);
+		}
+	};
+
+	
+	
+	
 }]);
 </script>
 
@@ -232,16 +253,69 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
     </form>
 
     <h3>
-        <spring:message code="label.AcademicDebtGenerationRule.rules" />
+        <spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlans" />
     </h3>
-
+    
+    
+<c:choose>
+	<c:when test="${not empty academicDebtGenerationRuleBean.degreeCurricularPlans}">
+		<table id="searchacademicdebtgenerationruleTable"
+			class="table responsive table-bordered table-hover" width="100%">
+			<thead>
+				<tr>
+					<%--!!!  Field names here --%>
+					<th><spring:message
+							code="label.AcademicDebtGenerationRuleEntry.degreeType" /></th>
+					<th><spring:message
+							code="label.AcademicDebtGenerationRuleEntry.degreeCurricularPlan" /></th>
+					<%-- Operations Column --%>
+					<th></th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:forEach var="dcp" items="${academicDebtGenerationRuleBean.degreeCurricularPlans}" varStatus="loopStatus">
+					<tr>
+						<td>
+							<p><c:out value="${dcp.degree.degreeType.name.content}" /></p>
+						</td>
+						<td>
+							<p><c:out value="${dcp.descriptionI18N.content}" /></p>
+						</td>
+						<td>
+							<form name='form' method="post" class="form-horizontal"
+								action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.REMOVEDEGREECURRICULARPLAN_URL %>/${loopStatus.index}'>
+								<input name="bean" type="hidden" value="{{ object }}" />
+								
+								<input type="submit" class="btn btn-xs btn-default" role="button" value="<spring:message code="label.delete" />" />
+							</form>
+						</td>
+					</tr>
+				</c:forEach>
+			</tbody>
+		</table>
+	</c:when>
+	<c:otherwise>
+		<div class="alert alert-warning" role="alert">
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+				<spring:message code="label.noResultsFound" />
+			</p>
+		</div>
+	</c:otherwise>
+</c:choose>
+    
+    
     <form name='form' method="post" class="form-horizontal"
-        action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CREATE_URL %>'>
+        action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.ADDDEGREECURRICULARPLANS_URL %>'>
 
         <input name="bean" type="hidden" value="{{ object }}" />
 
+		<input type="hidden" name="postback"
+			value='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CHOOSEDEGREETYPEPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
+
         <div class="panel panel-default">
             <div class="panel-body">
+            
                 <div class="form-group row">
                     <div class="col-sm-2 control-label">
                         <spring:message
@@ -254,6 +328,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                             id="academicDebtGenerationRule_executionYear"
                             class="" name="executionyear"
                             ng-model="$parent.object.executionYear"
+                            on-select="onDegreeTypeChange($product, $model)" 
                             theme="bootstrap" ng-disabled="disabled">
                         <ui-select-match>{{$select.selected.text}}</ui-select-match>
                         <ui-select-choices
@@ -263,6 +338,58 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                         </ui-select-choices> </ui-select>
                     </div>
                 </div>
+            
+				<div class="form-group row">
+					<div class="col-sm-2 control-label"><spring:message code="label.AcademicDebtGenerationRule.degreeType"/></div> 
+					
+					<div class="col-sm-8">
+						<ui-select id="academicDebtGenerationRule_degreeType" name="degreeType" ng-model="$parent.object.degreeType" theme="bootstrap" ng-disabled="disabled" 
+							on-select="onDegreeTypeChange($product, $model)" >
+							<ui-select-match>{{$select.selected.text}}</ui-select-match>
+							<ui-select-choices repeat="degreeType.id as degreeType in object.degreeTypeDataSource | filter: $select.search">
+								<span ng-bind-html="degreeType.text | highlight: $select.search"></span>
+							</ui-select-choices>
+						</ui-select>				
+					</div>
+				</div>		
+				<div class="form-group row">
+					<div class="col-sm-2 control-label"><spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlans"/></div> 
+					<div class="col-sm-8">
+	                    <div ng-hide="object.degreeCurricularPlanDataSource" class="alert alert-warning">
+	                        <spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlanDataSource.is.empty"/>
+	                    </div>
+						<div ng-repeat="dcp in object.degreeCurricularPlanDataSource" >
+	                        <div class="checkbox">
+	        					<input class="checkbox pull-left"  name="{{dcp.id}}" type="checkbox" id="{{dcp.id}}"
+	        					ng-checked="object.degreeCurricularPlans.indexOf(dcp.id) > -1"
+	        					ng-click="toggleDegreeCurricularPlans(dcp.id)" />
+	        					<span><label for="{{dcp.id}}">{{dcp.text}}</label></span>
+	                        </div>
+	                    </div>
+					</div>
+				</div>		
+            
+			</div>
+		</div>
+		
+        <div class="panel-footer">
+            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" />
+        </div>
+		
+    </form>
+
+
+    <h3>
+        <spring:message code="label.AcademicDebtGenerationRule.rules" />
+    </h3>
+    
+    <form name='form' method="post" class="form-horizontal"
+        action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CREATE_URL %>'>
+
+        <input name="bean" type="hidden" value="{{ object }}" />
+
+        <div class="panel panel-default">
+            <div class="panel-body">
                 
                 <div class="form-group row">
                     <div class="col-sm-2 control-label">
@@ -372,6 +499,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
             </div>
         </div>
     </form>
+
 
 </div>
 
