@@ -885,7 +885,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
 
-        return orderedTuitionDebitEntriesList().get(installmentOrder).getRemainingAmount();
+        return orderedTuitionDebitEntriesList().get(installmentOrder).getOpenAmount();
     }
 
     @Override
