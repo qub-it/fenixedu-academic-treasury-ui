@@ -10,6 +10,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -34,7 +35,10 @@ import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
+import pt.ist.fenixframework.FenixFramework;
+import antlr.StringUtils;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
 public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base {
@@ -124,6 +128,18 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         public void registerWithoutDebitEntriesToProcess(Registration registration) {
             log.append(String.format("Without debit entries to process on student '%s' [%s]", registration.getStudent()
                     .getNumber(), registration.getDegreeName()));
+            log.append("\n");
+        }
+
+        public void registerStudentNotActiveInExecutionYear(final Registration registration, final ExecutionYear executionYear) {
+            log.append(String.format("Student not active '%s' [%s - %s]", registration.getStudent()
+                    .getNumber(), registration.getDegreeName(), executionYear.getQualifiedName()));
+            log.append("\n");            
+        }
+
+        public void registerStudentWithNoEnrolments(final Registration registration, final ExecutionYear executionYear) {
+            log.append(String.format("Student with no enrolments '%s' [%s - %s]", registration.getStudent()
+                    .getNumber(), registration.getDegreeName(), executionYear.getQualifiedName()));
             log.append("\n");
         }
     }
@@ -275,6 +291,39 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
         
         writeLog(logBean);
+    }
+    
+    @Atomic(mode = TxMode.READ)
+    public void process(final Registration registration) {
+        if (!isActive()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
+        }
+
+        System.out.println("AcademicDebtGenerationRule: Start");
+
+        final LogBean logBean = new LogBean();
+        logBean.processDate = new DateTime();
+
+        // Discard registrations not active and with no enrolments
+        if(!registration.hasAnyActiveState(getExecutionYear())) {
+            logBean.registerStudentNotActiveInExecutionYear(registration, getExecutionYear());
+            writeLog(logBean);
+            return;
+        }
+        
+        if (!registration.hasAnyEnrolmentsIn(getExecutionYear())) {
+            logBean.registerStudentWithNoEnrolments(registration, getExecutionYear());
+            writeLog(logBean);
+            return;
+        }
+        
+        try {
+            processDebtsForRegistration(registration, logBean);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            logBean.registerException(registration, e);
+        }
+
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -518,4 +567,68 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         return new AcademicDebtGenerationRule(bean);
     }
 
+    
+    public static void runAllActive() {
+        for (final AcademicDebtGenerationRule academicDebtGenerationRule : AcademicDebtGenerationRule.findActive().collect(Collectors.toSet())) {
+            final RuleExecutor exec = new RuleExecutor(academicDebtGenerationRule);
+
+            try {
+                exec.start();
+                exec.join();
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+    
+    public static void runAllActiveForRegistration(final Registration registration) {
+        for (final AcademicDebtGenerationRule academicDebtGenerationRule : AcademicDebtGenerationRule.findActive().collect(Collectors.toSet())) {
+            final RuleExecutor exec = new RuleExecutor(academicDebtGenerationRule, registration);
+
+            try {
+                exec.start();
+                exec.join();
+            } catch (InterruptedException e) {
+            }
+        }        
+    }
+    
+    // @formatter: off
+    /**********
+     * EXECUTOR
+     **********
+     */
+    // @formatter: on
+
+    
+    public static final class RuleExecutor extends Thread {
+        
+        private String academicDebtGenerationRuleId;
+        private String registrationId;
+        
+        public RuleExecutor(final AcademicDebtGenerationRule rule) {
+            this.academicDebtGenerationRuleId = rule.getExternalId();
+        }
+        
+        public RuleExecutor(final AcademicDebtGenerationRule rule, final Registration registration) {
+            this.academicDebtGenerationRuleId = rule.getExternalId();
+            this.registrationId = registration.getExternalId();
+        }
+        
+        @Override
+        public void run() {
+            executeRule();
+        }
+
+        @Atomic(mode=TxMode.READ)
+        private void executeRule() {
+            final AcademicDebtGenerationRule rule = FenixFramework.getDomainObject(academicDebtGenerationRuleId);
+            
+            if(!Strings.isNullOrEmpty(registrationId)) {
+                final Registration registration = FenixFramework.getDomainObject(registrationId);
+                rule.process(registration);
+            } else {
+                rule.process();
+            }
+        }
+    }
 }
