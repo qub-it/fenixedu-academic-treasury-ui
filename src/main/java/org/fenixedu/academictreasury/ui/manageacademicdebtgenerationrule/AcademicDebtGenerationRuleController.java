@@ -154,12 +154,17 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
     public String create(Model model) {
         AcademicDebtGenerationRuleBean bean = new AcademicDebtGenerationRuleBean();
 
+        return _create(bean, model);
+    }
+    
+    private String _create(final AcademicDebtGenerationRuleBean bean, Model model) {
+
         model.addAttribute("academicDebtGenerationRuleBean", bean);
         model.addAttribute("academicDebtGenerationRuleBeanJson", getBeanJson(bean));
 
         return jspPage("create");
     }
-
+    
     private static final String _ADDPRODUCT_URI = "/addproduct";
     public static final String ADDPRODUCT_URL = CONTROLLER_URL + _ADDPRODUCT_URI;
 
@@ -174,6 +179,20 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
 
         return jspPage("create");
     }
+    
+    private static final String _CHOOSEEXECUTIONYEARPOSTBACK_URI = "/chooseexecutionyearpostback";
+    public static final String CHOOSEEXECUTIONYEARPOSTBACK_URL = CONTROLLER_URL + _CHOOSEEXECUTIONYEARPOSTBACK_URI;
+    
+    @RequestMapping(value= _CHOOSEEXECUTIONYEARPOSTBACK_URI, method=RequestMethod.POST)
+    public String chooseExecutionYearPostback(
+            @RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, final Model model) {
+        
+        model.addAttribute("academicDebtGenerationRuleBean", bean);
+        model.addAttribute("academicDebtGenerationRuleBeanJson", getBeanJson(bean));
+
+        return jspPage("create");
+    }
+    
     
     private static final String _CHOOSEDEGREETYPEPOSTBACK_URI = "/choosedegreetypepostback";
     public static final String CHOOSEDEGREETYPEPOSTBACK_URL = CONTROLLER_URL + _CHOOSEDEGREETYPEPOSTBACK_URI;
@@ -253,7 +272,8 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
 
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
-            return create(model);
+            
+            return _create(bean, model);
         }
     }
 

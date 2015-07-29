@@ -107,9 +107,6 @@ ${portal.angularToolkit()}
 
 angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select']).controller('AcademicDebtGenerationRuleController', ['$scope', function($scope) {
 
- 	$scope.object=angular.fromJson('${academicDebtGenerationRuleBeanJson}');
-	$scope.postBack = createAngularPostbackFunction($scope); 
- 	
 	 $scope.booleanvalues = [ {
          name : '<spring:message code="label.no"/>',
          value : false
@@ -118,11 +115,20 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
          value : true
      } ];
 	 
+ 	$scope.object=angular.fromJson('${academicDebtGenerationRuleBeanJson}');
+	$scope.postBack = createAngularPostbackFunction($scope); 
+ 	
 	 
 	$scope.onDegreeTypeChange = function(degreeType, model) {
-		$scope.postBack(model);
+		$('#degree-type-form').attr('action', $("#degree-type-postback").attr('value'));
+		$('#degree-type-form').submit();
 	}
- 	
+	
+	$scope.onExecutionYearChange = function(executionYear, model) {
+		$('#execution-year-select-form').attr('action', $("#execution-year-postback").attr('value'));
+		$('#execution-year-select-form').submit();
+	}
+	
 	$scope.toggleDegreeCurricularPlans = function toggleSelection(dcpId) {
 		var idx = $scope.object.degreeCurricularPlansToAdd.indexOf(dcpId);
 		
@@ -145,7 +151,145 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 	ng-app="angularAppAcademicDebtGenerationRule"
 	ng-controller="AcademicDebtGenerationRuleController">
 
-<h3><spring:message code="label.AcademicDebtGenerationRule.associated.products" /></h3>
+
+
+    <h3>
+        <spring:message code="label.AcademicDebtGenerationRule.rules" />
+    </h3>
+    
+    <form id="execution-year-select-form" name='form' method="post" class="form-horizontal"
+        action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CREATE_URL %>'>
+
+        <input name="bean" type="hidden" value="{{ object }}" />
+
+		<input id="execution-year-postback" type="hidden" name="postback"
+			value='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CHOOSEEXECUTIONYEARPOSTBACK_URL %>' />
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                
+                <div class="form-group row">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.executionYear" />
+                    </div>
+
+                    <div class="col-sm-4">
+                        <%-- Relation to side 1 drop down rendered in input --%>
+                        <ui-select
+                            id="academicDebtGenerationRule_executionYear"
+                            class="" name="executionyear"
+                            ng-model="$parent.object.executionYear"
+                            on-select="onExecutionYearChange($product, $model)"
+                            theme="bootstrap" ng-disabled="disabled">
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices
+                            repeat="executionYear.id as executionYear in object.executionYearDataSource | filter: $select.search">
+                        <span
+                            ng-bind-html="executionYear.text | highlight: $select.search"></span>
+                        </ui-select-choices> </ui-select>
+                    </div>
+                </div>
+                
+                <div class="form-group row">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.aggregateOnDebitNote" />
+                    </div>
+
+                    <div class="col-sm-2">
+                        <select
+                            id="academicDebtGenerationRule_aggregateOnDebitNote"
+                            name="aggregateondebitnote"
+                            class="form-control"
+                            ng-model="object.aggregateOnDebitNote" 
+                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                           </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row"
+                    ng-show="object.aggregateOnDebitNote === true">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.aggregateAllOrNothing" />
+                    </div>
+
+                    <div class="col-sm-2">
+                        <select
+                            id="academicDebtGenerationRule_aggregateAllOrNothing"
+                            name="aggregateallornothing"
+                            class="form-control"
+                            ng-model="object.aggregateAllOrNothing" 
+                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row"
+                    ng-show="object.aggregateOnDebitNote === true">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.closeDebitNote" />
+                    </div>
+
+                    <div class="col-sm-2">
+                        <select
+                            id="academicDebtGenerationRule_closeDebitNote"
+                            name="closedebitnote" class="form-control"
+                            ng-model="object.closeDebitNote" 
+                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row"
+                    ng-show="object.aggregateOnDebitNote === true && object.closeDebitNote === true">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.createPaymentReferenceCode" />
+                    </div>
+
+                    <div class="col-sm-2">
+                        <select
+                            id="academicDebtGenerationRule_createPaymentReferenceCode"
+                            name="createpaymentreferencecode"
+                            class="form-control"
+                            ng-model="object.createPaymentReferenceCode" 
+                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                        </select>
+                    </div>
+                </div>
+                
+                
+                <div class="form-group row"
+                	ng-show="object.createPaymentReferenceCode === true && object.createPaymentReferenceCode === true">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.paymentCodePool" />
+                    </div>
+
+                    <div class="col-sm-4">
+                        <%-- Relation to side 1 drop down rendered in input --%>
+                        <ui-select
+                            id="academicDebtGenerationRule_paymentCodePool"
+                            class="" name="paymentcodepool"
+                            ng-model="$parent.object.paymentCodePool"
+                            theme="bootstrap" ng-disabled="disabled">
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+                        <ui-select-choices
+                            repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search">
+                        <span
+                            ng-bind-html="paymentCodePool.text | highlight: $select.search"></span>
+                        </ui-select-choices> </ui-select>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </form>
+
+<c:if test="${not empty academicDebtGenerationRuleBean.executionYear}">
+
+	<h3 style="margin-top:100px;"><spring:message code="label.AcademicDebtGenerationRule.associated.products" /></h3>
 
 
 <c:choose>
@@ -235,24 +379,21 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 				<div class="col-sm-2">
 					<select id="academicDebtGenerationRule_createDebt"
 						name="aggregateondebitnote" class=""
-						ng-model="object.createDebt" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+						ng-model="object.createDebt" 
+						ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
-					<script>
-		$("#academicDebtGenerationRule_createDebt").select2().select2('val', '<c:out value='${not empty param.createDebt ? param.createDebt : academicDebtGenerationRule.createDebt }'/>');
-	</script>
                     </div>
+            </div>
+			<div class="form-group row">
+				<div class="col-sm-6">
+	                <input style="float:right;" type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" />
                 </div>
             </div>
-            <div class="panel-footer">
-                <input type="submit" class="btn btn-default"
-                    role="button"
-                    value="<spring:message code="label.add" />" />
-            </div>
+          </div>
         </div>
-
     </form>
 
-    <h3>
+    <h3 style="margin-top:100px;">
         <spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlans" />
     </h3>
     
@@ -279,7 +420,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 							<p><c:out value="${dcp.degree.degreeType.name.content}" /></p>
 						</td>
 						<td>
-							<p><c:out value="${dcp.descriptionI18N.content}" /></p>
+							<p><c:out value="${dcp.getPresentationName(academicDebtGenerationRuleBean.executionYear)}" /></p>
 						</td>
 						<td>
 							<form name='form' method="post" class="form-horizontal"
@@ -304,45 +445,21 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 	</c:otherwise>
 </c:choose>
     
-    
-    <form name='form' method="post" class="form-horizontal"
+    <form id="degree-type-form" name='form' method="post" class="form-horizontal"
         action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.ADDDEGREECURRICULARPLANS_URL %>'>
 
         <input name="bean" type="hidden" value="{{ object }}" />
 
-		<input type="hidden" name="postback"
-			value='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CHOOSEDEGREETYPEPOSTBACK_URL %>/${finantialEntity.externalId}/${executionYear.externalId}' />
+		<input id="degree-type-postback" type="hidden" name="postback"
+			value='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CHOOSEDEGREETYPEPOSTBACK_URL %>' />
 
         <div class="panel panel-default">
             <div class="panel-body">
             
-                <div class="form-group row">
-                    <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.executionYear" />
-                    </div>
-
-                    <div class="col-sm-4">
-                        <%-- Relation to side 1 drop down rendered in input --%>
-                        <ui-select
-                            id="academicDebtGenerationRule_executionYear"
-                            class="" name="executionyear"
-                            ng-model="$parent.object.executionYear"
-                            on-select="onDegreeTypeChange($product, $model)" 
-                            theme="bootstrap" ng-disabled="disabled">
-                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
-                        <ui-select-choices
-                            repeat="executionYear.id as executionYear in object.executionYearDataSource | filter: $select.search">
-                        <span
-                            ng-bind-html="executionYear.text | highlight: $select.search"></span>
-                        </ui-select-choices> </ui-select>
-                    </div>
-                </div>
-            
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicDebtGenerationRule.degreeType"/></div> 
 					
-					<div class="col-sm-8">
+					<div class="col-sm-4">
 						<ui-select id="academicDebtGenerationRule_degreeType" name="degreeType" ng-model="$parent.object.degreeType" theme="bootstrap" ng-disabled="disabled" 
 							on-select="onDegreeTypeChange($product, $model)" >
 							<ui-select-match>{{$select.selected.text}}</ui-select-match>
@@ -354,7 +471,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 				</div>		
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlans"/></div> 
-					<div class="col-sm-8">
+					<div class="col-sm-4">
 	                    <div ng-hide="object.degreeCurricularPlanDataSource" class="alert alert-warning">
 	                        <spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlanDataSource.is.empty"/>
 	                    </div>
@@ -368,140 +485,34 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 	                    </div>
 					</div>
 				</div>		
+				<div class="form-group row">
+					<div class="col-sm-6">
+			            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" style="float:right;"/>
+					</div>
+				</div>
             
 			</div>
 		</div>
-		
-        <div class="panel-footer">
-            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" />
-        </div>
-		
     </form>
-
-
-    <h3>
-        <spring:message code="label.AcademicDebtGenerationRule.rules" />
-    </h3>
     
-    <form name='form' method="post" class="form-horizontal"
+    <form id="form" name='form' method="post" class="form-horizontal"
         action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CREATE_URL %>'>
 
         <input name="bean" type="hidden" value="{{ object }}" />
 
         <div class="panel panel-default">
-            <div class="panel-body">
-                
-                <div class="form-group row">
-                    <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.aggregateOnDebitNote" />
-                    </div>
-
-                    <div class="col-sm-2">
-                        <select
-                            id="academicDebtGenerationRule_aggregateOnDebitNote"
-                            name="aggregateondebitnote"
-                            class="form-control"
-                            ng-model="object.aggregateOnDebitNote" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
-                           </option>
-                        </select>
-                        <script>
-		$("#academicDebtGenerationRule_aggregateOnDebitNote").select2().select2('val', '<c:out value='${not empty param.aggregateondebitnote ? param.aggregateondebitnote : academicDebtGenerationRuleBean.aggregateOnDebitNote }'/>');
-	</script>
-                    </div>
-                </div>
-                <div class="form-group row"
-                    ng-show="(object.aggregateOnDebitNote === true) || (object.aggregateOnDebitNote == 'true')">
-                    <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.aggregateAllOrNothing" />
-                    </div>
-
-                    <div class="col-sm-2">
-                        <select
-                            id="academicDebtGenerationRule_aggregateAllOrNothing"
-                            name="aggregateallornothing"
-                            class="form-control"
-                            ng-model="object.aggregateAllOrNothing" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
-                        </select>
-                        <script>
-		$("#academicDebtGenerationRule_aggregateAllOrNothing").select2().select2('val', '<c:out value='${not empty param.aggregateallornothing ? param.aggregateallornothing : academicDebtGenerationRuleBean.aggregateAllOrNothing }'/>');
-	</script>
-                    </div>
-                </div>
-                <div class="form-group row"
-                    ng-show="(object.aggregateOnDebitNote === true) || (object.aggregateOnDebitNote == 'true')">
-                    <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.closeDebitNote" />
-                    </div>
-
-                    <div class="col-sm-2">
-                        <select
-                            id="academicDebtGenerationRule_closeDebitNote"
-                            name="closedebitnote" class="form-control"
-                            ng-model="object.closeDebitNote" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
-                        </select>
-                        <script>
-		$("#academicDebtGenerationRule_closeDebitNote").select2().select2('val', '<c:out value='${not empty param.closedebitnote ? param.closedebitnote : academicDebtGenerationRuleBean.closeDebitNote }'/>');
-	</script>
-                    </div>
-                </div>
-                <div class="form-group row"
-                    ng-show="object.aggregateOnDebitNote && object.closeDebitNote ">
-                    <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.createPaymentReferenceCode" />
-                    </div>
-
-                    <div class="col-sm-2">
-                        <select
-                            id="academicDebtGenerationRule_createPaymentReferenceCode"
-                            name="createpaymentreferencecode"
-                            class="form-control"
-                            ng-model="object.createPaymentReferenceCode" ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">>
-                        </select>
-                        <script>
-		$("#academicDebtGenerationRule_createPaymentReferenceCode").select2().select2('val', '<c:out value='${not empty param.createpaymentreferencecode ? param.createpaymentreferencecode : academicDebtGenerationRuleBean.createPaymentReferenceCode }'/>');
-	</script>
-                    </div>
-                </div>
-                
-                
-                <div class="form-group row"
-                	ng-show="object.createPaymentReferenceCode && object.createPaymentReferenceCode">
-                    <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.paymentCodePool" />
-                    </div>
-
-                    <div class="col-sm-4">
-                        <%-- Relation to side 1 drop down rendered in input --%>
-                        <ui-select
-                            id="academicDebtGenerationRule_paymentCodePool"
-                            class="" name="paymentcodepool"
-                            ng-model="$parent.object.paymentCodePool"
-                            theme="bootstrap" ng-disabled="disabled">
-                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
-                        <ui-select-choices
-                            repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search">
-                        <span
-                            ng-bind-html="paymentCodePool.text | highlight: $select.search"></span>
-                        </ui-select-choices> </ui-select>
-                    </div>
-                </div>
-                
-            </div>
             <div class="panel-footer">
                 <input type="submit" class="btn btn-default"
                     role="button"
                     value="<spring:message code="label.submit" />" />
             </div>
         </div>
-    </form>
+	</div>    
 
+</c:if>
 
 </div>
+
 
 <script>
 $(document).ready(function() {

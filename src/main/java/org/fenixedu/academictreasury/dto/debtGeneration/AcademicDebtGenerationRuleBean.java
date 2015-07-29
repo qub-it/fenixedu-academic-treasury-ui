@@ -105,10 +105,12 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     public void chooseDegreeType() {
         if (getExecutionYear() == null) {
             degreeCurricularPlanDataSource = Collections.<TupleDataSourceBean> emptyList();
+            return;
         }
 
         if (getDegreeType() == null) {
             degreeCurricularPlanDataSource = Collections.<TupleDataSourceBean> emptyList();
+            return;
         }
 
         

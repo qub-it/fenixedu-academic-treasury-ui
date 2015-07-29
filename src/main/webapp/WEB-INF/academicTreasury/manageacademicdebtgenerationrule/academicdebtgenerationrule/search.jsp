@@ -1,3 +1,10 @@
+<%@page import="org.fenixedu.academic.domain.DegreeCurricularPlan"%>
+<%@page import="java.util.List"%>
+<%@page import="com.google.common.collect.Lists"%>
+<%@page import="org.apache.commons.lang.StringUtils"%>
+<%@page import="java.util.stream.Collectors"%>
+<%@page import="org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule"%>
+<%@page import="com.google.common.base.Strings"%>
 <%@page
     import="org.fenixedu.academictreasury.ui.manageacademicdebtgenerationrule.AcademicDebtGenerationRuleController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -104,6 +111,12 @@ ${portal.toolkit()}
 		$("#deleteForm").attr("action", url);
 		$('#deleteModal').modal('toggle')
 	}
+	
+	function processShowDcps(dcps) {
+		$("#dcpModalBody").html(dcps);
+		$('#dcpModal').modal('toggle')
+	}
+	
 </script>
 
 
@@ -144,6 +157,28 @@ ${portal.toolkit()}
 </div>
 <!-- /.modal -->
 
+
+
+<div class="modal fade" id="dcpModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+	        <div class="modal-header">
+	            <button type="button" class="close"
+	                data-dismiss="modal" aria-label="Close">
+	                <span aria-hidden="true">&times;</span>
+	            </button>
+	            <h4 class="modal-title">
+	                <spring:message code="label.manageacademicdebtgenerationrule.degreeCurricularPlans" />
+	            </h4>
+	        </div>
+	        <div id="dcpModalBody" class="modal-body">
+	        </div>
+        </div>
+        <!-- /.modal-content -->
+    </div>
+    <!-- /.modal-dialog -->
+</div>
+<!-- /.modal -->
 
 
 <c:choose>
@@ -254,39 +289,60 @@ ${portal.toolkit()}
                             </c:if>
 
                         </td>
-                        <td><a class="btn-xs btn-warning"
-                            href="#"
-                            onClick="javascript:processDelete('${rule.externalId}')">
-                                <span class="glyphicon glyphicon-trash"
-                                aria-hidden="true"></span>&nbsp;<spring:message
-                                    code='label.delete' />
-                        </a> <c:if test="${rule.active}">
-
-                                <a class="btn-default btn-xs"
-                                    href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.PROCESS_ACTION_URL %>${rule.externalId}">
-                                    <span class="glyphicon glyphicon-cog"
-                                aria-hidden="true"></span>&nbsp;<spring:message
-                                        code='label.manageacademicdebtgenerationrule.process' />
-                                </a>
-
-                                <a class="btn-default btn-xs"
-                                    href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_INACTIVATE_ACTION_URL %>${rule.externalId}">
-                                    <spring:message
-                                        code='label.manageacademicdebtgenerationrule.inactivate' />
-                                </a>
-                            </c:if> <c:if test="${not rule.active}">
-                                <a class="btn-xs btn-default"
-                                    href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_ACTIVATE_ACTION_URL %>${rule.externalId}">
-                                    <spring:message
-                                        code='label.manageacademicdebtgenerationrule.activate' />
-                                </a>
-                            </c:if>
-                            <a class="btn-default btn-xs"
-                                href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_READ_LOG_ACTION_URL %>${rule.externalId}">
-                                <spring:message
-                                    code='label.manageacademicdebtgenerationrule.readlog' />
-                            </a>
-                            </td>
+                        <td>
+                        <%
+                        	final AcademicDebtGenerationRule rule = (AcademicDebtGenerationRule) pageContext.getAttribute("rule");
+                        	final List<String> dcps = Lists.newArrayList();
+                        	
+                        	for(final DegreeCurricularPlan dcp : rule.getDegreeCurricularPlansSet()) {
+                        	    dcps.add(dcp.getPresentationName(rule.getExecutionYear()));
+                        	}
+                        	
+                        	request.setAttribute(rule.getExternalId(), String.join("<br/>", dcps));
+                        %>
+	                        <a class="btn btn-warning"
+	                            href="#"
+	                            onClick="javascript:processShowDcps('<%= request.getAttribute(((AcademicDebtGenerationRule) pageContext.getAttribute("rule")).getExternalId()) %>')">
+	                                <span class="glyphicon glyphicon-trash"
+	                                aria-hidden="true"></span>&nbsp;<spring:message
+	                                    code='label.delete' />
+	                        </a> 
+	                        <c:if test="${rule.active}">
+	
+	                                <a class="btn-default btn"
+	                                    href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.PROCESS_ACTION_URL %>${rule.externalId}">
+	                                    <span class="glyphicon glyphicon-cog"
+	                                aria-hidden="true"></span>&nbsp;<spring:message
+	                                        code='label.manageacademicdebtgenerationrule.process' />
+	                                </a>
+	
+	                                <a class="btn-default btn"
+	                                    href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_INACTIVATE_ACTION_URL %>${rule.externalId}">
+	                                    <spring:message
+	                                        code='label.manageacademicdebtgenerationrule.inactivate' />
+	                                </a>
+	                            </c:if> <c:if test="${not rule.active}">
+	                                <a class="btn btn-default"
+	                                    href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_ACTIVATE_ACTION_URL %>${rule.externalId}">
+	                                    <spring:message
+	                                        code='label.manageacademicdebtgenerationrule.activate' />
+	                                </a>
+	                            </c:if>
+	                            <a class="btn-default btn"
+	                                href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_READ_LOG_ACTION_URL %>${rule.externalId}">
+	                                <spring:message
+	                                    code='label.manageacademicdebtgenerationrule.readlog' />
+	                            </a>
+		                        <a class="btn btn-default"
+		                            href="#"
+		                            onClick="javascript:processShowDcps('<%= request.getAttribute(((AcademicDebtGenerationRule) pageContext.getAttribute("rule")).getExternalId()) %>')">
+		                                <span class="glyphicon glyphicon-trash"
+		                                aria-hidden="true"></span>&nbsp;<spring:message
+		                                    code='label.manageacademicdebtgenerationrule.show.dcps' />
+		                        </a> 
+	                        
+	                            
+                       </td>
                     </tr>
                 </c:forEach>
             </tbody>

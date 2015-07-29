@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
@@ -164,6 +165,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         for (final ProductEntry productEntry : bean.getEntries()) {
             AcademicDebtGenerationRuleEntry.create(this, productEntry.getProduct(), productEntry.isCreateDebt());
         }
+        
+        getDegreeCurricularPlansSet().addAll((bean.getDegreeCurricularPlans()));
 
         checkRules();
     }
@@ -199,6 +202,17 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         if (isCreatePaymentReferenceCode() && getPaymentCodePool() == null) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.paymentCodePool.required");
         }
+        
+        if(getDegreeCurricularPlansSet().isEmpty()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.degreeCurricularPlans.required");
+        }
+        
+        for (final DegreeCurricularPlan degreeCurricularPlan : getDegreeCurricularPlansSet()) {
+            if(ExecutionDegree.getByDegreeCurricularPlanAndExecutionYear(degreeCurricularPlan, getExecutionYear()) == null) {
+                throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.degreeCurricularPlan.not.active", degreeCurricularPlan.getName());
+            }
+        }
+        
     }
 
     public boolean isActive() {
@@ -273,9 +287,17 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         final LogBean logBean = new LogBean();
         logBean.processDate = new DateTime();
 
-        for (ExecutionDegree executionDegree : getExecutionYear().getExecutionDegreesSet()) {
-            for (final Registration registration : executionDegree.getDegreeCurricularPlan().getRegistrations()) {
+        for (final DegreeCurricularPlan degreeCurricularPlan : getDegreeCurricularPlansSet()) {
+            for (final Registration registration : degreeCurricularPlan.getRegistrations()) {
                 
+                if(registration.getStudentCurricularPlan(getExecutionYear()) == null) {
+                    continue;
+                }
+                
+                if(!getDegreeCurricularPlansSet().contains(registration.getStudentCurricularPlan(getExecutionYear()).getDegreeCurricularPlan())) {
+                    continue;
+                }
+
                 // Discard registrations not active and with no enrolments
                 if (!registration.hasAnyActiveState(getExecutionYear()) || !registration.hasAnyEnrolmentsIn(getExecutionYear())) {
                     continue;
@@ -297,6 +319,14 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     public void process(final Registration registration) {
         if (!isActive()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
+        }
+        
+        if(registration.getStudentCurricularPlan(getExecutionYear()) == null) {
+            return;
+        }
+        
+        if(!getDegreeCurricularPlansSet().contains(registration.getStudentCurricularPlan(getExecutionYear()).getDegreeCurricularPlan())) {
+            return;
         }
 
         System.out.println("AcademicDebtGenerationRule: Start");
