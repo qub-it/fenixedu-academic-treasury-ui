@@ -29,6 +29,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -396,17 +397,7 @@ public class TuitionServices {
 
             return true;
         } else if (((DebitNote) debitEntry.getFinantialDocument()).isClosed()) {
-            DebtAccount debtAccount = debitEntry.getDebtAccount();
-            final CreditNote creditNote =
-                    CreditNote.create(
-                            debtAccount,
-                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForCreditNote(),
-                                    debtAccount.getFinantialInstitution()).orElse(null), new DateTime(),
-                            ((DebitNote) debitEntry.getFinantialDocument()), null);
-
-            CreditEntry.create(creditNote, debitEntry.getDescription(), debitEntry.getProduct(), debitEntry.getVat(),
-                    debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
-
+            ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(org.fenixedu.academictreasury.util.Constants.bundle("label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"));
             debitEntry.annulOnEvent();
 
             return true;
@@ -632,17 +623,7 @@ public class TuitionServices {
 
             return true;
         } else if (((DebitNote) debitEntry.getFinantialDocument()).isClosed()) {
-            DebtAccount debtAccount = debitEntry.getDebtAccount();
-            final CreditNote creditNote =
-                    CreditNote.create(
-                            debtAccount,
-                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForCreditNote(),
-                                    debtAccount.getFinantialInstitution()).orElse(null), new DateTime(),
-                            ((DebitNote) debitEntry.getFinantialDocument()), null);
-
-            CreditEntry.create(creditNote, debitEntry.getDescription(), debitEntry.getProduct(), debitEntry.getVat(),
-                    debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
-
+            ((DebitNote) debitEntry.getFinantialDocument()).anullDebitNoteWithCreditNote(org.fenixedu.academictreasury.util.Constants.bundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"));
             debitEntry.annulOnEvent();
 
             return true;

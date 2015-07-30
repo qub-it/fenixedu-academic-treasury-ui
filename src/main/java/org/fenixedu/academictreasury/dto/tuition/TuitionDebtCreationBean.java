@@ -81,7 +81,8 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         getExtracurricularEnrolmentsDataSource();
         getImprovementEnrolmentEvaluationsDataSource();
 
-        if (registration != null && executionYear != null && isRegistrationTuition()) {
+        if (registration != null && executionYear != null && isRegistrationTuition()
+                && !TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
             debtDate = TuitionServices.enrolmentDate(registration, executionYear, false);
         } else {
             debtDate = new LocalDate();
@@ -107,8 +108,22 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
     }
 
     private List<ExecutionYear> possibleExecutionYears() {
-        return registration.getEnrolmentsExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
-                .collect(Collectors.toList());
+        final List<ExecutionYear> executionYears =
+                registration.getEnrolmentsExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
+                        .collect(Collectors.toList());
+
+        if(!isRegistrationTuition()) {
+            return executionYears;
+        }
+        
+        final List<ExecutionYear> result = Lists.newArrayList();
+        for (final ExecutionYear executionYear : executionYears) {
+            if (!TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
+                result.add(executionYear);
+            }
+        }
+
+        return result;
     }
 
     public List<TupleDataSourceBean> getRegistrationDataSource() {
@@ -145,7 +160,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
             return tuitionPaymentPlansDataSource;
         }
 
-        if (isRegistrationTuition()) {
+        if (isRegistrationTuition() && !TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
             tuitionPaymentPlansDataSource =
                     TuitionPaymentPlan
                             .find(tuitionPaymentPlanGroup,
@@ -241,7 +256,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
             return inferedPaymentPlanName;
         }
 
-        if (isRegistrationTuition()) {
+        if (isRegistrationTuition() && !TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
             if (TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear) == null) {
                 inferedPaymentPlanName = BundleUtil.getString(Constants.BUNDLE, "label.TuitionDebtCreationBean.infer.impossible");
                 return inferedPaymentPlanName;

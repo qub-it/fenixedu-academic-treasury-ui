@@ -11,7 +11,6 @@ import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
-import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -37,7 +36,6 @@ import org.joda.time.LocalDate;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 import pt.ist.fenixframework.FenixFramework;
-import antlr.StringUtils;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -427,6 +425,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             logBean.registerDebitEntriesOnDebitNote(registration, debitNote);
 
             if (debitNote.isPreparing() && isCloseDebitNote()) {
+                debitNote.setDocumentDueDate(maxDebitEntryDueDate(debitNote));
                 debitNote.closeDocument();
                 logBean.registerDebitNoteClosing(registration, debitNote);
             }
@@ -461,6 +460,11 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             logBean.registerCreatedPaymentReference(registration, paymentCode);
         }
 
+    }
+
+    private LocalDate maxDebitEntryDueDate(final DebitNote debitNote) {
+        final LocalDate maxDate = debitNote.getDebitEntries().max(DebitEntry.COMPARE_BY_DUE_DATE).map(DebitEntry::getDueDate).orElse(new LocalDate());
+        return maxDate.isAfter(new LocalDate()) ? maxDate : new LocalDate();
     }
 
     private boolean allWithTheSameClosedDebitNote(final Set<DebitEntry> debitEntries) {

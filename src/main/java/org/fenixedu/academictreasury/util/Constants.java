@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.I18N;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.joda.time.DateTime;
 
 public class Constants {
@@ -63,4 +64,20 @@ public class Constants {
         return a.divide(b, SCALE, RoundingMode.HALF_EVEN);
     }
 
+    
+    // @formatter: off
+    /**********
+     * BUNDLE *
+     **********/
+    // @formatter: on
+    
+    public static String bundle(final String key, final String ... args) {
+        return BundleUtil.getString(Constants.BUNDLE, key, args);
+    }
+    
+    public static LocalizedString bundleI18N(final String key, final String ... args) {
+        return BundleUtil.getLocalizedString(Constants.BUNDLE, key, args);        
+    }
+    
+    
 }
