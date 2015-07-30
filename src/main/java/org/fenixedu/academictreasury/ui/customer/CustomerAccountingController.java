@@ -19,7 +19,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 //@Component("org.fenixedu.treasury.ui.customer.viewAccounting") <-- Use for duplicate controller name disambiguation
-@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.customer.viewAccount", accessGroup = "logged")
+@SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.customer.viewAccount",
+        accessGroup = "activeStudents")
 @RequestMapping(CustomerAccountingController.CONTROLLER_URL)
 public class CustomerAccountingController extends AcademicTreasuryBaseController {
     public static final String CONTROLLER_URL = "/academictreasury/customer/viewaccount";
@@ -63,9 +64,10 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
         List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
         allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
-        paymentEntries = SettlementNote.findByDebtAccount(debtAccount).filter(x -> x.isClosed() || x.isPreparing())
+        paymentEntries =
+                SettlementNote.findByDebtAccount(debtAccount).filter(x -> x.isClosed() || x.isPreparing())
                         .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
-                .collect(Collectors.toList());
+                        .collect(Collectors.toList());
 
         exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
 

@@ -26,16 +26,19 @@ import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHa
 import org.fenixedu.academictreasury.services.signals.ImprovementEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.StandaloneEnrolmentHandler;
 import org.fenixedu.bennu.signals.Signal;
+import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
+import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Lists;
 
 public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
 
-    /* ------------------------
+    /* ------------------------ 
      * ACADEMIC SERVICE REQUEST
-     * ------------------------
+     * ------------------------ 
      */
 
     @Override
@@ -194,4 +197,18 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         return PersonCustomer.findUnique(person).isPresent();
     }
 
+    @Override
+    public String getRegistrationAccountTreasuryManagementURL(Registration registration) {
+        FinantialInstitution inst =
+                registration.getDegree().getAdministrativeOffice().getFinantialEntity().getFinantialInstitution();
+        Person person = registration.getPerson();
+        PersonCustomer customer = PersonCustomer.findUnique(person).get();
+
+        DebtAccount account = customer.getDebtAccountFor(inst);
+        if (account != null) {
+            return DebtAccountController.READ_URL + customer.getDebtAccountFor(inst).getExternalId();
+        } else {
+            return getPersonAccountTreasuryManagementURL(person);
+        }
+    }
 }
