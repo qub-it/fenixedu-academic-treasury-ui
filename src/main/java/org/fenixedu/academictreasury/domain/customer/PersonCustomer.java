@@ -96,7 +96,7 @@ public class PersonCustomer extends PersonCustomer_Base {
             return null;
         }
 
-        return getPerson().getDefaultPhysicalAddress().getCountryOfResidence().getThreeLetterCode();
+        return getPerson().getDefaultPhysicalAddress().getCountryOfResidence().getCode();
     }
 
     @Override
