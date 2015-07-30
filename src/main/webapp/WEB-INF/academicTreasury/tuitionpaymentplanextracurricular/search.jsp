@@ -230,7 +230,7 @@ ${portal.toolkit()}
                                             arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
                                     </p>
                                 </c:if>
-                                <c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+                                <c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
                                     <p>
                                         <em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
                                                 arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em>
@@ -261,7 +261,7 @@ ${portal.toolkit()}
                                             arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
                                     </p>
                                 </c:if>
-                                <c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+                                <c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
                                     <p>
                                         <em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.unitsParameters"
                                                 arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em>

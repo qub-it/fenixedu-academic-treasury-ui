@@ -587,6 +587,58 @@ class academicalAct.AcademicActBlockingSuspension {
 		}
 	}
 	
+	
+/* --------------------
+ * COURSE FUNCTION COST
+ * --------------------
+ */
+
+class coursefunctioncost.CourseFunctionCost {
+	BigDecimalAT functionCost;
+}
+
+	relation CourseFunctionCostBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		coursefunctioncost.CourseFunctionCost playsRole courseFunctionCosts {
+			multiplicity *;
+		}
+	}
+	
+	
+	relation CourseFunctionCostExecutionYear {
+		.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear {
+			multiplicity 1..1;
+		}
+		
+		coursefunctioncost.CourseFunctionCost playsRole courseFunctionCosts {
+			multiplicity *;
+		}
+	}
+	
+	relation CourseFunctionCostCompetenceCourse {
+		.org.fenixedu.academic.domain.CompetenceCourse playsRole competenceCourses {
+			multiplicity 1..1;
+		}
+		
+		coursefunctioncost.CourseFunctionCost playsRole courseFunctionCosts {
+			multiplicity *;
+		}
+	}
+	
+	relation CourseFunctionCostDegreeCurricularPlan {
+		.org.fenixedu.academic.domain.DegreeCurricularPlan playsRole degreeCurricularPlan {
+			multiplicity 1..1;
+		}
+	
+		coursefunctioncost.CourseFunctionCost playsRole courseFunctionCosts {
+			multiplicity *;
+		}
+	}
+
+	
 /* --------
  * Settings
  * --------

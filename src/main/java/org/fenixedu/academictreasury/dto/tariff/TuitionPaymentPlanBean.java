@@ -192,14 +192,14 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         if (this.tuitionCalculationType != null
                 && (this.tuitionCalculationType.isEcts() || this.tuitionCalculationType.isUnits())
-                && this.ectsCalculationType != null && this.ectsCalculationType.isDefaultPaymentPlanIndexed()
+                && this.ectsCalculationType != null && this.ectsCalculationType.isDependentOnDefaultPaymentPlan()
                 && this.factor == null) {
             errorMessages.add("error.TuitionPaymentPlan.factor.required");
         }
 
         if (this.tuitionCalculationType != null
                 && (this.tuitionCalculationType.isEcts() || this.tuitionCalculationType.isUnits())
-                && this.ectsCalculationType != null && this.ectsCalculationType.isDefaultPaymentPlanIndexed()
+                && this.ectsCalculationType != null && this.ectsCalculationType.isDependentOnDefaultPaymentPlan()
                 && this.totalEctsOrUnits == null) {
             errorMessages.add("error.TuitionPaymentPlan.totalEctsOrUnits.required");
         }

@@ -114,17 +114,15 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.tuitionCalculationType.required");
         }
 
-        if ((isTuitionCalculationByEctsOrUnits() || getTuitionCalculationType().isUnits()) && getEctsCalculationType() == null) {
+        if (isTuitionCalculationByEctsOrUnits() && getEctsCalculationType() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.ectsCalculationType.required");
         }
 
-        if (!(isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed())
-                && getFixedAmount() == null) {
+        if (isFixedAmountRequired() && getFixedAmount() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixedAmount.required");
         }
 
-        if (!(isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed())
-                && !isPositive(getFixedAmount())) {
+        if (isFixedAmountRequired() && !isPositive(getFixedAmount())) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.fixedAmount.must.be.positive");
         }
 
@@ -156,15 +154,19 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
             }
         }
     }
-    
+
+    private boolean isFixedAmountRequired() {
+        return !(isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDependentOnDefaultPaymentPlan());
+    }
+
     private boolean isTuitionCalculationByEctsOrUnits() {
         return getTuitionCalculationType().isEcts() || getTuitionCalculationType().isUnits();
     }
 
     public boolean isDefaultPaymentPlanDependent() {
-        return isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDefaultPaymentPlanIndexed();
+        return isTuitionCalculationByEctsOrUnits() && getEctsCalculationType().isDependentOnDefaultPaymentPlan();
     }
-    
+
     public boolean isAcademicalActBlockingOff() {
         return super.getAcademicalActBlockingOff();
     }
@@ -216,8 +218,8 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 .getTuitionPaymentPlanGroup().isForExtracurricular())) {
             throw new RuntimeException("wrong call");
         }
-        
-        if(getTuitionCalculationType().isFixedAmount()) {
+
+        if (getTuitionCalculationType().isFixedAmount()) {
             return getFixedAmount();
         }
 
@@ -306,8 +308,8 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 fillPriceProperties(academicTreasuryEvent, extracurricularEnrolment, dueDate);
 
         final DebitEntry debitEntry =
-                DebitEntry.create(Optional.empty(), debtAccount, academicTreasuryEvent, vat(when), amount, dueDate, fillPriceProperties,
-                        getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(),
+                DebitEntry.create(Optional.empty(), debtAccount, academicTreasuryEvent, vat(when), amount, dueDate,
+                        fillPriceProperties, getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(),
                         Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, extracurricularEnrolment);

@@ -185,7 +185,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 							<spring:message code="label.TuitionInstallmentTariff.amountPerEcts" 
 								arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
 						</c:if>
-						<c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+						<c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
 							<spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
 								arguments="${installment.factor},${installment.totalEctsOrUnits}" />
 						</c:if>
@@ -206,7 +206,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						<p><spring:message code="label.TuitionInstallmentTariff.amountPerUnits" 
 							arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" /></p>
 					</c:if>
-					<c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+					<c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
 						<p><em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.unitsParameters"
 							arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em></p>
 					</c:if>
@@ -423,7 +423,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				</div>
                 </div>
 			</div>
-			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'">
+			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.factor" />
 				</div>
@@ -432,10 +432,10 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<input id="tuitionInstallmentTariff_factor" class="form-control"
 						type="number" pattern="\d+(\.\d{4})?" min="0" step="0.001" 
                         ng-model="object.factor" name="factor"
-						value='<c:out value='${bean.factor}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'" pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.factor}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')" pattern="\d+(\.\d{2})?" />
 				</div>
 			</div>
-			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'">
+			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')">
 				<div class="col-sm-2 control-label">
 					<span ng-show='object.tuitionCalculationType == "ECTS"'>
 						<spring:message code="label.TuitionInstallmentTariff.totalEctsOrUnits"
@@ -451,7 +451,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<input id="tuitionInstallmentTariff_totalEctsOrUnits"
 						class="form-control" type="number" pattern="[0-9]?" min="0" step="1"
 						ng-model="object.totalEctsOrUnits" name="totalectsorunits"
-						value='<c:out value='${bean.totalEctsOrUnits}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'" pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.totalEctsOrUnits}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')" pattern="\d+(\.\d{2})?" />
 				</div>
 			</div>
 			<div class="form-group row">

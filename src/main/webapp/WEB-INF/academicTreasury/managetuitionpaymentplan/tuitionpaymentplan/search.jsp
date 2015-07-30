@@ -219,12 +219,12 @@ ${portal.toolkit()}
                                         <spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
                                             arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
 	                                </c:if>
-	                                <c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+	                                <c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
                                         <spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
                                                 arguments="${installment.factor},${installment.totalEctsOrUnits}" />
 	                                </c:if>
                                 </p>
-                                <c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+                                <c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
                                     <p>
                                         <spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
                                             arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
@@ -249,7 +249,7 @@ ${portal.toolkit()}
                                             arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
                                     </p>
                                 </c:if>
-                                <c:if test="${installment.ectsCalculationType.defaultPaymentPlanIndexed}">
+                                <c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
                                     <p>
                                         <em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.unitsParameters"
                                                 arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em>

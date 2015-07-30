@@ -238,7 +238,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
                     </div>
 				</div>
 			</div>
-			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'">
+			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.factor" />
 				</div>
@@ -247,10 +247,10 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<input id="tuitionInstallmentTariff_factor" class="form-control"
 						type="number" pattern="\d+(\.\d{4})?" min="0" step="0.001"
                         ng-model="object.factor" name="factor"
-						value="<c:out value='${bean.factor}'/>" ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'" />
+						value="<c:out value='${bean.factor}'/>" ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')" />
 				</div>
 			</div>
-			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'">
+			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')">
 				<div class="col-sm-2 control-label">
 					<span ng-show='object.tuitionCalculationType == "ECTS"'>
 						<spring:message code="label.TuitionInstallmentTariff.totalEctsOrUnits"
@@ -266,7 +266,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<input id="tuitionInstallmentTariff_totalEctsOrUnits"
 						class="form-control" type="number" pattern="[0-9]?" min="0" step="1"
 						ng-model="object.totalEctsOrUnits" name="totalectsorunits"
-						value='<c:out value='${bean.totalEctsOrUnits}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED'" pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.totalEctsOrUnits}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')" pattern="\d+(\.\d{2})?" />
 				</div>
 			</div>
 			<div class="form-group row">
