@@ -302,7 +302,7 @@ ${portal.toolkit()}
                         %>
 	                        <a class="btn btn-warning"
 	                            href="#"
-	                            onClick="javascript:processDelete('<%= request.getAttribute(((AcademicDebtGenerationRule) pageContext.getAttribute("rule")).getExternalId()) %>')">
+	                            onClick="javascript:processDelete('${rule.externalId}')">
 	                                <span class="glyphicon glyphicon-trash"
 	                                aria-hidden="true"></span>&nbsp;<spring:message
 	                                    code='label.delete' />
