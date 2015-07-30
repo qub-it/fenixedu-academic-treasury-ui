@@ -245,14 +245,19 @@ ${portal.angularToolkit()}
                                             </br> <strong><spring:message code="label.customer.PaymentReferenceCode.reference" />: </strong>
                                             <c:out value="${paymentCode.paymentReferenceCode.formattedCode}" />
                                             </br> <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
-                                            <c:if test="${not paymentCode.isFixedAmount }">
+                                            <%-- 
+                                            <c:if test="${not paymentCode.fixedAmount }">
                                                 <c:if test="${not empty pendingEntry.finantialDocument }">
                                                     <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.finantialDocument.totalAmount)}" />
                                                 </c:if>
                                             </c:if>
-                                            <c:if test="${paymentCode.isFixedAmount }">
+                                            <c:if test="${paymentCode.fixedAmount }">
                                                 <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(paymentCode.payableAmount)}" />
                                             </c:if>
+                                            --%>
+                                          <c:if test="${not empty pendingEntry.finantialDocument }">
+                                              <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.finantialDocument.totalAmount)}" />
+                                          </c:if>
 
                                         </p>
                                     </c:if>
