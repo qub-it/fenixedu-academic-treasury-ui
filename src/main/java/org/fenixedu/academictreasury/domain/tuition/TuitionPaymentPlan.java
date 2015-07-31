@@ -108,9 +108,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.customized.required.name");
         }
 
-        if (isCustomized()
-                && (getRegistrationRegimeType() != null || isDefaultPaymentPlan() || getRegistrationProtocol() != null
-                        || getIngression() != null || getCurricularYear() != null || getSemester() != null || isFirstTimeStudent())) {
+        if (isCustomized() && hasStudentSpecificConditionSelected()) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.customized.plan.cannot.have.other.options");
         }
 
@@ -145,6 +143,33 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             throw new AcademicTreasuryDomainException(
                     "error.TuitionPaymentPlan.standalone.and.extracurricular.supports.only.one.installment");
         }
+
+        if (getTuitionPaymentPlanGroup().isForRegistration() && !hasAtLeastOneConditionSpecified()) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.specify.at.least.one.condition");
+        }
+    }
+
+    private boolean hasStudentSpecificConditionSelected() {
+        return getRegistrationRegimeType() != null || isDefaultPaymentPlan() || getRegistrationProtocol() != null
+                || getIngression() != null || getCurricularYear() != null || getSemester() != null || isFirstTimeStudent()
+                || getStatuteType() != null;
+    }
+
+    private boolean hasAtLeastOneConditionSpecified() {
+        boolean hasAtLeastOneCondition = false;
+
+        hasAtLeastOneCondition |= getDefaultPaymentPlan();
+        hasAtLeastOneCondition |= getRegistrationRegimeType() != null;
+        hasAtLeastOneCondition |= getRegistrationProtocol() != null;
+        hasAtLeastOneCondition |= getIngression() != null;
+        hasAtLeastOneCondition |= getCurricularYear() != null;
+        hasAtLeastOneCondition |= getStatuteType() != null;
+        hasAtLeastOneCondition |= getSemester() != null;
+        hasAtLeastOneCondition |= isFirstTimeStudent();
+        hasAtLeastOneCondition |= isCustomized();
+        hasAtLeastOneCondition |= isWithLaboratorialClasses();
+
+        return hasAtLeastOneCondition;
     }
 
     private void createInstallments(final TuitionPaymentPlanBean tuitionPaymentPlanBean) {
@@ -449,14 +474,13 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                     getDegreeCurricularPlan(), getExecutionYear()).collect(Collectors.toSet()));
             allPlans.addAll(TuitionPaymentPlan.find(TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get(),
                     getDegreeCurricularPlan(), getExecutionYear()).collect(Collectors.toSet()));
-            
 
             for (final TuitionPaymentPlan tuitionPaymentPlan : allPlans) {
-                
-                if(tuitionPaymentPlan == this) {
+
+                if (tuitionPaymentPlan == this) {
                     continue;
                 }
-                
+
                 for (final TuitionInstallmentTariff tuitionInstallmentTariff : tuitionPaymentPlan
                         .getTuitionInstallmentTariffsSet()) {
                     if (tuitionInstallmentTariff.isDefaultPaymentPlanDependent()) {
@@ -494,6 +518,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         this.setCurricularYear(null);
         this.setFinantialEntity(null);
         this.setIngression(null);
+        this.setStatuteType(null);
 
         super.deleteDomainObject();
     }

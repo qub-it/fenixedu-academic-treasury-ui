@@ -237,13 +237,15 @@ ${portal.toolkit()}
                                     </p>
                                     <p>&nbsp;</p>
 
-                                    <p>
-                                        <spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
-                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
-                                    </p>
-                                    <p>
-                                        <em><spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" /></em>
-                                    </p>
+									<c:if test="${!installment.ectsCalculationType.defaultPaymentPlanCourseFunctionCostIndexed}">
+	                                    <p>
+	                                        <spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
+	                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
+	                                    </p>
+	                                    <p>
+	                                        <em><spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" /></em>
+	                                    </p>
+                                    </c:if>
                                 </c:if>
                             </c:when>
                             <c:when test="${installment.tuitionCalculationType.units}">
@@ -267,14 +269,16 @@ ${portal.toolkit()}
                                                 arguments="${installment.factor},${installment.totalEctsOrUnits}" /></em>
                                     </p>
                                     <p>&nbsp;</p>
-
-                                    <p>
-                                        <spring:message code="label.TuitionInstallmentTariff.amountPerUnits"
-                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
-                                    </p>
-                                    <p>
-                                        <em><spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" /></em>
-                                    </p>
+									
+									<c:if test="${!installment.ectsCalculationType.defaultPaymentPlanCourseFunctionCostIndexed}">
+	                                    <p>
+	                                        <spring:message code="label.TuitionInstallmentTariff.amountPerUnits"
+	                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
+	                                    </p>
+	                                    <p>
+	                                        <em><spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" /></em>
+	                                    </p>
+	                                </c:if>
                                 </c:if>
                             </c:when>
                         </c:choose>

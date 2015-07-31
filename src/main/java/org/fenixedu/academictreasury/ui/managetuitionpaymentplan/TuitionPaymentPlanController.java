@@ -210,6 +210,16 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
+        List<String> messages = bean.validateStudentConditions();
+        if(!messages.isEmpty()) {
+            for (String m : messages) {
+                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, m),
+                        model);
+            }
+            
+            return createdefinestudentconditions(finantialEntity, executionYear, bean, model);                
+        }
+        
         if (bean.isCustomized() && Strings.isNullOrEmpty(bean.getName())) {
             addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
                     model);

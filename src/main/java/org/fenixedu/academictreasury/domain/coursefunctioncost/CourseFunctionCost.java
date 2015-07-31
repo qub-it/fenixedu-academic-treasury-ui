@@ -74,9 +74,21 @@ public class CourseFunctionCost extends CourseFunctionCost_Base {
                         && l.getDegreeCurricularPlan() == curricularCourse.getDegreeCurricularPlan());
     }
 
+    public static Stream<CourseFunctionCost> find(final DegreeCurricularPlan degreeCurricularPlan,
+            final CompetenceCourse competenceCourse, final ExecutionYear executionYear) {
+        return findAll().filter(
+                l -> l.getExecutionYear() == executionYear && l.getCompetenceCourses() == competenceCourse
+                        && l.getDegreeCurricularPlan() == degreeCurricularPlan);
+    }
+
     public static Optional<CourseFunctionCost> findUnique(final ExecutionYear executionYear,
             final CurricularCourse curricularCourse) {
         return find(executionYear, curricularCourse).findFirst();
+    }
+
+    public static Optional<CourseFunctionCost> findUnique(final DegreeCurricularPlan degreeCurricularPlan,
+            final CompetenceCourse competenceCourse, final ExecutionYear executionYear) {
+        return find(degreeCurricularPlan, competenceCourse, executionYear).findFirst();
     }
 
     @Atomic

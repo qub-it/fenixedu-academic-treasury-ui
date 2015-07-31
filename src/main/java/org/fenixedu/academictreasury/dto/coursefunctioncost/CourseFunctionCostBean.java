@@ -58,7 +58,7 @@ public class CourseFunctionCostBean implements IBean {
 
     public void updateData() {
         executionYearDataSource =
-                ExecutionYear.readOpenExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
+                ExecutionYear.readNotClosedExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
                         .collect(Collectors.toList()).stream()
                         .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
 

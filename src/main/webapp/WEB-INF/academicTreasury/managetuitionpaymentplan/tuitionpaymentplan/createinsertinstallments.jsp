@@ -347,7 +347,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<spring:message code="label.TuitionInstallmentTariff.product" />
 				</div>
 				
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionInstallmentTariff_tuitionInstallmentProduct"
 						name="tuitioninstallmentproduct"
 						ng-model="$parent.object.tuitionInstallmentProduct" theme="bootstrap">
@@ -367,7 +367,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<spring:message code="label.TuitionInstallmentTariff.tuitionCalculationType" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionInstallmentTariff_tuitionCalculationType"
 						name="tuitioncalculationtype"
 						ng-model="$parent.object.tuitionCalculationType" theme="bootstrap"
@@ -393,7 +393,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					</span>
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionInstallmentTariff_ectsCalculationType"
 						name="ectscalculationtype"
 						ng-model="$parent.object.ectsCalculationType" theme="bootstrap"
@@ -411,7 +411,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<spring:message code="label.TuitionInstallmentTariff.fixedAmount" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
                  <div class="input-group">
                         <div class="input-group-addon">
                             <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
@@ -428,7 +428,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<spring:message code="label.TuitionInstallmentTariff.factor" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<input id="tuitionInstallmentTariff_factor" class="form-control"
 						type="number" pattern="\d+(\.\d{4})?" min="0" step="0.001" 
                         ng-model="object.factor" name="factor"
@@ -447,7 +447,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					</span>
 				</div>
 
-				<div class="col-sm-4" >
+				<div class="col-sm-6" >
 					<input id="tuitionInstallmentTariff_totalEctsOrUnits"
 						class="form-control" type="number" pattern="[0-9]?" min="0" step="1"
 						ng-model="object.totalEctsOrUnits" name="totalectsorunits"
@@ -459,7 +459,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<spring:message code="label.TuitionInstallmentTariff.beginDate" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<input id="tuitionInstallmentTariff_beginDate" class="form-control" type="text" name="begindate"  
 						bennu-date="object.beginDate" ng-required="true" />
 					
@@ -474,7 +474,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<spring:message code="label.TuitionInstallmentTariff.dueDateCalculationType" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionInstallmentTariff_dueDateCalculationType"
 						name="duedatecalculationtype"
 						ng-model="$parent.object.dueDateCalculationType" theme="bootstrap"
@@ -493,7 +493,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<spring:message code="label.TuitionInstallmentTariff.fixedDueDate" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<input id="tuitionInstallmentTariff_fixedduedate" class="form-control" 
 						type="text" name="fixedduedate"  bennu-date="object.fixedDueDate" ng-required="object.dueDateCalculationType == 'FIXED_DATE' || object.dueDateCalculationType == 'BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION'" />
 				</div>
@@ -547,7 +547,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<spring:message code="label.TuitionInstallmentTariff.interestType" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionInstallmentTariff_interestType"
 						name="interesttype"
 						ng-model="$parent.object.interestType" theme="bootstrap"
@@ -646,7 +646,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                 </div>
-    			<div style="text-align: right" class="col-sm-4">
+    			<div style="text-align: right" class="col-sm-6">
                  
     				<button type="submit" class="btn btn-primary" role="button"   >
                     <span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<spring:message code="label.add" />

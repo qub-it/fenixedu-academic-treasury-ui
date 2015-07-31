@@ -17,6 +17,7 @@ import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academic.domain.student.StatuteType;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
@@ -229,10 +230,17 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 && this.rate == null) {
             errorMessages.add("error.TuitionPaymentPlan.interestRate.required");
         }
-        
-        if(getTuitionInstallmentBeans().stream().filter(l -> l.getTuitionInstallmentProduct() == getTuitionInstallmentProduct()).count() > 0) {
+
+        if (getTuitionInstallmentBeans().stream().filter(l -> l.getTuitionInstallmentProduct() == getTuitionInstallmentProduct())
+                .count() > 0) {
             errorMessages.add("error.TuitionPaymentPlan.installment.already.with.product");
-            
+        }
+
+        if (getTuitionPaymentPlanGroup().isForRegistration()
+                && (getTuitionCalculationType().isEcts() || getTuitionCalculationType().isUnits())
+                && getEctsCalculationType().isDefaultPaymentPlanCourseFunctionCostIndexed()) {
+            errorMessages
+                    .add("error.TuitionInstallmentTariff.defaultPaymentPlanCourseFunctionCostIndexed.not.supported.for.registrationTuition");
         }
 
         if (!errorMessages.isEmpty()) {
@@ -834,6 +842,42 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         result.add(Constants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
+    }
+
+    public List<String> validateStudentConditions() {
+        List<String> result = Lists.newArrayList();
+        if (!hasAtLeastOneConditionSpecified()) {
+            result.add("error.TuitionPaymentPlan.specify.at.least.one.condition");
+        }
+
+        if (isCustomized() && hasStudentConditionSelected()) {
+            result.add("error.TuitionPaymentPlan.customized.plan.cannot.have.other.options");
+        }
+
+        return result;
+    }
+
+    private boolean hasStudentConditionSelected() {
+        return getRegistrationRegimeType() != null || isDefaultPaymentPlan() || getRegistrationProtocol() != null
+                || getIngression() != null || getCurricularYear() != null || getExecutionSemester() != null
+                || isFirstTimeStudent() || getStatuteType() != null;
+    }
+
+    private boolean hasAtLeastOneConditionSpecified() {
+        boolean hasAtLeastOneCondition = false;
+
+        hasAtLeastOneCondition |= isDefaultPaymentPlan();
+        hasAtLeastOneCondition |= getRegistrationRegimeType() != null;
+        hasAtLeastOneCondition |= getRegistrationProtocol() != null;
+        hasAtLeastOneCondition |= getIngression() != null;
+        hasAtLeastOneCondition |= getCurricularYear() != null;
+        hasAtLeastOneCondition |= getStatuteType() != null;
+        hasAtLeastOneCondition |= getExecutionSemester() != null;
+        hasAtLeastOneCondition |= isFirstTimeStudent();
+        hasAtLeastOneCondition |= isCustomized();
+        hasAtLeastOneCondition |= isWithLaboratorialClasses();
+
+        return hasAtLeastOneCondition;
     }
 
 }

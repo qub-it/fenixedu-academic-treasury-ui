@@ -110,7 +110,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 			<div class="form-group row">
 				<div class="col-sm-2 control-label"><span id="executionYearLabel"><spring:message code="label.TuitionPaymentPlan.executionYear"/></span></div> 
 				
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<label for="executionYearLabel">${executionYear.qualifiedName}</label>
 				</div>
@@ -118,7 +118,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 			<div class="form-group row">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.registrationProtocol"/></div> 
 				
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<ui-select id="tuitionPaymentPlan_registrationProtocol" name="registrationprotocol" ng-model="$parent.object.registrationProtocol" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
@@ -131,7 +131,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 			<div class="form-group row">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.ingression"/></div> 
 				
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionPaymentPlan_ingression" name="ingression" ng-model="$parent.object.ingression" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="ingression.id as ingression in object.ingressionDataSource | filter: $select.search">
@@ -151,9 +151,6 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 						ng-model="object.withLaboratorialClasses" required
                         ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
-					<script>
-						$("#tuitionInstallmentTariff_withLaboratorialClasses").select2().val('<c:out value='${bean.withLaboratorialClasses}'/>');
-					</script>
 				</div>
 			</div>
 
@@ -164,15 +161,12 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<select id="tuitionPaymentPlan_customized" name="customized" class="form-control" ng-model="object.customized"
                     ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">				
 					</select>
-					<script>
-						$("#tuitionPaymentPlan_customized").select2().select2('val', '<c:out value='${bean.customized}'/>');
-					</script>	
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.customized">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.customizedName"/></div> 
 				
-				<div class="col-sm-10">
+				<div class="col-sm-6">
 					<input id="tuitionPaymentPlan_customizedName" class="form-control" type="text" name="customizedname" ng-model="object.name" />
 				</div>
 			</div>		
@@ -182,7 +176,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<spring:message code="label.TuitionInstallmentTariff.tuitionCalculationType" />
 				</div>
 	
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionInstallmentTariff_tuitionCalculationType"
 						name="tuitioncalculationtype"
 						ng-model="$parent.object.tuitionCalculationType" theme="bootstrap"
@@ -208,7 +202,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					</span>
 				</div>
 	
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionInstallmentTariff_ectsCalculationType"
 						name="ectscalculationtype"
 						ng-model="$parent.object.ectsCalculationType" theme="bootstrap"
@@ -226,7 +220,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<spring:message code="label.TuitionInstallmentTariff.fixedAmount" />
 				</div>
 	
-				<div class="col-sm-4">
+				<div class="col-sm-6">
                     <div class="input-group">
                         <div class="input-group-addon">
                             <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
@@ -243,7 +237,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<spring:message code="label.TuitionInstallmentTariff.factor" />
 				</div>
 	
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<input id="tuitionInstallmentTariff_factor" class="form-control"
 						type="number" pattern="\d+(\.\d{4})?" min="0" step="0.001"
                         ng-model="object.factor" name="factor"
@@ -262,7 +256,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					</span>
 				</div>
 	
-				<div class="col-sm-4" >
+				<div class="col-sm-6" >
 					<input id="tuitionInstallmentTariff_totalEctsOrUnits"
 						class="form-control" type="number" pattern="[0-9]?" min="0" step="1"
 						ng-model="object.totalEctsOrUnits" name="totalectsorunits"
@@ -274,7 +268,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<spring:message code="label.TuitionInstallmentTariff.beginDate" />
 				</div>
 	
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<input id="tuitionInstallmentTariff_beginDate" class="form-control" type="text" name="begindate"  
 						ng-required="true" bennu-date="object.beginDate" />
 				</div>
@@ -284,7 +278,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<spring:message code="label.TuitionInstallmentTariff.dueDateCalculationType" />
 				</div>
 	
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<ui-select id="tuitionInstallmentTariff_dueDateCalculationType"
 						name="duedatecalculationtype"
 						ng-model="$parent.object.dueDateCalculationType" theme="bootstrap"
@@ -303,7 +297,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<spring:message code="label.TuitionInstallmentTariff.fixedDueDate" />
 				</div>
 	
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<input id="tuitionInstallmentTariff_fixedduedate" class="form-control" 
 						type="text" name="fixedduedate"  bennu-date="object.fixedDueDate" ng-required="object.dueDateCalculationType == 'FIXED_DATE' || object.dueDateCalculationType == 'BEST_OF_FIXED_DATE_AND_DAYS_AFTER_CREATION'" />
 				</div>
@@ -313,7 +307,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<spring:message code="label.TuitionInstallmentTariff.numberOfDaysAfterCreationForDueDate" />
 				</div>
 	
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<input
 						id="tuitionInstallmentTariff_numberOfDaysAfterCreationForDueDate"
 						class="form-control" type="number" pattern="[0-9]?" min="0" step="1"
@@ -329,9 +323,6 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					<select id="tuitionPaymentPlan_academicalActBlockingOn" name="academicalactblockingon" class="form-control" ng-model="object.academicalActBlockingOn"
                     ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">				
 					</select>
-					<script>
-						$("#tuitionPaymentPlan_academicalActBlockingOn").select2().select2('val', '<c:out value='${bean.academicalActBlockingOn }'/>');
-					</script>	
 				</div>
 			</div>		
 
@@ -347,9 +338,6 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 						ng-model="object.applyInterests" required
                         ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
-					<script>
-						$("#tuitionInstallmentTariff_applyInterests").select2();
-					</script>
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.applyInterests">
@@ -394,9 +382,6 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 						ng-model="object.applyinfirstworkday" ng-required="object.applyInterests && object.interestType == 'DAILY'"
                         ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
-					<script>
-						$("#tuitionInstallmentTariff_applyInFirstWorkday").select2().val('<c:out value='${bean.applyInFirstWorkday}'/>');
-					</script>
 				</div>
 			</div>
 			<div class="form-group row" ng-show="object.applyInterests && object.interestType == 'DAILY'">

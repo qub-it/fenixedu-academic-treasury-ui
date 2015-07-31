@@ -109,7 +109,11 @@ ${portal.toolkit()}
 <div class="col-sm-4">
 	<%-- Relation to side 1 drop down rendered in input --%>
 		 <select id="courseFunctionCost_executionYear" class="js-example-basic-single" name="executionyear">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		 <option value=""></option>
+		 <c:forEach items="${CourseFunctionCost_executionYear_options}" var="ey">
+			 <option value="ey.externalId"><c:out value="${ey.qualifiedName}" /></option>
+		 </c:forEach>
+		 
 		</select>
 				</div>
 </div>		
@@ -123,16 +127,18 @@ ${portal.toolkit()}
 		</select>
 				</div>
 </div>		
+<%-- 
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.CourseFunctionCost.competenceCourses"/></div> 
 
 <div class="col-sm-4">
-	<%-- Relation to side 1 drop down rendered in input --%>
 		 <select id="courseFunctionCost_competenceCourses" class="js-example-basic-single" name="competencecourses">
-		 <option value=""></option> <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%> 
+		 <option value=""></option> 
 		</select>
 				</div>
 </div>		
+--%>
+
 </div>
 <div class="panel-footer">
 	<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.search" />"/>
@@ -176,9 +182,9 @@ ${portal.toolkit()}
 				<%-- Field access / formatting  here CHANGE_ME --%>
 				{
 				"DT_RowId" : '<c:out value='${searchResult.externalId}'/>',
-"degreecurricularplan" : "<c:out value='${searchResult.degreeCurricularPlan}'/>",
-"competencecourses" : "<c:out value='${searchResult.competenceCourses}'/>",
-"executionyear" : "<c:out value='${searchResult.executionYear}'/>",
+"degreecurricularplan" : "<c:out value='${searchResult.degreeCurricularPlan.presentationName}'/>",
+"competencecourses" : "<c:out value='${searchResult.competenceCourses.nameI18N.content}'/>",
+"executionyear" : "<c:out value='${searchResult.executionYear.qualifiedName}'/>",
 "functioncost" : "<c:out value='${searchResult.functionCost}'/>",
 "actions" :
 " <a  class=\"btn btn-xs btn-danger\" href=\"#\" onClick=\"javascript:processDelete('${searchResult.externalId}')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>&nbsp;<spring:message code='label.delete'/></a>" +
@@ -200,11 +206,7 @@ ${portal.toolkit()}
 		</c:forEach>
 	];
 	
-	$("#courseFunctionCost_executionYear").select2(
-		{
-			data : executionYear_options,
-		}	  
-		    );
+	$("#courseFunctionCost_executionYear").select2();
 		    
 		    <%-- If it's not from parameter change param.executionYear to whatever you need (it's the externalId already) --%>
 		    $("#courseFunctionCost_executionYear").select2().select2('val', '<c:out value='${param.executionYear}'/>');
@@ -240,25 +242,24 @@ ${portal.toolkit()}
 		</c:forEach>
 	];
 	
+	<%--
 	$("#courseFunctionCost_competenceCourses").select2(
 		{
 			data : competenceCourses_options,
 		}	  
 		    );
 		    
-		    <%-- If it's not from parameter change param.competenceCourses to whatever you need (it's the externalId already) --%>
 		    $("#courseFunctionCost_competenceCourses").select2().select2('val', '<c:out value='${param.competenceCourses}'/>');
-	<%-- End block for providing competenceCourses options --%>
-	
+	--%>	
 
 
 		var table = $('#searchcoursefunctioncostTable').DataTable({language : {
 			url : "${datatablesI18NUrl}",			
 		},
 		"columns": [
-			{ data: 'degreecurricularplan.presentationName' },
-			{ data: 'competencecourses.nameI18N.content' },
-			{ data: 'executionyear.qualifiedName' },
+			{ data: 'degreecurricularplan' },
+			{ data: 'competencecourses' },
+			{ data: 'executionyear' },
 			{ data: 'functioncost' },
 			{ data: 'actions' }
 			

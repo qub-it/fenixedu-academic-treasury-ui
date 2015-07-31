@@ -117,7 +117,7 @@ angular.module('angularAppCourseFunctionCost', ['ngSanitize', 'ui.select']).cont
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.CourseFunctionCost.degreeCurricularPlan"/></div> 
 
-<div class="col-sm-4">
+<div class="col-sm-10">
 	<%-- Relation to side 1 drop down rendered in input --%>
 		<ui-select id="courseFunctionCost_degreeCurricularPlan" class="" name="degreecurricularplan" ng-model="$parent.object.degreeCurricularPlan" 
 			on-select="executionYearPostback($model)" theme="bootstrap" ng-disabled="disabled" >
@@ -131,10 +131,10 @@ angular.module('angularAppCourseFunctionCost', ['ngSanitize', 'ui.select']).cont
 <div class="form-group row">
 <div class="col-sm-2 control-label"><spring:message code="label.CourseFunctionCost.competenceCourses"/></div> 
 
-<div class="col-sm-4">
+<div class="col-sm-10">
 	<%-- Relation to side 1 drop down rendered in input --%>
 		<ui-select id="courseFunctionCost_competenceCourses" class="" name="competencecourses" 
-			on-select="executionYearPostback()" ng-model="$parent.object.competenceCourses" theme="bootstrap" ng-disabled="disabled" >
+			on-select="executionYearPostback($model)" ng-model="$parent.object.competenceCourses" theme="bootstrap" ng-disabled="disabled" >
     						<ui-select-match >{{$select.selected.text}}</ui-select-match>
     						<ui-select-choices repeat="competenceCourses.id as competenceCourses in object.competenceCoursesDataSource | filter: $select.search">
       							<span ng-bind-html="competenceCourses.text | highlight: $select.search"></span>

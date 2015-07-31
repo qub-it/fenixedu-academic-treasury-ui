@@ -33,7 +33,7 @@ ${portal.angularToolkit()}
 <div class="page-header">
 	<h1><spring:message code="label.manageTuitionPaymentPlan.createTuitionPaymentPlan" /></h1>
 
-	<h3><spring:message code="label.manageTuitionPaymentPlan.createChooseDegreeCurricularPlans" /></h3>
+	<h3><spring:message code="label.manageTuitionPaymentPlan.createDefineStudentConditions" /></h3>
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -192,7 +192,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
-					<ui-select id="tuitionPaymentPlan_statuteType" name="statuteType" ng-model="$parent.object.executionStatuteType" theme="bootstrap" >
+					<ui-select id="tuitionPaymentPlan_statuteType" name="statuteType" ng-model="$parent.object.statuteType" theme="bootstrap" >
 						<ui-select-match >{{$select.selected.text}}</ui-select-match>
 						<ui-select-choices repeat="statuteType.id as statuteType in object.statuteTypeDataSource | filter: $select.search">
 							<span ng-bind-html="statuteType.text | highlight: $select.search"></span>
@@ -226,7 +226,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					</script>	
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.customized == 'true' ">
+			<div class="form-group row" ng-show="object.customized || (object.customized == 'true')">
 				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.customizedName"/></div> 
 				
 				<div class="col-sm-10">

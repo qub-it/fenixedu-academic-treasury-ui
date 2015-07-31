@@ -91,7 +91,7 @@ public class CourseFunctionCostController extends AcademicTreasuryBaseController
         model.addAttribute("searchcoursefunctioncostResultsDataSet", searchcoursefunctioncostResultsDataSet);
         model.addAttribute(
                 "CourseFunctionCost_executionYear_options",
-                ExecutionYear.readOpenExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
+                ExecutionYear.readNotClosedExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
                         .collect(Collectors.toList()));
 
         model.addAttribute("CourseFunctionCost_degreeCurricularPlan_options", DegreeCurricularPlan
@@ -164,7 +164,7 @@ public class CourseFunctionCostController extends AcademicTreasuryBaseController
         return getBeanJson(bean);
     }
 
-    @RequestMapping(value = _CREATEPOSTBACK_URI, method = RequestMethod.POST)
+    @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
     public String create(@RequestParam(value = "bean", required = false) CourseFunctionCostBean bean, Model model,
             RedirectAttributes redirectAttributes) {
 
