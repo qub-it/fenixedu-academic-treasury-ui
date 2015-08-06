@@ -42,24 +42,24 @@ public class DocumentPrinter {
     //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
     public static byte[] printRegistrationTuititionPaymentPlanToODT(Registration registration) {
 
-//        TreasuryDocumentTemplate templateInEntity =
-//                TreasuryDocumentTemplate
-//                        .findByFinantialDocumentTypeAndFinantialEntity(document.getFinantialDocumentType(),
-//                                document.getDebtAccount().getFinantialInstitution().getFinantialEntitiesSet().iterator().next())
-//                        .filter(x -> x.isActive()).findFirst().orElse(null);
+//      TreasuryDocumentTemplate templateInEntity =
+//              TreasuryDocumentTemplate
+//                      .findByFinantialDocumentTypeAndFinantialEntity(document.getFinantialDocumentType(),
+//                              document.getDebtAccount().getFinantialInstitution().getFinantialEntitiesSet().iterator().next())
+//                      .filter(x -> x.isActive()).findFirst().orElse(null);
         DocumentGenerator generator = null;
 
-//        if (templateInEntity != null) {
-//            generator = DocumentGenerator.create(templateInEntity, DocumentGenerator.ODT);
+//      if (templateInEntity != null) {
+//          generator = DocumentGenerator.create(templateInEntity, DocumentGenerator.ODT);
 //
-//        } else {
+//      } else {
         //HACK...
         generator =
                 DocumentGenerator.create(
                         "F:\\O\\fenixedu\\fenixedu-treasury\\src\\main\\resources\\document_templates\\settlementNote.odt",
                         DocumentGenerator.ODT);
-//            throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
-//        }
+//          throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
+//      }
         Person p = registration.getStudent().getPerson();
         PersonCustomer customer = PersonCustomer.findUnique(p).orElse(null);
         FinantialInstitution finst =
@@ -73,8 +73,9 @@ public class DocumentPrinter {
 
         //... add more providers...
 
-        byte[] outputReport = generator.generateReport();
+        byte[] outputReport = org.fenixedu.treasury.services.reports.DocumentPrinter.printDocumentToODT(account);
 
         return outputReport;
     }
+
 }
