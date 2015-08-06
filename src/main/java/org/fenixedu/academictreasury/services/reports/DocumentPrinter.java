@@ -3,12 +3,8 @@ package org.fenixedu.academictreasury.services.reports;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
-import org.fenixedu.academictreasury.services.reports.dataproviders.RegistrationDataProvider;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.services.reports.dataproviders.CustomerDataProvider;
-import org.fenixedu.treasury.services.reports.dataproviders.DebtAccountDataProvider;
-import org.fenixedu.treasury.services.reports.dataproviders.FinantialInstitutionDataProvider;
 import org.fenixedu.treasury.services.reports.helpers.DateHelper;
 import org.fenixedu.treasury.services.reports.helpers.EnumerationHelper;
 import org.fenixedu.treasury.services.reports.helpers.LanguageHelper;
@@ -65,15 +61,9 @@ public class DocumentPrinter {
         FinantialInstitution finst =
                 registration.getDegree().getAdministrativeOffice().getFinantialEntity().getFinantialInstitution();
         DebtAccount account = DebtAccount.findUnique(finst, customer).orElse(null);
-        registerHelpers(generator);
-        generator.registerDataProvider(new RegistrationDataProvider(registration));
-        generator.registerDataProvider(new DebtAccountDataProvider(account));
-        generator.registerDataProvider(new CustomerDataProvider(customer));
-        generator.registerDataProvider(new FinantialInstitutionDataProvider(finst));
-
         //... add more providers...
 
-        byte[] outputReport = org.fenixedu.treasury.services.reports.DocumentPrinter.printDocumentToODT(account);
+        byte[] outputReport = org.fenixedu.treasury.services.reports.DocumentPrinter.printDebtAccountPaymentPlanToODT(account);
 
         return outputReport;
     }
