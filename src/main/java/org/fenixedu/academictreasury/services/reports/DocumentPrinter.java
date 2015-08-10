@@ -30,7 +30,7 @@ public class DocumentPrinter {
 //    }
 
     //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
-    public static byte[] printRegistrationTuititionPaymentPlanToODT(Registration registration) {
+    public static byte[] printRegistrationTuititionPaymentPlan(Registration registration, String outputMimeType) {
 
         Person p = registration.getStudent().getPerson();
         PersonCustomer customer = PersonCustomer.findUnique(p).orElse(null);
@@ -39,7 +39,8 @@ public class DocumentPrinter {
         DebtAccount account = DebtAccount.findUnique(finst, customer).orElse(null);
 
         //Is this correct?!?!? Pleas check
-        byte[] outputReport = org.fenixedu.treasury.services.reports.DocumentPrinter.printDebtAccountPaymentPlanToODT(account);
+        byte[] outputReport =
+                org.fenixedu.treasury.services.reports.DocumentPrinter.printDebtAccountPaymentPlan(account, outputMimeType);
 
         return outputReport;
     }
