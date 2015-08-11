@@ -48,8 +48,8 @@ public class CourseFunctionCost extends CourseFunctionCost_Base {
             throw new AcademicTreasuryDomainException("error.CourseFunctionCost.functionCost.required");
         }
 
-        if (!Constants.isPositive(getFunctionCost())) {
-            throw new AcademicTreasuryDomainException("error.CourseFunctionCost.functionCost.must.be.positive");
+        if (Constants.isNegative(getFunctionCost())) {
+            throw new AcademicTreasuryDomainException("error.CourseFunctionCost.functionCost.must.be.positive.or.zero");
         }
     }
 

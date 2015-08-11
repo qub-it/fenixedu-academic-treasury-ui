@@ -630,7 +630,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         ENROLMENT,
         FACTOR,
         TOTAL_ECTS_OR_UNITS,
-        COURSE_FUNCTION_COST;
+        COURSE_FUNCTION_COST, 
+        DEFAULT_TUITION_TOTAL_AMOUNT;
 
         public LocalizedString getDescriptionI18N() {
             return BundleUtil.getLocalizedString(Constants.BUNDLE, "label." + AcademicTreasuryEventKeys.class.getSimpleName()

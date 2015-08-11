@@ -218,7 +218,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                         getTuitionPaymentPlan().getExecutionYear()).get();
 
         return Constants.divide(Constants.defaultScale(defaultPaymentPlan.tuitionTotalAmount()).multiply(getFactor()),
-                getTotalEctsOrUnits()).multiply(Constants.divide(BigDecimal.ONE, cost.getFunctionCost()).add(BigDecimal.ONE));
+                getTotalEctsOrUnits()).multiply(Constants.divide(cost.getFunctionCost(), BigDecimal.TEN).add(BigDecimal.ONE));
     }
 
     public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent) {
@@ -442,6 +442,14 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                     getFinantialEntity().getFinantialInstitution().getCurrency()
                             .getValueFor(amountToPay(academicTreasuryEvent, enrolment)));
         } else if (getTuitionCalculationType().isEcts() && getEctsCalculationType().isDefaultPaymentPlanCourseFunctionCostIndexed()) {
+            
+            final TuitionPaymentPlan defaultPaymentPlan =
+                    TuitionPaymentPlan.findUniqueDefaultPaymentPlan(getTuitionPaymentPlan().getDegreeCurricularPlan(),
+                            getTuitionPaymentPlan().getExecutionYear()).get();
+
+            propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEFAULT_TUITION_TOTAL_AMOUNT.getDescriptionI18N().getContent(),
+                    defaultPaymentPlan.tuitionTotalAmount().toString());
+            
             propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ECTS_CREDITS.getDescriptionI18N().getContent(),
                     new BigDecimal(enrolment.getCurricularCourse().getEctsCredits()).toString());
             propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.AMOUNT_PER_ECTS.getDescriptionI18N().getContent(),
