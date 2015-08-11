@@ -361,6 +361,11 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     @Atomic(mode = TxMode.WRITE)
     private void processDebtsForRegistration(final Registration registration, final LogBean logBean) {
+        _processDebtsForRegistration(registration, logBean);
+        registration.setBennuForPendingRegistrationsDebtCreation(null);
+    }
+
+    private void _processDebtsForRegistration(final Registration registration, final LogBean logBean) {
         final ExecutionYear executionYear = getExecutionYear();
 
         System.out.println(String.format("[AcademicDebtGenerationRule] processDebtsForRegistration for student '%d'",
@@ -459,7 +464,6 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
             logBean.registerCreatedPaymentReference(registration, paymentCode);
         }
-
     }
 
     private LocalDate maxDebitEntryDueDate(final DebitNote debitNote) {

@@ -24,6 +24,7 @@ import org.fenixedu.academictreasury.services.RegistrationServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.ImprovementEnrolmentHandler;
+import org.fenixedu.academictreasury.services.signals.NormalEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.StandaloneEnrolmentHandler;
 import org.fenixedu.bennu.signals.Signal;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -75,6 +76,10 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         Signal.register(IMPROVEMENT_ENROLMENT, new ImprovementEnrolmentHandler());
     }
 
+    public void registerNormalEnrolmentHandler() {
+        Signal.register(NORMAL_ENROLMENT, new NormalEnrolmentHandler());        
+    }
+    
     @Override
     public void standaloneUnenrolment(final Enrolment standaloneEnrolment) {
         TuitionServices.removeDebitEntryForStandaloneEnrolment(standaloneEnrolment);
@@ -211,4 +216,5 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
             return getPersonAccountTreasuryManagementURL(person);
         }
     }
+
 }

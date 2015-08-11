@@ -639,6 +639,23 @@ class coursefunctioncost.CourseFunctionCost {
 	}
 
 	
+	
+/* ------------------------------------------------------
+ * PENDING ACADEMIC DEBT GENERATION RULE FOR REGISTRATION
+ * ------------------------------------------------------
+ */
+
+relation PendingRegistrationsForAcademicAcademicDebtGenerationRule {
+	.org.fenixedu.bennu.core.domain.Bennu playsRole bennuForPendingRegistrationsDebtCreation {
+		multiplicity 0..1;
+	}
+		
+	.org.fenixedu.academic.domain.student.Registration playsRole pendingRegistrationsForDebtCreation {
+		multiplicity *;
+	}
+}
+
+	
 /* --------
  * Settings
  * --------

@@ -4,11 +4,12 @@ import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGeneratio
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 
-@Task(englishTitle = "Create academic debts", readOnly = true)
+@Task(englishTitle = "Create academic debts for pending registrations", readOnly = true)
 public class AcademicDebtGenerationRuleCronTask extends CronTask {
 
     @Override
     public void runTask() throws Exception {
+        
         AcademicDebtGenerationRule.runAllActive();
     }
 }
