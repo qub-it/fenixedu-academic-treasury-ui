@@ -20,6 +20,9 @@ public class DocumentPrinter {
         DocumentTemplateEngine.registerServiceImplementations(service);
     }
 
+    public static final String PDF = DocumentGenerator.PDF;
+    public static final String ODT = DocumentGenerator.ODT;
+
 //    private static void registerHelpers(DocumentGenerator generator) {
 //        generator.registerHelper("dates", new DateHelper());
 //        generator.registerHelper("lang", new LanguageHelper());
