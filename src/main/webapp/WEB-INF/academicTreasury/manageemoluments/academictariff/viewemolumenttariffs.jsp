@@ -211,8 +211,9 @@ ${portal.toolkit()}
                                 <p>
                                     <strong><spring:message
                                             code="label.AcademicTariff.baseAmount" />:</strong>
-                                    <span>${tariff.baseAmount}
-                                        €</span> <span><em> <c:if
+                                    <span>${finantialEntity.finantialInstitution.currency.getValueFor(tariff.baseAmount)}</span> 
+                                    <span><em> 
+                                    <c:if
                                                 test="${tariff.unitsForBase == 1}">
 											(<spring:message
                                                     code="label.AcademicTariff.unitsForBase.view.singular"
@@ -228,22 +229,19 @@ ${portal.toolkit()}
                                 <p>
                                     <strong><spring:message
                                             code="label.AcademicTariff.unitAmount" />:</strong>
-                                    <span>${tariff.unitAmount}
-                                        €</span>
+                                    <span>${finantialEntity.finantialInstitution.currency.getValueFor(tariff.unitAmount)}</span>
                                 </p>
                             </c:if> <c:if test="${tariff.applyPagesAmount}">
                                 <p>
                                     <strong><spring:message
                                             code="label.AcademicTariff.pageAmount" />:</strong>
-                                    <span>${tariff.pageAmount}
-                                        €</span>
+                                    <span>${finantialEntity.finantialInstitution.currency.getValueFor(tariff.pageAmount)}</span>
                                 </p>
                             </c:if> <c:if test="${tariff.applyMaximumAmount}">
                                 <p>
                                     <strong><spring:message
                                             code="label.AcademicTariff.maximumAmount" />:</strong>
-                                    <span>${tariff.maximumAmount}
-                                        €</span>
+                                    <span>${finantialEntity.finantialInstitution.currency.getValueFor(tariff.maximumAmount)}</span>
                                 </p>
                             </c:if> <c:if test="${tariff.applyUrgencyRate}">
                                 <p>
@@ -256,8 +254,7 @@ ${portal.toolkit()}
                                 <p>
                                     <strong><spring:message
                                             code="label.AcademicTariff.languageTranslationRate" /></strong>
-                                    <span>${tariff.languageTranslationRate}
-                                        %</span>
+                                    <span>${tariff.languageTranslationRate}%</span>
                                 </p>
                             </c:if></td>
                         <td><c:if test="${!tariff.applyInterests}">
@@ -308,7 +305,7 @@ ${portal.toolkit()}
                                         <p>
                                             <strong><spring:message
                                                     code="label.AcademicTariff.interestFixedAmount" />:</strong>
-                                            <span>${tariff.interestRate.interestFixedAmount}</span>
+                                            <span>${finantialEntity.finantialInstitution.currency.getValueFor(tariff.interestRate.interestFixedAmount)}</span>
                                         </p>
                                     </c:if>
                             </c:if></td>

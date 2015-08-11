@@ -94,7 +94,7 @@ ${portal.angularToolkit()}
 </c:if>
 
 <script type="text/javascript">
-angular.module('changeExample', []).controller('ExampleController', ['$scope', function($scope) {
+angular.module('changeExample', [ 'ngSanitize', 'ui.select', 'bennuToolkit' ]).controller('ExampleController', ['$scope', function($scope) {
 	$scope.object=${academicTariffBeanJson};
 	$scope.degreeTypeDropdownInitialized=false;
 	
@@ -143,7 +143,7 @@ function registerJqueryReadyClosure(func) {
                         class="form-control" type="text"
                         name="begindate"
                         value='<c:out value='${not empty academicTariffBean.beginDate ? academicTariffBean.beginDate : "" }'/>'
-                        ng-model="object.beginDate" />
+                        bennu-date="object.beginDate" />
                 </div>
             </div>
 
@@ -156,7 +156,7 @@ function registerJqueryReadyClosure(func) {
                     <input id="academicTariff_endDate"
                         class="form-control" name="enddate" type="text"
                         value='<c:out value='${not empty academicTariffBean.endDate ? academicTariffBean.endDate : "" }'/>'
-                        ng-model="object.endDate">
+                        bennu-date="object.endDate">
                 </div>
             </div>
 
