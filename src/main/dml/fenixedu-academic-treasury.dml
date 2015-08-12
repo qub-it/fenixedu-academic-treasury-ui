@@ -524,6 +524,7 @@ class debtGeneration.AcademicDebtGenerationRule {
 	
 class debtGeneration.AcademicDebtGenerationRuleEntry {
 	boolean createDebt;
+	boolean toCreateAfterLastRegistrationStateDate;
 }
 	
 	relation AcademicDebtGenerationRuleEntryBennu {

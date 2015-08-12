@@ -29,10 +29,12 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
         private Product product;
         private boolean createDebt;
+        private boolean toCreateAfterLastRegistrationStateDate;
 
-        public ProductEntry(Product product, boolean createDebt) {
+        public ProductEntry(Product product, boolean createDebt, boolean toCreateAfterLastRegistrationStateDate) {
             this.product = product;
             this.createDebt = createDebt;
+            this.toCreateAfterLastRegistrationStateDate = toCreateAfterLastRegistrationStateDate;
         }
 
         public Product getProduct() {
@@ -41,6 +43,10 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
         public boolean isCreateDebt() {
             return createDebt;
+        }
+        
+        public boolean isToCreateAfterLastRegistrationStateDate() {
+            return toCreateAfterLastRegistrationStateDate;
         }
     }
 
@@ -59,6 +65,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     private Product product;
     private boolean createDebt;
+    private boolean toCreateAfterLastRegistrationStateDate;
     private PaymentCodePool paymentCodePool;
 
     private List<TupleDataSourceBean> executionYearDataSource = Lists.newArrayList();
@@ -132,7 +139,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
             return;
         }
 
-        entries.add(new ProductEntry(this.product, this.createDebt));
+        entries.add(new ProductEntry(this.product, this.createDebt, this.toCreateAfterLastRegistrationStateDate));
 
         this.product = null;
         this.createDebt = false;
@@ -194,6 +201,14 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     public void setCreateDebt(boolean createDebt) {
         this.createDebt = createDebt;
+    }
+    
+    public boolean isToCreateAfterLastRegistrationStateDate() {
+        return toCreateAfterLastRegistrationStateDate;
+    }
+    
+    public void setToCreateAfterLastRegistrationStateDate(boolean toCreateAfterLastRegistrationStateDate) {
+        this.toCreateAfterLastRegistrationStateDate = toCreateAfterLastRegistrationStateDate;
     }
 
     public ExecutionYear getExecutionYear() {

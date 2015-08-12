@@ -161,7 +161,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         setPaymentCodePool(bean.getPaymentCodePool());
 
         for (final ProductEntry productEntry : bean.getEntries()) {
-            AcademicDebtGenerationRuleEntry.create(this, productEntry.getProduct(), productEntry.isCreateDebt());
+            AcademicDebtGenerationRuleEntry.create(this, productEntry.getProduct(), productEntry.isCreateDebt(), 
+                    productEntry.isToCreateAfterLastRegistrationStateDate());
         }
         
         getDegreeCurricularPlansSet().addAll((bean.getDegreeCurricularPlans()));
@@ -562,8 +563,20 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     return null;
                 }
     
-                final LocalDate enrolmentDate = TuitionServices.enrolmentDate(registration, executionYear, false);
-                createdTuition = TuitionServices.createInferedTuitionForRegistration(registration, executionYear, enrolmentDate, false);
+                if(entry.getToCreateAfterLastRegistrationStateDate()) {
+                    final LocalDate lastRegisteredStateDate = TuitionServices.lastRegisteredDate(registration, executionYear);
+                    if(lastRegisteredStateDate == null) {
+                        return null;
+                    }/* else if(lastRegisteredStateDate.isAfter(new LocalDate())) {
+                        return null;
+                    }*/ else {
+                        createdTuition = TuitionServices.createInferedTuitionForRegistration(registration, executionYear, lastRegisteredStateDate, false);
+                    }
+                } else {
+                    final LocalDate enrolmentDate = TuitionServices.enrolmentDate(registration, executionYear, false);
+                    createdTuition = TuitionServices.createInferedTuitionForRegistration(registration, executionYear, enrolmentDate, false);
+                }
+                
             }
         }
 

@@ -16,12 +16,13 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
     }
 
     protected AcademicDebtGenerationRuleEntry(final AcademicDebtGenerationRule rule, final Product product,
-            final boolean createDebt) {
+            final boolean createDebt, final boolean toCreateAfterLastRegistrationStateDate) {
         this();
 
         setAcademicDebtGenerationRule(rule);
         setProduct(product);
         setCreateDebt(createDebt);
+        setToCreateAfterLastRegistrationStateDate(toCreateAfterLastRegistrationStateDate);
 
         checkRules();
     }
@@ -86,8 +87,8 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
     }
 
     public static AcademicDebtGenerationRuleEntry create(final AcademicDebtGenerationRule rule, final Product product,
-            final boolean createDebt) {
-        return new AcademicDebtGenerationRuleEntry(rule, product, createDebt);
+            final boolean createDebt, final boolean toCreateAfterLastRegistrationStateDate) {
+        return new AcademicDebtGenerationRuleEntry(rule, product, createDebt, toCreateAfterLastRegistrationStateDate);
     }
 
 }

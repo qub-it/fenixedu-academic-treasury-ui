@@ -303,6 +303,8 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 							code="label.AcademicDebtGenerationRuleEntry.product" /></th>
 					<th><spring:message
 							code="label.AcademicDebtGenerationRuleEntry.createDebt" /></th>
+					<th><spring:message
+							code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" /></th>
 					<%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -319,6 +321,15 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 							</c:if>
 	
 							<c:if test="${not entry.createDebt}">
+								<p><strong><spring:message code="label.false" /></strong></p>
+							</c:if>
+						</td>
+						<td>
+							<c:if test="${entry.toCreateAfterLastRegistrationStateDate}">
+								<p><strong><spring:message code="label.true" /></strong></p>
+							</c:if>
+	
+							<c:if test="${not entry.toCreateAfterLastRegistrationStateDate}">
 								<p><strong><spring:message code="label.false" /></strong></p>
 							</c:if>
 						</td>
@@ -384,6 +395,20 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 					</select>
                     </div>
             </div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" />
+				</div>
+
+				<div class="col-sm-2">
+					<select id="academicDebtGenerationRule_toCreateAfterLastRegistrationStateDate"
+						name="toCreateAfterLastRegistrationStateDate" class=""
+						ng-model="object.toCreateAfterLastRegistrationStateDate" 
+						ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+					</select>
+                    </div>
+            </div>            
 			<div class="form-group row">
 				<div class="col-sm-6">
 	                <input style="float:right;" type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" />
