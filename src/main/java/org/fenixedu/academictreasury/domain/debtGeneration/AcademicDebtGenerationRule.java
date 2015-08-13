@@ -567,9 +567,9 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     final LocalDate lastRegisteredStateDate = TuitionServices.lastRegisteredDate(registration, executionYear);
                     if(lastRegisteredStateDate == null) {
                         return null;
-                    }/* else if(lastRegisteredStateDate.isAfter(new LocalDate())) {
+                    } else if(lastRegisteredStateDate.isAfter(new LocalDate())) {
                         return null;
-                    }*/ else {
+                    } else {
                         createdTuition = TuitionServices.createInferedTuitionForRegistration(registration, executionYear, lastRegisteredStateDate, false);
                     }
                 } else {
