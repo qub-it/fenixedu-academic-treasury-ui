@@ -209,6 +209,11 @@ ${portal.toolkit()}
 										(<em><spring:message
                                                 code="label.AcademicDebtGenerationRuleEntry.createDebt" /></em>)
 									</c:if>
+									&nbsp;
+                                    <c:if test="${entry.toCreateAfterLastRegistrationStateDate}">
+										[<em><spring:message
+                                                code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" /></em>]
+									</c:if>
                                 </p>
                             </c:forEach></td>
                         <td>

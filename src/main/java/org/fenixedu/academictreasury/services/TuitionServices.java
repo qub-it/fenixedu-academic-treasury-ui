@@ -717,6 +717,9 @@ public class TuitionServices {
         result.removeAll(registration.getStudentCurricularPlan(executionYear).getExtraCurricularCurriculumLines().stream()
                 .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
 
+        result.removeAll(registration.getStudentCurricularPlan(executionYear).getPropaedeuticCurriculumLines().stream()
+                .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
+
         return result;
     }
 
