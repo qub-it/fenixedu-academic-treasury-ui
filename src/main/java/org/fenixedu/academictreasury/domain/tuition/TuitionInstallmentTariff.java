@@ -324,7 +324,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         final DebitEntry debitEntry =
                 DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat(when), amount, dueDate,
                         fillPriceProperties, getProduct(), standaloneDebitEntryName(standaloneEnrolment).getContent(),
-                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
+                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, standaloneEnrolment);
 
@@ -353,7 +353,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         final DebitEntry debitEntry =
                 DebitEntry.create(Optional.empty(), debtAccount, academicTreasuryEvent, vat(when), amount, dueDate,
                         fillPriceProperties, getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(),
-                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
+                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, extracurricularEnrolment);
 
@@ -426,6 +426,8 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 .getContent(), enrolment.getCurricularCourse().getDegreeCurricularPlan().getName());
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), enrolment
                 .getCurricularCourse().getDegree().getPresentationNameI18N().getContent());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(), enrolment
+                .getCurricularCourse().getDegree().getCode());
 
         if (getTuitionCalculationType().isFixedAmount()) {
             propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FIXED_AMOUNT.getDescriptionI18N().getContent(),
