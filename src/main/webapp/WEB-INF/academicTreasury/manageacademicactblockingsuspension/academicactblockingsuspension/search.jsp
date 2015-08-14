@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page
 	import="org.fenixedu.academictreasury.ui.manageacademicactblockingsuspension.AcademicActBlockingSuspensionController"%>
 <%@page
@@ -56,9 +57,13 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
+		class=""
+		href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>/${debtAccount.externalId}"><spring:message
+			code="label.event.back" /></a> |&nbsp;&nbsp; 
 	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.CREATE_URL %>/${person.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.CREATE_URL %>/${debtAccount.externalId}"><spring:message
 			code="label.event.create" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
@@ -101,7 +106,7 @@ ${portal.toolkit()}
 
 <script type="text/javascript">
 	  function processDelete(externalId) {
-	    url = "${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_TO_DELETE_ACTION_URL %>${person.externalId}/" + externalId;
+	    url = "${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_TO_DELETE_ACTION_URL %>${debtAccount.externalId}/" + externalId;
 	    $("#deleteForm").attr("action", url);
 	    $('#deleteModal').modal('toggle')
 	  }
@@ -192,7 +197,7 @@ ${portal.toolkit()}
 "enddate" : "<c:out value='${searchResult.endDate}'/>",
 "reason" : "<c:out value='${searchResult.reason}'/>",
 "actions" :
-" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/view/${person.externalId}/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
+" <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/manageacademicactblockingsuspension/academicactblockingsuspension/search/view/${debtAccount.externalId}/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
 " <a  class=\"btn btn-xs btn-danger\" href=\"#\" onClick=\"javascript:processDelete('${searchResult.externalId}')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>&nbsp;<spring:message code='label.delete'/></a>" +
                 "" 
 			},

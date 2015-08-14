@@ -5,8 +5,11 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
+import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -106,6 +109,35 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public boolean isPersonCustomer() {
+        return true;
+    }
+
+    public boolean isBlockingAcademicalActs(final LocalDate when) {
+        return DebitEntry.find(this).map(d -> isDebitEntryBlockingAcademicalActs(d, when)).reduce((a, c) -> a || c)
+                .orElse(Boolean.FALSE);
+    }
+
+    public static boolean isDebitEntryBlockingAcademicalActs(final DebitEntry debitEntry, final LocalDate when) {
+        if (debitEntry.isAnnulled()) {
+            return false;
+        }
+
+        if (!debitEntry.isInDebt()) {
+            return false;
+        }
+
+        if (!debitEntry.isDueDateExpired(when)) {
+            return false;
+        }
+
+        if (!AcademicTreasurySettings.getInstance().isAcademicalActBlocking(debitEntry.getProduct())) {
+            return false;
+        }
+
+        if (debitEntry.isAcademicalActBlockingSuspension()) {
+            return false;
+        }
+
         return true;
     }
 

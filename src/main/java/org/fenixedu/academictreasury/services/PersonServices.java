@@ -33,8 +33,7 @@ public class PersonServices {
             return false;
         }
 
-        return AcademicTreasuryEvent.find(PersonCustomer.findUnique(person).get()).filter(l -> l.isBlockingAcademicalActs(when))
-                .count() > 0;
+        return PersonCustomer.findUnique(person).get().isBlockingAcademicalActs(when);
     }
 
     @Subscribe

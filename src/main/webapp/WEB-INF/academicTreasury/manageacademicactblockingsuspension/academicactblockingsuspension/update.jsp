@@ -57,7 +57,7 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.READ_URL %>${person.externalId}/${academicActBlockingSuspension.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.READ_URL %>${debtAccount.externalId}/${academicActBlockingSuspension.externalId}"><spring:message
 			code="label.event.back" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">

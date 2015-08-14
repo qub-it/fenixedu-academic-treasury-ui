@@ -804,10 +804,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
          */
 
         return DebitEntry
-                .findActive(this)
-                .filter(l -> l.isInDebt() && l.isDueDateExpired(when)
-                        && AcademicTreasurySettings.getInstance().isAcademicalActBlocking(l.getProduct())
-                        && !l.isAcademicalActBlockingSuspension()).count() > 0;
+                .find(this)
+                .filter(l -> PersonCustomer.isDebitEntryBlockingAcademicalActs(l, when)).count() > 0;
     }
 
     @Override

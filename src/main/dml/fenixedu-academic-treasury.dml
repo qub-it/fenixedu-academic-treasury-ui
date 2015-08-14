@@ -698,7 +698,8 @@ class settings.AcademicTreasurySettings {
 
 	
 	relation AcademicTreasurySettingsAcademicalActBlockingProduct {
-		settings.AcademicTreasurySettings playsRole academicTreasurySettingsForTuition {
+		/* TODO: Fix relation name 'academicTreasurySettingsForTuition' */
+		protected settings.AcademicTreasurySettings playsRole academicTreasurySettingsForTuition {
 			multiplicity 0..1;
 		}
 		
@@ -709,7 +710,8 @@ class settings.AcademicTreasurySettings {
 	}
 	
 	relation AcademicTreasurySettingsImprovementAcademicTax {
-		settings.AcademicTreasurySettings playsRole academicTreasurySettingsForTuition {
+		/* TODO: Fix relation name 'academicTreasurySettingsForTuition' */
+		protected settings.AcademicTreasurySettings playsRole academicTreasurySettingsForTuition {
 			multiplicity 0..1;
 		}
 	

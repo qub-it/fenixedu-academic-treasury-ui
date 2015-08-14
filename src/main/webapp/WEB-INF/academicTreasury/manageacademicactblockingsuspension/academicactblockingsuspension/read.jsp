@@ -58,7 +58,7 @@ ${portal.toolkit()}
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<form id="deleteForm"
-				action="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_TO_DELETE_ACTION_URL %>/${person.externalId}/${academicActBlockingSuspension.externalId}"
+				action="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_TO_DELETE_ACTION_URL %>/${debtAccount.externalId}/${academicActBlockingSuspension.externalId}"
 				method="POST">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal"
@@ -94,11 +94,11 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_URL %>/${person.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.SEARCH_URL %>/${debtAccount.externalId}"><spring:message
 			code="label.event.back" /></a> |&nbsp;&nbsp; <span
 		class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;<a
 		class=""
-		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.UPDATE_URL %>${person.externalId}/${academicActBlockingSuspension.externalId}"><spring:message
+		href="${pageContext.request.contextPath}<%= AcademicActBlockingSuspensionController.UPDATE_URL %>${debtAccount.externalId}/${academicActBlockingSuspension.externalId}"><spring:message
 			code="label.event.update" /></a> |&nbsp;&nbsp;
 </div>
 <c:if test="${not empty infoMessages}">
