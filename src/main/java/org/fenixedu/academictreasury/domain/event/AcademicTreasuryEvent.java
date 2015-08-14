@@ -625,13 +625,15 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         AMOUNT_PER_ECTS, 
         ENROLLED_COURSES, 
         AMOUNT_PER_COURSE, 
-        DUE_DATE, DEGREE, 
+        DUE_DATE, DEGREE,
+        DEGREE_CODE,
         DEGREE_CURRICULAR_PLAN, 
         ENROLMENT,
         FACTOR,
         TOTAL_ECTS_OR_UNITS,
         COURSE_FUNCTION_COST, 
-        DEFAULT_TUITION_TOTAL_AMOUNT;
+        DEFAULT_TUITION_TOTAL_AMOUNT, 
+        USED_DATE;
 
         public LocalizedString getDescriptionI18N() {
             return BundleUtil.getLocalizedString(Constants.BUNDLE, "label." + AcademicTreasuryEventKeys.class.getSimpleName()
@@ -656,6 +658,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                 propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
                         ((RegistrationAcademicServiceRequest) getAcademicServiceRequest()).getRegistration().getDegree()
                                 .getPresentationNameI18N(getAcademicServiceRequest().getExecutionYear()).getContent());
+                propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(), ((RegistrationAcademicServiceRequest) getAcademicServiceRequest()).getDegree()
+                        .getCode());
             } else if (getAcademicServiceRequest().isRequestForPhd()) {
                 // TODO: Fill
             }
@@ -678,6 +682,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                     .getPresentationNameI18N(getExecutionYear()).getContent());
             propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
                     getRegistration().getDegreeCurricularPlanName());
+            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(), getRegistration().getDegree()
+                    .getCode());
         }
 
         return propertiesMap;

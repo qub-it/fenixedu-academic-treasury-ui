@@ -9,8 +9,10 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.DomainObjectUtil;
 import org.fenixedu.academic.domain.Enrolment;
+import org.fenixedu.academic.domain.serviceRequests.RegistrationAcademicServiceRequest;
 import org.fenixedu.academictreasury.domain.coursefunctioncost.CourseFunctionCost;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
+import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.AcademicTreasuryEventKeys;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.util.Constants;
@@ -209,6 +211,10 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 getTuitionPaymentPlan().getExecutionYear())) {
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.default.payment.plan.not.defined");
         }
+        
+        if(!CourseFunctionCost.findUnique(enrolment.getExecutionYear(), enrolment.getCurricularCourse()).isPresent()) {
+            throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.courseFunctionCourse.not.defined");
+        }
 
         final CourseFunctionCost cost =
                 CourseFunctionCost.findUnique(enrolment.getExecutionYear(), enrolment.getCurricularCourse()).get();
@@ -282,7 +288,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
         updatePriceValuesInEvent(academicTreasuryEvent);
 
-        final Map<String, String> fillPriceProperties = fillPricePropertiesForRegistration(academicTreasuryEvent, dueDate);
+        final Map<String, String> fillPriceProperties = fillPricePropertiesForRegistration(academicTreasuryEvent, dueDate, when);
 
         final DebitEntry debitEntry =
                 DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat(when), amount, dueDate,
@@ -499,7 +505,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
     }
 
     private Map<String, String> fillPricePropertiesForRegistration(final AcademicTreasuryEvent academicTreasuryEvent,
-            final LocalDate dueDate) {
+            final LocalDate dueDate, final LocalDate usedDate) {
 
         if (!getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForRegistration()) {
             throw new RuntimeException("wrong call");
@@ -542,8 +548,16 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                     .getContent(), getTotalEctsOrUnits().toPlainString());
         }
 
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.USED_DATE.getDescriptionI18N().getContent(), usedDate.toString(Constants.DATE_FORMAT));
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DUE_DATE.getDescriptionI18N().getContent(),
                 dueDate.toString(Constants.DATE_FORMAT));
+        
+        propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(), academicTreasuryEvent.getRegistration().getDegree().getCode());
+        propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), academicTreasuryEvent.getRegistration().getDegree()
+                .getPresentationNameI18N(academicTreasuryEvent.getExecutionYear()).getContent());
+        propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
+                academicTreasuryEvent.getRegistration().getDegreeCurricularPlanName());
+        
 
         return propertiesMap;
     }

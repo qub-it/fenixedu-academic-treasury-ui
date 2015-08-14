@@ -14,6 +14,8 @@ public class Constants {
 
     private static final int SCALE = 20;
 
+    public static final int EXTENDED_CURRENCY_DECIMAL_DIGITS = 4;
+    
     public static final String BUNDLE = "resources.AcademicTreasuryResources";
 
     public static final BigDecimal HUNDRED_PERCENT = new BigDecimal("100.00");
