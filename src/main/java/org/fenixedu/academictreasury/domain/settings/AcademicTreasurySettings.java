@@ -17,11 +17,12 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
     }
 
     @Atomic
-    public void edit(final ProductGroup emolumentsProductGroup, final ProductGroup tuitionProductGroup, final AcademicTax improvementAcademicTax, final boolean closeServiceRequestEmolumentsWithDebitNote) {
+    public void edit(final ProductGroup emolumentsProductGroup, final ProductGroup tuitionProductGroup, final AcademicTax improvementAcademicTax, final boolean closeServiceRequestEmolumentsWithDebitNote, boolean runAcademicDebtGenerationRuleOnNormalEnrolment) {
         setEmolumentsProductGroup(emolumentsProductGroup);
         setTuitionProductGroup(tuitionProductGroup);
         setImprovementAcademicTax(improvementAcademicTax);
         setCloseServiceRequestEmolumentsWithDebitNote(closeServiceRequestEmolumentsWithDebitNote);
+        setRunAcademicDebtGenerationRuleOnNormalEnrolment(runAcademicDebtGenerationRuleOnNormalEnrolment);
     }
     
     @Atomic
@@ -40,6 +41,10 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
     
     public boolean isCloseServiceRequestEmolumentsWithDebitNote() {
         return getCloseServiceRequestEmolumentsWithDebitNote();
+    }
+    
+    public boolean isRunAcademicDebtGenerationRuleOnNormalEnrolment() {
+        return getRunAcademicDebtGenerationRuleOnNormalEnrolment();
     }
 
     // @formatter: off

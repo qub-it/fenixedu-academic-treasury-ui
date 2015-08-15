@@ -90,12 +90,13 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
             @RequestParam(value = "tuitionproductgroup", required = false) final ProductGroup tuitionProductGroup,
             @RequestParam(value = "improvementacademictax", required = false) final AcademicTax improvementAcademicTax,
             @RequestParam(value = "closeservicerequestemolumentswithdebitnote", required = false) final boolean closeServiceRequestEmolumentsWithDebitNote,
+            @RequestParam(value = "runacademicdebtgenerationruleonnormalenrolment", required=false) final boolean runAcademicDebtGenerationRuleOnNormalEnrolment,
             final Model model, final RedirectAttributes redirectAttributes) {
 
         try {
 
             AcademicTreasurySettings.getInstance().edit(emolumentsProductGroup, tuitionProductGroup, improvementAcademicTax,
-                    closeServiceRequestEmolumentsWithDebitNote);
+                    closeServiceRequestEmolumentsWithDebitNote, runAcademicDebtGenerationRuleOnNormalEnrolment);
 
             return redirect(READ_URL, model, redirectAttributes);
         } catch (final DomainException de) {

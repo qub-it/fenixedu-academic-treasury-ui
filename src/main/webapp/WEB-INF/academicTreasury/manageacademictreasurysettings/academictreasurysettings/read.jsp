@@ -141,7 +141,20 @@ ${portal.toolkit()}
                             </c:if> <c:if
                                 test="${!academicTreasurySettings.closeServiceRequestEmolumentsWithDebitNote}">
                                 <spring:message code="label.false" />
-                            </c:if></td>
+                            </c:if>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="col-xs-3"><spring:message
+                                code="label.AcademicTreasurySettings.runAcademicDebtGenerationRuleOnNormalEnrolment" /></th>
+                        <td><c:if
+                                test="${academicTreasurySettings.runAcademicDebtGenerationRuleOnNormalEnrolment}">
+                                <spring:message code="label.true" />
+                            </c:if> <c:if
+                                test="${!academicTreasurySettings.runAcademicDebtGenerationRuleOnNormalEnrolment}">
+                                <spring:message code="label.false" />
+                            </c:if>
+                        </td>
                     </tr>
                 </tbody>
             </table>

@@ -138,7 +138,7 @@ ${portal.toolkit()}
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.AcademicTreasurySettings.tuitionProductGroup" />
+                        code="label.AcademicTreasurySettings.improvementAcademicTax" />
                 </div>
 
                 <div class="col-sm-4">
@@ -155,7 +155,7 @@ ${portal.toolkit()}
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
-                    <spring:message code="label.AcademicTreasurySettings.tuitionProductGroup" />
+                    <spring:message code="label.AcademicTreasurySettings.closeServiceRequestEmolumentsWithDebitNote" />
                 </div>
 
 
@@ -172,6 +172,26 @@ ${portal.toolkit()}
 
 
             </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.AcademicTreasurySettings.runAcademicDebtGenerationRuleOnNormalEnrolment" />
+                </div>
+
+
+                <div class="col-sm-2">
+                    <select id="academicTreasurySettings_runacademicdebtgenerationruleonnormalenrolment" name="runacademicdebtgenerationruleonnormalenrolment" class="form-control">
+                        <option value="false"><spring:message code="label.no" /></option>
+                        <option value="true"><spring:message code="label.yes" /></option>
+                    </select>
+                    <script>
+        $("#academicTreasurySettings_runacademicdebtgenerationruleonnormalenrolment").val('<c:out value='${not empty param.runacademicdebtgenerationruleonnormalenrolment ? param.runacademicdebtgenerationruleonnormalenrolment : academicTreasurySettings.runAcademicDebtGenerationRuleOnNormalEnrolment }'/>');
+    </script>
+
+                </div>
+
+
+            </div>
+
             <div class="panel-footer">
                 <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
             </div>

@@ -2306,7 +2306,7 @@
         private void configureAcademicTreasurySettings_FROM_SPREADSHEET() {
             if (!fromAcronymsToFinantialInstitutionList("FF, FL, FMD, FMV, RUL").isEmpty()) {
                 AcademicTreasurySettings.getInstance().edit(ProductGroup.findByCode("EMOLUMENT"), ProductGroup.findByCode("TUITION"),
-                        AcademicTax.findUnique(Product.findUniqueByCode("TAXA_MELHORIA").get()).get(), true);
+                        AcademicTax.findUnique(Product.findUniqueByCode("TAXA_MELHORIA").get()).get(), true, false);
             }
         }
     
