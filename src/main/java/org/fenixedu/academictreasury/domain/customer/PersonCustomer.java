@@ -78,9 +78,16 @@ public class PersonCustomer extends PersonCustomer_Base {
             return null;
         }
 
-        return getPerson().getDefaultPhysicalAddress().getArea() + " "
-                + getPerson().getDefaultPhysicalAddress().getDistrictSubdivisionOfResidence() + " "
-                + getPerson().getDefaultPhysicalAddress().getDistrictOfResidence();
+        return getPerson().getDefaultPhysicalAddress().getArea();
+    }
+
+    @Override
+    public String getDistrict() {
+        if (getPerson().getDefaultPhysicalAddress() == null) {
+            return null;
+        }
+
+        return getPerson().getDefaultPhysicalAddress().getDistrictOfResidence();
     }
 
     @Override
