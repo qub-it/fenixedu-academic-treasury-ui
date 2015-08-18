@@ -281,8 +281,6 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
 
-        System.out.println("AcademicDebtGenerationRule: Start");
-
         final LogBean logBean = new LogBean();
         logBean.processDate = new DateTime();
 

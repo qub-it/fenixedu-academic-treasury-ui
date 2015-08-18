@@ -16,6 +16,7 @@ import org.fenixedu.academic.domain.treasury.ITreasuryBridgeAPI;
 import org.fenixedu.academic.domain.treasury.ITuitionTreasuryEvent;
 import org.fenixedu.academictreasury.domain.academicalAct.AcademicActBlockingSuspension;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.services.AcademicTaxServices;
 import org.fenixedu.academictreasury.services.EmolumentServices;
@@ -215,6 +216,11 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         } else {
             return getPersonAccountTreasuryManagementURL(person);
         }
+    }
+
+    @Override
+    public void createAcademicDebts(final Registration registration) {
+        AcademicDebtGenerationRule.runAllActiveForRegistration(registration);
     }
 
 }
