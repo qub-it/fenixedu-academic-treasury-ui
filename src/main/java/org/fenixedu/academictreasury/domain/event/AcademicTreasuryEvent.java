@@ -322,6 +322,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return DebitEntry.findActive(this).filter(d -> d.getProduct().equals(tariff.getProduct())).count() > 0;
     }
 
+    public boolean isCharged() {
+        return DebitEntry.findActive(this).count() > 0;
+    }
+
     public boolean isChargedWithDebitEntry(final Enrolment enrolment) {
         if (!isForStandaloneTuition() && !isForExtracurricularTuition()) {
             throw new RuntimeException("wrong call");
