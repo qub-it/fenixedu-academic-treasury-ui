@@ -336,19 +336,10 @@ public class AcademicTaxServices {
 
             return true;
         } else if (((DebitNote) debitEntry.getFinantialDocument()).isClosed() && debitEntry.getCreditEntriesSet().isEmpty()) {
-            DebtAccount debtAccount = debitEntry.getDebtAccount();
-            final CreditNote creditNote =
-                    CreditNote.create(
-                            debtAccount,
-                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForCreditNote(),
-                                    debtAccount.getFinantialInstitution()).orElse(null), new DateTime(),
-                            ((DebitNote) debitEntry.getFinantialDocument()), null);
-
-            CreditEntry.create(creditNote, debitEntry.getDescription(), debitEntry.getProduct(), debitEntry.getVat(),
-                    debitEntry.getAmount(), new DateTime(), debitEntry, BigDecimal.ONE);
-
-            creditNote.closeDocument();
-
+            ((DebitNote) debitEntry.getFinantialDocument())
+                .anullDebitNoteWithCreditNote(org.fenixedu.academictreasury.util.Constants
+                            .bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"));
+            
             debitEntry.annulOnEvent();
 
             return true;

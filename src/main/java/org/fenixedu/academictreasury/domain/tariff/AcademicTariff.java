@@ -18,6 +18,7 @@ import org.fenixedu.academic.domain.serviceRequests.RegistrationAcademicServiceR
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.AcademicTreasuryEventKeys;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
@@ -26,8 +27,11 @@ import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
+import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.InterestType;
@@ -38,6 +42,7 @@ import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class AcademicTariff extends AcademicTariff_Base {
@@ -431,6 +436,18 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);
 
+        if (debitEntry != null && AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+            DebtAccount debtAccount = academicTreasuryEvent.getDebtAccount();
+            final DebitNote debitNote =
+                    DebitNote.create(
+                            debtAccount,
+                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
+                                    debtAccount.getFinantialInstitution()).get(), new DateTime());
+
+            debitNote.addDebitNoteEntries(Lists.newArrayList(debitEntry));
+            debitNote.closeDocument();
+        }
+        
         return debitEntry;
     }
 
