@@ -266,7 +266,26 @@ ${portal.toolkit()}
                                         </c:if>
                                     </span>
                                 </p>
-                            </c:if> <c:if test="${rule.closeDebitNote}">
+                            </c:if> 
+
+							<c:if test="${rule.closeDebitNote}">
+                                <p>
+                                    <span><strong><spring:message
+                                                code="label.AcademicDebtGenerationRule.alignAllAcademicTaxesDebitToMaxDueDate" />:</strong></span>
+                                    <span> <c:if
+                                            test="${rule.alignAllAcademicTaxesDebitToMaxDueDate}">
+                                            <spring:message
+                                                code="label.true" />
+                                        </c:if> <c:if
+                                            test="${not rule.alignAllAcademicTaxesDebitToMaxDueDate}">
+                                            <spring:message
+                                                code="label.false" />
+                                        </c:if>
+                                    </span>
+                                </p>
+                            </c:if>
+                                                        
+                            <c:if test="${rule.closeDebitNote}">
                                 <p>
                                     <span><strong><spring:message
                                                 code="label.AcademicDebtGenerationRule.createPaymentReferenceCode" />:</strong></span>

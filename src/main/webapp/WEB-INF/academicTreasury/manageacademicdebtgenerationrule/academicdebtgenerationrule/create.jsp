@@ -241,6 +241,25 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                         </select>
                     </div>
                 </div>
+
+                <div class="form-group row"
+                    ng-show="object.aggregateOnDebitNote === true && object.closeDebitNote === true">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.alignAllAcademicTaxesDebitToMaxDueDate" />
+                    </div>
+
+                    <div class="col-sm-2">
+                        <select
+                            id="academicDebtGenerationRule_alignAllAcademicTaxesDebitToMaxDueDate"
+                            name="alignallacademictaxesdebittomaxduedate"
+                            class="form-control"
+                            ng-model="object.alignAllAcademicTaxesDebitToMaxDueDate" 
+                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                        </select>
+                    </div>
+                </div>
+                
                 <div class="form-group row"
                     ng-show="object.aggregateOnDebitNote === true && object.closeDebitNote === true">
                     <div class="col-sm-2 control-label">

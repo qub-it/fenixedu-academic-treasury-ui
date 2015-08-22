@@ -157,6 +157,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         setAggregateOnDebitNote(bean.isAggregateOnDebitNote());
         setAggregateAllOrNothing(bean.isAggregateAllOrNothing());
         setCloseDebitNote(bean.isCloseDebitNote());
+        setAlignAllAcademicTaxesDebitToMaxDueDate(bean.isAlignAllAcademicTaxesDebitToMaxDueDate());
         setCreatePaymentReferenceCode(bean.isCreatePaymentReferenceCode());
         setPaymentCodePool(bean.getPaymentCodePool());
 
@@ -228,6 +229,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     public boolean isCloseDebitNote() {
         return super.getCloseDebitNote();
+    }
+    
+    public boolean isAlignAllAcademicTaxesDebitToMaxDueDate() {
+        return super.getAlignAllAcademicTaxesDebitToMaxDueDate();
     }
 
     public boolean isCreatePaymentReferenceCode() {
@@ -361,7 +366,6 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     @Atomic(mode = TxMode.WRITE)
     private void processDebtsForRegistration(final Registration registration, final LogBean logBean) {
         _processDebtsForRegistration(registration, logBean);
-        registration.setBennuForPendingRegistrationsDebtCreation(null);
     }
 
     private void _processDebtsForRegistration(final Registration registration, final LogBean logBean) {
@@ -429,7 +433,18 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             logBean.registerDebitEntriesOnDebitNote(registration, debitNote);
 
             if (debitNote.isPreparing() && isCloseDebitNote()) {
-                debitNote.setDocumentDueDate(maxDebitEntryDueDate(debitNote));
+                final LocalDate maxDebitEntryDueDate = maxDebitEntryDueDate(debitNote);
+                debitNote.setDocumentDueDate(maxDebitEntryDueDate);
+                
+                if(isAlignAllAcademicTaxesDebitToMaxDueDate()) {
+                    for (final DebitEntry debitEntry : debitNote.getDebitEntriesSet()) {
+                        if(!AcademicTax.findUnique(debitEntry.getProduct()).isPresent()) {
+                            continue;
+                        }
+                        debitEntry.setDueDate(maxDebitEntryDueDate);
+                    }
+                }
+                
                 debitNote.closeDocument();
                 logBean.registerDebitNoteClosing(registration, debitNote);
             }

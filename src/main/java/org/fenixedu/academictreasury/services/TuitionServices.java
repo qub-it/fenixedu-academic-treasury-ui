@@ -21,20 +21,16 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tuition.TuitionDebitEntryBean;
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.CreditEntry;
-import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.fenixedu.treasury.util.Constants;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -665,27 +661,29 @@ public class TuitionServices {
     }
 
     public static LocalDate lastRegisteredDate(final Registration registration, final ExecutionYear executionYear) {
-        
+
         final RegistrationState lastRegistrationState = registration.getLastRegistrationState(executionYear);
-        
-        if(lastRegistrationState == null) {
+
+        if (lastRegistrationState == null) {
             return null;
         }
-        
-        if(!lastRegistrationState.isActive()) {
+
+        if (!lastRegistrationState.isActive()) {
             return null;
         }
-        
+
         final LocalDate stateDate = lastRegistrationState.getStateDate().toLocalDate();
-        final LocalDate dateOnBeginExecutionYearCivilDate = new LocalDate(executionYear.getBeginCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
-        final LocalDate dateOnEndExecutionYearCivilDate = new LocalDate(executionYear.getBeginCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
-        
-        if(executionYear.containsDate(dateOnBeginExecutionYearCivilDate)) {
+        final LocalDate dateOnBeginExecutionYearCivilDate =
+                new LocalDate(executionYear.getBeginCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
+        final LocalDate dateOnEndExecutionYearCivilDate =
+                new LocalDate(executionYear.getBeginCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
+
+        if (executionYear.containsDate(dateOnBeginExecutionYearCivilDate)) {
             return dateOnBeginExecutionYearCivilDate;
-        } else if(executionYear.containsDate(dateOnEndExecutionYearCivilDate)) {
+        } else if (executionYear.containsDate(dateOnEndExecutionYearCivilDate)) {
             return dateOnEndExecutionYearCivilDate;
         }
-        
+
         return null;
     }
 
@@ -766,4 +764,33 @@ public class TuitionServices {
                 .findFirst().orElse(null);
     }
 
+    public static void enqueueRegistrationForAcademicDebtRuleExecution(final String registrationId) {
+        synchronized (TuitionServices.class) {
+            FenixFramework.atomic(new Runnable() {
+
+                @Override
+                public void run() {
+                    final Registration registration = FenixFramework.getDomainObject(registrationId);
+                    registration.setBennuForPendingRegistrationsDebtCreation(Bennu.getInstance());
+                }
+            });
+        }
+    }
+
+    public static Set<String> dequeueAllRegistrationsForAcademicDebtRuleExecution() {
+        synchronized (TuitionServices.class) {
+            final Set<String> result = Sets.newHashSet();
+            FenixFramework.atomic(new Runnable() {
+
+                @Override
+                public void run() {
+                    result.addAll(Bennu.getInstance().getPendingRegistrationsForDebtCreationSet().stream().map(l -> l.getExternalId())
+                            .collect(Collectors.toSet()));
+                    Bennu.getInstance().getPendingRegistrationsForDebtCreationSet().clear();
+                }
+            });
+
+            return result;
+        }
+    }
 }

@@ -379,6 +379,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         if (!getTuitionPaymentPlanGroup().isForRegistration()) {
             throw new RuntimeException("wrong call");
         }
+        
+        if(academicTreasuryEvent.isCharged()) {
+            return false;
+        }
 
         boolean createdDebitEntries = false;
         for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {

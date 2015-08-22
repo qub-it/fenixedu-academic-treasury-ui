@@ -54,6 +54,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     private boolean aggregateOnDebitNote;
     private boolean aggregateAllOrNothing;
     private boolean closeDebitNote;
+    private boolean alignAllAcademicTaxesDebitToMaxDueDate;
     private boolean createPaymentReferenceCode;
 
     private List<ProductEntry> entries = Lists.newArrayList();
@@ -105,6 +106,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         this.aggregateOnDebitNote = false;
         this.aggregateAllOrNothing = false;
         this.closeDebitNote = false;
+        this.alignAllAcademicTaxesDebitToMaxDueDate = false;
         this.createPaymentReferenceCode = false;
 
     }
@@ -173,6 +175,14 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     public void setCloseDebitNote(boolean closeDebitNote) {
         this.closeDebitNote = closeDebitNote;
+    }
+    
+    public boolean isAlignAllAcademicTaxesDebitToMaxDueDate() {
+        return alignAllAcademicTaxesDebitToMaxDueDate;
+    }
+    
+    public void setAlignAllAcademicTaxesDebitToMaxDueDate(boolean alignAllAcademicTaxesDebitToMaxDueDate) {
+        this.alignAllAcademicTaxesDebitToMaxDueDate = alignAllAcademicTaxesDebitToMaxDueDate;
     }
 
     public boolean isCreatePaymentReferenceCode() {

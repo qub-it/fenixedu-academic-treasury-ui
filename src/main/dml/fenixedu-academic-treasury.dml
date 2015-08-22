@@ -479,6 +479,7 @@ class debtGeneration.AcademicDebtGenerationRule {
 	boolean aggregateOnDebitNote;
 	boolean aggregateAllOrNothing;
 	boolean closeDebitNote;
+	boolean alignAllAcademicTaxesDebitToMaxDueDate;
 	boolean createPaymentReferenceCode;
 }
 
