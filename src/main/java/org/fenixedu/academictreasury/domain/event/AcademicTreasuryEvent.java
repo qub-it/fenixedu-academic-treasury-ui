@@ -362,6 +362,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         throw new RuntimeException("dont know how to handle this!");
     }
 
+    public Optional<? extends DebitEntry> findActiveAcademicServiceRequestDebitEntry() {
+        return DebitEntry.findActive(this).findFirst();
+    }
+    
     public Optional<? extends DebitEntry> findActiveEnrolmentDebitEntry(final Enrolment enrolment) {
         return DebitEntry
                 .findActive(this)

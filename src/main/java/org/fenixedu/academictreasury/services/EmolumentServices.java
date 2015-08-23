@@ -268,4 +268,34 @@ public class EmolumentServices {
 
         return academicServiceRequest.getSituationByType(createEventOnSituation).getSituationDate().toLocalDate();
     }
+
+    public static boolean removeDebitEntryForAcademicService(final AcademicServiceRequest academicServiceRequest) {
+        if (findAcademicTreasuryEvent(academicServiceRequest) == null) {
+            return false;
+        }
+
+        final AcademicTreasuryEvent academicTreasuryEvent = findAcademicTreasuryEvent(academicServiceRequest);
+
+        if (!academicTreasuryEvent.isChargedWithDebitEntry()) {
+            return false;
+        }
+
+        final DebitEntry debitEntry = academicTreasuryEvent.findActiveAcademicServiceRequestDebitEntry().get();
+
+        if (!debitEntry.isProcessedInDebitNote() || ((DebitNote) debitEntry.getFinantialDocument()).isPreparing()) {
+            debitEntry.delete();
+
+            return true;
+        } else if (((DebitNote) debitEntry.getFinantialDocument()).isClosed() && debitEntry.getCreditEntriesSet().isEmpty()) {
+            ((DebitNote) debitEntry.getFinantialDocument())
+                    .anullDebitNoteWithCreditNote(org.fenixedu.academictreasury.util.Constants
+                            .bundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"));
+
+            debitEntry.annulOnEvent();
+
+            return true;
+        }
+
+        return false;
+    }
 }

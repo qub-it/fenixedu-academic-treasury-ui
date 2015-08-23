@@ -23,6 +23,7 @@ import org.fenixedu.academictreasury.services.EmolumentServices;
 import org.fenixedu.academictreasury.services.PersonServices;
 import org.fenixedu.academictreasury.services.RegistrationServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
+import org.fenixedu.academictreasury.services.signals.AcademicServiceRequestCancelOrRejectHandler;
 import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.ImprovementEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.NormalEnrolmentHandler;
@@ -49,6 +50,11 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         //The PERSON CREATE SIGNAL Was replaced for the REGISTRATION CREATE SIGNAL, 
 //        Signal.register(Person.PERSON_CREATE_SIGNAL, new PersonServices());
         Signal.register(Registration.REGISTRATION_CREATE_SIGNAL, new RegistrationServices());
+    }
+    
+    @Override
+    public void registerAcademicServiceRequestCancelOrRejectHandler() {
+        Signal.register(ACADEMIC_SERVICE_REQUEST_REJECT_OR_CANCEL_EVENT, new AcademicServiceRequestCancelOrRejectHandler());        
     }
 
     @Override
