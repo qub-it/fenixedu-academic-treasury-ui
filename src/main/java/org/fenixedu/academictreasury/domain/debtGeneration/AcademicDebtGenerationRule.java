@@ -473,6 +473,11 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
         if (debitNote.isClosed() && isCreatePaymentReferenceCode()
                 && FinantialDocumentPaymentCode.findNewByFinantialDocument(debitNote).count() == 0) {
+            
+            if(!debitNote.getPaymentCodesSet().isEmpty()) {
+                return;
+            }
+            
             final PaymentReferenceCode paymentReferenceCode =
                     getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(debitNote.getDebtAccount().getCustomer(),
                             debitNote.getOpenAmount(), new LocalDate(), debitNote.getDocumentDueDate(), true);
