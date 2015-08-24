@@ -13,18 +13,15 @@ public class ChangeAgreementOnErasmusStudents extends CustomTask {
     public void runTask() throws Exception {
         int count = 0;
         for (final Registration registration : Bennu.getInstance().getRegistrationsSet()) {
-            if(!registration.isActive()) {
-                continue;
-            }
-            
-            if(!registration.getIngressionType().getCode().equals("15")) {
+
+            if(!registration.getIngressionType().getCode().equals("35")) {
                 continue;
             }
             
             getLogger().info(String.format("Change student %d -> '%s' to Erasmus agreement ", 
                     registration.getNumber(), registration.getStudent().getName()));
             
-            registration.setRegistrationProtocol((RegistrationProtocol) FenixFramework.getDomainObject("282836481343490"));
+            //registration.setRegistrationProtocol((RegistrationProtocol) FenixFramework.getDomainObject("282836481343490"));
             count++;
         }
         

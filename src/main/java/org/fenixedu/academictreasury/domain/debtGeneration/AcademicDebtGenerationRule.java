@@ -318,7 +318,17 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     }
     
     @Atomic(mode = TxMode.READ)
-    public void process(final Registration registration) {
+    private void process(final Registration registration) {
+        final LogBean logBean = new LogBean();
+        try {
+            _process(registration, logBean);
+        } catch (final Exception e) {
+            e.printStackTrace();
+            logBean.registerException(registration, e);
+        }
+    }
+    
+    private void _process(final Registration registration, final LogBean logBean) {
         if (!isActive()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
@@ -333,7 +343,6 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
         System.out.println("AcademicDebtGenerationRule: Start");
 
-        final LogBean logBean = new LogBean();
         logBean.processDate = new DateTime();
 
         // Discard registrations not active and with no enrolments
@@ -348,14 +357,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             writeLog(logBean);
             return;
         }
-        
-        try {
-            processDebtsForRegistration(registration, logBean);
-        } catch (final Exception e) {
-            e.printStackTrace();
-            logBean.registerException(registration, e);
-        }
-
+    
+        processDebtsForRegistration(registration, logBean);
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -653,7 +656,15 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 exec.join();
             } catch (InterruptedException e) {
             }
-        }        
+        }
+    }
+    
+    @Atomic(mode=TxMode.WRITE)
+    public static void runAllActiveForRegistrationAtomically(final Registration registration) {
+        final LogBean logBean = new LogBean();
+        for (final AcademicDebtGenerationRule academicDebtGenerationRule : AcademicDebtGenerationRule.findActive().collect(Collectors.toSet())) {
+            academicDebtGenerationRule._process(registration, logBean);
+        }
     }
     
     // @formatter: off
