@@ -251,7 +251,7 @@ ${portal.angularToolkit()}
                                                 </c:if>
                                             </c:if>
                                             <c:if test="${paymentCode.paymentReferenceCode.isFixedAmount() }">
-                                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(paymentCode.payableAmount)}" />
+                                                <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(paymentCode.paymentReferenceCode.payableAmount)}" />
                                             </c:if>
 
                                         </p>
