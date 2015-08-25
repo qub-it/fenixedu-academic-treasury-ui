@@ -1,6 +1,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
+<%@ taglib prefix="joda" uri="http://www.joda.org/joda/time/tags"%>
+
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
 <spring:url var="datatablesBootstrapJsUrl"
@@ -256,7 +258,42 @@ ${portal.toolkit()}
                                             code="label.AcademicTariff.languageTranslationRate" /></strong>
                                     <span>${tariff.languageTranslationRate}%</span>
                                 </p>
-                            </c:if></td>
+                            </c:if>
+
+                            <p>
+                            </p>
+                        
+	                        <c:choose>
+	                            <c:when test="${tariff.dueDateCalculationType.noDueDate}">
+	                                <p>
+		                                <strong><spring:message code="label.AcademicTariff.dueDateCalculationType" />:</strong>
+	                                    <spring:message code="label.TuitionInstallmentTariff.noDueDate" />
+	                                </p>
+	                            </c:when>
+	                            <c:when test="${tariff.dueDateCalculationType.fixedDate}">
+	                                <p>
+		                                <strong><spring:message code="label.AcademicTariff.dueDateCalculationType" />:</strong>
+	                                    <joda:format value="${tariff.fixedDueDate}" style="S-" />
+	                                </p>
+	                            </c:when>
+	                            <c:when test="${tariff.dueDateCalculationType.daysAfterCreation}">
+	                                <p>
+		                                <strong><spring:message code="label.AcademicTariff.dueDateCalculationType" />:</strong>
+	                                    <spring:message code="label.TuitionInstallmentTariff.daysAfterCreation" arguments="${tariff.numberOfDaysAfterCreationForDueDate}" />
+	                                </p>
+	                            </c:when>
+	                            <c:when test="${tariff.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
+	                                <p>
+		                                <strong><spring:message code="label.AcademicTariff.dueDateCalculationType" />:</strong>
+	                                    <joda:format value="${tariff.fixedDueDate}" style="S-" />
+	                                    <spring:message code="label.TuitionInstallmentTariff.bestOfFixedDateAndDaysAfterCreation"
+	                                        arguments="${tariff.numberOfDaysAfterCreationForDueDate}" />
+	                                </p>
+	                            </c:when>
+	                        </c:choose>
+                        
+                            
+                        </td>
                         <td><c:if test="${!tariff.applyInterests}">
                                 <p>
                                     <strong><spring:message
