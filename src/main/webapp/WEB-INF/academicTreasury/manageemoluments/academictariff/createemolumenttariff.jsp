@@ -444,43 +444,41 @@ function registerJqueryReadyClosure(func) {
                 </div>
             </div>
 
-            <c:choose>
-                <c:when
-                    test="${academicTariffBean.dueDateCalculationType.fixedDate || academicTariffBean.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
-                    <div class="form-group row">
-                        <div class="col-sm-2 control-label">
-                            <spring:message
-                                code="label.AcademicTariff.fixedDueDate" />
-                        </div>
-
-                        <div class="col-sm-4">
-                            <input id="academicTariff_fixedDueDate"
-                                class="form-control" type="text"
-                                name="fixedDueDate" bennu-date
-                                value='<c:out value='${not empty academicTariffBean.fixedDueDate ? academicTariffBean.fixedDueDate : "" }'/>'
-                                ng-model="object.fixedDueDate" />
-                        </div>
-                    </div>
-                </c:when>
-                <c:when
-                    test="${academicTariffBean.dueDateCalculationType.daysAfterCreation || academicTariffBean.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
-                    <div class="form-group row">
-                        <div class="col-sm-2 control-label">
-                            <spring:message
-                                code="label.AcademicTariff.numberOfDaysAfterCreationForDueDate" />
-                        </div>
-
-                        <div class="col-sm-4">
-                            <input
-                                id="academicTariff_numberOfDaysAfterCreationForDueDate"
-                                class="form-control" type="text"
-                                name="numberOfDaysAfterCreationForDueDate"
-                                value='${academicTariffBean.numberOfDaysAfterCreationForDueDate}'
-                                ng-model="object.numberOfDaysAfterCreationForDueDate" />
-                        </div>
-                    </div>
-                </c:when>
-            </c:choose>
+			<c:if
+			    test="${academicTariffBean.dueDateCalculationType.fixedDate || academicTariffBean.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
+			    <div class="form-group row">
+			        <div class="col-sm-2 control-label">
+			            <spring:message
+			                code="label.AcademicTariff.fixedDueDate" />
+			        </div>
+			
+			        <div class="col-sm-4">
+			            <input id="academicTariff_fixedDueDate"
+			                class="form-control" type="text"
+			                name="fixedDueDate" bennu-date="object.fixedDueDate"
+			                value='<c:out value='${not empty academicTariffBean.fixedDueDate ? academicTariffBean.fixedDueDate : "" }'/>' />
+			        </div>
+			    </div>
+			</c:if>
+			
+			<c:if
+			    test="${academicTariffBean.dueDateCalculationType.daysAfterCreation || academicTariffBean.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
+			    <div class="form-group row">
+			        <div class="col-sm-2 control-label">
+			            <spring:message
+			                code="label.AcademicTariff.numberOfDaysAfterCreationForDueDate" />
+			        </div>
+			
+			        <div class="col-sm-4">
+			            <input
+			                id="academicTariff_numberOfDaysAfterCreationForDueDate"
+			                class="form-control" type="text"
+			                name="numberOfDaysAfterCreationForDueDate"
+			                value='${academicTariffBean.numberOfDaysAfterCreationForDueDate}'
+			                ng-model="object.numberOfDaysAfterCreationForDueDate" />
+			        </div>
+			    </div>
+			</c:if>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">

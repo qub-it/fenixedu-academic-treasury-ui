@@ -187,6 +187,11 @@ public class AcademicTariffBean implements IBean, Serializable {
         if (!isApplyMaximumAmount()) {
             setMaximumAmount(BigDecimal.ZERO);
         }
+        
+        if (getDueDateCalculationType() != null && (getDueDateCalculationType().isFixedDate() || 
+                getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation()) && getFixedDueDate() == null) {
+            setFixedDueDate(new LocalDate());
+        }
     }
 
     public BigDecimal getAmountPerEctsOrUnit() {
