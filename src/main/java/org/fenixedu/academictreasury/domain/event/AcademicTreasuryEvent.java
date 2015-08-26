@@ -1086,22 +1086,24 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public String getERPIntegrationMetadata() {
-
-        if (this.getDegree() != null && this.getExecutionYear() != null) {
-            return "{\"" + AcademicTreasuryEventKeys.DEGREE_CODE + "\":\"" + this.getDegree().getCode() + "\",\""
-                    + AcademicTreasuryEventKeys.EXECUTION_YEAR + "\":\"" + this.getExecutionYear().getQualifiedName() + "\"}";
+        String degreeCode = "";
+        String executionYear = "";
+//HACK: This should be done using GJSON
+        if (this.getDegree() != null) {
+            degreeCode = this.getDegree().getCode();
         } else {
-            if (this.getDegree() != null) {
-                return "{\"" + AcademicTreasuryEventKeys.DEGREE_CODE + "\":\"" + this.getDegree().getCode() + "\"}";
-
-            }
-            if (this.getExecutionYear() != null) {
-                return "{\"" + AcademicTreasuryEventKeys.EXECUTION_YEAR + "\":\"" + this.getExecutionYear().getQualifiedName()
-                        + "\"}";
+            if (this.getPropertiesMap().containsKey(AcademicTreasuryEventKeys.DEGREE_CODE)) {
+                degreeCode = this.getPropertiesMap().get(AcademicTreasuryEventKeys.DEGREE_CODE);
             }
         }
-
-        return "{}";
+        if (this.getExecutionYear() != null) {
+            executionYear = this.getExecutionYear().getQualifiedName();
+        } else {
+            if (this.getPropertiesMap().containsKey(AcademicTreasuryEventKeys.EXECUTION_YEAR)) {
+                executionYear = this.getPropertiesMap().get(AcademicTreasuryEventKeys.EXECUTION_YEAR);
+            }
+        }
+        return "{\"" + AcademicTreasuryEventKeys.DEGREE_CODE + "\":\"" + degreeCode + "\",\""
+                + AcademicTreasuryEventKeys.EXECUTION_YEAR + "\":\"" + executionYear + "\"}";
     }
-
 }
