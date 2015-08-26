@@ -365,7 +365,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public Optional<? extends DebitEntry> findActiveAcademicServiceRequestDebitEntry() {
         return DebitEntry.findActive(this).findFirst();
     }
-    
+
     public Optional<? extends DebitEntry> findActiveEnrolmentDebitEntry(final Enrolment enrolment) {
         return DebitEntry
                 .findActive(this)
@@ -603,45 +603,13 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     // @formatter:off
     public static enum AcademicTreasuryEventKeys {
-        ACADEMIC_SERVICE_REQUEST_NAME, 
-        ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR, 
-        EXECUTION_YEAR, EXECUTION_SEMESTER,
-        EVALUATION_SEASON, 
-        DETAILED, 
-        URGENT, 
-        LANGUAGE, 
-        BASE_AMOUNT, 
-        UNITS_FOR_BASE, 
-        UNIT_AMOUNT, 
-        ADDITIONAL_UNITS,
-        CALCULATED_UNITS_AMOUNT, 
-        PAGE_AMOUNT, 
-        NUMBER_OF_PAGES, 
-        CALCULATED_PAGES_AMOUNT, 
-        MAXIMUM_AMOUNT, 
-        AMOUNT_WITHOUT_RATES,
-        FOREIGN_LANGUAGE_RATE, 
-        CALCULATED_FOREIGN_LANGUAGE_RATE, 
-        URGENT_PERCENTAGE, 
-        CALCULATED_URGENT_AMOUNT, 
-        FINAL_AMOUNT,
-        TUITION_PAYMENT_PLAN, 
-        TUITION_PAYMENT_PLAN_CONDITIONS, 
-        TUITION_CALCULATION_TYPE, 
-        FIXED_AMOUNT, 
-        ECTS_CREDITS,
-        AMOUNT_PER_ECTS, 
-        ENROLLED_COURSES, 
-        AMOUNT_PER_COURSE, 
-        DUE_DATE, DEGREE,
-        DEGREE_CODE,
-        DEGREE_CURRICULAR_PLAN, 
-        ENROLMENT,
-        FACTOR,
-        TOTAL_ECTS_OR_UNITS,
-        COURSE_FUNCTION_COST, 
-        DEFAULT_TUITION_TOTAL_AMOUNT, 
-        USED_DATE;
+        ACADEMIC_SERVICE_REQUEST_NAME, ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR, EXECUTION_YEAR, EXECUTION_SEMESTER,
+        EVALUATION_SEASON, DETAILED, URGENT, LANGUAGE, BASE_AMOUNT, UNITS_FOR_BASE, UNIT_AMOUNT, ADDITIONAL_UNITS,
+        CALCULATED_UNITS_AMOUNT, PAGE_AMOUNT, NUMBER_OF_PAGES, CALCULATED_PAGES_AMOUNT, MAXIMUM_AMOUNT, AMOUNT_WITHOUT_RATES,
+        FOREIGN_LANGUAGE_RATE, CALCULATED_FOREIGN_LANGUAGE_RATE, URGENT_PERCENTAGE, CALCULATED_URGENT_AMOUNT, FINAL_AMOUNT,
+        TUITION_PAYMENT_PLAN, TUITION_PAYMENT_PLAN_CONDITIONS, TUITION_CALCULATION_TYPE, FIXED_AMOUNT, ECTS_CREDITS,
+        AMOUNT_PER_ECTS, ENROLLED_COURSES, AMOUNT_PER_COURSE, DUE_DATE, DEGREE, DEGREE_CODE, DEGREE_CURRICULAR_PLAN, ENROLMENT,
+        FACTOR, TOTAL_ECTS_OR_UNITS, COURSE_FUNCTION_COST, DEFAULT_TUITION_TOTAL_AMOUNT, USED_DATE;
 
         public LocalizedString getDescriptionI18N() {
             return BundleUtil.getLocalizedString(Constants.BUNDLE, "label." + AcademicTreasuryEventKeys.class.getSimpleName()
@@ -666,8 +634,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                 propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
                         ((RegistrationAcademicServiceRequest) getAcademicServiceRequest()).getRegistration().getDegree()
                                 .getPresentationNameI18N(getAcademicServiceRequest().getExecutionYear()).getContent());
-                propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(), ((RegistrationAcademicServiceRequest) getAcademicServiceRequest()).getDegree()
-                        .getCode());
+                propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
+                        ((RegistrationAcademicServiceRequest) getAcademicServiceRequest()).getDegree().getCode());
             } else if (getAcademicServiceRequest().isRequestForPhd()) {
                 // TODO: Fill
             }
@@ -690,8 +658,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                     .getPresentationNameI18N(getExecutionYear()).getContent());
             propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
                     getRegistration().getDegreeCurricularPlanName());
-            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(), getRegistration().getDegree()
-                    .getCode());
+            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(), getRegistration()
+                    .getDegree().getCode());
         }
 
         return propertiesMap;
@@ -817,9 +785,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
          * and ask if it is in debt
          */
 
-        return DebitEntry
-                .find(this)
-                .filter(l -> PersonCustomer.isDebitEntryBlockingAcademicalActs(l, when)).count() > 0;
+        return DebitEntry.find(this).filter(l -> PersonCustomer.isDebitEntryBlockingAcademicalActs(l, when)).count() > 0;
     }
 
     @Override
@@ -1116,6 +1082,26 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         return DebitEntry.findActive(this).sorted((a, b) -> a.getExternalId().compareTo(b.getExternalId()))
                 .collect(Collectors.<DebitEntry> toList());
+    }
+
+    @Override
+    public String getERPIntegrationMetadata() {
+
+        if (this.getDegree() != null && this.getExecutionYear() != null) {
+            return "{\"" + AcademicTreasuryEventKeys.DEGREE_CODE + "\":\"" + this.getDegree().getCode() + "\",\""
+                    + AcademicTreasuryEventKeys.EXECUTION_YEAR + "\":\"" + this.getExecutionYear().getQualifiedName() + "\"}";
+        } else {
+            if (this.getDegree() != null) {
+                return "{\"" + AcademicTreasuryEventKeys.DEGREE_CODE + "\":\"" + this.getDegree().getCode() + "\"}";
+
+            }
+            if (this.getExecutionYear() != null) {
+                return "{\"" + AcademicTreasuryEventKeys.EXECUTION_YEAR + "\":\"" + this.getExecutionYear().getQualifiedName()
+                        + "\"}";
+            }
+        }
+
+        return "{}";
     }
 
 }
