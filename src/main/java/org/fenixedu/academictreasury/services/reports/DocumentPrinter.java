@@ -22,7 +22,8 @@ import com.qubit.terra.docs.core.DocumentTemplateEngine;
 import com.qubit.terra.docs.core.IDocumentTemplateService;
 
 public class DocumentPrinter {
-    private static final String TEMPLATES_TUITIONS_PAYMENT_PLAN_ODT = "templates/tuitionsPaymentPlan.odt";
+    private static final String TEMPLATES_TUITIONS_PAYMENT_PLAN = "templates/tuitionsPaymentPlan";
+    private static final String TEMPLATES_TUITIONS_PAYMENT_PLAN_EXTENSION = "odt";
     static {
         registerService();
     }
@@ -55,11 +56,17 @@ public class DocumentPrinter {
 
         DocumentGenerator generator = null;
 
+        //TODO refactor: there should be an application runtime configuration to enable those templates
+        //Gets file templates/tuitionsPaymentPlan-NIF.odt
         InputStream resourceAsStream =
-                DocumentGenerator.class.getClassLoader().getResourceAsStream(TEMPLATES_TUITIONS_PAYMENT_PLAN_ODT);
-
+                DocumentGenerator.class.getClassLoader().getResourceAsStream(
+                        TEMPLATES_TUITIONS_PAYMENT_PLAN + "-" + account.getFinantialInstitution().getFiscalNumber() + "."
+                                + TEMPLATES_TUITIONS_PAYMENT_PLAN_EXTENSION);
         if (resourceAsStream == null) {
-            throw new RuntimeException("Template must be in class path in " + TEMPLATES_TUITIONS_PAYMENT_PLAN_ODT);
+            //Fallback to default file if there is no specific file for the institution
+            resourceAsStream =
+                    DocumentGenerator.class.getClassLoader().getResourceAsStream(
+                            TEMPLATES_TUITIONS_PAYMENT_PLAN + "." + TEMPLATES_TUITIONS_PAYMENT_PLAN_EXTENSION);
         }
         generator = DocumentGenerator.create(resourceAsStream, outputMimeType);
 //          throw new TreasuryDomainException("error.ReportExecutor.document.template.not.available");
