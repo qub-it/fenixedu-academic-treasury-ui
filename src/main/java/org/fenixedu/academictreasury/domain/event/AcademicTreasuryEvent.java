@@ -623,6 +623,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     private Map<String, String> fillPropertiesMap() {
         final Map<String, String> propertiesMap = Maps.newHashMap();
 
+        //THIS IS WRONG!!! - Ricardo Pedro 5-9-2015
+        // The properties MAP SHOULD BE FILLED WITH KEY:VALUE
+        // Then in the JSP should be used the "getDescriptionI18N().getContent()" to show to the description
+
         if (isForAcademicServiceRequest()) {
             propertiesMap.put(AcademicTreasuryEventKeys.ACADEMIC_SERVICE_REQUEST_NAME.getDescriptionI18N().getContent(),
                     ServiceRequestType.findUnique(getAcademicServiceRequest()).getName().getContent());
