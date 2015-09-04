@@ -32,6 +32,8 @@ import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -43,6 +45,7 @@ import com.google.common.collect.Sets;
 public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base {
 
     public static final String TREASURY_OPERATION_LOG_TYPE = "AcademicDebtGenerationRuleLog";
+    private static Logger logger = LoggerFactory.getLogger(AcademicDebtGenerationRule.class);
 
     public static Comparator<AcademicDebtGenerationRule> COMPARATOR_BY_EXECUTION_YEAR =
             new Comparator<AcademicDebtGenerationRule>() {
@@ -344,7 +347,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             return;
         }
 
-        System.out.println("AcademicDebtGenerationRule: Start");
+        logger.info("AcademicDebtGenerationRule: Start");
 
         logBean.processDate = new DateTime();
 
@@ -377,8 +380,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     private void _processDebtsForRegistration(final Registration registration, final LogBean logBean) {
         final ExecutionYear executionYear = getExecutionYear();
 
-        System.out.println(String.format("[AcademicDebtGenerationRule] processDebtsForRegistration for student '%d'",
-                registration.getStudent().getNumber()));
+        logger.info(String.format("[AcademicDebtGenerationRule] processDebtsForRegistration for student '%d'", registration
+                .getStudent().getNumber()));
 
         // For each product try to grab or create if requested
         final Set<DebitEntry> debitEntries = Sets.newHashSet();
