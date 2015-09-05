@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.domain.debtGeneration;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -39,6 +40,7 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 import pt.ist.fenixframework.FenixFramework;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 
@@ -369,7 +371,16 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     @Atomic(mode = TxMode.WRITE)
     private void writeLog(final LogBean logBean) {
-        TreasuryOperationLog.create(logBean.log.toString(), this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
+        int MAX_LENGTH = 32 * 1024;
+        int length = logBean.log.length();
+        if (length <= MAX_LENGTH) {
+            TreasuryOperationLog.create(logBean.log.toString(), this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
+        } else {
+            List<String> splitToList = Splitter.fixedLength(MAX_LENGTH).splitToList(logBean.log.toString());
+            for (String str : splitToList) {
+                TreasuryOperationLog.create(str, this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
+            }
+        }
     }
 
     @Atomic(mode = TxMode.WRITE)
