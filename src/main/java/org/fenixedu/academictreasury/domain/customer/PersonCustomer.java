@@ -1,5 +1,6 @@
 package org.fenixedu.academictreasury.domain.customer;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -8,7 +9,9 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -120,8 +123,14 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     public boolean isBlockingAcademicalActs(final LocalDate when) {
-        return DebitEntry.find(this).map(d -> isDebitEntryBlockingAcademicalActs(d, when)).reduce((a, c) -> a || c)
-                .orElse(Boolean.FALSE);
+
+        if (DebtAccount.find(this).map(da -> Constants.isGreaterThan(da.getTotalInDebt(), BigDecimal.ZERO)).reduce((a, c) -> a || c)
+                .orElse(Boolean.FALSE)) {
+            return DebitEntry.find(this).map(d -> isDebitEntryBlockingAcademicalActs(d, when)).reduce((a, c) -> a || c)
+                    .orElse(Boolean.FALSE);
+        }
+        
+        return false;
     }
 
     public static boolean isDebitEntryBlockingAcademicalActs(final DebitEntry debitEntry, final LocalDate when) {
