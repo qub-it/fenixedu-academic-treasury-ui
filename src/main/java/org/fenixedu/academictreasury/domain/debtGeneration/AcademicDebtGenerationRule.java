@@ -370,18 +370,18 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     }
 
 //HACK: RSP DISABLE FOR TESTING LOCK's ON DATABASE
-    //@Atomic(mode = TxMode.WRITE)
+    @Atomic(mode = TxMode.WRITE)
     private void writeLog(final LogBean logBean) {
-        //int MAX_LENGTH = 32 * 1024;
-        //int length = logBean.log.length();
-        //if (length <= MAX_LENGTH) {
-      //      TreasuryOperationLog.create(logBean.log.toString(), this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
-        //} else {
-        //    List<String> splitToList = Splitter.fixedLength(MAX_LENGTH).splitToList(logBean.log.toString());
-        //    for (String str : splitToList) {
-        //        TreasuryOperationLog.create(str, this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
-        //    }
-        //}
+        int MAX_LENGTH = 32 * 1024;
+        int length = logBean.log.length();
+        if (length <= MAX_LENGTH) {
+            TreasuryOperationLog.create(logBean.log.toString(), this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
+        } else {
+            List<String> splitToList = Splitter.fixedLength(MAX_LENGTH).splitToList(logBean.log.toString());
+            for (String str : splitToList) {
+                TreasuryOperationLog.create(str, this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
+            }
+        }
     }
 
     @Atomic(mode = TxMode.WRITE)
