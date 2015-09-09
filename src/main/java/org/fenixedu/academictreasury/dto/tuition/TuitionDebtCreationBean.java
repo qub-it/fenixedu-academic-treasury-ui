@@ -2,12 +2,12 @@ package org.fenixedu.academictreasury.dto.tuition;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
-import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
@@ -24,6 +24,7 @@ import org.joda.time.LocalDate;
 import pt.ist.fenixframework.Atomic;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class TuitionDebtCreationBean implements Serializable, IBean {
 
@@ -50,6 +51,8 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
 
     private TuitionPaymentPlanGroup tuitionPaymentPlanGroup;
     private AcademicTax academicTax;
+    
+    private boolean forceCreation = false;
 
     public TuitionDebtCreationBean(final DebtAccount debtAccount, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup) {
         this.debtAccount = debtAccount;
@@ -108,8 +111,14 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
     }
 
     private List<ExecutionYear> possibleExecutionYears() {
+        Set<ExecutionYear> possibleExecutionYears = Sets.newHashSet(ExecutionYear.readNotClosedExecutionYears());
+        
+        if(!isForceCreation()) {
+            possibleExecutionYears = Sets.newHashSet(registration.getEnrolmentsExecutionYears());
+        }
+        
         final List<ExecutionYear> executionYears =
-                registration.getEnrolmentsExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
+                possibleExecutionYears.stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
                         .collect(Collectors.toList());
 
         if(!isRegistrationTuition()) {
@@ -118,7 +127,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         
         final List<ExecutionYear> result = Lists.newArrayList();
         for (final ExecutionYear executionYear : executionYears) {
-            if (!TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
+            if (isForceCreation() || !TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
                 result.add(executionYear);
             }
         }
@@ -160,7 +169,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
             return tuitionPaymentPlansDataSource;
         }
 
-        if (isRegistrationTuition() && !TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
+        if (isRegistrationTuition() && ( isForceCreation() || !TuitionServices.normalEnrolments(registration, executionYear).isEmpty())) {
             tuitionPaymentPlansDataSource =
                     TuitionPaymentPlan
                             .find(tuitionPaymentPlanGroup,
@@ -360,6 +369,14 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
 
     public void setEnrolment(Enrolment enrolment) {
         this.enrolment = enrolment;
+    }
+    
+    public boolean isForceCreation() {
+        return forceCreation;
+    }
+    
+    public void setForceCreation(boolean forceCreation) {
+        this.forceCreation = forceCreation;
     }
 
 }

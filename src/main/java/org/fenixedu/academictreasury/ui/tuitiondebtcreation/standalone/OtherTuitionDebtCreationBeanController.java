@@ -264,21 +264,21 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
                             bean.getDebtDate(), false);
                 } else {
                     TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(),
-                            bean.getDebtDate(), false, bean.getTuitionPaymentPlan());
+                            bean.getDebtDate(), bean.isForceCreation(), bean.getTuitionPaymentPlan());
                 }
             } else if (bean.isStandaloneTuition()) {
                 if (bean.isInfered()) {
-                    TuitionServices.createInferedTuitionForStandalone(bean.getEnrolment(), bean.getDebtDate());
+                    TuitionServices.createInferedTuitionForStandalone(bean.getEnrolment(), bean.getDebtDate(), bean.isForceCreation());
                 } else {
                     TuitionServices.createTuitionForStandalone(bean.getEnrolment(), bean.getTuitionPaymentPlan(),
-                            bean.getDebtDate());
+                            bean.getDebtDate(), bean.isForceCreation());
                 }
             } else if (bean.isExtracurricularTuition()) {
                 if (bean.isInfered()) {
-                    TuitionServices.createInferedTuitionForExtracurricular(bean.getEnrolment(), bean.getDebtDate());
+                    TuitionServices.createInferedTuitionForExtracurricular(bean.getEnrolment(), bean.getDebtDate(), bean.isForceCreation());
                 } else {
                     TuitionServices.createTuitionForExtracurricular(bean.getEnrolment(), bean.getTuitionPaymentPlan(),
-                            bean.getDebtDate());
+                            bean.getDebtDate(), bean.isForceCreation());
                 }
             }
 

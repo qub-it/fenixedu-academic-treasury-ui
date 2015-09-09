@@ -117,6 +117,16 @@ ${portal.angularToolkit()}
 								$scope.object = angular
 										.fromJson('${academicTaxDebtCreationBeanJson}');
 								// $scope.$apply();
+								$scope.booleanvalues = [
+										{
+											name : '<spring:message code="label.no"/>',
+											value : false
+										},
+										{
+											name : '<spring:message code="label.yes"/>',
+											value : true
+										} ];
+
 
 								$scope.postBack = createAngularPostbackFunction($scope);
 
@@ -157,6 +167,23 @@ ${portal.angularToolkit()}
                     <span
                         ng-bind-html="academicTax.text | highlight: $select.search"></span>
                     </ui-select-choices> </ui-select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.TuitionDebtCreationBean.forceCreation" />
+                </div>
+
+                <div class="col-sm-2">
+
+                    <select id="tuitionDebtCreationBean_forceCreation"
+                        name="forceCreation" class="form-control"
+                        ng-model="object.forceCreation"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues"
+                        on-select="onBeanChange($model)">
+                    </select>
                 </div>
             </div>
 

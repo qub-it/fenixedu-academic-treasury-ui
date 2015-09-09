@@ -50,9 +50,10 @@ public class AcademicTaxServices {
 
     @Atomic
     public static AcademicTaxDebitEntryBean calculateAcademicTax(final Registration registration,
-            final ExecutionYear executionYear, final AcademicTax academicTax, final LocalDate debtDate) {
+            final ExecutionYear executionYear, final AcademicTax academicTax, final LocalDate debtDate, 
+            final boolean forceCreation) {
 
-        if (TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
+        if (!forceCreation && TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
             return null;
         }
 
@@ -101,14 +102,14 @@ public class AcademicTaxServices {
 
     @Atomic
     public static boolean createAcademicTax(final Registration registration, final ExecutionYear executionYear,
-            final AcademicTax academicTax) {
-        return createAcademicTax(registration, executionYear, academicTax, new LocalDate());
+            final AcademicTax academicTax, final boolean forceCreation) {
+        return createAcademicTax(registration, executionYear, academicTax, new LocalDate(), forceCreation);
     }
     
     @Atomic
     public static boolean createAcademicTax(final Registration registration, final ExecutionYear executionYear,
-            final AcademicTax academicTax, final LocalDate when) {
-        if (TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
+            final AcademicTax academicTax, final LocalDate when, final boolean forceCreation) {
+        if (!forceCreation && TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
             return false;
         }
 

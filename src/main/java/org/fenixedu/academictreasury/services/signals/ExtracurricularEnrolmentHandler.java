@@ -11,7 +11,7 @@ public class ExtracurricularEnrolmentHandler {
     @Subscribe
     public void extracurricularEnrolment(final DomainObjectEvent<Enrolment> event) {
         TuitionServices.createInferedTuitionForExtracurricular(event.getInstance(), event.getInstance().getCreationDateDateTime()
-                .toLocalDate());
+                .toLocalDate(), false);
     }
 
 }

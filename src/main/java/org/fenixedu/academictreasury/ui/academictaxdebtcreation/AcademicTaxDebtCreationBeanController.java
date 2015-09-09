@@ -203,7 +203,7 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                 model.addAttribute(
                         "debt",
                         AcademicTaxServices.calculateAcademicTax(bean.getRegistration(), bean.getExecutionYear(),
-                                bean.getAcademicTax(), bean.getDebtDate()));
+                                bean.getAcademicTax(), bean.getDebtDate(), bean.isForceCreation()));
             }
 
             return jspPage("confirmacademictaxdebtcreation");
@@ -228,7 +228,7 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                 AcademicTaxServices.createImprovementTax(bean.getImprovementEvaluation(), bean.getDebtDate());
             } else {
                 AcademicTaxServices.createAcademicTax(bean.getRegistration(), bean.getExecutionYear(), bean.getAcademicTax(),
-                        bean.getDebtDate());
+                        bean.getDebtDate(), bean.isForceCreation());
             }
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicTax.debit.entries.created.success"), model);

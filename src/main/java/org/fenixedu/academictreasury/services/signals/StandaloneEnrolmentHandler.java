@@ -11,7 +11,7 @@ public class StandaloneEnrolmentHandler {
     @Subscribe
     public void standaloneEnrolment(final DomainObjectEvent<Enrolment> event) {
         TuitionServices.createInferedTuitionForStandalone(event.getInstance(), event.getInstance().getCreationDateDateTime()
-                .toLocalDate());
+                .toLocalDate(), false);
     }
     
 }

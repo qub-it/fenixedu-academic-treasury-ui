@@ -148,6 +148,23 @@ ${portal.angularToolkit()}
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
+                        code="label.TuitionDebtCreationBean.forceCreation" />
+                </div>
+
+                <div class="col-sm-2">
+
+                    <select id="tuitionDebtCreationBean_forceCreation"
+                        name="forceCreation" class="form-control"
+                        ng-model="object.forceCreation"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues"
+                        on-select="onRegistrationChange($model)">
+                    </select>
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
                         code="label.TuitionDebtCreationBean.registration" />
                 </div>
 

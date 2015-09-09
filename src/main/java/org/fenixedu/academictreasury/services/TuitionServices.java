@@ -56,7 +56,7 @@ public class TuitionServices {
     public static boolean createTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
             final LocalDate when, final boolean forceCreationIfNotEnrolled, TuitionPaymentPlan tuitionPaymentPlan) {
 
-        if (!isToPayRegistrationTuition(registration, executionYear)) {
+        if (!isToPayRegistrationTuition(registration, executionYear) && !forceCreationIfNotEnrolled) {
             return false;
         }
 
@@ -189,12 +189,12 @@ public class TuitionServices {
     }
 
     @Atomic
-    public static boolean createInferedTuitionForStandalone(final Enrolment standaloneEnrolment, final LocalDate when) {
-        return createInferedTuitionForStandalone(Sets.newHashSet(standaloneEnrolment), when);
+    public static boolean createInferedTuitionForStandalone(final Enrolment standaloneEnrolment, final LocalDate when, final boolean forceCreation) {
+        return createInferedTuitionForStandalone(Sets.newHashSet(standaloneEnrolment), when, forceCreation);
     }
 
     @Atomic
-    public static boolean createInferedTuitionForStandalone(final Set<Enrolment> standaloneEnrolments, final LocalDate when) {
+    public static boolean createInferedTuitionForStandalone(final Set<Enrolment> standaloneEnrolments, final LocalDate when, final boolean forceCreation) {
 
         if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == null) {
             return false;
@@ -237,7 +237,7 @@ public class TuitionServices {
                     TuitionPaymentPlan.inferTuitionPaymentPlanForStandaloneEnrolment(registration, executionYear,
                             standaloneEnrolment);
 
-            created |= createTuitionForStandalone(standaloneEnrolment, tuitionPaymentPlan, when);
+            created |= createTuitionForStandalone(standaloneEnrolment, tuitionPaymentPlan, when, forceCreation);
         }
 
         return created;
@@ -245,7 +245,7 @@ public class TuitionServices {
 
     @Atomic
     public static boolean createTuitionForStandalone(final Enrolment standaloneEnrolment,
-            final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate when) {
+            final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate when, final boolean forceCreation) {
 
         if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == null) {
             return false;
@@ -260,6 +260,10 @@ public class TuitionServices {
         final ExecutionYear executionYear = standaloneEnrolment.getExecutionYear();
         final PersonCustomer personCustomer = PersonCustomer.findUnique(person).get();
 
+        if (!isToPayRegistrationTuition(registration, executionYear) && !forceCreation) {
+            return false;
+        }
+        
         if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
                 .isPresent()) {
             DebtAccount.create(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer);
@@ -414,13 +418,13 @@ public class TuitionServices {
     }
 
     @Atomic
-    public static boolean createInferedTuitionForExtracurricular(final Enrolment extracurricularEnrolment, final LocalDate when) {
-        return createInferedTuitionForExtracurricular(Sets.newHashSet(extracurricularEnrolment), when);
+    public static boolean createInferedTuitionForExtracurricular(final Enrolment extracurricularEnrolment, final LocalDate when, final boolean forceCreation) {
+        return createInferedTuitionForExtracurricular(Sets.newHashSet(extracurricularEnrolment), when, forceCreation);
     }
 
     @Atomic
     public static boolean createInferedTuitionForExtracurricular(final Set<Enrolment> extracurricularEnrolments,
-            final LocalDate when) {
+            final LocalDate when, final boolean forceCreation) {
 
         if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == null) {
             return false;
@@ -461,7 +465,7 @@ public class TuitionServices {
                     TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear,
                             extracurricularEnrolment);
 
-            created |= createTuitionForExtracurricular(extracurricularEnrolment, tuitionPaymentPlan, when);
+            created |= createTuitionForExtracurricular(extracurricularEnrolment, tuitionPaymentPlan, when, forceCreation);
         }
 
         return created;
@@ -469,7 +473,7 @@ public class TuitionServices {
 
     @Atomic
     public static boolean createTuitionForExtracurricular(final Enrolment extracurricularEnrolment,
-            final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate when) {
+            final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate when, final boolean forceCreation) {
 
         if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == null) {
             return false;
@@ -483,6 +487,10 @@ public class TuitionServices {
         final Person person = registration.getPerson();
         final ExecutionYear executionYear = extracurricularEnrolment.getExecutionYear();
         final PersonCustomer personCustomer = PersonCustomer.findUnique(person).get();
+
+        if (!isToPayRegistrationTuition(registration, executionYear) && !forceCreation) {
+            return false;
+        }
 
         if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
                 .isPresent()) {

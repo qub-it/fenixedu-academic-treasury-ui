@@ -4,27 +4,22 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.EnrolmentEvaluation;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
-import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
-import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
-import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.services.TuitionServices;
-import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 public class AcademicTaxDebtCreationBean implements Serializable, IBean {
 
@@ -45,6 +40,8 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
     private AcademicTax academicTax;
     
     private boolean improvementTaxSelected;
+
+    private boolean forceCreation = false;
 
     public AcademicTaxDebtCreationBean(final DebtAccount debtAccount) {
         this.debtAccount = debtAccount;
@@ -106,6 +103,11 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
         if(isImprovementTax()) {
             return TuitionServices.orderedEnrolledAndImprovementExecutionYears(registration);
         } else {
+            if(isForceCreation()) {
+                return Sets.newHashSet(ExecutionYear.readNotClosedExecutionYears()).stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
+                .collect(Collectors.toList());
+            }
+            
             return TuitionServices.orderedEnrolledExecutionYears(registration);
         }
     }
@@ -226,6 +228,14 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
     
     public void setImprovementEvaluation(EnrolmentEvaluation improvementEvaluation) {
         this.improvementEvaluation = improvementEvaluation;
+    }
+    
+    public boolean isForceCreation() {
+        return forceCreation;
+    }
+    
+    public void setForceCreation(boolean forceCreation) {
+        this.forceCreation = forceCreation;
     }
     
 }

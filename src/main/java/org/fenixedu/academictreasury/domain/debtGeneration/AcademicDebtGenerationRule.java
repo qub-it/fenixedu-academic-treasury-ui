@@ -392,9 +392,6 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     private void _processDebtsForRegistration(final Registration registration, final LogBean logBean) {
         final ExecutionYear executionYear = getExecutionYear();
 
-        logger.info(String.format("[AcademicDebtGenerationRule] processDebtsForRegistration for student '%d'", registration
-                .getStudent().getNumber()));
-
         // For each product try to grab or create if requested
         final Set<DebitEntry> debitEntries = Sets.newHashSet();
 
@@ -573,7 +570,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     return null;
                 }
 
-                if (AcademicTaxServices.createAcademicTax(registration, executionYear, academicTax)) {
+                if (AcademicTaxServices.createAcademicTax(registration, executionYear, academicTax, false)) {
                     logBean.registerCreatedAcademicTreasuryEvent(registration, academicTax);
                 }
             }
