@@ -162,11 +162,11 @@ public class AcademicTaxServices {
     }
 
     public static boolean isRegistrationFirstYear(final Registration registration, final ExecutionYear executionYear) {
-        return registration.getStartExecutionYear() == executionYear;
+        return registration.getRegistrationYear() == executionYear;
     }
     
     public static boolean isRegistrationSubsequentYear(final Registration registration, final ExecutionYear executionYear) {
-        return registration.getStartExecutionYear().isBefore(executionYear);
+        return registration.getRegistrationYear().isBefore(executionYear);
     }
 
     public static boolean isAppliableOnRegistration(final AcademicTax academicTax, final Registration registration,
