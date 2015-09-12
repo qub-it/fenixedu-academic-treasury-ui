@@ -180,13 +180,13 @@ ${portal.toolkit()}
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.AcademicActBlockingSuspension.versioningUpdatedBy" /></th>
-						<td><c:out value='${academicActBlockingSuspension.versioningUpdatedBy}' />
+						<td><c:out value='${academicActBlockingSuspension.versioningUpdatedBy.username}' />
 						</td>
 					</tr>
 					<tr>
 						<th scope="row" class="col-xs-3"><spring:message
 								code="label.AcademicActBlockingSuspension.versioningUpdateDate" /></th>
-						<td><joda:format value="${academicActBlockingSuspension.versioningUpdateDate}" style="S-" /></td>
+						<td><joda:format value="${academicActBlockingSuspension.versioningUpdateDate.date}" style="S-" /></td>
 					</tr>
 
 
