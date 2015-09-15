@@ -288,13 +288,16 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     @Atomic(mode = TxMode.READ)
     public void process() {
+        logger.info(String.format("[AcademicDebtGenerationRule] START: %s", getExternalId()));
+        
         if (!isActive()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
 
         final LogBean logBean = new LogBean();
         logBean.processDate = new DateTime();
-
+        
+        long timeInMillis = System.currentTimeMillis();
         for (final DegreeCurricularPlan degreeCurricularPlan : getDegreeCurricularPlansSet()) {
             for (final Registration registration : degreeCurricularPlan.getRegistrations()) {
 
@@ -320,8 +323,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 }
             }
         }
+        
+        logger.info(String.format("[AcademicDebtGenerationRule] Elapsed: %d", (System.currentTimeMillis() - timeInMillis)));
 
-        writeLog(logBean);
+//        writeLog(logBean);
     }
 
     @Atomic(mode = TxMode.READ)

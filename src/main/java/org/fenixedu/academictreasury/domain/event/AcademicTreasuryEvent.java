@@ -490,7 +490,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     protected static Stream<? extends AcademicTreasuryEvent> findForRegistrationTuition(final Registration registration,
             final ExecutionYear executionYear) {
-        return findAll()
+//      return findAll().filter(e -> e.isForRegistrationTuition() && e.getRegistration() == registration
+//              && e.getExecutionYear() == executionYear);
+//        
+        return registration.getAcademicTreasuryEventSet().stream()
                 .filter(e -> e.isForRegistrationTuition() && e.getRegistration() == registration
                         && e.getExecutionYear() == executionYear);
     }
@@ -578,7 +581,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             final ExecutionYear executionYear, final AcademicTax academicTax) {
         final PersonCustomer pc = PersonCustomer.findUnique(registration.getPerson()).orElse(null);
 
-        return findAll().filter(
+        return academicTax.getAcademicTreasuryEventSet().stream().filter(
                 e -> e.isForAcademicTax()
                         && e.getAcademicTax() == academicTax
                         && e.getExecutionYear() == executionYear
