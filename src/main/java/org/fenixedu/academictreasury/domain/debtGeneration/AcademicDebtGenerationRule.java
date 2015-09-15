@@ -326,7 +326,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         
         logger.info(String.format("[AcademicDebtGenerationRule] Elapsed: %d", (System.currentTimeMillis() - timeInMillis)));
 
-//        writeLog(logBean);
+        writeLog(logBean);
     }
 
     @Atomic(mode = TxMode.READ)
@@ -377,16 +377,16 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 //HACK: RSP DISABLE FOR TESTING LOCK's ON DATABASE
     @Atomic(mode = TxMode.WRITE)
     private void writeLog(final LogBean logBean) {
-        int MAX_LENGTH = 32 * 1024;
-        int length = logBean.log.length();
-        if (length <= MAX_LENGTH) {
-            TreasuryOperationLog.create(logBean.log.toString(), this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
-        } else {
-            List<String> splitToList = Splitter.fixedLength(MAX_LENGTH).splitToList(logBean.log.toString());
-            for (String str : splitToList) {
-                TreasuryOperationLog.create(str, this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
-            }
-        }
+//        int MAX_LENGTH = 32 * 1024;
+//        int length = logBean.log.length();
+//        if (length <= MAX_LENGTH) {
+//            TreasuryOperationLog.create(logBean.log.toString(), this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
+//        } else {
+//            List<String> splitToList = Splitter.fixedLength(MAX_LENGTH).splitToList(logBean.log.toString());
+//            for (String str : splitToList) {
+//                TreasuryOperationLog.create(str, this.getExternalId(), TREASURY_OPERATION_LOG_TYPE);
+//            }
+//        }
     }
 
     @Atomic(mode = TxMode.WRITE)
@@ -403,6 +403,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         // For each product try to grab or create if requested
         final Set<DebitEntry> debitEntries = Sets.newHashSet();
 
+        long startCreatingDebts = System.currentTimeMillis();
+        
         for (final AcademicDebtGenerationRuleEntry entry : getAcademicDebtGenerationRuleEntriesSet()) {
             final Product product = entry.getProduct();
 
@@ -423,6 +425,9 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             }
         }
 
+        logger.info(String.format("[AcademicDebtGenerationRule][%d] Debit entries in: %d", registration
+                .getStudent().getNumber(), System.currentTimeMillis() - startCreatingDebts));
+        
         if (!isAggregateOnDebitNote()) {
             return;
         }
@@ -432,6 +437,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             return;
         }
 
+        long startDebitNote = System.currentTimeMillis();
+        
         DebitNote debitNote = null;
         if (isAllWithClosedDebitNote(debitEntries)) {
             logBean.registerAllWithClosedDebitNote(registration);
@@ -494,6 +501,11 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             }
         }
 
+        logger.info(String.format("[AcademicDebtGenerationRule][%d] Debit note in: %d", registration
+                .getStudent().getNumber(), System.currentTimeMillis() - startDebitNote));
+        
+        long startPaymentCodes = System.currentTimeMillis();
+        
         if (debitNote.isClosed() && isCreatePaymentReferenceCode()
                 && FinantialDocumentPaymentCode.findNewByFinantialDocument(debitNote).count() == 0
                 && FinantialDocumentPaymentCode.findUsedByFinantialDocument(debitNote).count() == 0) {
@@ -510,6 +522,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
             logBean.registerCreatedPaymentReference(registration, paymentCode);
         }
+        
+        logger.info(String.format("[AcademicDebtGenerationRule][%d] Payment codes in: %d", registration
+                .getStudent().getNumber(), System.currentTimeMillis() - startPaymentCodes));
+        
     }
 
     private LocalDate maxDebitEntryDueDate(final DebitNote debitNote) {
