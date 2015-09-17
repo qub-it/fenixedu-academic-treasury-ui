@@ -457,5 +457,10 @@ ${portal.angularToolkit()}
 	$(document).ready(function() {
 		//Enable Bootstrap Tabs
 		$('#tabs').tab();
+		
+		var oTable = $('#pendingDocuments').dataTable();
+		if(oTable) {
+			oTable.fnSort([[1, 'asc']]);			
+		}
 	});
 </script>
