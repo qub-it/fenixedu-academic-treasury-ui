@@ -4,6 +4,7 @@ enum org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituatio
 enum org.fenixedu.academic.domain.student.RegistrationRegimeType                                        as RegistrationRegimeTypeT;
 enum org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType                                as TuitionCalculationType;
 enum org.fenixedu.academictreasury.domain.tuition.EctsCalculationType                                   as EctsCalculationType;
+enum org.fenixedu.academictreasury.domain.reports.DebtReportRequestType                                 as DebtReportRequestType;
 
 valueType java.math.BigDecimal as BigDecimalAT
 {
@@ -721,5 +722,62 @@ class settings.AcademicTreasurySettings {
 			multiplicity 0..1;
 		}
 	}
+
 	
+/* *******************
+ * DEBT REPORT REQUEST
+ * *******************
+ */
+ 
+class reports.DebtReportRequest {
+	DebtReportRequestType type;
+	LocalDate beginDate;
+	LocalDate endDate;
+}
+ 
+class reports.DebtReportRequestResultFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+} 
+ 
+ 	relation DebtReportRequestBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
 	
+		reports.DebtReportRequest playsRole debtReportRequests {
+			multiplicity *;
+		}
+	}
+	
+
+	relation PendingDebtReportRequestBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennuForPendingReportRequests {
+			multiplicity 1..1;
+		}
+	
+		reports.DebtReportRequest playsRole pendingReportRequests {
+			multiplicity *;
+		}
+	}
+	
+	relation DebtReportRequestResultFileBennu {
+	
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+	
+		reports.DebtReportRequestResultFile playsRole DebtReportRequestResultFiles {
+			multiplicity *;
+		}
+	}
+	
+	relation DebtReportRequestResultFileDebtReportRequest {
+
+		reports.DebtReportRequest playsRole debtReportRequest {
+			multiplicity 1..1;
+		}
+	
+		reports.DebtReportRequestResultFile playsRole debtReportRequestResultFiles {
+			multiplicity *;
+		}
+		
+	}

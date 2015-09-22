@@ -1,9 +1,7 @@
 package org.fenixedu.academictreasury.domain.debtGeneration.task;
 
-import java.util.List;
 import java.util.Set;
 
-import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.bennu.scheduler.CronTask;
