@@ -14,6 +14,7 @@ public class PendingDebtReportRequestsCronTask extends CronTask {
 
     @Override
     public void runTask() throws Exception {
+        getLogger().info("Start");
         Thread thread = new Thread() {
 
             @Override
@@ -24,6 +25,8 @@ public class PendingDebtReportRequestsCronTask extends CronTask {
                 }
             }
         };
+        
+        getLogger().info("Finished");
         
         thread.start();
         try {

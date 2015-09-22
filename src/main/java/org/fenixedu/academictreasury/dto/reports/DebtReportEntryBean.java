@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import java.util.Date;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.serviceRequests.RegistrationAcademicServiceRequest;
@@ -103,7 +105,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             this.documentNumber = entry.getFinantialDocument().getUiDocumentNumber();
         }
 
-        final Currency currency = entry.getFinantialDocument().getDebtAccount().getFinantialInstitution().getCurrency();
+        final Currency currency = entry.getDebtAccount().getFinantialInstitution().getCurrency();
 
         this.baseAmount = currency.getValueWithScale(entry.getAmountWithVat()).toString();
         if (entry.isDebitNoteEntry()) {
@@ -487,7 +489,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
         row.createCell(0).setCellValue(identification);
         row.createCell(1).setCellValue(entryType);
         row.createCell(2).setCellValue(versioningCreator);
-        row.createCell(3).setCellValue(creationDate.toString(Constants.DATE_TIME_FORMAT));
+        row.createCell(3).setCellValue(valueOrEmpty(creationDate));
         row.createCell(4).setCellValue(entryDate.toString(Constants.DATE_TIME_FORMAT));
         row.createCell(5).setCellValue(dueDate.toString(Constants.DATE_FORMAT));
         row.createCell(6).setCellValue(name);
@@ -517,12 +519,20 @@ public class DebtReportEntryBean implements SpreadsheetRow {
         row.createCell(30).setCellValue(valueOrEmpty(tuitionPaymentPlanConditions));
     }
 
+    private String valueOrEmpty(final DateTime value) {
+        if(value == null) {
+            return "";
+        }
+        
+        return value.toString(Constants.DATE_TIME_FORMAT);
+    }
+
     private String valueOrEmpty(final Boolean value) {
         if(value == null) {
             return "";
         }
         
-        return Constants.bundle(value ? "label.yes" : "label.no");
+        return Constants.bundle(value ? "label.true" : "label.false");
     }
 
     private String valueOrEmpty(final Integer value) {
