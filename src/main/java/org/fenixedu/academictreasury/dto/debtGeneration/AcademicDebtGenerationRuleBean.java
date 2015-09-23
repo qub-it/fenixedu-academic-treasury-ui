@@ -30,11 +30,15 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         private Product product;
         private boolean createDebt;
         private boolean toCreateAfterLastRegistrationStateDate;
+        private boolean forceCreation;
+        private boolean limitToRegisteredOnExecutionYear;
 
-        public ProductEntry(Product product, boolean createDebt, boolean toCreateAfterLastRegistrationStateDate) {
+        public ProductEntry(Product product, boolean createDebt, boolean toCreateAfterLastRegistrationStateDate, boolean forceCreation, boolean limitToRegisteredOnExecutionYear) {
             this.product = product;
             this.createDebt = createDebt;
             this.toCreateAfterLastRegistrationStateDate = toCreateAfterLastRegistrationStateDate;
+            this.forceCreation = forceCreation;
+            this.limitToRegisteredOnExecutionYear = limitToRegisteredOnExecutionYear;
         }
 
         public Product getProduct() {
@@ -48,6 +52,15 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         public boolean isToCreateAfterLastRegistrationStateDate() {
             return toCreateAfterLastRegistrationStateDate;
         }
+        
+        public boolean isForceCreation() {
+            return forceCreation;
+        }
+        
+        public boolean isLimitToRegisteredOnExecutionYear() {
+            return limitToRegisteredOnExecutionYear;
+        }
+        
     }
 
     private ExecutionYear executionYear;
@@ -67,6 +80,8 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     private Product product;
     private boolean createDebt;
     private boolean toCreateAfterLastRegistrationStateDate;
+    private boolean forceCreation;
+    private boolean limitToRegisteredOnExecutionYear;
     private PaymentCodePool paymentCodePool;
 
     private List<TupleDataSourceBean> executionYearDataSource = Lists.newArrayList();
@@ -141,10 +156,13 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
             return;
         }
 
-        entries.add(new ProductEntry(this.product, this.createDebt, this.toCreateAfterLastRegistrationStateDate));
+        entries.add(new ProductEntry(this.product, this.createDebt, this.toCreateAfterLastRegistrationStateDate, 
+                this.forceCreation, this.limitToRegisteredOnExecutionYear));
 
         this.product = null;
         this.createDebt = false;
+        this.forceCreation = false;
+        this.limitToRegisteredOnExecutionYear = false;
     }
 
     public void removEntry(final int index) {
@@ -275,6 +293,22 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     
     public List<TupleDataSourceBean> getDegreeCurricularPlanDataSource() {
         return degreeCurricularPlanDataSource;
+    }
+    
+    public boolean isForceCreation() {
+        return forceCreation;
+    }
+    
+    public void setForceCreation(boolean forceCreation) {
+        this.forceCreation = forceCreation;
+    }
+    
+    public boolean isLimitToRegisteredOnExecutionYear() {
+        return limitToRegisteredOnExecutionYear;
+    }
+    
+    public void setLimitToRegisteredOnExecutionYear(boolean limitToRegisteredOnExecutionYear) {
+        this.limitToRegisteredOnExecutionYear = limitToRegisteredOnExecutionYear;
     }
     
 }

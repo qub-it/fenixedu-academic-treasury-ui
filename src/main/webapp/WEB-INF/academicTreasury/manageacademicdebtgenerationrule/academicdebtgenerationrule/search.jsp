@@ -215,6 +215,18 @@ ${portal.toolkit()}
                                                 code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" /></em>]
 									</c:if>
                                 </p>
+                                <c:if test="${entry.forceCreation}">
+	                                <p style="margin-left: 15px">
+											[<em><spring:message
+	                                                code="label.AcademicDebtGenerationRuleEntry.forceCreation" /></em>]
+	                                </p>
+								</c:if>                                	
+                                <c:if test="${entry.limitToRegisteredOnExecutionYear}">
+	                                <p style="margin-left: 15px">
+											[<em><spring:message
+	                                                code="label.AcademicDebtGenerationRuleEntry.limitToRegisteredOnExecutionYear" /></em>]
+	                                </p>
+								</c:if>
                             </c:forEach></td>
                         <td>
                             <p>

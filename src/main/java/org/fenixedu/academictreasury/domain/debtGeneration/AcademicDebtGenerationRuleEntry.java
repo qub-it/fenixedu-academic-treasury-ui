@@ -16,19 +16,34 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
     }
 
     protected AcademicDebtGenerationRuleEntry(final AcademicDebtGenerationRule rule, final Product product,
-            final boolean createDebt, final boolean toCreateAfterLastRegistrationStateDate) {
+            final boolean createDebt, final boolean toCreateAfterLastRegistrationStateDate, final boolean forceCreation,
+            final boolean limitToRegisteredOnExecutionYear) {
         this();
 
         setAcademicDebtGenerationRule(rule);
         setProduct(product);
         setCreateDebt(createDebt);
         setToCreateAfterLastRegistrationStateDate(toCreateAfterLastRegistrationStateDate);
+        setForceCreation(forceCreation);
+        setLimitToRegisteredOnExecutionYear(limitToRegisteredOnExecutionYear);
 
         checkRules();
     }
 
     public boolean isCreateDebt() {
         return super.getCreateDebt();
+    }
+
+    public boolean isToCreateAfterLastRegistrationStateDate() {
+        return super.getToCreateAfterLastRegistrationStateDate();
+    }
+
+    public boolean isForceCreation() {
+        return super.getForceCreation();
+    }
+
+    public boolean isLimitToRegisteredOnExecutionYear() {
+        return super.getLimitToRegisteredOnExecutionYear();
     }
 
     private void checkRules() {
@@ -87,8 +102,10 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
     }
 
     public static AcademicDebtGenerationRuleEntry create(final AcademicDebtGenerationRule rule, final Product product,
-            final boolean createDebt, final boolean toCreateAfterLastRegistrationStateDate) {
-        return new AcademicDebtGenerationRuleEntry(rule, product, createDebt, toCreateAfterLastRegistrationStateDate);
+            final boolean createDebt, final boolean toCreateAfterLastRegistrationStateDate, final boolean forceCreation,
+            final boolean limitToRegisteredOnExecutionYear) {
+        return new AcademicDebtGenerationRuleEntry(rule, product, createDebt, toCreateAfterLastRegistrationStateDate,
+                forceCreation, limitToRegisteredOnExecutionYear);
     }
 
 }

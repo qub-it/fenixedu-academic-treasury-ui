@@ -168,7 +168,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
         for (final ProductEntry productEntry : bean.getEntries()) {
             AcademicDebtGenerationRuleEntry.create(this, productEntry.getProduct(), productEntry.isCreateDebt(),
-                    productEntry.isToCreateAfterLastRegistrationStateDate());
+                    productEntry.isToCreateAfterLastRegistrationStateDate(), productEntry.isForceCreation(),
+                    productEntry.isLimitToRegisteredOnExecutionYear());
         }
 
         getDegreeCurricularPlansSet().addAll((bean.getDegreeCurricularPlans()));
@@ -289,14 +290,14 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     @Atomic(mode = TxMode.READ)
     public void process() {
         logger.info(String.format("[AcademicDebtGenerationRule] START: %s", getExternalId()));
-        
+
         if (!isActive()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
 
         final LogBean logBean = new LogBean();
         logBean.processDate = new DateTime();
-        
+
         long timeInMillis = System.currentTimeMillis();
         for (final DegreeCurricularPlan degreeCurricularPlan : getDegreeCurricularPlansSet()) {
             for (final Registration registration : degreeCurricularPlan.getRegistrations()) {
@@ -311,10 +312,17 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 }
 
                 // Discard registrations not active and with no enrolments
-                if (!registration.hasAnyActiveState(getExecutionYear()) || !registration.hasAnyEnrolmentsIn(getExecutionYear())) {
+                if (!registration.hasAnyActiveState(getExecutionYear())) {
                     continue;
                 }
-
+                
+                if(!registration.hasAnyEnrolmentsIn(getExecutionYear())) {
+                    // only return is this rule has not entry that forces creation
+                    if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation()) {
+                        continue;
+                    }
+                }
+                
                 try {
                     processDebtsForRegistration(registration, logBean);
                 } catch (final Exception e) {
@@ -323,7 +331,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 }
             }
         }
-        
+
         logger.info(String.format("[AcademicDebtGenerationRule] Elapsed: %d", (System.currentTimeMillis() - timeInMillis)));
 
         writeLog(logBean);
@@ -368,13 +376,29 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         if (!registration.hasAnyEnrolmentsIn(getExecutionYear())) {
             logBean.registerStudentWithNoEnrolments(registration, getExecutionYear());
             writeLog(logBean);
-            return;
+
+            // only return is this rule has not entry that forces creation
+            if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation()) {
+                return;
+            }
         }
 
         processDebtsForRegistration(registration, logBean);
     }
 
-//HACK: RSP DISABLE FOR TESTING LOCK's ON DATABASE
+    private boolean isRuleWithOnlyOneAcademicTaxEntryForcingCreation() {
+        if(getAcademicDebtGenerationRuleEntriesSet().size() != 1) {
+            return false;
+        }
+        
+        if(!AcademicTax.findUnique(getAcademicDebtGenerationRuleEntriesSet().iterator().next().getProduct()).isPresent()) {
+            return false;
+        }
+        
+        return getAcademicDebtGenerationRuleEntriesSet().iterator().next().isForceCreation();
+    }
+
+    //HACK: RSP DISABLE FOR TESTING LOCK's ON DATABASE
     @Atomic(mode = TxMode.WRITE)
     private void writeLog(final LogBean logBean) {
 //        int MAX_LENGTH = 32 * 1024;
@@ -399,12 +423,12 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
         logger.info(String.format("[AcademicDebtGenerationRule] processDebtsForRegistration for student '%d'", registration
                 .getStudent().getNumber()));
-        
+
         // For each product try to grab or create if requested
         final Set<DebitEntry> debitEntries = Sets.newHashSet();
 
         long startCreatingDebts = System.currentTimeMillis();
-        
+
         for (final AcademicDebtGenerationRuleEntry entry : getAcademicDebtGenerationRuleEntriesSet()) {
             final Product product = entry.getProduct();
 
@@ -425,9 +449,9 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             }
         }
 
-        logger.info(String.format("[AcademicDebtGenerationRule][%d] Debit entries in: %d", registration
-                .getStudent().getNumber(), System.currentTimeMillis() - startCreatingDebts));
-        
+        logger.info(String.format("[AcademicDebtGenerationRule][%d] Debit entries in: %d", registration.getStudent().getNumber(),
+                System.currentTimeMillis() - startCreatingDebts));
+
         if (!isAggregateOnDebitNote()) {
             return;
         }
@@ -438,7 +462,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
 
         long startDebitNote = System.currentTimeMillis();
-        
+
         DebitNote debitNote = null;
         if (isAllWithClosedDebitNote(debitEntries)) {
             logBean.registerAllWithClosedDebitNote(registration);
@@ -501,11 +525,11 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             }
         }
 
-        logger.info(String.format("[AcademicDebtGenerationRule][%d] Debit note in: %d", registration
-                .getStudent().getNumber(), System.currentTimeMillis() - startDebitNote));
-        
+        logger.info(String.format("[AcademicDebtGenerationRule][%d] Debit note in: %d", registration.getStudent().getNumber(),
+                System.currentTimeMillis() - startDebitNote));
+
         long startPaymentCodes = System.currentTimeMillis();
-        
+
         if (debitNote.isClosed() && isCreatePaymentReferenceCode()
                 && FinantialDocumentPaymentCode.findNewByFinantialDocument(debitNote).count() == 0
                 && FinantialDocumentPaymentCode.findUsedByFinantialDocument(debitNote).count() == 0) {
@@ -522,10 +546,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
             logBean.registerCreatedPaymentReference(registration, paymentCode);
         }
-        
-        logger.info(String.format("[AcademicDebtGenerationRule][%d] Payment codes in: %d", registration
-                .getStudent().getNumber(), System.currentTimeMillis() - startPaymentCodes));
-        
+
+        logger.info(String.format("[AcademicDebtGenerationRule][%d] Payment codes in: %d", registration.getStudent().getNumber(),
+                System.currentTimeMillis() - startPaymentCodes));
+
     }
 
     private LocalDate maxDebitEntryDueDate(final DebitNote debitNote) {
@@ -594,7 +618,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     return null;
                 }
 
-                if (AcademicTaxServices.createAcademicTax(registration, executionYear, academicTax, false)) {
+                /* HACK: For now limit forcing for first time students only */
+                boolean forceCreation = entry.isCreateDebt() && registration.isFirstTime(getExecutionYear());
+
+                if (AcademicTaxServices.createAcademicTax(registration, executionYear, academicTax, forceCreation)) {
                     logBean.registerCreatedAcademicTreasuryEvent(registration, academicTax);
                 }
             }
@@ -627,7 +654,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     return null;
                 }
 
-                if (entry.getToCreateAfterLastRegistrationStateDate()) {
+                if (entry.isToCreateAfterLastRegistrationStateDate()) {
                     final LocalDate lastRegisteredStateDate = TuitionServices.lastRegisteredDate(registration, executionYear);
                     if (lastRegisteredStateDate == null) {
                         return null;

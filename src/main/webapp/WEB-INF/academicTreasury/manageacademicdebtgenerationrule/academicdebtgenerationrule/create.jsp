@@ -324,6 +324,10 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 							code="label.AcademicDebtGenerationRuleEntry.createDebt" /></th>
 					<th><spring:message
 							code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" /></th>
+					<th><spring:message
+							code="label.AcademicDebtGenerationRuleEntry.forceCreation" /></th>
+					<th><spring:message
+							code="label.AcademicDebtGenerationRuleEntry.limitToRegisteredOnExecutionYear" /></th>
 					<%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -349,6 +353,24 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 							</c:if>
 	
 							<c:if test="${not entry.toCreateAfterLastRegistrationStateDate}">
+								<p><strong><spring:message code="label.false" /></strong></p>
+							</c:if>
+						</td>
+						<td>
+							<c:if test="${entry.forceCreation}">
+								<p><strong><spring:message code="label.true" /></strong></p>
+							</c:if>
+	
+							<c:if test="${not entry.forceCreation}">
+								<p><strong><spring:message code="label.false" /></strong></p>
+							</c:if>
+						</td>
+						<td>
+							<c:if test="${entry.limitToRegisteredOnExecutionYear}">
+								<p><strong><spring:message code="label.true" /></strong></p>
+							</c:if>
+	
+							<c:if test="${not entry.limitToRegisteredOnExecutionYear}">
 								<p><strong><spring:message code="label.false" /></strong></p>
 							</c:if>
 						</td>
@@ -400,7 +422,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 					</ui-select-choices> </ui-select>
 				</div>
 			</div>
-			<div class="form-group row">
+			<div class="form-group row" >
 				<div class="col-sm-2 control-label">
 					<spring:message
 						code="label.AcademicDebtGenerationRuleEntry.createDebt" />
@@ -412,8 +434,42 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 						ng-model="object.createDebt" 
 						ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
-                    </div>
+                </div>
             </div>
+            
+			<div class="form-group row" 
+				ng-show="object.createDebt === true">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.AcademicDebtGenerationRuleEntry.forceCreation" />
+				</div>
+
+				<div class="col-sm-2">
+					<select id="academicDebtGenerationRule_forceCreation"
+						name="forcecreation" class=""
+						ng-model="object.forceCreation" 
+						ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+					</select>
+                </div>
+            </div>
+            
+			<div class="form-group row" 
+				ng-show="object.forceCreation === true">
+				<div class="col-sm-2 control-label">
+					<spring:message
+						code="label.AcademicDebtGenerationRuleEntry.limitToRegisteredOnExecutionYear" />
+				</div>
+
+				<div class="col-sm-2">
+					<select id="academicDebtGenerationRule_limitToRegisteredOnExecutionYear"
+						name="limittoregisteredonexecutionyear" class=""
+						ng-model="object.limitToRegisteredOnExecutionYear" 
+						ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+					</select>
+                </div>
+            </div>
+            
+            
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message
