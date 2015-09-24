@@ -92,7 +92,8 @@ function createDataTables(tableid, showsearchbox, showtools,pagination, pagecont
 			"dom" : dom, 
 			"tableTools" : {
 				"sSwfPath" : pagecontext + "/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
-			}
+			},
+			"lengthMenu": [ [10, 25, 50, -1], [10, 25, 50, "All"] ]
 	});
 	table.columns.adjust().draw();
 	$('#' + tableid +' tbody').on('click', 'tr', function() {
