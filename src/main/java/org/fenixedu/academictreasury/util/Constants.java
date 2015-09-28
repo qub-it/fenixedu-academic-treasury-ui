@@ -26,6 +26,10 @@ public class Constants {
     public static final String DATE_FORMAT = "dd/MM/yyyy";
 
     public static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
+
+    public static final String DATE_FORMAT_YYYY_MM_DD = "yyyy/MM/dd";
+
+    public static final String DATE_TIME_FORMAT_YYYY_MM_DD = "yyyy/MM/dd HH:mm:ss";
     
     // HACK: org.joda.time.Interval does not allow open end dates so use this date in the future
     public static final DateTime INFINITY_DATE = new DateTime().plusYears(500);

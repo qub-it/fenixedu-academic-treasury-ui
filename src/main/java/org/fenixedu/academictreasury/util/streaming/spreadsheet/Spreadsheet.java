@@ -2,44 +2,46 @@ package org.fenixedu.academictreasury.util.streaming.spreadsheet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.stream.Stream;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 
 public interface Spreadsheet {
 
     public static final int ROWS_IN_MEMORY = 100;
 
-    public String[] getHeaders();
-    public Stream<? extends SpreadsheetRow> getRows();
+    public ExcelSheet[] getSheets();
     
-    public static byte[] buildSpreadsheetContent(final Spreadsheet spreadsheet) {
+    public static byte[] buildSpreadsheetContent(final Spreadsheet spreadsheet, final ErrorsLog errorsLog) {
         final SXSSFWorkbook wb = new SXSSFWorkbook(ROWS_IN_MEMORY);
         
-        final Sheet sh = wb.createSheet();
-        final Row row = sh.createRow(0);
-        
-        final Font headerFont = wb.createFont();
-        headerFont.setBold(true);
-        
-        if(row.getRowStyle() == null) {
-            row.setRowStyle(wb.createCellStyle());
+        for (ExcelSheet sheet : spreadsheet.getSheets()) {
+            final Sheet sh = wb.createSheet(sheet.getName());
+            final Row row = sh.createRow(0);
+            
+            final Font headerFont = wb.createFont();
+            headerFont.setBold(true);
+            
+            if(row.getRowStyle() == null) {
+                row.setRowStyle(wb.createCellStyle());
+            }
+            
+            row.getRowStyle().setFont(headerFont);
+            
+            final String[] headers = sheet.getHeaders();
+            for (int i = 0; i < headers.length; i++) {
+                final Cell cell = row.createCell(i);
+                cell.setCellType(Cell.CELL_TYPE_STRING);
+                cell.setCellValue(headers[i]);
+            }
+            
+            sheet.getRows().forEach(r -> r.writeCellValues(sh.createRow(sh.getLastRowNum() + 1), errorsLog));
         }
         
-        row.getRowStyle().setFont(headerFont);
-        
-        final String[] headers = spreadsheet.getHeaders();
-        for (int i = 0; i < headers.length; i++) {
-            final Cell cell = row.createCell(i);
-            cell.setCellType(Cell.CELL_TYPE_STRING);
-            cell.setCellValue(headers[i]);
-        }
-        
-        spreadsheet.getRows().forEach(r -> r.writeCellValues(sh.createRow(sh.getLastRowNum() + 1)));
         
         final ByteArrayOutputStream output = new ByteArrayOutputStream();
         

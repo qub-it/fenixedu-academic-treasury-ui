@@ -1,15 +1,17 @@
 package org.fenixedu.academictreasury.domain.reports;
 
-import java.util.List;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.reports.task.PendingDebtReportRequestsCronTask;
 import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportRequestBean;
+import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
 import org.fenixedu.academictreasury.services.debtReports.DebtReportService;
+import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.streaming.spreadsheet.ExcelSheet;
 import org.fenixedu.academictreasury.util.streaming.spreadsheet.Spreadsheet;
-import org.fenixedu.academictreasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
@@ -18,83 +20,117 @@ import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 public class DebtReportRequest extends DebtReportRequest_Base {
-    
+
     protected DebtReportRequest() {
         super();
         setBennu(Bennu.getInstance());
         setBennuForPendingReportRequests(Bennu.getInstance());
     }
-    
+
     protected DebtReportRequest(final DebtReportRequestBean bean) {
         this();
-        
+
         this.setBeginDate(bean.getBeginDate());
         this.setEndDate(bean.getEndDate());
         this.setType(bean.getType());
-        
+
         checkRules();
     }
 
     private void checkRules() {
-        
-        if(getBeginDate() == null) {
+
+        if (getBeginDate() == null) {
             throw new AcademicTreasuryDomainException("error.DebtReportRequest.beginDate.required");
         }
-        
-        if(getEndDate() == null) {
+
+        if (getEndDate() == null) {
             throw new AcademicTreasuryDomainException("error.DebtReportRequest.endDate.required");
         }
-        
-        if(getType() == null) {
+
+        if (getType() == null) {
             throw new AcademicTreasuryDomainException("error.DebtReportRequest.type.required");
         }
-        
+
     }
-    
+
     public boolean isPending() {
         return getBennuForPendingReportRequests() != null;
     }
-    
-    @Atomic(mode=TxMode.WRITE)
+
+    @Atomic(mode = TxMode.WRITE)
     public void processRequest() {
+
+        final ErrorsLog errorsLog = new ErrorsLog();
         
-        if(getType().isRequestForInvoiceEntries()) {
-            final Stream<DebtReportEntryBean> reportResult = DebtReportService.debtsReport(getBeginDate(), getEndDate());
-            
+        if (getType().isRequestForInvoiceEntries()) {
+
             final byte[] content = Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
 
                 @Override
-                public String[] getHeaders() {
-                    return DebtReportEntryBean.SPREADSHEET_HEADERS;
+                public ExcelSheet[] getSheets() {
+                    return new ExcelSheet[] {
+                            ExcelSheet.create(debitEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_DEBIT_HEADERS,
+                                    DebtReportService.debitEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                            ExcelSheet.create(creditEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_CREDIT_HEADERS,
+                                    DebtReportService.creditEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                            ExcelSheet.create(settlementEntriesSheetName(), SettlementReportEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.settlementEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                            ExcelSheet.create(paymentEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.paymentEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                                    ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
+                                            DebtReportService.reimbursementEntriesReport(getBeginDate(), getEndDate(), errorsLog)) };
                 }
 
-                @Override
-                public Stream<? extends SpreadsheetRow> getRows() {
-                    return reportResult;
-                }
-            });
-            
+            }, errorsLog);
+
             DebtReportRequestResultFile.create(this, content);
+            DebtReportRequestResultErrorsFile.create(this, errorsLog.getLog().getBytes());
+            
         }
-        
+
         setBennuForPendingReportRequests(null);
+    }
+
+    @Atomic
+    public void cancelRequest() {
+        setBennuForPendingReportRequests(null);
+    }
+    
+    private String debitEntriesSheetName() {
+        return Constants.bundle("label.DebtReportRequest.debitEntriesSheetName");
+    }
+
+    private String creditEntriesSheetName() {
+        return Constants.bundle("label.DebtReportRequest.creditEntriesSheetName");
+    }
+
+    private String paymentEntriesSheetName() {
+        return Constants.bundle("label.DebtReportRequest.paymentEntriesSheetName");
+    }
+
+    private String settlementEntriesSheetName() {
+        return Constants.bundle("label.DebtReportRequest.settlementEntriesSheetName");
+    }
+
+    private String reimbursementEntriesSheetName() {
+        return Constants.bundle("label.DebtReportRequest.reimbursementEntriesSheetName");
     }
     
     public static Stream<DebtReportRequest> findAll() {
         return Bennu.getInstance().getDebtReportRequestsSet().stream();
     }
-    
+
     public static Stream<DebtReportRequest> findPending() {
         return Bennu.getInstance().getDebtReportRequestsSet().stream().filter(i -> i.isPending());
     }
-    
+
     @Atomic
     public static DebtReportRequest create(final DebtReportRequestBean bean) {
         final DebtReportRequest request = new DebtReportRequest(bean);
-        
+
         new Thread() {
 
-            @Atomic(mode=TxMode.READ)
+            @Atomic(mode = TxMode.READ)
             public void run() {
 
                 try {
@@ -106,7 +142,7 @@ public class DebtReportRequest extends DebtReportRequest_Base {
             };
 
         }.start();
-        
+
         return request;
     }
     

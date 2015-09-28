@@ -738,7 +738,10 @@ class reports.DebtReportRequest {
 }
  
 class reports.DebtReportRequestResultFile extends .org.fenixedu.bennu.io.domain.GenericFile {
-} 
+}
+
+class reports.DebtReportRequestResultErrorsFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+}
  
  	relation DebtReportRequestBennu {
 		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
@@ -772,6 +775,17 @@ class reports.DebtReportRequestResultFile extends .org.fenixedu.bennu.io.domain.
 		}
 	}
 	
+	relation DebtReportRequestResultErrorsFileBennu {
+	
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+	
+		reports.DebtReportRequestResultErrorsFile playsRole debtReportRequestResultErrorsFiles {
+			multiplicity *;
+		}
+	}
+	
 	relation DebtReportRequestResultFileDebtReportRequest {
 
 		reports.DebtReportRequest playsRole debtReportRequest {
@@ -779,6 +793,18 @@ class reports.DebtReportRequestResultFile extends .org.fenixedu.bennu.io.domain.
 		}
 	
 		reports.DebtReportRequestResultFile playsRole debtReportRequestResultFiles {
+			multiplicity *;
+		}
+		
+	}
+	
+	relation DebtReportRequestResultErrorsFileDebtReportRequest {
+
+		reports.DebtReportRequest playsRole debtReportRequest {
+			multiplicity 1..1;
+		}
+		
+		reports.DebtReportRequestResultErrorsFile playsRole debtReportRequestResultErrorsFiles {
 			multiplicity *;
 		}
 		

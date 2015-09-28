@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.academictreasury.ui.managedebtreportrequests.DebtReportRequestController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -143,16 +145,28 @@ ${portal.angularToolkit()}
 					<joda:format value="${row.endDate}" style="S-" />
 				</p>
 				<c:forEach var="result" items="${row.debtReportRequestResultFiles}">
-					<p><a  class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= DebtReportRequestController.DOWNLOAD_URL %>/${result.externalId}">
-						<c:out value="${resultFile.getFilename()}" />
+					<p><a href="${pageContext.request.contextPath}<%= DebtReportRequestController.DOWNLOAD_URL %>/${result.externalId}">
+						<c:out value="${result.filename}" />
 					</a></p>
 				</c:forEach>
+				
+				<% if(TreasuryAccessControlAPI.isManager(Authenticate.getUser())) { %>
+				
+				<c:forEach var="result" items="${row.debtReportRequestResultErrorsFiles}">
+					<p><a href="${pageContext.request.contextPath}<%= DebtReportRequestController.DOWNLOAD_ERRORS_URL %>/${result.externalId}">
+						<c:out value="${result.filename}" />
+					</a></p>
+				</c:forEach>
+				
+				<% } %>
 			</datatables:column>
 
 			<datatables:column cssStyle="width:80px;align:center">
-				<a  class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= DebtReportRequestController.SEARCH_TO_CANCELREQUEST_ACTION_URL %>/${searchResult.externalId}">
-					<spring:message code='label.manageDebtReportRequests.cancelRequest' />
-				</a>
+				<c:if test="${row.pending}">
+					<a  class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= DebtReportRequestController.SEARCH_TO_CANCELREQUEST_ACTION_URL %>/${row.externalId}">
+						<spring:message code='label.manageDebtReportRequests.cancelRequest' />
+					</a>
+				</c:if>
 			</datatables:column>
 			
 		</datatables:table>
@@ -184,6 +198,12 @@ ${portal.angularToolkit()}
 
 <script>
 	$(document).ready(function() {
+		
+		var oTable = $('#searchdebtreportrequestTable').dataTable();
+		if(oTable) {
+			oTable.fnSort([[0, 'desc']]);			
+		}
+		
 	}); 
 </script>
 

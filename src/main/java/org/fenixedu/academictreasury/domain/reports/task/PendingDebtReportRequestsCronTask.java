@@ -26,13 +26,13 @@ public class PendingDebtReportRequestsCronTask extends CronTask {
             }
         };
         
-        getLogger().info("Finished");
-        
         thread.start();
         try {
             thread.join();
         } catch(IllegalStateException e) {
         }
+        
+        getLogger().info("Finished");
     }
 
 }

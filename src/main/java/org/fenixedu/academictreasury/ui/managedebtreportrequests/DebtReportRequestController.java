@@ -34,6 +34,7 @@ import java.util.stream.Stream;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequestResultErrorsFile;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequestResultFile;
 import org.fenixedu.academictreasury.dto.reports.DebtReportRequestBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
@@ -47,8 +48,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import pt.ist.fenixframework.FenixFramework;
 
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageDebtReportRequests",
         accessGroup = "treasuryBackOffice")
@@ -96,6 +95,8 @@ public class DebtReportRequestController extends AcademicTreasuryBaseController 
     public String processSearchToCancelRequestAction(@PathVariable("oid") final DebtReportRequest debtReportRequest,
             final Model model, final RedirectAttributes redirectAttributes) {
 
+        debtReportRequest.cancelRequest();
+        
         return redirect(SEARCH_URL, model, redirectAttributes);
     }
 
@@ -125,15 +126,16 @@ public class DebtReportRequestController extends AcademicTreasuryBaseController 
     }
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.POST)
-    public String create(@RequestParam(value = "bean", required = false) DebtReportRequestBean bean, Model model,
-            RedirectAttributes redirectAttributes) {
+    public String create(@RequestParam(value = "bean", required = false) DebtReportRequestBean bean, final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         try {
 
             final DebtReportRequest debtReportRequest = DebtReportRequest.create(bean);
 
             model.addAttribute("debtReportRequest", debtReportRequest);
-            return redirect(_SEARCH_URI, model, redirectAttributes);
+            
+            return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (final DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
 
@@ -145,7 +147,7 @@ public class DebtReportRequestController extends AcademicTreasuryBaseController 
     public static final String DOWNLOAD_URL = CONTROLLER_URL + _DOWNLOAD_URI;
 
     @RequestMapping(value = _DOWNLOAD_URI + "/{debtReportRequestResultFileId}", method = RequestMethod.GET)
-    public String create(final @PathVariable("debtReportRequestResultFileId") DebtReportRequestResultFile resultFile,
+    public String download(final @PathVariable("debtReportRequestResultFileId") DebtReportRequestResultFile resultFile,
             final Model model, final HttpServletResponse response) {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-disposition", "attachment; filename=" + resultFile.getFilename());
@@ -158,6 +160,25 @@ public class DebtReportRequestController extends AcademicTreasuryBaseController 
         
         return null;
     }
+    
+    private static final String _DOWNLOAD_ERRORS_URI = "/downloadErrors";
+    public static final String DOWNLOAD_ERRORS_URL = CONTROLLER_URL + _DOWNLOAD_ERRORS_URI;
+    
+    @RequestMapping(value = _DOWNLOAD_ERRORS_URI + "/{debtReportRequestResultErrorsFileId}", method = RequestMethod.GET)
+    public String downloadErrors(final @PathVariable("debtReportRequestResultErrorsFileId") DebtReportRequestResultErrorsFile resultFile,
+            final Model model, final HttpServletResponse response) {
+        response.setContentType("text/plain");
+        response.setHeader("Content-disposition", "attachment; filename=" + resultFile.getFilename());
+
+        try {
+            response.getOutputStream().write(resultFile.getContent());
+        } catch (final IOException e) {
+            throw new RuntimeException(e);
+        }
+        
+        return null;
+    }
+    
 
     private String jspPage(final String page) {
         return JSP_PATH + "/" + page;

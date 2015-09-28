@@ -2,15 +2,45 @@ package org.fenixedu.academictreasury.services.debtReports;
 
 import java.util.stream.Stream;
 
+import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.ReimbursementReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.PaymentEntry;
+import org.fenixedu.treasury.domain.document.ReimbursementEntry;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.joda.time.LocalDate;
 
 public class DebtReportService {
 
-    public static Stream<DebtReportEntryBean> debtsReport(final LocalDate begin, final LocalDate end) {
-        return InvoiceEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getEntryDateTime()))
-                .map(i -> new DebtReportEntryBean(i));
+    public static Stream<DebtReportEntryBean> debitEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return DebitEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getEntryDateTime()))
+                .map(i -> new DebtReportEntryBean(i, log));
     }
+    
+    public static Stream<DebtReportEntryBean> creditEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return CreditEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getEntryDateTime()))
+                .map(i -> new DebtReportEntryBean(i, log));
+    }
+    
+    public static Stream<SettlementReportEntryBean> settlementEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return SettlementEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getEntryDateTime()))
+                .map(i -> new SettlementReportEntryBean(i, log));
+    }
+    
+    public static Stream<PaymentReportEntryBean> paymentEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return PaymentEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getSettlementNote().getPaymentDate()))
+                .map(i -> new PaymentReportEntryBean(i, log));
+    }
+    
+    public static Stream<ReimbursementReportEntryBean> reimbursementEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return ReimbursementEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getSettlementNote().getPaymentDate()))
+                .map(i -> new ReimbursementReportEntryBean(i, log));
+    }
+    
+    
 }
