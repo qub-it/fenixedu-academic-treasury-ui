@@ -28,6 +28,8 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
         Constants.bundle("label.ReimbursementReportEntryBean.header.documentExportationPending"),
         Constants.bundle("label.ReimbursementReportEntryBean.header.paymentMethod"),
         Constants.bundle("label.ReimbursementReportEntryBean.header.amount"),
+        Constants.bundle("label.ReimbursementReportEntryBean.header.customerId"),
+        Constants.bundle("label.ReimbursementReportEntryBean.header.debtAccountId"),
         Constants.bundle("label.ReimbursementReportEntryBean.header.name"),
         Constants.bundle("label.ReimbursementReportEntryBean.header.identificationType"),
         Constants.bundle("label.ReimbursementReportEntryBean.header.identificationNumber"),
@@ -50,6 +52,8 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
     private boolean documentExportationPending;
     private String paymentMethod;
     private BigDecimal amount;
+    private String customerId;
+    private String debtAccountId;
     private String name;
     private LocalizedString identificationType;
     private String identificationNumber;
@@ -88,6 +92,9 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
     private void fillStudentInformation(final ReimbursementEntry entry) {
         final Customer customer = entry.getSettlementNote().getDebtAccount().getCustomer();
 
+        this.customerId = customer.getExternalId();
+        this.debtAccountId = entry.getSettlementNote().getDebtAccount().getExternalId();
+        
         this.name = customer.getName();
 
         if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson().getIdDocumentType() != null) {
@@ -129,6 +136,8 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
             row.createCell(i++).setCellValue(valueOrEmpty(paymentMethod));
             row.createCell(i++).setCellValue(amount.toString());
+            row.createCell(i++).setCellValue(customerId);
+            row.createCell(i++).setCellValue(debtAccountId);
             row.createCell(i++).setCellValue(valueOrEmpty(name));
             row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
             row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));

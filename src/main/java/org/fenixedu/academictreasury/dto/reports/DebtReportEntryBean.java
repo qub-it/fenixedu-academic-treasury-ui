@@ -30,6 +30,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.creationDate"),
             Constants.bundle("label.DebtReportEntryBean.header.entryDate"),
             Constants.bundle("label.DebtReportEntryBean.header.dueDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.customerId"),
+            Constants.bundle("label.DebtReportEntryBean.header.debtAccountId"),            
             Constants.bundle("label.DebtReportEntryBean.header.name"),
             Constants.bundle("label.DebtReportEntryBean.header.identificationType"),
             Constants.bundle("label.DebtReportEntryBean.header.identificationNumber"),
@@ -68,6 +70,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
         Constants.bundle("label.DebtReportEntryBean.header.creationDate"),
         Constants.bundle("label.DebtReportEntryBean.header.entryDate"),
         Constants.bundle("label.DebtReportEntryBean.header.dueDate"),
+        Constants.bundle("label.DebtReportEntryBean.header.customerId"),
+        Constants.bundle("label.DebtReportEntryBean.header.debtAccountId"),        
         Constants.bundle("label.DebtReportEntryBean.header.name"),
         Constants.bundle("label.DebtReportEntryBean.header.identificationType"),
         Constants.bundle("label.DebtReportEntryBean.header.identificationNumber"),
@@ -107,6 +111,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private DateTime creationDate;
     private DateTime entryDate;
     private LocalDate dueDate;
+    private String customerId;
+    private String debtAccountId;
     private String name;
     private LocalizedString identificationType;
     private String identificationNumber;
@@ -192,6 +198,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private void fillStudentInformation(final InvoiceEntry entry) {
         final Customer customer = entry.getDebtAccount().getCustomer();
 
+        this.customerId = customer.getExternalId();
+        this.debtAccountId = entry.getDebtAccount().getExternalId();
+        
         this.name = customer.getName();
 
         if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson().getIdDocumentType() != null) {
@@ -328,151 +337,6 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 .map(s -> s != null ? s.getName().getContent() : "").reduce((a, c) -> c + ", " + a).orElse(null);
     }
 
-    /* *****************
-     * GETTERS & SETTERS
-     * *****************
-     */
-
-    public String getIdentification() {
-        return identification;
-    }
-
-    public String getEntryType() {
-        return entryType;
-    }
-
-    public String getVersioningCreator() {
-        return versioningCreator;
-    }
-
-    public DateTime getCreationDate() {
-        return creationDate;
-    }
-
-    public DateTime getEntryDate() {
-        return entryDate;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public LocalizedString getIdentificationType() {
-        return identificationType;
-    }
-
-    public String getIdentificationNumber() {
-        return identificationNumber;
-    }
-
-    public String getVatNumber() {
-        return vatNumber;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getAddress() {
-        return address;
-    }
-
-    public Integer getStudentNumber() {
-        return studentNumber;
-    }
-
-    public String getDegreeCode() {
-        return degreeCode;
-    }
-
-    public LocalizedString getDegreeName() {
-        return degreeName;
-    }
-
-    public String getExecutionYear() {
-        return executionYear;
-    }
-
-    public String getExecutionSemester() {
-        return executionSemester;
-    }
-
-    public String getProductCode() {
-        return productCode;
-    }
-
-    public String getInvoiceEntryDescription() {
-        return invoiceEntryDescription;
-    }
-
-    public String getDocumentNumber() {
-        return documentNumber;
-    }
-
-    public boolean isDocumentExportationPending() {
-        return documentExportationPending;
-    }
-
-    public String getBaseAmount() {
-        return baseAmount;
-    }
-
-    public String getCreditedAmount() {
-        return creditedAmount;
-    }
-
-    public String getAmountToPay() {
-        return amountToPay;
-    }
-
-    public String getOpenAmountToPay() {
-        return openAmountToPay;
-    }
-
-    public LocalizedString getAgreement() {
-        return agreement;
-    }
-
-    public LocalizedString getIngression() {
-        return ingression;
-    }
-
-    public Boolean getFirstTimeStudent() {
-        return firstTimeStudent;
-    }
-
-    public Boolean getPartialRegime() {
-        return partialRegime;
-    }
-
-    public String getStatutes() {
-        return statutes;
-    }
-
-    public int getNumberOfNormalEnrolments() {
-        return numberOfNormalEnrolments;
-    }
-
-    public int getNumberOfStandaloneEnrolments() {
-        return numberOfStandaloneEnrolments;
-    }
-
-    public int getNumberOfExtracurricularEnrolments() {
-        return numberOfExtracurricularEnrolments;
-    }
-
-    public String getTuitionPaymentPlan() {
-        return tuitionPaymentPlan;
-    }
-
-    public String getTuitionPaymentPlanConditions() {
-        return tuitionPaymentPlanConditions;
-    }
-
     @Override
     public void writeCellValues(final Row row, final ErrorsLog errorsLog) {
         try {
@@ -491,6 +355,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
                 row.createCell(i++).setCellValue(entryDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD));
                 row.createCell(i++).setCellValue(dueDate.toString(Constants.DATE_FORMAT_YYYY_MM_DD));
+                row.createCell(i++).setCellValue(customerId);
+                row.createCell(i++).setCellValue(debtAccountId);
                 row.createCell(i++).setCellValue(name);
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));
@@ -526,6 +392,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
                 row.createCell(i++).setCellValue(entryDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD));
                 row.createCell(i++).setCellValue(dueDate.toString(Constants.DATE_FORMAT_YYYY_MM_DD));
+                row.createCell(i++).setCellValue(customerId);
+                row.createCell(i++).setCellValue(debtAccountId);
                 row.createCell(i++).setCellValue(name);
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));

@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.reports.task.PendingDebtReportRequestsCronTask;
+import org.fenixedu.academictreasury.dto.reports.DebtAccountReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportRequestBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
@@ -77,8 +78,13 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                                     DebtReportService.settlementEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
                             ExcelSheet.create(paymentEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
                                     DebtReportService.paymentEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
-                                    ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
-                                            DebtReportService.reimbursementEntriesReport(getBeginDate(), getEndDate(), errorsLog)) };
+                            ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.reimbursementEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                            ExcelSheet.create(debtAccountEntriesSheetName(), DebtAccountReportEntryBean.SPREADSHEET_HEADERS,
+                                            DebtReportService.debtAccountEntriesReport(getBeginDate(), getEndDate(), errorsLog))
+                                            
+                    
+                    };
                 }
 
             }, errorsLog);
@@ -95,7 +101,7 @@ public class DebtReportRequest extends DebtReportRequest_Base {
     public void cancelRequest() {
         setBennuForPendingReportRequests(null);
     }
-    
+
     private String debitEntriesSheetName() {
         return Constants.bundle("label.DebtReportRequest.debitEntriesSheetName");
     }
@@ -116,6 +122,10 @@ public class DebtReportRequest extends DebtReportRequest_Base {
         return Constants.bundle("label.DebtReportRequest.reimbursementEntriesSheetName");
     }
     
+    private String debtAccountEntriesSheetName() {
+        return Constants.bundle("label.DebtReportRequest.debtAccountEntriesSheetName");
+    }
+
     public static Stream<DebtReportRequest> findAll() {
         return Bennu.getInstance().getDebtReportRequestsSet().stream();
     }
@@ -145,5 +155,5 @@ public class DebtReportRequest extends DebtReportRequest_Base {
 
         return request;
     }
-    
+
 }

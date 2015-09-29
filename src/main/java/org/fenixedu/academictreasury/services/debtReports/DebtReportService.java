@@ -3,11 +3,13 @@ package org.fenixedu.academictreasury.services.debtReports;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
+import org.fenixedu.academictreasury.dto.reports.DebtAccountReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.ReimbursementReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
 import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
@@ -42,5 +44,8 @@ public class DebtReportService {
                 .map(i -> new ReimbursementReportEntryBean(i, log));
     }
     
+    public static Stream<DebtAccountReportEntryBean> debtAccountEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return DebtAccount.findAll().map(i -> new DebtAccountReportEntryBean(i, log));
+    }
     
 }

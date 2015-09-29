@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.domain.reports;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.ReimbursementEntry;
@@ -56,6 +57,17 @@ public class ErrorsLog {
         }
     }
 
+    public void addError(final DebtAccount debtAccount, final Exception e) {
+        synchronized (this) {
+            final String oid = debtAccount.getExternalId();
+            final String identification = debtAccount.getCustomer().getIdentificationNumber();
+            final String name = debtAccount.getCustomer().getName();
+
+            sb.append(String.format("[%s/%s] - %s\n", oid, identification, name));
+            sb.append(ExceptionUtils.getFullStackTrace(e)).append("\n\n");
+        }
+    }
+    
     public String getLog() {
         return sb.toString();
     }
