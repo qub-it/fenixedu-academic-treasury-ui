@@ -11,6 +11,8 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
+import com.google.common.base.Strings;
+
 public class Constants {
 
     private static final int SCALE = 20;
@@ -38,9 +40,18 @@ public class Constants {
             "label.TupleDataSourceBean.select.description"));
 
     public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
-
+    public static final String DEFAULT_COUNTRY = "PT";
+    
     public static boolean isForeignLanguage(final Locale language) {
         return !language.getLanguage().equals(DEFAULT_LANGUAGE.getLanguage());
+    }
+    
+    public static boolean isDefaultCountry(final String country) {
+        if(Strings.isNullOrEmpty(country)) {
+            return false;
+        }
+        
+        return DEFAULT_COUNTRY.equals(country.toUpperCase());
     }
 
     // @formatter: off
