@@ -8,8 +8,10 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.EnrolmentEvaluation;
+import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.domain.StudentCurricularPlan;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academic.domain.student.registrationStates.RegistrationState;
@@ -743,24 +745,13 @@ public class TuitionServices {
 
     public static Set<EnrolmentEvaluation> improvementEnrolments(final Registration registration,
             final ExecutionYear executionYear) {
+
         final Set<EnrolmentEvaluation> result = Sets.newHashSet();
 
-        for (final Enrolment enrolment : registration.getStudentCurricularPlan(executionYear).getEnroledImprovements()) {
-            for (final EnrolmentEvaluation enrolmentEvaluation : enrolment.getEvaluationsSet()) {
-                if (!enrolmentEvaluation.getEvaluationSeason().isImprovement()) {
-                    continue;
-                }
+        final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
 
-                if (enrolmentEvaluation.getExecutionPeriod() == null) {
-                    continue;
-                }
-
-                if (enrolmentEvaluation.getExecutionPeriod().getExecutionYear() != executionYear) {
-                    continue;
-                }
-
-                result.add(enrolmentEvaluation);
-            }
+        for (final ExecutionSemester executionSemester : executionYear.getExecutionPeriodsSet()) {
+            result.addAll(studentCurricularPlan.getEnroledImprovements(executionSemester));
         }
 
         return result;
