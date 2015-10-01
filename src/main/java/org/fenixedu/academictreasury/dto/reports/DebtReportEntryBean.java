@@ -39,6 +39,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.email"),
             Constants.bundle("label.DebtReportEntryBean.header.address"),
             Constants.bundle("label.DebtReportEntryBean.header.studentNumber"),
+            Constants.bundle("label.DebtReportEntryBean.header.degreeType"),
             Constants.bundle("label.DebtReportEntryBean.header.degreeCode"),
             Constants.bundle("label.DebtReportEntryBean.header.degreeName"),
             Constants.bundle("label.DebtReportEntryBean.header.executionYear"),
@@ -120,6 +121,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String email;
     private String address;
     private Integer studentNumber;
+    private String degreeType;
     private String degreeCode;
     private LocalizedString degreeName;
     private String executionYear;
@@ -229,6 +231,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 final AcademicTreasuryEvent academicTreasuryEvent = (AcademicTreasuryEvent) debitEntry.getTreasuryEvent();
 
                 if (academicTreasuryEvent.isForRegistrationTuition()) {
+                    this.degreeType = academicTreasuryEvent.getRegistration().getDegree().getDegreeType().getName().getContent();
                     this.degreeCode = academicTreasuryEvent.getRegistration().getDegree().getCode();
                     this.degreeName = academicTreasuryEvent.getRegistration().getDegree().getPresentationNameI18N();
                     this.executionYear = academicTreasuryEvent.getExecutionYear().getQualifiedName();
@@ -243,6 +246,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
                 } else if ((academicTreasuryEvent.isForStandaloneTuition() || academicTreasuryEvent.isForExtracurricularTuition())) {
                     if (debitEntry.getCurricularCourse() != null) {
+                        this.degreeType = debitEntry.getCurricularCourse().getDegree().getDegreeType().getName().getContent();
                         this.degreeCode = debitEntry.getCurricularCourse().getDegree().getCode();
                         this.degreeName = debitEntry.getCurricularCourse().getDegree().getPresentationNameI18N();
                     }
@@ -266,6 +270,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
                 } else if (academicTreasuryEvent.isForImprovementTax()) {
                     if (debitEntry.getCurricularCourse() != null) {
+                        this.degreeType = debitEntry.getCurricularCourse().getDegree().getDegreeType().getName().getContent();
                         this.degreeCode = debitEntry.getCurricularCourse().getDegree().getCode();
                         this.degreeName = debitEntry.getCurricularCourse().getDegree().getPresentationNameI18N();
                     }
@@ -281,6 +286,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     }
                 } else if (academicTreasuryEvent.isForAcademicTax()) {
 
+                    this.degreeType = academicTreasuryEvent.getRegistration().getDegree().getDegreeType().getName().getContent();
                     this.degreeCode = academicTreasuryEvent.getRegistration().getDegree().getCode();
                     this.degreeName = academicTreasuryEvent.getRegistration().getDegree().getPresentationNameI18N();
                     this.executionYear = academicTreasuryEvent.getExecutionYear().getQualifiedName();
@@ -293,6 +299,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
                     final RegistrationAcademicServiceRequest registrationAcademicServiceRequest =
                             (RegistrationAcademicServiceRequest) academicTreasuryEvent.getAcademicServiceRequest();
+                    
+                    this.degreeType = registrationAcademicServiceRequest.getRegistration().getDegree().getDegreeType().getName().getContent();
                     this.degreeCode = registrationAcademicServiceRequest.getRegistration().getDegree().getCode();
                     this.degreeName = registrationAcademicServiceRequest.getRegistration().getDegree().getPresentationNameI18N();
 
@@ -364,6 +372,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(email));
                 row.createCell(i++).setCellValue(valueOrEmpty(address));
                 row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
+                row.createCell(i++).setCellValue(valueOrEmpty(degreeType));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeCode));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeName));
                 row.createCell(i++).setCellValue(valueOrEmpty(executionYear));
@@ -401,6 +410,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(email));
                 row.createCell(i++).setCellValue(valueOrEmpty(address));
                 row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
+                row.createCell(i++).setCellValue(valueOrEmpty(degreeType));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeCode));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeName));
                 row.createCell(i++).setCellValue(valueOrEmpty(executionYear));
