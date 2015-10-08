@@ -43,6 +43,10 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
             throw new AcademicTreasuryDomainException("error.ServiceRequestMapEntry.createEventOnSituation.required");
         }
 
+        if (find(getServiceRequestType()).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.ServiceRequestMapEntry.duplicatedForServiceRequestType");
+        }
+
     }
 
     private boolean isDeletable() {
@@ -78,16 +82,16 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
         return findAll().filter(e -> e.getServiceRequestType() == requestType);
     }
 
-    //TODOJN o nome do metodo e v ou find
-    public static Stream<ServiceRequestMapEntry> v(final Product product, final ServiceRequestType requestType) {
+    public static Stream<ServiceRequestMapEntry> find(final Product product, final ServiceRequestType requestType) {
         return find(product).filter(e -> e.getServiceRequestType() == requestType);
     }
 
     public static ServiceRequestMapEntry findMatch(final AcademicServiceRequest academicServiceRequest) {
-        //TODOJN mudar para usar o contracto?
         final ServiceRequestType serviceRequestType = ServiceRequestType.findUnique(academicServiceRequest);
-
-        return null;
+        if (find(serviceRequestType).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.ServiceRequestMapEntry.duplicatedForServiceRequestType");
+        }
+        return find(serviceRequestType).findFirst().orElse(null);
     }
 
     public static Product findProduct(final AcademicServiceRequest academicServiceRequest) {
