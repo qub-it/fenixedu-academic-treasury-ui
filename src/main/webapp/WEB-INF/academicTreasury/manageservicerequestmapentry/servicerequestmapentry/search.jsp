@@ -164,8 +164,6 @@ ${portal.toolkit()}
                     <th><spring:message
                             code="label.ServiceRequestMapEntry.serviceRequestType" /></th>
                     <th><spring:message
-                            code="label.ServiceRequestMapEntry.serviceRequestTypeOptions" /></th>
-                    <th><spring:message
                             code="label.ServiceRequestMapEntry.product" /></th>
                     <th><spring:message
                             code="label.ServiceRequestMapEntry.createEventOnSituation" /></th>
@@ -179,11 +177,6 @@ ${portal.toolkit()}
                     var="searchResult">
                     <tr>
                         <td>${searchResult.serviceRequestType.name.content}</td>
-                        <td><c:forEach
-                                items="${searchResult.serviceRequestTypeOptionBooleanValues}"
-                                var="option">
-                                <p>${option.serviceRequestTypeOption.name.content}</p>
-                            </c:forEach></td>
                         <td>${searchResult.product.name.content}</td>
                         <td>${searchResult.createEventOnSituation.localizedName}</td>
                         <td><a class="btn btn-xs btn-warning"

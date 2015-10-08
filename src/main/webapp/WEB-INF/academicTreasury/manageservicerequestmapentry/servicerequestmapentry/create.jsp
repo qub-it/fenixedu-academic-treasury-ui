@@ -99,15 +99,6 @@ ${portal.toolkit()}
 				</div>
 			</div>		
 			<div class="form-group row">
-				<div class="col-sm-2 control-label"><spring:message code="label.ServiceRequestMapEntry.serviceRequestTypeOptions"/></div> 
-				
-				<div class="col-sm-4">
-					<select id="ServiceRequestMapEntry_serviceRequestTypeOption_options" class="js-example-basic-single form-control" name="servicerequesttypeoptions" multiple="multiple">
-						<option value=""></option>
-					</select>
-				</div>
-			</div>		
-			<div class="form-group row">
 				<div class="col-sm-2 control-label"><spring:message code="label.ServiceRequestMapEntry.createEventOnSituation"/></div> 
 				
 				<div class="col-sm-4">
@@ -147,41 +138,6 @@ $(document).ready(function() {
 	    $("#serviceRequestMapEntry_serviceRequestType").select2().select2('val', '<c:out value='${param.servicerequesttype}'/>');
 	
 		<%-- End block for providing serviceRequestType options --%>
-		<%-- Block for providing serviceRequestTypeOptionBooleanValues options --%>
-		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-		serviceRequestTypeOptions_options = [
-			<c:forEach items="${ServiceRequestMapEntry_serviceRequestTypeOption_options}" var="element"> 
-				{
-					text : "<c:out value='${element.name.content}'/>",  
-					id : "<c:out value='${element.externalId}'/>"
-				},
-			</c:forEach>
-		];
-		
-		$("#ServiceRequestMapEntry_serviceRequestTypeOption_options").select2(
-			{
-				data : serviceRequestTypeOptions_options,
-			}	  
-	    );
-	    
-	    <% java.util.List hackingListServiceRequestTypeOptionBooleanValues = request.getParameterValues("servicerequesttypeoptionbooleanvalues") != null ? 
-	            java.util.Arrays.asList(request.getParameterValues("servicerequesttypeoptionbooleanvalues")) : new java.util.ArrayList();
-	            
-			request.setAttribute("hackingListServiceRequestTypeOptions",hackingListServiceRequestTypeOptionBooleanValues);
-		%>
-	    
-	    <c:if test="${not empty hackingListServiceRequestTypeOptions}">
-				$("#ServiceRequestMapEntry_serviceRequestTypeOption_options").select2().select2('val', [
-                	<c:forEach items="${ServiceRequestMapEntry_serviceRequestTypeOption_options}" var="element" varStatus="status">
-                    	"<c:out value='${element}'/>"
-                        <c:if test="${not status.last}">
-                        ,
-                       </c:if>
-                      </c:forEach>
-                     ]);
-            </c:if>
-	
-		<%-- End block for providing serviceRequestTypeOptionBooleanValues options --%>
 		<%-- Block for providing product options --%>
 		<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
 		product_options = [

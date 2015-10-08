@@ -26,12 +26,10 @@
  */
 package org.fenixedu.academictreasury.ui.manageservicerequestmapentry;
 
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
-import org.fenixedu.academic.domain.serviceRequests.ServiceRequestTypeOption;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
@@ -88,8 +86,6 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
                 ServiceRequestType.findAll().collect(Collectors.toList()));
 
         model.addAttribute("ServiceRequestMapEntry_product_options", Product.findAllActive().collect(Collectors.toList()));
-        model.addAttribute("ServiceRequestMapEntry_serviceRequestTypeOption_options",
-                ServiceRequestTypeOption.findAll().collect(Collectors.toList()));
         model.addAttribute("ServiceRequestMapEntry_situationType_options", AcademicServiceRequestSituationType.values());
 
         return "academicTreasury/manageservicerequestmapentry/servicerequestmapentry/create";
@@ -98,14 +94,13 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public String create(
             @RequestParam(value = "servicerequesttype", required = false) final ServiceRequestType serviceRequestType,
-            @RequestParam(value = "servicerequesttypeoptions", required = false) final Set<ServiceRequestTypeOption> serviceRequestTypeOptions,
             @RequestParam(value = "product", required = false) final Product product,
             @RequestParam(value = "createEventOnSituation", required = true) final AcademicServiceRequestSituationType createEventOnSituationType,
             Model model, RedirectAttributes redirectAttributes) {
 
         try {
 
-            ServiceRequestMapEntry.create(product, serviceRequestType, createEventOnSituationType, serviceRequestTypeOptions);
+            ServiceRequestMapEntry.create(product, serviceRequestType, createEventOnSituationType);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.ServiceRequestMapEntry.create.success"), model);
 
