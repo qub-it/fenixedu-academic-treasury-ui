@@ -65,8 +65,8 @@ public interface ITreasuryServiceRequest {
 
     public boolean hasCycleType();
 
-    public DateTime getRequestDate(); //Vem de base no ASR
+    public DateTime getRequestDate();
 
-    public String getDescription(); //Descrição para o anil apresentar como label para associar ao item de conta.
+    public String getDescription();
 
 }
