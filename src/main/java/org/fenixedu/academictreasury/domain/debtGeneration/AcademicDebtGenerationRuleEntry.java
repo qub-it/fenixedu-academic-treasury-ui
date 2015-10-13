@@ -2,7 +2,9 @@ package org.fenixedu.academictreasury.domain.debtGeneration;
 
 import java.util.stream.Stream;
 
+import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
 
@@ -62,6 +64,18 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
         if (find(getAcademicDebtGenerationRule(), getProduct()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.product.duplicated.in.rule");
         }
+        
+        if(!isProductTuition() && !isProductAcademicTax() && isCreateDebt()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.createDebt.only.supported.for.tuition.or.academicTax");
+        }
+    }
+
+    private boolean isProductAcademicTax() {
+        return AcademicTax.findUnique(getProduct()).isPresent();
+    }
+
+    private boolean isProductTuition() {
+        return getProduct().getProductGroup() == AcademicTreasurySettings.getInstance().getTuitionProductGroup();
     }
 
     private boolean isDeletable() {

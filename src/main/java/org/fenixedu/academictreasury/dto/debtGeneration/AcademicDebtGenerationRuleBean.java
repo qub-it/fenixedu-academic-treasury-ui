@@ -16,6 +16,7 @@ import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 
 import com.google.common.collect.Lists;
 
@@ -102,6 +103,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         availableProducts.addAll(AcademicTax.findAll().filter(AcademicTax::isAppliedAutomatically).map(l -> l.getProduct())
                 .collect(Collectors.toList()));
         availableProducts.addAll(AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet());
+        availableProducts.add(TreasurySettings.getInstance().getInterestProduct());
 
         productDataSource =
                 availableProducts.stream().sorted(Product.COMPARE_BY_NAME)

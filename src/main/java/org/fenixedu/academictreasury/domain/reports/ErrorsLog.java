@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.domain.reports;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.fenixedu.academictreasury.domain.academicalAct.AcademicActBlockingSuspension;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
@@ -66,6 +67,16 @@ public class ErrorsLog {
             sb.append(String.format("[%s/%s] - %s\n", oid, identification, name));
             sb.append(ExceptionUtils.getFullStackTrace(e)).append("\n\n");
         }
+    }
+    
+    public void addError(final AcademicActBlockingSuspension academicActBlockingSuspension, final Exception e) {
+        synchronized (this) {
+            final String oid = academicActBlockingSuspension.getExternalId();
+            final String name = academicActBlockingSuspension.getPerson().getName();
+
+            sb.append(String.format("[%s] - %s\n", oid, name));
+            sb.append(ExceptionUtils.getFullStackTrace(e)).append("\n\n");
+        }        
     }
     
     public String getLog() {

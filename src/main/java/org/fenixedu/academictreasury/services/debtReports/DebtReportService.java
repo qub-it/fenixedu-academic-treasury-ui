@@ -2,7 +2,9 @@ package org.fenixedu.academictreasury.services.debtReports;
 
 import java.util.stream.Stream;
 
+import org.fenixedu.academictreasury.domain.academicalAct.AcademicActBlockingSuspension;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
+import org.fenixedu.academictreasury.dto.reports.AcademicActBlockingSuspensionReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtAccountReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
@@ -46,6 +48,10 @@ public class DebtReportService {
     
     public static Stream<DebtAccountReportEntryBean> debtAccountEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
         return DebtAccount.findAll().map(i -> new DebtAccountReportEntryBean(i, log));
+    }
+    
+    public static Stream<AcademicActBlockingSuspensionReportEntryBean> academicActBlockingSuspensionReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return AcademicActBlockingSuspension.findAll().map(i -> new AcademicActBlockingSuspensionReportEntryBean(i, log));
     }
     
 }
