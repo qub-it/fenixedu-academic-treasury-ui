@@ -325,6 +325,9 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 
                 try {
                     processDebtsForRegistration(registration, logBean);
+                } catch(final AcademicTreasuryDomainException e) {
+                    logger.info(e.getMessage());
+                    logBean.registerException(registration, e);
                 } catch (final Exception e) {
                     e.printStackTrace();
                     logBean.registerException(registration, e);
@@ -342,6 +345,9 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         final LogBean logBean = new LogBean();
         try {
             _process(registration, logBean);
+        } catch(final AcademicTreasuryDomainException e) {
+            logger.info(e.getMessage());
+            logBean.registerException(registration, e);
         } catch (final Exception e) {
             e.printStackTrace();
             logBean.registerException(registration, e);

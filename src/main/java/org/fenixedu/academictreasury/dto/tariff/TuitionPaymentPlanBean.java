@@ -299,7 +299,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     }
 
     public void resetInstallmentFields() {
-        this.beginDate = new LocalDate();
+        this.beginDate = this.executionYear.getBeginLocalDate();
         this.endDate = Constants.INFINITY_DATE.toLocalDate();
         this.dueDateCalculationType = DueDateCalculationType.FIXED_DATE;
         this.fixedDueDate = new LocalDate();

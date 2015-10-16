@@ -7,9 +7,11 @@ import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.dto.reports.AcademicActBlockingSuspensionReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtAccountReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.PaymentReferenceCodeEntryBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.ReimbursementReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.SibsTransactionDetailEntryBean;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
@@ -17,6 +19,8 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.ReimbursementEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
+import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
 import org.joda.time.LocalDate;
 
 public class DebtReportService {
@@ -52,6 +56,14 @@ public class DebtReportService {
     
     public static Stream<AcademicActBlockingSuspensionReportEntryBean> academicActBlockingSuspensionReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
         return AcademicActBlockingSuspension.findAll().map(i -> new AcademicActBlockingSuspensionReportEntryBean(i, log));
+    }
+    
+    public static Stream<PaymentReferenceCodeEntryBean> paymentReferenceCodeReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return PaymentReferenceCode.findAll().map(i -> new PaymentReferenceCodeEntryBean(i, log));
+    } 
+    
+    public static Stream<SibsTransactionDetailEntryBean> sibsTransactionDetailReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+        return SibsTransactionDetail.findAll().map(i -> new SibsTransactionDetailEntryBean(i, log));
     }
     
 }
