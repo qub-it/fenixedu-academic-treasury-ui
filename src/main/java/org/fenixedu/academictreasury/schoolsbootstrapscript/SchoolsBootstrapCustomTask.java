@@ -9990,16 +9990,17 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
         if (academicServiceRequestType != null) {
             createdServiceRequestType =
                     ServiceRequestType.createLegacy(code, name, true, academicServiceRequestType, documentRequestType, payable,
-                            false, category);
+                            Boolean.FALSE, Boolean.FALSE, category);
         } else {
-            createdServiceRequestType = ServiceRequestType.create(code, name, true, payable, false, category);
+            createdServiceRequestType =
+                    ServiceRequestType.create(code, name, true, payable, Boolean.FALSE, Boolean.FALSE, category);
         }
 
         if (numberOfUnits) {
             createdServiceRequestType.edit(createdServiceRequestType.getCode(), createdServiceRequestType.getName(),
                     createdServiceRequestType.getActive(), createdServiceRequestType.getPayable(),
-                    createdServiceRequestType.getNotifyUponConclusion(), createdServiceRequestType.getServiceRequestCategory(),
-                    new LocalizedString(pt(), numberOfUnitsDesignationPT));
+                    createdServiceRequestType.getNotifyUponConclusion(), createdServiceRequestType.getPrintable(),
+                    createdServiceRequestType.getServiceRequestCategory(), new LocalizedString(pt(), numberOfUnitsDesignationPT));
         }
 
         return createdServiceRequestType;
