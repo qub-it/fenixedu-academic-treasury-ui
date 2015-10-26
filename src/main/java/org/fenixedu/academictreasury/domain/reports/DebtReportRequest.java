@@ -4,11 +4,14 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.reports.task.PendingDebtReportRequestsCronTask;
+import org.fenixedu.academictreasury.dto.reports.AcademicActBlockingSuspensionReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtAccountReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportRequestBean;
+import org.fenixedu.academictreasury.dto.reports.PaymentReferenceCodeEntryBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.SibsTransactionDetailEntryBean;
 import org.fenixedu.academictreasury.services.debtReports.DebtReportService;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.academictreasury.util.streaming.spreadsheet.ExcelSheet;
@@ -81,17 +84,19 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                             ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
                                     DebtReportService.reimbursementEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
                             ExcelSheet.create(debtAccountEntriesSheetName(), DebtAccountReportEntryBean.SPREADSHEET_HEADERS,
-                                            DebtReportService.debtAccountEntriesReport(getBeginDate(), getEndDate(), errorsLog))
-                                            
-                    
+                                            DebtReportService.debtAccountEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                            ExcelSheet.create(academicActBlockingSuspensionSheetName(), AcademicActBlockingSuspensionReportEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.academicActBlockingSuspensionReport(getBeginDate(), getEndDate(), errorsLog)),
+                            ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.paymentReferenceCodeReport(getBeginDate(), getEndDate(), errorsLog)),
+                            ExcelSheet.create(sibsTransactionDetailSheetName(), SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.sibsTransactionDetailReport(getBeginDate(), getEndDate(), errorsLog))
                     };
                 }
-
             }, errorsLog);
 
             DebtReportRequestResultFile.create(this, content);
             DebtReportRequestResultErrorsFile.create(this, errorsLog.getLog().getBytes());
-            
         }
 
         setBennuForPendingReportRequests(null);
@@ -100,6 +105,18 @@ public class DebtReportRequest extends DebtReportRequest_Base {
     @Atomic
     public void cancelRequest() {
         setBennuForPendingReportRequests(null);
+    }
+    
+    protected String sibsTransactionDetailSheetName() {
+        return Constants.bundle("label.DebtReportRequest.sibsTransactionDetailSheetName");
+    }
+    
+    protected String paymentReferenceCodeSheetName() {
+        return Constants.bundle("label.DebtReportRequest.paymentReferenceCodeSheetName");
+    }
+
+    private String academicActBlockingSuspensionSheetName() {
+        return Constants.bundle("label.DebtReportRequest.academicActBlockingSuspensionSheetName");
     }
 
     private String debitEntriesSheetName() {

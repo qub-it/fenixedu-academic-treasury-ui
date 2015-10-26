@@ -50,6 +50,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     public static final Comparator<TuitionPaymentPlan> COMPARE_BY_PAYMENT_PLAN_ORDER = (o1, o2) -> Integer.compare(
             o1.getPaymentPlanOrder(), o2.getPaymentPlanOrder());
 
+    private static final int MAX_PAYMENT_PLANS_LIMIT = 50;
+
     protected TuitionPaymentPlan() {
         super();
         setBennu(Bennu.getInstance());
@@ -349,11 +351,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             return;
         }
 
-        final TuitionPaymentPlan previous =
-                findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), getPaymentPlanOrder() - 1)
-                        .get();
+        final TuitionPaymentPlan previous = getPreviousTuitionPaymentPlan();
 
-        int order = getPaymentPlanOrder() - 1;
+        int order = previous.getPaymentPlanOrder();
         previous.setPaymentPlanOrder(getPaymentPlanOrder());
         setPaymentPlanOrder(order);
     }
@@ -364,9 +364,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             return;
         }
 
-        final TuitionPaymentPlan next =
-                findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), getPaymentPlanOrder() + 1)
-                        .get();
+        final TuitionPaymentPlan next = getNextTuitionPaymentPlan();
 
         int order = getPaymentPlanOrder() + 1;
         next.setPaymentPlanOrder(getPaymentPlanOrder());
@@ -379,8 +377,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         if (!getTuitionPaymentPlanGroup().isForRegistration()) {
             throw new RuntimeException("wrong call");
         }
-        
-        if(academicTreasuryEvent.isCharged()) {
+
+        if (academicTreasuryEvent.isCharged()) {
             return false;
         }
 
@@ -734,6 +732,26 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     private static int semesterWithFirstEnrolments(final Registration registration, final ExecutionYear executionYear) {
         return registration.getEnrolments(executionYear).stream().map(e -> e.getExecutionPeriod().getSemester()).sorted()
                 .findFirst().orElse(1);
+    }
+
+    private TuitionPaymentPlan getPreviousTuitionPaymentPlan() {
+        for(int i = getPaymentPlanOrder() - 1; i >= 0; i--) {
+            if(findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).isPresent()) {
+                return findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).get();
+            }
+        }
+        
+        return null;
+    }
+
+    private TuitionPaymentPlan getNextTuitionPaymentPlan() {
+        for(int i = getPaymentPlanOrder() + 1; i <= MAX_PAYMENT_PLANS_LIMIT; i++) {
+            if(findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).isPresent()) {
+                return findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).get();
+            }
+        }
+        
+        return null;
     }
 
     @Atomic

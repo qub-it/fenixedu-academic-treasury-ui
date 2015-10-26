@@ -111,7 +111,22 @@ public class PersonCustomer extends PersonCustomer_Base {
 
         return getPerson().getDefaultPhysicalAddress().getCountryOfResidence().getCode();
     }
+    
+    @Override
+    public String getNationalityCountryCode() {
+        if(getPerson().getCountry() != null) {
+            return getPerson().getCountry().getCode();
+        }
+        
+        return null;
+    }
 
+    // TODO: Ask IST-DSI
+    @Override
+    public String getFiscalCountry() {
+        return getNationalityCountryCode();
+    }
+    
     @Override
     public String getPaymentReferenceBaseCode() {
         return this.getCode();
@@ -199,4 +214,5 @@ public class PersonCustomer extends PersonCustomer_Base {
         }
         return this.getIdentificationNumber();
     }
+
 }
