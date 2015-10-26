@@ -21,6 +21,8 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
+import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
+import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.IBean;
@@ -65,6 +67,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private String name;
     private boolean withLaboratorialClasses;
 
+    private List<TupleDataSourceBean> executionYearDataSource = null;
     private List<TupleDataSourceBean> degreeTypeDataSource = null;
     private List<TupleDataSourceBean> degreeCurricularPlanDataSource = null;
     private List<TupleDataSourceBean> registrationRegimeTypeDataSource = null;
@@ -119,6 +122,9 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
      * --------------------
      */
 
+    // To be used on copy tuition payment plan
+    private ExecutionYear copiedExecutionYear;
+
     public TuitionPaymentPlanBean(final Product product, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final FinantialEntity finantialEntity, final ExecutionYear executionYear) {
         this.product = product;
@@ -128,6 +134,62 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         updateData();
         resetInstallmentFields();
+    }
+
+    public TuitionPaymentPlanBean(TuitionPaymentPlan tuitionPaymentPlan) {
+        this(tuitionPaymentPlan.getProduct(), tuitionPaymentPlan.getTuitionPaymentPlanGroup(), tuitionPaymentPlan
+                .getFinantialEntity(), tuitionPaymentPlan.getExecutionYear());
+
+        this.copiedExecutionYear = tuitionPaymentPlan.getExecutionYear();
+
+        this.curricularYear = tuitionPaymentPlan.getCurricularYear();
+        this.customized = tuitionPaymentPlan.isCustomized();
+        this.defaultPaymentPlan = tuitionPaymentPlan.isDefaultPaymentPlan();
+
+        if (tuitionPaymentPlan.getSemester() != null) {
+            this.executionSemester = getExecutionYear().getExecutionSemesterFor(tuitionPaymentPlan.getSemester());
+        }
+
+        this.firstTimeStudent = tuitionPaymentPlan.isFirstTimeStudent();
+        this.ingression = tuitionPaymentPlan.getIngression();
+        this.name = tuitionPaymentPlan.getCustomizedName().getContent();
+        this.registrationProtocol = tuitionPaymentPlan.getRegistrationProtocol();
+        this.registrationRegimeType = tuitionPaymentPlan.getRegistrationRegimeType();
+        this.statuteType = tuitionPaymentPlan.getStatuteType();
+        this.withLaboratorialClasses = tuitionPaymentPlan.isWithLaboratorialClasses();
+
+        fillWithInstallments(tuitionPaymentPlan);
+    }
+
+    private void fillWithInstallments(final TuitionPaymentPlan tuitionPaymentPlan) {
+        for (final TuitionInstallmentTariff tuitionInstallmentTariff : tuitionPaymentPlan.getOrderedTuitionInstallmentTariffs()) {
+
+            this.tuitionInstallmentProduct = tuitionInstallmentTariff.getProduct();
+            this.beginDate = tuitionInstallmentTariff.getBeginDate().toLocalDate();
+            this.dueDateCalculationType = tuitionInstallmentTariff.getDueDateCalculationType();
+            this.fixedDueDate = tuitionInstallmentTariff.getFixedDueDate();
+            this.numberOfDaysAfterCreationForDueDate = tuitionInstallmentTariff.getNumberOfDaysAfterCreationForDueDate();
+
+            this.applyInterests = tuitionInstallmentTariff.getApplyInterests();
+            if (this.applyInterests) {
+                this.interestType = tuitionInstallmentTariff.getInterestRate().getInterestType();
+                this.numberOfDaysAfterDueDate = tuitionInstallmentTariff.getNumberOfDaysAfterCreationForDueDate();
+                this.applyInFirstWorkday = tuitionInstallmentTariff.getInterestRate().isApplyInFirstWorkday();
+                this.maximumDaysToApplyPenalty = tuitionInstallmentTariff.getInterestRate().getMaximumDaysToApplyPenalty();
+                this.maximumMonthsToApplyPenalty = tuitionInstallmentTariff.getInterestRate().getMaximumMonthsToApplyPenalty();
+                this.interestFixedAmount = tuitionInstallmentTariff.getInterestRate().getInterestFixedAmount();
+                this.rate = tuitionInstallmentTariff.getInterestRate().getRate();
+            }
+
+            this.tuitionCalculationType = tuitionInstallmentTariff.getTuitionCalculationType();
+            this.fixedAmount = tuitionInstallmentTariff.getFixedAmount();
+            this.ectsCalculationType = tuitionInstallmentTariff.getEctsCalculationType();
+            this.factor = tuitionInstallmentTariff.getFactor();
+            this.totalEctsOrUnits = tuitionInstallmentTariff.getTotalEctsOrUnits();
+            this.academicalActBlockingOn = !tuitionInstallmentTariff.getAcademicalActBlockingOff();
+
+            addInstallment();
+        }
     }
 
     public void updateData() {
@@ -154,6 +216,20 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         this.statuteTypeDataSource = statuteTypeDataSource();
 
+        this.executionYearDataSource = executionYearDataSource();
+
+    }
+
+    public void updateDatesBasedOnSelectedExecutionYear() {
+        int executionYearInterval = executionYear.getBeginCivilYear() - copiedExecutionYear.getBeginCivilYear();
+
+        for (final AcademicTariffBean academicTariffBean : tuitionInstallmentBeans) {
+            academicTariffBean.setBeginDate(academicTariffBean.getBeginDate().plusYears(executionYearInterval));
+         
+            if(this.fixedDueDate != null) {
+                academicTariffBean.setFixedDueDate(this.fixedDueDate.plusYears(executionYearInterval));
+            }
+        }
     }
 
     private List<TupleDataSourceBean> dueDateCalculationTypeDataSource() {
@@ -838,6 +914,16 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 Bennu.getInstance().getStatuteTypesSet().stream()
                         .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
                         .collect(Collectors.toList());
+
+        result.add(Constants.SELECT_OPTION);
+
+        return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
+    }
+
+    private List<TupleDataSourceBean> executionYearDataSource() {
+        final List<TupleDataSourceBean> result =
+                ExecutionYear.readNotClosedExecutionYears().stream()
+                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
 

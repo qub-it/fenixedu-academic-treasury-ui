@@ -391,15 +391,20 @@ ${portal.toolkit()}
                     </datatables:column>
 
                 </datatables:table>
+                
+                <a style="margin-left:10px;margin-bottom:10px;" class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= TuitionPaymentPlanController.COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_URL %>/${paymentPlan.finantialEntity.externalId}/${paymentPlan.executionYear.externalId}/${paymentPlan.degreeCurricularPlan.externalId}/${paymentPlan.externalId}">
+                	<spring:message code="label.copy" />
+                </a>
+                
                 <script>
-																	createDataTables(
-																			"paymentPlans-${loopStatus.index}",
-																			false,
-																			false,
-																			false,
-																			"${pageContext.request.contextPath}",
-																			"${datatablesI18NUrl}");
-																</script>
+					createDataTables(
+							"paymentPlans-${loopStatus.index}",
+							false,
+							false,
+							false,
+							"${pageContext.request.contextPath}",
+							"${datatablesI18NUrl}");
+				</script>
             </div>
         </div>
     </c:forEach>
