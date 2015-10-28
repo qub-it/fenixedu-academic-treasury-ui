@@ -227,7 +227,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
             academicTariffBean.setBeginDate(academicTariffBean.getBeginDate().plusYears(executionYearInterval));
          
             if(this.fixedDueDate != null) {
-                academicTariffBean.setFixedDueDate(this.fixedDueDate.plusYears(executionYearInterval));
+                academicTariffBean.setFixedDueDate(academicTariffBean.getFixedDueDate().plusYears(executionYearInterval));
             }
         }
     }
