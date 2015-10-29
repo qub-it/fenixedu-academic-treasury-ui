@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.ui.customer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
@@ -10,13 +11,19 @@ import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
+import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import com.google.common.collect.Sets;
 
 //@Component("org.fenixedu.treasury.ui.customer.viewAccounting") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.customer.viewAccount",
@@ -88,6 +95,18 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
         model.addAttribute("paymentsDataSet", paymentEntries);
         model.addAttribute("exemptionDataSet", exemptionEntries);
+        
+        final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
+        for(final InvoiceEntry invoiceEntry : pendingInvoiceEntries) {
+            if(!invoiceEntry.isDebitNoteEntry()) {
+                continue;
+            }
+            
+            usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
+            usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget>toSet()));
+        }
+        
+        model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
 
         return "academicTreasury/customer/readDebtAccount";
     }
