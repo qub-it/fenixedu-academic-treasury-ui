@@ -14,6 +14,7 @@ import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.dto.academicservicerequest.AcademicServiceRequestDebitEntryBean;
@@ -77,7 +78,8 @@ public class EmolumentServices {
             return false;
         }
 
-        if (!(academicServiceRequest.getAcademicProgram() instanceof Degree)) {
+        // ITreasuryServiceRequest have always a registration which has a degree
+        if (!(academicServiceRequest instanceof ITreasuryServiceRequest)) {
             return false;
         };
 
@@ -99,7 +101,7 @@ public class EmolumentServices {
 
     public static AcademicTariff findTariffForAcademicServiceRequest(final AcademicServiceRequest academicServiceRequest,
             final LocalDate when) {
-        final Degree degree = (Degree) academicServiceRequest.getAcademicProgram();
+        final Degree degree = ((ITreasuryServiceRequest) academicServiceRequest).getRegistration().getDegree();
         final Product product = ServiceRequestMapEntry.findProduct(academicServiceRequest);
 
         return academicServiceRequest.isRequestedWithCycle() ? AcademicTariff.findMatch(product, degree,
@@ -121,10 +123,10 @@ public class EmolumentServices {
             return null;
         }
 
-        if (!(academicServiceRequest.getAcademicProgram() instanceof Degree)) {
+        // ITreasuryServiceRequest have always a registration which has a degree
+        if (!(academicServiceRequest instanceof ITreasuryServiceRequest)) {
             return null;
         };
-
         // Read person customer
 
         if (!PersonCustomer.findUnique(academicServiceRequest.getPerson()).isPresent()) {
@@ -187,7 +189,8 @@ public class EmolumentServices {
             return false;
         }
 
-        if (!(academicServiceRequest.getAcademicProgram() instanceof Degree)) {
+        // ITreasuryServiceRequest have always a registration which has a degree
+        if (!(academicServiceRequest instanceof ITreasuryServiceRequest)) {
             return false;
         };
 
@@ -232,8 +235,8 @@ public class EmolumentServices {
         if (debitEntry == null) {
             return false;
         }
-        
-        if(Constants.isEqual(debitEntry.getOpenAmount(), BigDecimal.ZERO)) {
+
+        if (Constants.isEqual(debitEntry.getOpenAmount(), BigDecimal.ZERO)) {
             throw new AcademicTreasuryDomainException("error.EmolumentServices.academicServiceRequest.amount.equals.to.zero");
         }
 
