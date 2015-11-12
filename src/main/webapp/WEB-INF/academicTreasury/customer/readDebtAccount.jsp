@@ -165,12 +165,7 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.DebitNote.dueDate" />
                             </datatables:columnHead>
-                            <c:if test="${empty pendingEntry.finantialDocument }">
-                                <c:out value='${pendingEntry.dueDate.toString("YYYY-MM-dd")}' />
-                            </c:if>
-                            <c:if test="${not empty pendingEntry.finantialDocument }">
-                                <c:out value='${pendingEntry.finantialDocument.documentDueDate.toString("YYYY-MM-dd")}' />
-                            </c:if>
+							<c:out value='${pendingEntry.dueDate.toString("YYYY-MM-dd")}' />
                             <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column cssStyle="width:100px;">
