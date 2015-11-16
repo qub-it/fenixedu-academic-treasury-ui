@@ -103,7 +103,10 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             }
             
             usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
-            usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget>toSet()));
+            
+            if(invoiceEntry.getFinantialDocument() != null) {
+                usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget>toSet()));
+            }
         }
         
         model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
