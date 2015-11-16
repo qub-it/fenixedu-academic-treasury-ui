@@ -48,7 +48,18 @@ class customer.PersonCustomer extends .org.fenixedu.treasury.domain.Customer {
 		
 		customer.PersonCustomer playsRole personCustomer {
 			multiplicity 0..1;
-		}	
+		}
+	}
+	
+	/* For inactive customers resulted in person merge */
+	relation InactivePersonCustomerPerson {
+		.org.fenixedu.academic.domain.Person playsRole personForInactivePersonCustomer {
+			multiplicity 0..1;
+		}
+		
+		customer.PersonCustomer playsRole inactivePersonCustomers {
+			multiplicity *;
+		}
 	}
 
 /*-------
