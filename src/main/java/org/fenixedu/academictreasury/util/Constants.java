@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Locale;
 
+import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -32,25 +33,25 @@ public class Constants {
     public static final String DATE_FORMAT_YYYY_MM_DD = "yyyy/MM/dd";
 
     public static final String DATE_TIME_FORMAT_YYYY_MM_DD = "yyyy/MM/dd HH:mm:ss";
-    
+
     // HACK: org.joda.time.Interval does not allow open end dates so use this date in the future
     public static final DateTime INFINITY_DATE = new DateTime().plusYears(500);
 
-    public static final TupleDataSourceBean SELECT_OPTION = new TupleDataSourceBean("", BundleUtil.getString(Constants.BUNDLE,
-            "label.TupleDataSourceBean.select.description"));
+    public static final TupleDataSourceBean SELECT_OPTION =
+            new TupleDataSourceBean("", BundleUtil.getString(Constants.BUNDLE, "label.TupleDataSourceBean.select.description"));
 
     public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
     public static final String DEFAULT_COUNTRY = "PT";
-    
+
     public static boolean isForeignLanguage(final Locale language) {
         return !language.getLanguage().equals(DEFAULT_LANGUAGE.getLanguage());
     }
-    
+
     public static boolean isDefaultCountry(final String country) {
-        if(Strings.isNullOrEmpty(country)) {
+        if (Strings.isNullOrEmpty(country)) {
             return false;
         }
-        
+
         return DEFAULT_COUNTRY.equals(country.toUpperCase());
     }
 
@@ -105,12 +106,30 @@ public class Constants {
     // @formatter: on
 
     public static boolean isDateBetween(final LocalDate beginDate, final LocalDate endDate, final LocalDate when) {
-        return new Interval(beginDate.toDateTimeAtStartOfDay(), endDate != null ? endDate.toDateTimeAtStartOfDay()
-                .minusSeconds(1) : INFINITY_DATE).contains(when.toDateTimeAtStartOfDay());
+        return new Interval(beginDate.toDateTimeAtStartOfDay(),
+                endDate != null ? endDate.toDateTimeAtStartOfDay().minusSeconds(1) : INFINITY_DATE)
+                        .contains(when.toDateTimeAtStartOfDay());
     }
 
     public static boolean isDateBetween(final LocalDate beginDate, final LocalDate endDate, final DateTime when) {
-        return new Interval(beginDate.toDateTimeAtStartOfDay(), endDate != null ? endDate.toDateTimeAtStartOfDay()
-                .minusSeconds(1) : INFINITY_DATE).contains(when);
+        return new Interval(beginDate.toDateTimeAtStartOfDay(),
+                endDate != null ? endDate.toDateTimeAtStartOfDay().minusSeconds(1) : INFINITY_DATE).contains(when);
+    }
+
+    public static Integer getNumberOfUnits(ITreasuryServiceRequest request) {
+        if (request.hasNumberOfUnits()) {
+            return request.getNumberOfUnits();
+        } else if (request.hasNumberOfDays()) {
+            return request.getNumberOfDays();
+        } else {
+            Integer numberOfApprovedExtraCurriculum =
+                    request.hasApprovedExtraCurriculum() ? request.getApprovedExtraCurriculum().size() : 0;
+            Integer numberOfApprovedStandaloneCurriculum =
+                    request.hasApprovedStandaloneCurriculum() ? request.getApprovedStandaloneCurriculum().size() : 0;
+            Integer numberOfApprovedEnrolments = request.hasApprovedEnrolments() ? request.getApprovedEnrolments().size() : 0;
+            Integer numberOfCurriculum = request.hasCurriculum() ? request.getCurriculum().size() : 0;
+            return numberOfApprovedExtraCurriculum + numberOfApprovedStandaloneCurriculum + numberOfApprovedEnrolments
+                    + numberOfCurriculum;
+        }
     }
 }
