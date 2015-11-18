@@ -29,9 +29,12 @@
 package org.fenixedu.academictreasury.domain.serviceRequests;
 
 import java.util.Locale;
+import java.util.Set;
 
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
+import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.curriculum.ICurriculumEntry;
 import org.joda.time.DateTime;
 
 /**
@@ -55,6 +58,10 @@ public interface ITreasuryServiceRequest {
 
     public boolean hasNumberOfUnits();
 
+    public Integer getNumberOfDays();
+
+    public boolean hasNumberOfDays();
+
     public boolean isUrgent();
 
     public Integer getNumberOfPages();
@@ -68,5 +75,21 @@ public interface ITreasuryServiceRequest {
     public DateTime getRequestDate();
 
     public String getDescription();
+
+    public boolean hasApprovedExtraCurriculum();
+
+    public Set<ICurriculumEntry> getApprovedExtraCurriculum();
+
+    public boolean hasApprovedStandaloneCurriculum();
+
+    public Set<ICurriculumEntry> getApprovedStandaloneCurriculum();
+
+    public boolean hasApprovedEnrolments();
+
+    public Set<ICurriculumEntry> getApprovedEnrolments();
+
+    public boolean hasCurriculum();
+
+    public Set<ICurriculumEntry> getCurriculum();
 
 }
