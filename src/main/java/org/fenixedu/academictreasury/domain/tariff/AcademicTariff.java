@@ -481,17 +481,13 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         propertiesMap.putAll(fillPriceCommonProperties(academicTreasuryEvent, when));
 
-        if (academicTreasuryEvent.getAcademicServiceRequest().isRequestForRegistration()) {
-            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
-                    ((ITreasuryServiceRequest) academicTreasuryEvent.getAcademicServiceRequest()).getRegistration().getDegree()
-                            .getPresentationNameI18N(academicTreasuryEvent.getAcademicServiceRequest().getExecutionYear())
-                            .getContent());
-            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
-                    ((ITreasuryServiceRequest) academicTreasuryEvent.getAcademicServiceRequest()).getRegistration().getDegree()
-                            .getCode());
-        } else if (academicTreasuryEvent.getAcademicServiceRequest().isRequestForPhd()) {
-            // TODO: Fill
-        }
+        propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
+                ((ITreasuryServiceRequest) academicTreasuryEvent.getAcademicServiceRequest()).getRegistration().getDegree()
+                        .getPresentationNameI18N(academicTreasuryEvent.getAcademicServiceRequest().getExecutionYear())
+                        .getContent());
+        propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
+                ((ITreasuryServiceRequest) academicTreasuryEvent.getAcademicServiceRequest()).getRegistration().getDegree()
+                        .getCode());
 
         if (academicTreasuryEvent.getAcademicServiceRequest().hasExecutionYear()) {
             propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(), academicTreasuryEvent
