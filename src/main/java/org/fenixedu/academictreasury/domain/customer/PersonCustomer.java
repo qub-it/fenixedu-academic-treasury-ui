@@ -63,10 +63,13 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public String getFiscalNumber() {
-        if (Strings.isNullOrEmpty(getPerson().getSocialSecurityNumber())) {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (Strings.isNullOrEmpty(person.getSocialSecurityNumber())) {
             return Customer.DEFAULT_FISCAL_NUMBER;
         }
-        return getPerson().getSocialSecurityNumber();
+        
+        return person.getSocialSecurityNumber();
     }
 
     @Override
@@ -151,6 +154,17 @@ public class PersonCustomer extends PersonCustomer_Base {
         return null;
     }
 
+    @Override
+    public String getBusinessIdentification() {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (person.getStudent() != null) {
+            return person.getStudent().getNumber().toString();
+        }
+        
+        return this.getIdentificationNumber();
+    }
+
     // TODO: Ask IST-DSI
     @Override
     public String getFiscalCountry() {
@@ -206,6 +220,26 @@ public class PersonCustomer extends PersonCustomer_Base {
 
         return true;
     }
+    
+    public BigDecimal getGlobalBalance() {
+        BigDecimal globalBalance = BigDecimal.ZERO;
+        
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+        
+        if(person.getPersonCustomer() != null) {
+            for (final DebtAccount debtAccount : person.getPersonCustomer().getDebtAccountsSet()) {
+                globalBalance = globalBalance.add(debtAccount.getTotalInDebt());
+            }
+        }
+        
+        for (final PersonCustomer personCustomer : person.getInactivePersonCustomersSet()) {
+            for (final DebtAccount debtAccount : personCustomer.getDebtAccountsSet()) {
+                globalBalance = globalBalance.add(debtAccount.getTotalInDebt());
+            }
+        }
+        
+        return globalBalance;
+    }
 
     public void mergeWithPerson(final Person person) {
 
@@ -218,7 +252,9 @@ public class PersonCustomer extends PersonCustomer_Base {
         }
 
         if(person.getPersonCustomer() != null) {
-            person.getPersonCustomer().setPersonForInactivePersonCustomer(getPerson());
+            final PersonCustomer personCustomer = person.getPersonCustomer();
+            personCustomer.setPersonForInactivePersonCustomer(getPerson());
+            personCustomer.setPerson(null);
         }
         
         for (final PersonCustomer personCustomer : person.getInactivePersonCustomersSet()) {
@@ -245,6 +281,10 @@ public class PersonCustomer extends PersonCustomer_Base {
     public static Optional<? extends PersonCustomer> findUnique(final Person person) {
         return PersonCustomer.findAll().filter(pc -> pc.getPerson() == person).findFirst();
     }
+    
+    public static Stream<? extends PersonCustomer> findInactivePersonCustomers(final Person person) {
+        return PersonCustomer.findAll().filter(pc -> pc.getPersonForInactivePersonCustomer() == person);
+    }
 
     @Atomic
     public static PersonCustomer create(Person person) {
@@ -261,14 +301,6 @@ public class PersonCustomer extends PersonCustomer_Base {
         } else {
             return CustomerType.findByCode(CANDIDACY_CODE).findFirst().orElse(null);
         }
-    }
-
-    @Override
-    public String getBusinessIdentification() {
-        if (this.getPerson().getStudent() != null) {
-            return this.getPerson().getStudent().getNumber().toString();
-        }
-        return this.getIdentificationNumber();
     }
 
 }
