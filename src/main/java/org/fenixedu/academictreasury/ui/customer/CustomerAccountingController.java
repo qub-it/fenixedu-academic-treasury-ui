@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.core.security.Authenticate;
@@ -70,13 +71,58 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
         List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
         List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
+
         allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
+
+        if (debtAccount.getCustomer().isActive() && debtAccount.getCustomer().isPersonCustomer()) {
+            for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
+                    .getInactivePersonCustomersSet()) {
+                if (inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()) == null) {
+                    continue;
+                }
+
+                allInvoiceEntries.addAll(inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution())
+                        .getActiveInvoiceEntries().collect(Collectors.toList()));
+            }
+        }
+
         paymentEntries =
                 SettlementNote.findByDebtAccount(debtAccount).filter(x -> x.isClosed() || x.isPreparing())
                         .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
                         .collect(Collectors.toList());
 
+        if (debtAccount.getCustomer().isActive() && debtAccount.getCustomer().isPersonCustomer()) {
+            for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
+                    .getInactivePersonCustomersSet()) {
+                if (inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()) == null) {
+                    continue;
+                }
+
+                paymentEntries.addAll(
+                        SettlementNote
+                                .findByDebtAccount(
+                                        inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()))
+                                .filter(x -> x.isClosed() || x.isPreparing())
+                                .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
+                                .collect(Collectors.toList()));
+
+            }
+        }
+
         exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
+
+        if (debtAccount.getCustomer().isActive() && debtAccount.getCustomer().isPersonCustomer()) {
+            for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
+                    .getInactivePersonCustomersSet()) {
+                if (inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()) == null) {
+                    continue;
+                }
+
+                exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(
+                        inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution())).collect(
+                        Collectors.toList()));
+            }
+        }
 
         for (InvoiceEntry entry : debtAccount.getPendingInvoiceEntriesSet()) {
             if (entry.getFinantialDocument() == null) {
@@ -91,21 +137,46 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             }
         }
 
+        
+        if (debtAccount.getCustomer().isActive() && debtAccount.getCustomer().isPersonCustomer()) {
+            for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
+                    .getInactivePersonCustomersSet()) {
+                if (inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()) == null) {
+                    continue;
+                }
+
+                for (InvoiceEntry entry : inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()).getPendingInvoiceEntriesSet()) {
+                    if (entry.getFinantialDocument() == null) {
+                        pendingInvoiceEntries.add(entry);
+                    } else {
+                        if (pendingInvoiceEntries.stream().anyMatch(
+                                x -> x.getFinantialDocument() != null && x.getFinantialDocument().equals(entry.getFinantialDocument()))) {
+                            //if there is any entry for this document, don't add
+                        } else {
+                            pendingInvoiceEntries.add(entry);
+                        }
+                    }                    
+                }
+            }
+        }
+        
         model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
         model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
         model.addAttribute("paymentsDataSet", paymentEntries);
         model.addAttribute("exemptionDataSet", exemptionEntries);
-        
+
         final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
-        for(final InvoiceEntry invoiceEntry : pendingInvoiceEntries) {
-            if(!invoiceEntry.isDebitNoteEntry()) {
+        for (final InvoiceEntry invoiceEntry : pendingInvoiceEntries) {
+            if (!invoiceEntry.isDebitNoteEntry()) {
                 continue;
             }
-            
-            usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
-            usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget>toSet()));
+
+            usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(
+                    Collectors.toSet()));
+            usedPaymentCodeTargets.addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(
+                    invoiceEntry.getFinantialDocument()).collect(Collectors.<PaymentCodeTarget> toSet()));
         }
-        
+
         model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
 
         return "academicTreasury/customer/readDebtAccount";
