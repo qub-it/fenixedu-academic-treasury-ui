@@ -15,6 +15,7 @@ import org.fenixedu.treasury.util.Constants;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
+import sun.security.jca.GetInstance;
 
 import com.google.common.base.Strings;
 
@@ -38,11 +39,19 @@ public class PersonCustomer extends PersonCustomer_Base {
     @Override
     protected void checkRules() {
         super.checkRules();
-        if (getPerson() == null) {
+
+        /* Person Customer can be associated to Person with only one of two relations
+         */
+
+        if (getPerson() == null && getPersonForInactivePersonCustomer() == null) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.person.required");
         }
 
-        if (find(getPerson()).count() > 1) {
+        if (getPerson() != null && getPersonForInactivePersonCustomer() != null) {
+            throw new AcademicTreasuryDomainException("error.PersonCustomer.may.only.be.related.to.person.with.one.relation");
+        }
+
+        if (isActive() && (find(getPerson()).count() > 1)) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.person.customer.duplicated");
         }
     }
@@ -54,71 +63,106 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public String getFiscalNumber() {
-        if (Strings.isNullOrEmpty(getPerson().getSocialSecurityNumber())) {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (Strings.isNullOrEmpty(person.getSocialSecurityNumber())) {
             return Customer.DEFAULT_FISCAL_NUMBER;
         }
-        return getPerson().getSocialSecurityNumber();
+        
+        return person.getSocialSecurityNumber();
     }
 
     @Override
     public String getName() {
+        if (!isActive()) {
+            return getPersonForInactivePersonCustomer().getName();
+        }
+
         return getPerson().getName();
     }
 
     @Override
     public String getIdentificationNumber() {
+        if (!isActive()) {
+            return getPersonForInactivePersonCustomer().getDocumentIdNumber();
+        }
+
         return getPerson().getDocumentIdNumber();
     }
 
     @Override
     public String getAddress() {
+        if (!isActive()) {
+            return getPersonForInactivePersonCustomer().getAddress();
+        }
+
         return getPerson().getAddress();
     }
 
     @Override
     public String getDistrictSubdivision() {
-        if (getPerson().getDefaultPhysicalAddress() == null) {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (person.getDefaultPhysicalAddress() == null) {
             return null;
         }
 
-        return getPerson().getDefaultPhysicalAddress().getArea();
+        return person.getDefaultPhysicalAddress().getArea();
     }
 
     @Override
     public String getDistrict() {
-        if (getPerson().getDefaultPhysicalAddress() == null) {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (person.getDefaultPhysicalAddress() == null) {
             return null;
         }
 
-        return getPerson().getDefaultPhysicalAddress().getDistrictOfResidence();
+        return person.getDefaultPhysicalAddress().getDistrictOfResidence();
     }
 
     @Override
     public String getZipCode() {
-        if (getPerson().getDefaultPhysicalAddress() == null) {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (person.getDefaultPhysicalAddress() == null) {
             return null;
         }
 
-        return getPerson().getDefaultPhysicalAddress().getAreaCode();
+        return person.getDefaultPhysicalAddress().getAreaCode();
     }
 
     @Override
     public String getCountryCode() {
-        if (getPerson().getDefaultPhysicalAddress() == null
-                || getPerson().getDefaultPhysicalAddress().getCountryOfResidence() == null) {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (person.getDefaultPhysicalAddress() == null || person.getDefaultPhysicalAddress().getCountryOfResidence() == null) {
             return null;
         }
 
-        return getPerson().getDefaultPhysicalAddress().getCountryOfResidence().getCode();
+        return person.getDefaultPhysicalAddress().getCountryOfResidence().getCode();
     }
-    
+
     @Override
     public String getNationalityCountryCode() {
-        if(getPerson().getCountry() != null) {
-            return getPerson().getCountry().getCode();
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (person.getCountry() != null) {
+            return person.getCountry().getCode();
+        }
+
+        return null;
+    }
+
+    @Override
+    public String getBusinessIdentification() {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+
+        if (person.getStudent() != null) {
+            return person.getStudent().getNumber().toString();
         }
         
-        return null;
+        return this.getIdentificationNumber();
     }
 
     // TODO: Ask IST-DSI
@@ -126,7 +170,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     public String getFiscalCountry() {
         return getNationalityCountryCode();
     }
-    
+
     @Override
     public String getPaymentReferenceBaseCode() {
         return this.getCode();
@@ -137,14 +181,19 @@ public class PersonCustomer extends PersonCustomer_Base {
         return true;
     }
 
+    @Override
+    public boolean isActive() {
+        return getPerson() != null;
+    }
+
     public boolean isBlockingAcademicalActs(final LocalDate when) {
 
-        if (DebtAccount.find(this).map(da -> Constants.isGreaterThan(da.getTotalInDebt(), BigDecimal.ZERO)).reduce((a, c) -> a || c)
-                .orElse(Boolean.FALSE)) {
+        if (DebtAccount.find(this).map(da -> Constants.isGreaterThan(da.getTotalInDebt(), BigDecimal.ZERO))
+                .reduce((a, c) -> a || c).orElse(Boolean.FALSE)) {
             return DebitEntry.find(this).map(d -> isDebitEntryBlockingAcademicalActs(d, when)).reduce((a, c) -> a || c)
                     .orElse(Boolean.FALSE);
         }
-        
+
         return false;
     }
 
@@ -171,6 +220,49 @@ public class PersonCustomer extends PersonCustomer_Base {
 
         return true;
     }
+    
+    public BigDecimal getGlobalBalance() {
+        BigDecimal globalBalance = BigDecimal.ZERO;
+        
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+        
+        if(person.getPersonCustomer() != null) {
+            for (final DebtAccount debtAccount : person.getPersonCustomer().getDebtAccountsSet()) {
+                globalBalance = globalBalance.add(debtAccount.getTotalInDebt());
+            }
+        }
+        
+        for (final PersonCustomer personCustomer : person.getInactivePersonCustomersSet()) {
+            for (final DebtAccount debtAccount : personCustomer.getDebtAccountsSet()) {
+                globalBalance = globalBalance.add(debtAccount.getTotalInDebt());
+            }
+        }
+        
+        return globalBalance;
+    }
+
+    public void mergeWithPerson(final Person person) {
+
+        if (getPerson() == person) {
+            throw new AcademicTreasuryDomainException("error.PersonCustomer.merging.not.happening");
+        }
+
+        if (getPersonForInactivePersonCustomer() == person) {
+            throw new AcademicTreasuryDomainException("error.PersonCustomer.merged.already.with.person");
+        }
+
+        if(person.getPersonCustomer() != null) {
+            final PersonCustomer personCustomer = person.getPersonCustomer();
+            personCustomer.setPersonForInactivePersonCustomer(getPerson());
+            personCustomer.setPerson(null);
+        }
+        
+        for (final PersonCustomer personCustomer : person.getInactivePersonCustomersSet()) {
+            personCustomer.setPersonForInactivePersonCustomer(getPerson());
+        }
+
+        checkRules();
+    }
 
     // @formatter: off
     /************
@@ -189,6 +281,10 @@ public class PersonCustomer extends PersonCustomer_Base {
     public static Optional<? extends PersonCustomer> findUnique(final Person person) {
         return PersonCustomer.findAll().filter(pc -> pc.getPerson() == person).findFirst();
     }
+    
+    public static Stream<? extends PersonCustomer> findInactivePersonCustomers(final Person person) {
+        return PersonCustomer.findAll().filter(pc -> pc.getPersonForInactivePersonCustomer() == person);
+    }
 
     @Atomic
     public static PersonCustomer create(Person person) {
@@ -205,14 +301,6 @@ public class PersonCustomer extends PersonCustomer_Base {
         } else {
             return CustomerType.findByCode(CANDIDACY_CODE).findFirst().orElse(null);
         }
-    }
-
-    @Override
-    public String getBusinessIdentification() {
-        if (this.getPerson().getStudent() != null) {
-            return this.getPerson().getStudent().getNumber().toString();
-        }
-        return this.getIdentificationNumber();
     }
 
 }
