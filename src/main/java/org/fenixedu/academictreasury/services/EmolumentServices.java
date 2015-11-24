@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Degree;
+import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituation;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
@@ -34,9 +35,9 @@ import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.eventbus.Subscribe;
+
+import pt.ist.fenixframework.Atomic;
 
 public class EmolumentServices {
 
@@ -102,11 +103,11 @@ public class EmolumentServices {
     public static AcademicTariff findTariffForAcademicServiceRequest(final AcademicServiceRequest academicServiceRequest,
             final LocalDate when) {
         final Degree degree = ((ITreasuryServiceRequest) academicServiceRequest).getRegistration().getDegree();
+        final CycleType cycleType = ((ITreasuryServiceRequest) academicServiceRequest).getCycleType();
         final Product product = ServiceRequestMapEntry.findProduct(academicServiceRequest);
 
-        return academicServiceRequest.isRequestedWithCycle() ? AcademicTariff.findMatch(product, degree,
-                academicServiceRequest.getRequestedCycle(), when.toDateTimeAtStartOfDay()) : AcademicTariff.findMatch(product,
-                degree, when.toDateTimeAtStartOfDay());
+        return academicServiceRequest.isRequestedWithCycle() ? AcademicTariff.findMatch(product, degree, cycleType,
+                when.toDateTimeAtStartOfDay()) : AcademicTariff.findMatch(product, degree, when.toDateTimeAtStartOfDay());
     }
 
     @Atomic
@@ -241,11 +242,9 @@ public class EmolumentServices {
         }
 
         if (AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
-            final DebitNote debitNote =
-                    DebitNote.create(
-                            personDebtAccount,
-                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
-                                    personDebtAccount.getFinantialInstitution()).get(), new DateTime());
+            final DebitNote debitNote = DebitNote.create(personDebtAccount, DocumentNumberSeries
+                    .findUniqueDefault(FinantialDocumentType.findForDebitNote(), personDebtAccount.getFinantialInstitution())
+                    .get(), new DateTime());
 
             debitNote.addDebitNoteEntries(Collections.singletonList(debitEntry));
             debitNote.closeDocument();
