@@ -17,7 +17,6 @@ import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.AcademicTreasuryEventKeys;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.util.Constants;
@@ -40,10 +39,10 @@ import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+
+import pt.ist.fenixframework.Atomic;
 
 public class AcademicTariff extends AcademicTariff_Base {
 
@@ -64,12 +63,12 @@ public class AcademicTariff extends AcademicTariff_Base {
 
     protected void init(final FinantialEntity finantialEntity, final Product product, final AcademicTariffBean bean) {
 
-        super.init(finantialEntity, product, bean.getBeginDate().toDateTimeAtStartOfDay(), bean.getEndDate() != null ? bean
-                .getEndDate().toDateTimeAtStartOfDay() : null, bean.getDueDateCalculationType(),
+        super.init(finantialEntity, product, bean.getBeginDate().toDateTimeAtStartOfDay(),
+                bean.getEndDate() != null ? bean.getEndDate().toDateTimeAtStartOfDay() : null, bean.getDueDateCalculationType(),
                 bean.getFixedDueDate() != null ? bean.getFixedDueDate() : null, bean.getNumberOfDaysAfterCreationForDueDate(),
-                bean.isApplyInterests(), bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(),
-                bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean
-                        .getInterestFixedAmount(), bean.getRate());
+                bean.isApplyInterests(), bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
+                bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
+                bean.getRate());
 
         setBaseAmount(bean.getBaseAmount());
         setUnitsForBase(bean.getUnitsForBase());
@@ -194,7 +193,8 @@ public class AcademicTariff extends AcademicTariff_Base {
                 throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other");
             };
         } else if (getDegree() != null) {
-            if (findInInterval(getProduct(), getAdministrativeOffice(), getDegreeType(), getDegree(), getInterval()).count() > 1) {
+            if (findInInterval(getProduct(), getAdministrativeOffice(), getDegreeType(), getDegree(), getInterval())
+                    .count() > 1) {
                 throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other");
             }
         } else if (getDegreeType() != null) {
@@ -210,8 +210,8 @@ public class AcademicTariff extends AcademicTariff_Base {
 
     @Atomic
     public void edit(final AcademicTariffBean bean) {
-        super.edit(bean.getBeginDate().toDateTimeAtStartOfDay(), bean.getEndDate().toDateTimeAtStartOfDay().plusDays(1)
-                .minusSeconds(1));
+        super.edit(bean.getBeginDate().toDateTimeAtStartOfDay(),
+                bean.getEndDate().toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1));
 
         if (bean.isApplyInterests() && getInterestRate() == null) {
             InterestRate.createForTariff(this, bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(),
@@ -256,16 +256,15 @@ public class AcademicTariff extends AcademicTariff_Base {
     public BigDecimal amountForUrgencyRate(final AcademicTreasuryEvent academicTreasuryEvent) {
         BigDecimal amount = amountWithLanguageRate(academicTreasuryEvent);
 
-        return amount.multiply(getUrgencyRate().setScale(20, RoundingMode.HALF_EVEN).divide(Constants.HUNDRED_PERCENT)
-                .setScale(2, RoundingMode.HALF_EVEN));
+        return amount.multiply(getUrgencyRate().setScale(20, RoundingMode.HALF_EVEN).divide(Constants.HUNDRED_PERCENT).setScale(2,
+                RoundingMode.HALF_EVEN));
     }
 
     public BigDecimal amountForLanguageTranslationRate(final AcademicTreasuryEvent academicTreasuryEvent) {
         final BigDecimal amount = amountToPayWithoutRates(academicTreasuryEvent);
 
-        final BigDecimal result =
-                amount.multiply(getLanguageTranslationRate().setScale(20, RoundingMode.HALF_EVEN)
-                        .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN));
+        final BigDecimal result = amount.multiply(getLanguageTranslationRate().setScale(20, RoundingMode.HALF_EVEN)
+                .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN));
 
         return isPositive(result) ? result : BigDecimal.ZERO;
     }
@@ -310,7 +309,8 @@ public class AcademicTariff extends AcademicTariff_Base {
         return result >= 0 ? result : 0;
     }
 
-    public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent, final EnrolmentEvaluation enrolmentEvaluation) {
+    public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent,
+            final EnrolmentEvaluation enrolmentEvaluation) {
         return getBaseAmount();
     }
 
@@ -344,13 +344,10 @@ public class AcademicTariff extends AcademicTariff_Base {
         LocalizedString result = new LocalizedString();
 
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
-            result =
-                    result.with(
-                            locale,
-                            academicTreasuryEvent.getDescription().getContent(locale)
-                                    + String.format(" (%s - %s)",
-                                            enrolmentEvaluation.getEnrolment().getName().getContent(locale), enrolmentEvaluation
-                                                    .getExecutionPeriod().getQualifiedName()));
+            result = result.with(locale,
+                    academicTreasuryEvent.getDescription().getContent(locale)
+                            + String.format(" (%s - %s)", enrolmentEvaluation.getEnrolment().getName().getContent(locale),
+                                    enrolmentEvaluation.getExecutionPeriod().getQualifiedName()));
         }
 
         return result;
@@ -378,8 +375,8 @@ public class AcademicTariff extends AcademicTariff_Base {
         final Map<String, String> fillPriceProperties =
                 fillPriceCommonPropertiesForAcademicServiceRequest(academicTreasuryEvent, when);
 
-        return DebitEntry.create(Optional.<DebitNote> empty(), academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent,
-                vat, amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
+        return DebitEntry.create(Optional.<DebitNote> empty(), academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent, vat,
+                amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
                 this.getInterestRate(), when.toDateTimeAtStartOfDay());
     }
 
@@ -403,15 +400,15 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         final Map<String, String> fillPriceProperties = fillPricePropertiesForAcademicTax(academicTreasuryEvent, when);
 
-        return DebitEntry.create(Optional.<DebitNote> empty(), academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent,
-                vat, amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
+        return DebitEntry.create(Optional.<DebitNote> empty(), academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent, vat,
+                amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
                 this.getInterestRate(), when.toDateTimeAtStartOfDay());
     }
 
     public DebitEntry createDebitEntryForImprovement(final AcademicTreasuryEvent academicTreasuryEvent,
             final EnrolmentEvaluation enrolmentEvaluation) {
-        return createDebitEntryForImprovement(academicTreasuryEvent, enrolmentEvaluation, enrolmentEvaluation.getWhenDateTime()
-                .toLocalDate());
+        return createDebitEntryForImprovement(academicTreasuryEvent, enrolmentEvaluation,
+                enrolmentEvaluation.getWhenDateTime().toLocalDate());
     }
 
     public DebitEntry createDebitEntryForImprovement(final AcademicTreasuryEvent academicTreasuryEvent,
@@ -430,20 +427,19 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent, enrolmentEvaluation);
 
-        final DebitEntry debitEntry =
-                DebitEntry.create(Optional.<DebitNote> empty(), academicTreasuryEvent.getDebtAccount(), academicTreasuryEvent,
-                        vat, amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(),
-                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
+        final DebitEntry debitEntry = DebitEntry.create(Optional.<DebitNote> empty(), academicTreasuryEvent.getDebtAccount(),
+                academicTreasuryEvent, vat, amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(),
+                Constants.DEFAULT_QUANTITY, this.getInterestRate(), new DateTime());
 
         academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);
 
         if (debitEntry != null && AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
             DebtAccount debtAccount = academicTreasuryEvent.getDebtAccount();
-            final DebitNote debitNote =
-                    DebitNote.create(
-                            debtAccount,
-                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
-                                    debtAccount.getFinantialInstitution()).get(), new DateTime());
+            final DebitNote debitNote = DebitNote.create(debtAccount,
+                    DocumentNumberSeries
+                            .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution())
+                            .get(),
+                    new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(debitEntry));
             debitNote.closeDocument();
@@ -466,10 +462,10 @@ public class AcademicTariff extends AcademicTariff_Base {
         final BigDecimal amountForAdditionalUnits = amountForAdditionalUnits(academicTreasuryEvent);
         final BigDecimal amountForPages = amountForPages(academicTreasuryEvent);
         final BigDecimal maximumAmount = getMaximumAmount();
-        final BigDecimal amountForLanguageTranslationRate =
-                academicTreasuryEvent.isForAcademicServiceRequest() ? amountForLanguageTranslationRate(academicTreasuryEvent) : BigDecimal.ZERO;
-        final BigDecimal amountForUrgencyRate =
-                academicTreasuryEvent.isForAcademicServiceRequest() ? amountForUrgencyRate(academicTreasuryEvent) : BigDecimal.ZERO;
+        final BigDecimal amountForLanguageTranslationRate = academicTreasuryEvent
+                .isForAcademicServiceRequest() ? amountForLanguageTranslationRate(academicTreasuryEvent) : BigDecimal.ZERO;
+        final BigDecimal amountForUrgencyRate = academicTreasuryEvent
+                .isForAcademicServiceRequest() ? amountForUrgencyRate(academicTreasuryEvent) : BigDecimal.ZERO;
 
         academicTreasuryEvent.updatePricingFields(baseAmount, amountForAdditionalUnits, amountForPages, maximumAmount,
                 amountForLanguageTranslationRate, amountForUrgencyRate);
@@ -482,16 +478,15 @@ public class AcademicTariff extends AcademicTariff_Base {
         propertiesMap.putAll(fillPriceCommonProperties(academicTreasuryEvent, when));
 
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
-                ((ITreasuryServiceRequest) academicTreasuryEvent.getAcademicServiceRequest()).getRegistration().getDegree()
-                        .getPresentationNameI18N(academicTreasuryEvent.getAcademicServiceRequest().getExecutionYear())
+                academicTreasuryEvent.getITreasuryServiceRequest().getRegistration().getDegree()
+                        .getPresentationNameI18N(academicTreasuryEvent.getITreasuryServiceRequest().getExecutionYear())
                         .getContent());
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
-                ((ITreasuryServiceRequest) academicTreasuryEvent.getAcademicServiceRequest()).getRegistration().getDegree()
-                        .getCode());
+                academicTreasuryEvent.getITreasuryServiceRequest().getRegistration().getDegree().getCode());
 
-        if (academicTreasuryEvent.getAcademicServiceRequest().hasExecutionYear()) {
-            propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(), academicTreasuryEvent
-                    .getAcademicServiceRequest().getExecutionYear().getQualifiedName());
+        if (academicTreasuryEvent.getITreasuryServiceRequest().hasExecutionYear()) {
+            propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(),
+                    academicTreasuryEvent.getITreasuryServiceRequest().getExecutionYear().getQualifiedName());
         }
 
         return propertiesMap;
@@ -503,19 +498,20 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         propertiesMap.putAll(fillPriceCommonProperties(academicTreasuryEvent, when));
 
-        propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(), academicTreasuryEvent
-                .getExecutionYear().getQualifiedName());
+        propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(),
+                academicTreasuryEvent.getExecutionYear().getQualifiedName());
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), academicTreasuryEvent
                 .getRegistration().getDegree().getPresentationNameI18N(academicTreasuryEvent.getExecutionYear()).getContent());
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
                 academicTreasuryEvent.getRegistration().getDegreeCurricularPlanName());
-        propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(), academicTreasuryEvent
-                .getRegistration().getDegree().getCode());
+        propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
+                academicTreasuryEvent.getRegistration().getDegree().getCode());
 
         return propertiesMap;
     }
 
-    private Map<String, String> fillPriceCommonProperties(final AcademicTreasuryEvent academicTreasuryEvent, final LocalDate when) {
+    private Map<String, String> fillPriceCommonProperties(final AcademicTreasuryEvent academicTreasuryEvent,
+            final LocalDate when) {
         final Map<String, String> propertiesMap = Maps.newHashMap();
 
         final Currency currency = academicTreasuryEvent.getDebtAccount().getFinantialInstitution().getCurrency();
@@ -525,37 +521,39 @@ public class AcademicTariff extends AcademicTariff_Base {
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.UNITS_FOR_BASE.getDescriptionI18N().getContent(),
                 String.valueOf(getUnitsForBase()));
 
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.UNIT_AMOUNT.getDescriptionI18N().getContent(), currency
-                .getValueFor(getUnitAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS).toString());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.UNIT_AMOUNT.getDescriptionI18N().getContent(),
+                currency.getValueFor(getUnitAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS).toString());
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ADDITIONAL_UNITS.getDescriptionI18N().getContent(),
                 String.valueOf(numberOfAdditionalUnits(academicTreasuryEvent)));
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_UNITS_AMOUNT.getDescriptionI18N()
-                .getContent(), currency.getValueFor(amountForAdditionalUnits(academicTreasuryEvent),
-                Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+        propertiesMap.put(
+                AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_UNITS_AMOUNT.getDescriptionI18N().getContent(),
+                currency.getValueFor(amountForAdditionalUnits(academicTreasuryEvent),
+                        Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
 
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.PAGE_AMOUNT.getDescriptionI18N().getContent(), currency
-                .getValueFor(getPageAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS).toString());
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.PAGE_AMOUNT.getDescriptionI18N().getContent(),
+                currency.getValueFor(getPageAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS).toString());
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.NUMBER_OF_PAGES.getDescriptionI18N().getContent(),
                 String.valueOf(academicTreasuryEvent.getNumberOfPages()));
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_PAGES_AMOUNT.getDescriptionI18N()
-                .getContent(), currency.getValueFor(amountForPages(academicTreasuryEvent),
-                Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+        propertiesMap.put(
+                AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_PAGES_AMOUNT.getDescriptionI18N().getContent(),
+                currency.getValueFor(amountForPages(academicTreasuryEvent), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.MAXIMUM_AMOUNT.getDescriptionI18N().getContent(),
                 currency.getValueFor(getMaximumAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
 
-        propertiesMap.put(
-                AcademicTreasuryEvent.AcademicTreasuryEventKeys.FOREIGN_LANGUAGE_RATE.getDescriptionI18N().getContent(),
+        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FOREIGN_LANGUAGE_RATE.getDescriptionI18N().getContent(),
                 getLanguageTranslationRate().toString());
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_FOREIGN_LANGUAGE_RATE.getDescriptionI18N()
-                .getContent(), currency.getValueFor(amountForLanguageTranslationRate(academicTreasuryEvent),
-                Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+        propertiesMap.put(
+                AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_FOREIGN_LANGUAGE_RATE.getDescriptionI18N()
+                        .getContent(),
+                currency.getValueFor(amountForLanguageTranslationRate(academicTreasuryEvent),
+                        Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.URGENT_PERCENTAGE.getDescriptionI18N().getContent(),
                 getUrgencyRate().toString());
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_URGENT_AMOUNT.getDescriptionI18N()
-                .getContent(), currency.getValueFor(amountForUrgencyRate(academicTreasuryEvent),
-                Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+        propertiesMap.put(
+                AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_URGENT_AMOUNT.getDescriptionI18N().getContent(),
+                currency.getValueFor(amountForUrgencyRate(academicTreasuryEvent), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(),
                 currency.getValueFor(amountToPay(academicTreasuryEvent), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
@@ -579,8 +577,9 @@ public class AcademicTariff extends AcademicTariff_Base {
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ENROLMENT.getDescriptionI18N().getContent(),
                 improvementEnrolmentEvaluation.getEnrolment().getName().getContent());
 
-        propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N()
-                .getContent(), improvementEnrolmentEvaluation.getDegreeCurricularPlan().getName());
+        propertiesMap.put(
+                AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
+                improvementEnrolmentEvaluation.getDegreeCurricularPlan().getName());
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
                 improvementEnrolmentEvaluation.getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent());
@@ -687,7 +686,8 @@ public class AcademicTariff extends AcademicTariff_Base {
     }
 
     public static Stream<? extends AcademicTariff> findActive(final Product product,
-            final AdministrativeOffice administrativeOffice, final DegreeType degreeType, final Degree degree, final DateTime when) {
+            final AdministrativeOffice administrativeOffice, final DegreeType degreeType, final Degree degree,
+            final DateTime when) {
         return AcademicTariff.find(product, administrativeOffice, degreeType, degree).filter(t -> t.isActive(when));
     }
 
@@ -701,7 +701,8 @@ public class AcademicTariff extends AcademicTariff_Base {
         return AcademicTariff.findAll().filter(t -> t.isActive(interval));
     }
 
-    public static Stream<? extends AcademicTariff> findInInterval(final FinantialEntity finantialEntity, final Interval interval) {
+    public static Stream<? extends AcademicTariff> findInInterval(final FinantialEntity finantialEntity,
+            final Interval interval) {
         return AcademicTariff.find(finantialEntity).filter(t -> t.isActive(interval));
     }
 
@@ -787,8 +788,8 @@ public class AcademicTariff extends AcademicTariff_Base {
         final DegreeType degreeType = degree.getDegreeType();
 
         Set<? extends AcademicTariff> activeTariffs =
-                findActive(product, administrativeOffice, degreeType, degree, cycleType, when).collect(
-                        Collectors.<AcademicTariff> toSet());
+                findActive(product, administrativeOffice, degreeType, degree, cycleType, when)
+                        .collect(Collectors.<AcademicTariff> toSet());
         if (activeTariffs.size() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
         } else if (activeTariffs.size() == 1) {

@@ -4,22 +4,19 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.EnrolmentEvaluation;
-import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.student.Registration;
-import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.services.EmolumentServices;
-import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.joda.time.LocalDate;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.collect.Lists;
+
+import pt.ist.fenixframework.Atomic;
 
 public class AcademicServiceRequestDebtCreationBean implements Serializable, IBean {
 
@@ -51,7 +48,7 @@ public class AcademicServiceRequestDebtCreationBean implements Serializable, IBe
         getAcademicServiceRequestesDataSource();
 
         if (registration != null && academicServiceRequest != null) {
-            debtDate = EmolumentServices.possibleDebtDateOnAcademicService(academicServiceRequest);
+            debtDate = EmolumentServices.possibleDebtDateOnAcademicService((ITreasuryServiceRequest) academicServiceRequest);
 
             if (debtDate == null) {
                 debtDate = new LocalDate();
@@ -67,14 +64,10 @@ public class AcademicServiceRequestDebtCreationBean implements Serializable, IBe
             return registrationDataSource;
         }
 
-        registrationDataSource =
-                ((PersonCustomer) debtAccount.getCustomer())
-                        .getPerson()
-                        .getStudent()
-                        .getRegistrationsSet()
-                        .stream()
-                        .map(r -> new TupleDataSourceBean(r.getExternalId(), r.getDegree().getPresentationNameI18N().getContent()))
-                        .collect(Collectors.toList());
+        registrationDataSource = ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet()
+                .stream()
+                .map(r -> new TupleDataSourceBean(r.getExternalId(), r.getDegree().getPresentationNameI18N().getContent()))
+                .collect(Collectors.toList());
 
         return registrationDataSource;
     }
@@ -85,10 +78,10 @@ public class AcademicServiceRequestDebtCreationBean implements Serializable, IBe
             return academicServiceRequestesDataSource;
         }
 
-        academicServiceRequestesDataSource =
-                registration.getAcademicServiceRequestsSet().stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getDescription() + " (" + l.getServiceRequestNumberYear() + ")"))
-                        .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+        academicServiceRequestesDataSource = registration.getAcademicServiceRequestsSet().stream()
+                .map(l -> new TupleDataSourceBean(l.getExternalId(),
+                        l.getDescription() + " (" + l.getServiceRequestNumberYear() + ")"))
+                .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         return academicServiceRequestesDataSource;
     }

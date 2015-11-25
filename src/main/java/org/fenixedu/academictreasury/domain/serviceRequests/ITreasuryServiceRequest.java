@@ -31,8 +31,13 @@ package org.fenixedu.academictreasury.domain.serviceRequests;
 import java.util.Locale;
 import java.util.Set;
 
+import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
+import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituation;
+import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
+import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.curriculum.ICurriculumEntry;
 import org.joda.time.DateTime;
@@ -45,6 +50,18 @@ import org.joda.time.DateTime;
 public interface ITreasuryServiceRequest {
 
     public Registration getRegistration();
+
+    public ServiceRequestType getServiceRequestType();
+
+    public Person getPerson();
+
+    public AcademicServiceRequestSituation getSituationByType(AcademicServiceRequestSituationType type);
+
+    public boolean hasExecutionYear();
+
+    public ExecutionYear getExecutionYear();
+
+    public String getServiceRequestNumberYear();
 
     public boolean hasRegistation();
 
@@ -91,5 +108,7 @@ public interface ITreasuryServiceRequest {
     public boolean hasCurriculum();
 
     public Set<ICurriculumEntry> getCurriculum();
+
+    public String getExternalId();
 
 }

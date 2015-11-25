@@ -2,10 +2,10 @@ package org.fenixedu.academictreasury.domain.emoluments;
 
 import java.util.stream.Stream;
 
-import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
 
@@ -86,20 +86,20 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
         return find(product).filter(e -> e.getServiceRequestType() == requestType);
     }
 
-    public static ServiceRequestMapEntry findMatch(final AcademicServiceRequest academicServiceRequest) {
-        final ServiceRequestType serviceRequestType = ServiceRequestType.findUnique(academicServiceRequest);
+    public static ServiceRequestMapEntry findMatch(final ITreasuryServiceRequest iTreasuryServiceRequest) {
+        final ServiceRequestType serviceRequestType = iTreasuryServiceRequest.getServiceRequestType();
         if (find(serviceRequestType).count() > 1) {
             throw new AcademicTreasuryDomainException("error.ServiceRequestMapEntry.duplicatedForServiceRequestType");
         }
         return find(serviceRequestType).findFirst().orElse(null);
     }
 
-    public static Product findProduct(final AcademicServiceRequest academicServiceRequest) {
-        if (findMatch(academicServiceRequest) == null) {
+    public static Product findProduct(final ITreasuryServiceRequest iTreasuryServiceRequest) {
+        if (findMatch(iTreasuryServiceRequest) == null) {
             throw new AcademicTreasuryDomainException("error.ServiceRequestMapEntry.cannot.find.serviceRequestMapEntry");
         }
 
-        return findMatch(academicServiceRequest).getProduct();
+        return findMatch(iTreasuryServiceRequest).getProduct();
     }
 
     @Atomic

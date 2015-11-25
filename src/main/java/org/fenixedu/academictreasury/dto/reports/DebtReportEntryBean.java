@@ -234,14 +234,14 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     this.executionYear = academicTreasuryEvent.getExecutionYear().getQualifiedName();
                     this.tuitionPaymentPlan =
                             AcademicTreasuryEventKeys.valueFor(debitEntry, AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN);
-                    this.tuitionPaymentPlanConditions =
-                            AcademicTreasuryEventKeys.valueFor(debitEntry,
-                                    AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN_CONDITIONS);
+                    this.tuitionPaymentPlanConditions = AcademicTreasuryEventKeys.valueFor(debitEntry,
+                            AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN_CONDITIONS);
 
                     fillStudentConditionsInformation(academicTreasuryEvent.getRegistration(),
                             academicTreasuryEvent.getExecutionYear());
 
-                } else if ((academicTreasuryEvent.isForStandaloneTuition() || academicTreasuryEvent.isForExtracurricularTuition())) {
+                } else if (academicTreasuryEvent.isForStandaloneTuition()
+                        || academicTreasuryEvent.isForExtracurricularTuition()) {
                     if (debitEntry.getCurricularCourse() != null) {
                         this.degreeType = debitEntry.getCurricularCourse().getDegree().getDegreeType().getName().getContent();
                         this.degreeCode = debitEntry.getCurricularCourse().getDegree().getCode();
@@ -255,9 +255,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
                     this.tuitionPaymentPlan =
                             AcademicTreasuryEventKeys.valueFor(debitEntry, AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN);
-                    this.tuitionPaymentPlanConditions =
-                            AcademicTreasuryEventKeys.valueFor(debitEntry,
-                                    AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN_CONDITIONS);
+                    this.tuitionPaymentPlanConditions = AcademicTreasuryEventKeys.valueFor(debitEntry,
+                            AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN_CONDITIONS);
 
                     if (academicTreasuryEvent.getRegistration() != null && academicTreasuryEvent.getExecutionYear() != null) {
                         fillStudentConditionsInformation(academicTreasuryEvent.getRegistration(),
@@ -291,25 +290,19 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     fillStudentConditionsInformation(academicTreasuryEvent.getRegistration(),
                             academicTreasuryEvent.getExecutionYear());
 
-                } else if (academicTreasuryEvent.isForAcademicServiceRequest()
-                        && academicTreasuryEvent.getAcademicServiceRequest().isRequestForRegistration()) {
+                } else if (academicTreasuryEvent.isForAcademicServiceRequest()) {
 
-                    final ITreasuryServiceRequest iTreasuryServiceRequest =
-                            (ITreasuryServiceRequest) academicTreasuryEvent.getAcademicServiceRequest();
+                    final ITreasuryServiceRequest iTreasuryServiceRequest = academicTreasuryEvent.getITreasuryServiceRequest();
 
                     this.degreeType =
                             iTreasuryServiceRequest.getRegistration().getDegree().getDegreeType().getName().getContent();
                     this.degreeCode = iTreasuryServiceRequest.getRegistration().getDegree().getCode();
                     this.degreeName = iTreasuryServiceRequest.getRegistration().getDegree().getPresentationNameI18N();
 
-                    if (academicTreasuryEvent.getAcademicServiceRequest().getExecutionYear() != null) {
-                        this.executionYear =
-                                academicTreasuryEvent.getAcademicServiceRequest().getExecutionYear().getQualifiedName();
-                    }
-
-                    if (academicTreasuryEvent.getAcademicServiceRequest().getExecutionYear() != null) {
-                        fillStudentConditionsInformation(iTreasuryServiceRequest.getRegistration(), academicTreasuryEvent
-                                .getAcademicServiceRequest().getExecutionYear());
+                    if (iTreasuryServiceRequest.hasExecutionYear()) {
+                        this.executionYear = iTreasuryServiceRequest.getExecutionYear().getQualifiedName();
+                        fillStudentConditionsInformation(iTreasuryServiceRequest.getRegistration(),
+                                iTreasuryServiceRequest.getExecutionYear());
                     }
                 }
             }
