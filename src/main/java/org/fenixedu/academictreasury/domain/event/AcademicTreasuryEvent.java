@@ -467,8 +467,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             throw new RuntimeException("wrong call");
         }
 
-        return findAll()
-                .filter(e -> e.getITreasuryServiceRequest().getExternalId().equals(iTreasuryServiceRequest.getExternalId()));
+        return findAll().filter(e -> e.getITreasuryServiceRequest() != null
+                && e.getITreasuryServiceRequest().getExternalId().equals(iTreasuryServiceRequest.getExternalId()));
     }
 
     public static Optional<? extends AcademicTreasuryEvent> findUnique(final ITreasuryServiceRequest iTreasuryServiceRequest) {

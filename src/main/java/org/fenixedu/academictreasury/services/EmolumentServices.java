@@ -73,7 +73,7 @@ public class EmolumentServices {
 
         ITreasuryServiceRequest iTreasuryServiceRequest = (ITreasuryServiceRequest) academicServiceRequest;
 
-        if (iTreasuryServiceRequest.getServiceRequestType().isPayable()) {
+        if (!iTreasuryServiceRequest.getServiceRequestType().isPayable()) {
             return false;
         }
 
@@ -113,7 +113,7 @@ public class EmolumentServices {
     @Atomic
     public static AcademicServiceRequestDebitEntryBean calculateForAcademicServiceRequest(
             final ITreasuryServiceRequest iTreasuryServiceRequest, final LocalDate debtDate) {
-        if (iTreasuryServiceRequest.getServiceRequestType().isPayable()) {
+        if (!iTreasuryServiceRequest.getServiceRequestType().isPayable()) {
             return null;
         }
 
@@ -175,7 +175,7 @@ public class EmolumentServices {
     public static boolean createAcademicServiceRequestEmolument(final ITreasuryServiceRequest iTreasuryServiceRequest,
             final LocalDate when) {
 
-        if (iTreasuryServiceRequest.getServiceRequestType().isPayable()) {
+        if (!iTreasuryServiceRequest.getServiceRequestType().isPayable()) {
             return false;
         }
 
@@ -247,7 +247,7 @@ public class EmolumentServices {
     public static LocalDate possibleDebtDateOnAcademicService(final ITreasuryServiceRequest iTreasuryServiceRequest) {
         // Find the configured state to create debt on academic service request
 
-        if (iTreasuryServiceRequest.getServiceRequestType().isPayable()) {
+        if (!iTreasuryServiceRequest.getServiceRequestType().isPayable()) {
             return null;
         }
 
