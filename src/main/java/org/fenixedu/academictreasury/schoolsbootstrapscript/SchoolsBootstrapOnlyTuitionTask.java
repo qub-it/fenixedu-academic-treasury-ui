@@ -9,41 +9,30 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.CurricularCourse;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
-import org.fenixedu.academic.domain.EvaluationConfiguration;
-import org.fenixedu.academic.domain.EvaluationSeason;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.degree.degreeCurricularPlan.DegreeCurricularPlanState;
-import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestCategory;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
-import org.fenixedu.academic.domain.serviceRequests.ServiceRequestTypeOption;
 import org.fenixedu.academic.domain.serviceRequests.documentRequests.AcademicServiceRequestType;
 import org.fenixedu.academic.domain.serviceRequests.documentRequests.DocumentRequestType;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academic.domain.student.StatuteType;
-import org.fenixedu.academic.util.PeriodState;
-import org.fenixedu.academictreasury.domain.coursefunctioncost.CourseFunctionCost;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
-import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
-import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
-import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
@@ -2265,33 +2254,21 @@ public class SchoolsBootstrapOnlyTuitionTask extends CustomTask {
         if (academicServiceRequestType != null) {
             createdServiceRequestType =
                     ServiceRequestType.createLegacy(code, name, true, academicServiceRequestType, documentRequestType, payable,
-                            false, category);
+                            Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, category);
         } else {
-            createdServiceRequestType = ServiceRequestType.create(code, name, true, payable, false, category);
-        }
-
-        if (detailed) {
-            createdServiceRequestType.associateOption(ServiceRequestTypeOption.findDetailedOption().get());
+            createdServiceRequestType =
+                    ServiceRequestType.create(code, name, true, payable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, category);
         }
 
         if (numberOfUnits) {
-            createdServiceRequestType.associateOption(ServiceRequestTypeOption.findNumberOfUnitsOption().get());
             createdServiceRequestType.edit(createdServiceRequestType.getCode(), createdServiceRequestType.getName(),
                     createdServiceRequestType.getActive(), createdServiceRequestType.getPayable(),
-                    createdServiceRequestType.getNotifyUponConclusion(), createdServiceRequestType.getServiceRequestCategory(),
+                    createdServiceRequestType.getNotifyUponConclusion(), createdServiceRequestType.getPrintable(),
+                    createdServiceRequestType.getRequestedOnline(), createdServiceRequestType.getServiceRequestCategory(),
                     new LocalizedString(pt(), numberOfUnitsDesignationPT));
         }
 
         return createdServiceRequestType;
-    }
-
-    private Set<ServiceRequestTypeOption> requestTypeDetailed(final boolean isDetailed) {
-
-        if (isDetailed) {
-            return Sets.newHashSet(ServiceRequestTypeOption.findDetailedOption().get());
-        }
-
-        return Sets.newHashSet();
     }
 
     private void createAcademicTaxes_FROM_SPREADSHEET() {
@@ -2458,18 +2435,6 @@ public class SchoolsBootstrapOnlyTuitionTask extends CustomTask {
         }
 
         return result;
-    }
-
-    private static void createDefaultServiceRequestTypes() {
-        ServiceRequestTypeOption.create(
-                "DETAILED",
-                BundleUtil.getLocalizedString("resources.AcademicAdminOffice", ServiceRequestTypeOption.class.getSimpleName()
-                        + ".detailed"), true, false);
-
-        ServiceRequestTypeOption.create(
-                "NUMBER_OF_UNITS",
-                BundleUtil.getLocalizedString("resources.AcademicAdminOffice", ServiceRequestTypeOption.class.getSimpleName()
-                        + ".numberOfUnitsOption"), false, true);
     }
 
 }

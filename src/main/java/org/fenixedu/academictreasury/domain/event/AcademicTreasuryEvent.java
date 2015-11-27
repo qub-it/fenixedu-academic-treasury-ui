@@ -14,8 +14,6 @@ import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.EnrolmentEvaluation;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
-import org.fenixedu.academic.domain.serviceRequests.RegistrationAcademicServiceRequest;
-import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academic.domain.treasury.AcademicTreasuryEventPayment;
@@ -28,6 +26,7 @@ import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
@@ -45,10 +44,10 @@ import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.joda.time.LocalDate;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+
+import pt.ist.fenixframework.Atomic;
 
 public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements IAcademicTreasuryEvent, ITuitionTreasuryEvent,
         IImprovementTreasuryEvent, IAcademicServiceRequestAndAcademicTaxTreasuryEvent {
@@ -57,8 +56,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     }
 
-    protected AcademicTreasuryEvent(final DebtAccount debtAccount, final AcademicServiceRequest academicServiceRequest) {
-        init(debtAccount, academicServiceRequest, ServiceRequestMapEntry.findProduct(academicServiceRequest));
+    protected AcademicTreasuryEvent(final DebtAccount debtAccount, final ITreasuryServiceRequest iTreasuryServiceRequest) {
+        init(debtAccount, iTreasuryServiceRequest, ServiceRequestMapEntry.findProduct(iTreasuryServiceRequest));
     }
 
     protected AcademicTreasuryEvent(final DebtAccount debtAccount, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
@@ -78,10 +77,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         throw new RuntimeException("wrong call");
     }
 
-    protected void init(final DebtAccount debtAccount, final AcademicServiceRequest academicServiceRequest, final Product product) {
-        super.init(debtAccount, product, nameForAcademicServiceRequest(product, academicServiceRequest));
+    protected void init(final DebtAccount debtAccount, final ITreasuryServiceRequest iTreasuryServiceRequest,
+            final Product product) {
+        super.init(debtAccount, product, nameForAcademicServiceRequest(product, iTreasuryServiceRequest));
 
-        setAcademicServiceRequest(academicServiceRequest);
+        setITreasuryServiceRequest(iTreasuryServiceRequest);
         setPropertiesJsonMap(propertiesMapToJson(fillPropertiesMap()));
         setDescription(descriptionForAcademicServiceRequest());
 
@@ -89,22 +89,21 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     private LocalizedString nameForAcademicServiceRequest(final Product product,
-            final AcademicServiceRequest academicServiceRequest) {
+            final ITreasuryServiceRequest iTreasuryServiceRequest) {
         LocalizedString result = new LocalizedString();
 
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
-            if (academicServiceRequest.getExecutionYear() != null) {
+            if (iTreasuryServiceRequest.getExecutionYear() != null) {
                 result =
                         result.with(locale, String.format("%s [%s - %s] (%s)", product.getName().getContent(locale),
-                                ((RegistrationAcademicServiceRequest) academicServiceRequest).getRegistration().getDegree()
-                                        .getPresentationNameI18N().getContent(), academicServiceRequest.getExecutionYear()
-                                        .getQualifiedName(), academicServiceRequest.getServiceRequestNumberYear()));
+                                iTreasuryServiceRequest.getRegistration().getDegree().getPresentationNameI18N().getContent(),
+                                iTreasuryServiceRequest.getExecutionYear().getQualifiedName(),
+                                iTreasuryServiceRequest.getServiceRequestNumberYear()));
             } else {
                 result =
                         result.with(locale, String.format("%s [%s] (%s)", product.getName().getContent(locale),
-                                ((RegistrationAcademicServiceRequest) academicServiceRequest).getRegistration().getDegree()
-                                        .getPresentationNameI18N().getContent(),
-                                academicServiceRequest.getServiceRequestNumberYear()));
+                                iTreasuryServiceRequest.getRegistration().getDegree().getPresentationNameI18N().getContent(),
+                                iTreasuryServiceRequest.getServiceRequestNumberYear()));
             }
         }
 
@@ -193,8 +192,13 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.executionYear.required");
         }
 
-        if (isForAcademicServiceRequest() && find(getAcademicServiceRequest()).count() > 1) {
+        if (isForAcademicServiceRequest() && find(getITreasuryServiceRequest()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.event.for.academicServiceRequest.duplicate");
+        }
+
+        if (isForAcademicServiceRequest()) {
+            //Ensuring that the Academic Service Request implements the ITreasuryServiceRequest.
+            getITreasuryServiceRequest();
         }
 
         if (isForRegistrationTuition() && findForRegistrationTuition(getRegistration(), getExecutionYear()).count() > 1) {
@@ -227,7 +231,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     public boolean isForAcademicServiceRequest() {
-        return getAcademicServiceRequest() != null;
+        return getITreasuryServiceRequest() != null;
     }
 
     public boolean isForRegistrationTuition() {
@@ -256,7 +260,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public int getNumberOfUnits() {
         if (isForAcademicServiceRequest()) {
-            return getAcademicServiceRequest().getNumberOfUnits() != null ? getAcademicServiceRequest().getNumberOfUnits() : 0;
+            return Constants.getNumberOfUnits(getITreasuryServiceRequest());
         } else if (isForAcademicTax()) {
             return 0;
         } else if (isForImprovementTax()) {
@@ -268,7 +272,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public int getNumberOfPages() {
         if (isForAcademicServiceRequest()) {
-            return getAcademicServiceRequest().getNumberOfPages() != null ? getAcademicServiceRequest().getNumberOfPages() : 0;
+            return getITreasuryServiceRequest().hasNumberOfPages() ? getITreasuryServiceRequest().getNumberOfPages() : 0;
         } else if (isForAcademicTax()) {
             return 0;
         } else if (isForImprovementTax()) {
@@ -280,7 +284,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public boolean isUrgentRequest() {
         if (isForAcademicServiceRequest()) {
-            return getAcademicServiceRequest().isUrgentRequest();
+            return getITreasuryServiceRequest().isUrgent();
         } else if (isForAcademicTax()) {
             return false;
         } else if (isForImprovementTax()) {
@@ -292,7 +296,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public LocalDate getRequestDate() {
         if (isForAcademicServiceRequest()) {
-            return getAcademicServiceRequest().getRequestDate().toLocalDate();
+            return getITreasuryServiceRequest().getRequestDate().toLocalDate();
         } else if (isForAcademicTax() && !isForImprovementTax()) {
             final LocalDate requestDate =
                     RegistrationDataByExecutionYear.getOrCreateRegistrationDataByYear(getRegistration(), getExecutionYear())
@@ -312,7 +316,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public Locale getLanguage() {
         if (isForAcademicServiceRequest()) {
-            return getAcademicServiceRequest().getLanguage();
+            return getITreasuryServiceRequest().getLanguage();
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.language.not.applied");
@@ -346,7 +350,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     @Atomic
     public LocalDate getTreasuryEventDate() {
         if (isForAcademicServiceRequest()) {
-            return getAcademicServiceRequest().getRequestDate().toLocalDate();
+            return getITreasuryServiceRequest().getRequestDate().toLocalDate();
         } else if (isForImprovementTax() || isForAcademicTax() || isForRegistrationTuition() || isForExtracurricularTuition()
                 || isForStandaloneTuition()) {
 
@@ -436,7 +440,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             result =
                     result.with(locale, getProduct().getName().getContent(locale) + ": "
-                            + getAcademicServiceRequest().getServiceRequestNumberYear());
+                            + getITreasuryServiceRequest().getServiceRequestNumberYear());
         }
 
         return result;
@@ -464,21 +468,23 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     /* --- Academic Service Requests --- */
 
-    public static Stream<? extends AcademicTreasuryEvent> find(final AcademicServiceRequest academicServiceRequest) {
-        if (academicServiceRequest == null) {
+    public static Stream<? extends AcademicTreasuryEvent> find(final ITreasuryServiceRequest iTreasuryServiceRequest) {
+        if (iTreasuryServiceRequest == null) {
             throw new RuntimeException("wrong call");
         }
 
-        return findAll().filter(e -> e.getAcademicServiceRequest() == academicServiceRequest);
+        return findAll().filter(
+                e -> e.getITreasuryServiceRequest() != null
+                        && e.getITreasuryServiceRequest().getExternalId().equals(iTreasuryServiceRequest.getExternalId()));
     }
 
-    public static Optional<? extends AcademicTreasuryEvent> findUnique(final AcademicServiceRequest academicServiceRequest) {
-        return find(academicServiceRequest).findFirst();
+    public static Optional<? extends AcademicTreasuryEvent> findUnique(final ITreasuryServiceRequest iTreasuryServiceRequest) {
+        return find(iTreasuryServiceRequest).findFirst();
     }
 
     public static AcademicTreasuryEvent createForAcademicServiceRequest(final DebtAccount debtAccount,
-            final AcademicServiceRequest academicServiceRequest) {
-        return new AcademicTreasuryEvent(debtAccount, academicServiceRequest);
+            final ITreasuryServiceRequest iTreasuryServiceRequest) {
+        return new AcademicTreasuryEvent(debtAccount, iTreasuryServiceRequest);
     }
 
     /* *******
@@ -493,7 +499,9 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 //      return findAll().filter(e -> e.isForRegistrationTuition() && e.getRegistration() == registration
 //              && e.getExecutionYear() == executionYear);
 //        
-        return registration.getAcademicTreasuryEventSet().stream()
+        return registration
+                .getAcademicTreasuryEventSet()
+                .stream()
                 .filter(e -> e.isForRegistrationTuition() && e.getRegistration() == registration
                         && e.getExecutionYear() == executionYear);
     }
@@ -581,8 +589,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             final ExecutionYear executionYear, final AcademicTax academicTax) {
         final PersonCustomer pc = PersonCustomer.findUnique(registration.getPerson()).orElse(null);
 
-        return academicTax.getAcademicTreasuryEventSet().stream().filter(
-                e -> e.isForAcademicTax()
+        return academicTax
+                .getAcademicTreasuryEventSet()
+                .stream()
+                .filter(e -> e.isForAcademicTax()
                         && e.getAcademicTax() == academicTax
                         && e.getExecutionYear() == executionYear
                         && (!e.getAcademicTax().isAppliedOnRegistration() && e.getDebtAccount().getCustomer() == pc || e
@@ -606,51 +616,19 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     // @formatter:off
     public static enum AcademicTreasuryEventKeys {
-        
-        ACADEMIC_SERVICE_REQUEST_NAME("1"), 
-        ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR("2"), 
-        EXECUTION_YEAR("3"), 
-        EXECUTION_SEMESTER("4"),
-        EVALUATION_SEASON("5"), 
-        DETAILED("6"), 
-        URGENT("7"), 
-        LANGUAGE("8"), 
-        BASE_AMOUNT("9"), 
-        UNITS_FOR_BASE("10"), 
-        UNIT_AMOUNT("11"), 
-        ADDITIONAL_UNITS("12"),
-        CALCULATED_UNITS_AMOUNT("13"), 
-        PAGE_AMOUNT("14"), 
-        NUMBER_OF_PAGES("15"),
-        CALCULATED_PAGES_AMOUNT("16"), 
-        MAXIMUM_AMOUNT("17"), 
-        AMOUNT_WITHOUT_RATES("18"),
-        FOREIGN_LANGUAGE_RATE("19"), 
-        CALCULATED_FOREIGN_LANGUAGE_RATE("20"), 
-        URGENT_PERCENTAGE("21"), 
-        CALCULATED_URGENT_AMOUNT("22"), 
-        FINAL_AMOUNT("23"),
-        TUITION_PAYMENT_PLAN("24"), 
-        TUITION_PAYMENT_PLAN_CONDITIONS("25"), 
-        TUITION_CALCULATION_TYPE("26"), 
-        FIXED_AMOUNT("27"), 
-        ECTS_CREDITS("28"),
-        AMOUNT_PER_ECTS("29"), 
-        ENROLLED_COURSES("30"), 
-        AMOUNT_PER_COURSE("31"), 
-        DUE_DATE("32"), 
-        DEGREE("33"), 
-        DEGREE_CODE("34"), 
-        DEGREE_CURRICULAR_PLAN("35"), 
-        ENROLMENT("36"),
-        FACTOR("37"), 
-        TOTAL_ECTS_OR_UNITS("38"), 
-        COURSE_FUNCTION_COST("39"), 
-        DEFAULT_TUITION_TOTAL_AMOUNT("40"), 
-        USED_DATE("41");
+
+        ACADEMIC_SERVICE_REQUEST_NAME("1"), ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR("2"), EXECUTION_YEAR("3"), EXECUTION_SEMESTER(
+                "4"), EVALUATION_SEASON("5"), DETAILED("6"), URGENT("7"), LANGUAGE("8"), BASE_AMOUNT("9"), UNITS_FOR_BASE("10"),
+        UNIT_AMOUNT("11"), ADDITIONAL_UNITS("12"), CALCULATED_UNITS_AMOUNT("13"), PAGE_AMOUNT("14"), NUMBER_OF_PAGES("15"),
+        CALCULATED_PAGES_AMOUNT("16"), MAXIMUM_AMOUNT("17"), AMOUNT_WITHOUT_RATES("18"), FOREIGN_LANGUAGE_RATE("19"),
+        CALCULATED_FOREIGN_LANGUAGE_RATE("20"), URGENT_PERCENTAGE("21"), CALCULATED_URGENT_AMOUNT("22"), FINAL_AMOUNT("23"),
+        TUITION_PAYMENT_PLAN("24"), TUITION_PAYMENT_PLAN_CONDITIONS("25"), TUITION_CALCULATION_TYPE("26"), FIXED_AMOUNT("27"),
+        ECTS_CREDITS("28"), AMOUNT_PER_ECTS("29"), ENROLLED_COURSES("30"), AMOUNT_PER_COURSE("31"), DUE_DATE("32"), DEGREE("33"),
+        DEGREE_CODE("34"), DEGREE_CURRICULAR_PLAN("35"), ENROLMENT("36"), FACTOR("37"), TOTAL_ECTS_OR_UNITS("38"),
+        COURSE_FUNCTION_COST("39"), DEFAULT_TUITION_TOTAL_AMOUNT("40"), USED_DATE("41");
 
         private String code;
-        
+
         private AcademicTreasuryEventKeys(final String code) {
             this.code = code;
         }
@@ -661,16 +639,16 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
         public static String valueFor(final DebitEntry debitEntry, final AcademicTreasuryEventKeys key) {
-            if(debitEntry.getPropertiesMap() == null) {
+            if (debitEntry.getPropertiesMap() == null) {
                 return null;
             }
-            
+
             // HACK Should retrieve with code and not with the description
             final LocalizedString descriptionI18N = key.getDescriptionI18N();
-            if(debitEntry.getPropertiesMap().containsKey(descriptionI18N.getContent(Constants.DEFAULT_LANGUAGE))) {
+            if (debitEntry.getPropertiesMap().containsKey(descriptionI18N.getContent(Constants.DEFAULT_LANGUAGE))) {
                 return debitEntry.getPropertiesMap().get(descriptionI18N.getContent(Constants.DEFAULT_LANGUAGE));
             }
-            
+
             return null;
         }
     }
@@ -686,32 +664,30 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         if (isForAcademicServiceRequest()) {
             propertiesMap.put(AcademicTreasuryEventKeys.ACADEMIC_SERVICE_REQUEST_NAME.getDescriptionI18N().getContent(),
-                    ServiceRequestType.findUnique(getAcademicServiceRequest()).getName().getContent());
+                    getITreasuryServiceRequest().getServiceRequestType().getName().getContent());
 
             propertiesMap.put(AcademicTreasuryEventKeys.ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR.getDescriptionI18N().getContent(),
-                    getAcademicServiceRequest().getServiceRequestNumberYear());
+                    getITreasuryServiceRequest().getServiceRequestNumberYear());
 
-            if (getAcademicServiceRequest().isRequestForRegistration()) {
-                propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
-                        ((RegistrationAcademicServiceRequest) getAcademicServiceRequest()).getRegistration().getDegree()
-                                .getPresentationNameI18N(getAcademicServiceRequest().getExecutionYear()).getContent());
-                propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
-                        ((RegistrationAcademicServiceRequest) getAcademicServiceRequest()).getDegree().getCode());
-            } else if (getAcademicServiceRequest().isRequestForPhd()) {
-                // TODO: Fill
-            }
+            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), getITreasuryServiceRequest()
+                    .getRegistration().getDegree().getPresentationNameI18N(getITreasuryServiceRequest().getExecutionYear())
+                    .getContent());
+            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
+                    getITreasuryServiceRequest().getRegistration().getDegree().getCode());
 
-            if (getAcademicServiceRequest().hasExecutionYear()) {
+            if (getITreasuryServiceRequest().hasExecutionYear()) {
                 propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(),
-                        getAcademicServiceRequest().getExecutionYear().getQualifiedName());
+                        getITreasuryServiceRequest().getExecutionYear().getQualifiedName());
             }
 
             propertiesMap.put(AcademicTreasuryEventKeys.DETAILED.getDescriptionI18N().getContent(),
-                    booleanLabel(getAcademicServiceRequest().isDetailed()).getContent());
+                    booleanLabel(getITreasuryServiceRequest().isDetailed()).getContent());
             propertiesMap.put(AcademicTreasuryEventKeys.URGENT.getDescriptionI18N().getContent(),
-                    booleanLabel(getAcademicServiceRequest().isUrgentRequest()).getContent());
-            propertiesMap.put(AcademicTreasuryEventKeys.LANGUAGE.getDescriptionI18N().getContent(), getAcademicServiceRequest()
-                    .getLanguage().getLanguage());
+                    booleanLabel(getITreasuryServiceRequest().isUrgent()).getContent());
+            if (getITreasuryServiceRequest().hasLanguage()) {
+                propertiesMap.put(AcademicTreasuryEventKeys.LANGUAGE.getDescriptionI18N().getContent(),
+                        getITreasuryServiceRequest().getLanguage().getLanguage());
+            }
         } else if (isForRegistrationTuition() || isForStandaloneTuition() || isForExtracurricularTuition()) {
             propertiesMap.put(AcademicTreasuryEventKeys.EXECUTION_YEAR.getDescriptionI18N().getContent(), getExecutionYear()
                     .getQualifiedName());
@@ -1166,5 +1142,31 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
         return "{\"" + AcademicTreasuryEventKeys.DEGREE_CODE + "\":\"" + degreeCode + "\",\""
                 + AcademicTreasuryEventKeys.EXECUTION_YEAR + "\":\"" + executionYear + "\"}";
+    }
+
+    /**
+     * You should use the abstraction. API setITreasuryServiceRequest
+     */
+    @Deprecated
+    @Override
+    public void setAcademicServiceRequest(AcademicServiceRequest academicServiceRequest) {
+        super.setAcademicServiceRequest(academicServiceRequest);
+    }
+
+    public void setITreasuryServiceRequest(ITreasuryServiceRequest iTreasuryServiceRequest) {
+        super.setAcademicServiceRequest((AcademicServiceRequest) iTreasuryServiceRequest);
+    }
+
+    /**
+     * You should use the abstraction. API getITreasuryServiceRequest
+     */
+    @Deprecated
+    @Override
+    public AcademicServiceRequest getAcademicServiceRequest() {
+        return super.getAcademicServiceRequest();
+    }
+
+    public ITreasuryServiceRequest getITreasuryServiceRequest() {
+        return (ITreasuryServiceRequest) super.getAcademicServiceRequest();
     }
 }

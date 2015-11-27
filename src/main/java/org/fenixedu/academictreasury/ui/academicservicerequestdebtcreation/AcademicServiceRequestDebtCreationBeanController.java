@@ -28,6 +28,7 @@ package org.fenixedu.academictreasury.ui.academicservicerequestdebtcreation;
 
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
+import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.dto.academicservicerequest.AcademicServiceRequestDebtCreationBean;
 import org.fenixedu.academictreasury.services.EmolumentServices;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
@@ -75,8 +76,9 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
     public static final String BACKTOCREATE_URL = CONTROLLER_URL + _BACKTOCREATE_URI;
 
     @RequestMapping(value = _BACKTOCREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
-            required = false) final AcademicServiceRequestDebtCreationBean bean, final Model model) {
+    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final AcademicServiceRequestDebtCreationBean bean,
+            final Model model) {
         return _createFirstPage(debtAccount, bean, model);
     }
 
@@ -98,7 +100,8 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
     @RequestMapping(value = _CREATEPOSTBACK_URI + "/{debtAccountId}", method = RequestMethod.POST,
             produces = "application/json;charset=UTF-8")
     public @ResponseBody ResponseEntity<String> createpostback(@PathVariable("debtAccountId") final DebtAccount debtAccount,
-            @RequestParam(value = "bean", required = false) final AcademicServiceRequestDebtCreationBean bean, final Model model) {
+            @RequestParam(value = "bean", required = false) final AcademicServiceRequestDebtCreationBean bean,
+            final Model model) {
 
         bean.updateData();
 
@@ -106,8 +109,8 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
     }
 
     @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
-            required = false) final AcademicServiceRequestDebtCreationBean bean, final Model model,
+    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final AcademicServiceRequestDebtCreationBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
@@ -137,14 +140,15 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
                 return _createFirstPage(debtAccount, bean, model);
             }
 
-            if (EmolumentServices.findTariffForAcademicServiceRequest(bean.getAcademicServiceRequest(), bean.getDebtDate()) == null) {
+            ITreasuryServiceRequest iTreasuryServiceRequest = (ITreasuryServiceRequest) bean.getAcademicServiceRequest();
+            if (EmolumentServices.findTariffForAcademicServiceRequest(iTreasuryServiceRequest, bean.getDebtDate()) == null) {
                 addErrorMessage(
                         BundleUtil.getString(Constants.BUNDLE, "error.AcademicServiceRequestDebtCreation.tariff.not.found"),
                         model);
                 return _createFirstPage(debtAccount, bean, model);
             }
 
-            final AcademicTreasuryEvent event = EmolumentServices.findAcademicTreasuryEvent(bean.getAcademicServiceRequest());
+            final AcademicTreasuryEvent event = EmolumentServices.findAcademicTreasuryEvent(iTreasuryServiceRequest);
 
             if (event != null && event.isChargedWithDebitEntry()) {
                 addErrorMessage(
@@ -159,7 +163,7 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
             model.addAttribute("academicServiceRequestDebtCreationBeanJson", getBeanJson(bean));
 
             model.addAttribute("debt",
-                    EmolumentServices.calculateForAcademicServiceRequest(bean.getAcademicServiceRequest(), bean.getDebtDate()));
+                    EmolumentServices.calculateForAcademicServiceRequest(iTreasuryServiceRequest, bean.getDebtDate()));
 
             return jspPage("confirmacademicservicerequestdebtcreation");
         } catch (final DomainException e) {
@@ -170,8 +174,8 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
     }
 
     private static final String _CONFIRMACADEMICSERVICEREQUESTDEBTCREATION_URI = "/confirmacademicservicerequestdebtcreation";
-    public static final String CONFIRMACADEMICSERVICEREQUESTDEBTCREATION_URL = CONTROLLER_URL
-            + _CONFIRMACADEMICSERVICEREQUESTDEBTCREATION_URI;
+    public static final String CONFIRMACADEMICSERVICEREQUESTDEBTCREATION_URL =
+            CONTROLLER_URL + _CONFIRMACADEMICSERVICEREQUESTDEBTCREATION_URI;
 
     @RequestMapping(value = _CONFIRMACADEMICSERVICEREQUESTDEBTCREATION_URI + "/{debtAccountId}", method = RequestMethod.POST)
     public String confirmacademicservicerequestdebtcreation(@PathVariable("debtAccountId") final DebtAccount debtAccount,
@@ -179,8 +183,9 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
             final RedirectAttributes redirectAttributes) {
 
         try {
-            
-            EmolumentServices.createAcademicServiceRequestEmolument(bean.getAcademicServiceRequest(), bean.getDebtDate());
+
+            EmolumentServices.createAcademicServiceRequestEmolument((ITreasuryServiceRequest) bean.getAcademicServiceRequest(),
+                    bean.getDebtDate());
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicServiceRequest.debit.entries.created.success"),
                     model);

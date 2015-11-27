@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.DomainObjectUtil;
 import org.fenixedu.academic.domain.Enrolment;
-import org.fenixedu.academic.domain.serviceRequests.RegistrationAcademicServiceRequest;
 import org.fenixedu.academictreasury.domain.coursefunctioncost.CourseFunctionCost;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.AcademicTreasuryEventKeys;

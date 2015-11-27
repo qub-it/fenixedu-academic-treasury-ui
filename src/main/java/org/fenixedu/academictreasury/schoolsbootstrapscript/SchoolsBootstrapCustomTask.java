@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.CurricularCourse;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
@@ -24,14 +23,12 @@ import org.fenixedu.academic.domain.degree.degreeCurricularPlan.DegreeCurricular
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestCategory;
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
-import org.fenixedu.academic.domain.serviceRequests.ServiceRequestTypeOption;
 import org.fenixedu.academic.domain.serviceRequests.documentRequests.AcademicServiceRequestType;
 import org.fenixedu.academic.domain.serviceRequests.documentRequests.DocumentRequestType;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
 import org.fenixedu.academic.domain.student.RegistrationRegimeType;
 import org.fenixedu.academic.domain.student.StatuteType;
 import org.fenixedu.academic.util.PeriodState;
-import org.fenixedu.academictreasury.domain.coursefunctioncost.CourseFunctionCost;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
@@ -43,7 +40,6 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.scheduler.custom.CustomTask;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
@@ -9577,370 +9573,361 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CARTA_CURSO")).get(),
                     serviceRequestType("DIPLOMA_REQUEST", academicServiceRequestType("DIPLOMA_REQUEST"),
-                            documentRequestType("DIPLOMA_REQUEST")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("DIPLOMA_REQUEST")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CARTA_CURSO_2_VIA")).get(),
                     serviceRequestType("CARTA_CURSO_2_VIA", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CARTA_TITULO_AGREGACAO")).get(),
                     serviceRequestType("CARTA_TITULO_AGREGACAO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CARTA_TITULO_HABILITACAO_COORDENACAO_CIENTIFICA")).get(),
                     serviceRequestType("CARTA_TITULO_HABILITACAO_COORDENACAO_CIENTIFICA", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CARTA_TITULO_2_VIA")).get(),
                     serviceRequestType("CARTA_TITULO_2_VIA", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("PROCESSO_RECONHECIMENTO_GRAU")).get(),
                     serviceRequestType("PROCESSO_RECONHECIMENTO_GRAU", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("PROCESSO_EQUIVALENCIA_GRAU")).get(),
                     serviceRequestType("PROCESSO_EQUIVALENCIA_GRAU", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIDAO_RECONHECIMENTO_GRAU")).get(),
                     serviceRequestType("CERTIDAO_RECONHECIMENTO_GRAU", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIDAO_EQUIVALENCIA_GRAU")).get(),
                     serviceRequestType("CERTIDAO_EQUIVALENCIA_GRAU", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("PEDIDO_REGISTO_GRAUS_DL_341_2007")).get(),
                     serviceRequestType("PEDIDO_REGISTO_GRAUS_DL_341_2007", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("PROVAS_AVALIACAO_CAPACIDADE_M23_ADMISSAO")).get(),
                     serviceRequestType("PROVAS_AVALIACAO_CAPACIDADE_M23_ADMISSAO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("PROVAS_AVALIACAO_CAPACIDADE_M23_RECLAMACAO")).get(),
                     serviceRequestType("PROVAS_AVALIACAO_CAPACIDADE_M23_RECLAMACAO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_REGISTO")).get(),
                     serviceRequestType("REGISTRY_DIPLOMA_REQUEST", academicServiceRequestType("REGISTRY_DIPLOMA_REQUEST"),
-                            documentRequestType("REGISTRY_DIPLOMA_REQUEST")), AcademicServiceRequestSituationType.NEW, Sets
-                            .newHashSet());
+                            documentRequestType("REGISTRY_DIPLOMA_REQUEST")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIDAO_REGISTO_2_VIA")).get(),
                     serviceRequestType("CERTIDAO_REGISTO_2_VIA", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("SUPLEMENTO_DIPLOMA_2_VIA")).get(),
                     serviceRequestType("SUPLEMENTO_DIPLOMA_2_VIA", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_REGISTO_CURSO_POS_GRADUADO_ESPECIALIZACAO")).get(),
                     serviceRequestType("CERTIDAO_REGISTO_CURSO_POS_GRADUADO_ESPECIALIZACAO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_CONCLUSAO")).get(),
                     serviceRequestType("DEGREE_FINALIZATION_CERTIFICATE", academicServiceRequestType("DOCUMENT"),
-                            documentRequestType("DEGREE_FINALIZATION_CERTIFICATE")), AcademicServiceRequestSituationType.NEW,
-                    Sets.newHashSet());
+                            documentRequestType("DEGREE_FINALIZATION_CERTIFICATE")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_OBTENCAO_TITULO_AGREGADO")).get(),
                     serviceRequestType("CERTIDAO_OBTENCAO_TITULO_AGREGADO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_CONCLUSAO_CURSO_DOUTORAMENTO")).get(),
                     serviceRequestType("CERTIDAO_CONCLUSAO_CURSO_DOUTORAMENTO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_CONCLUSAO_CURSO_MESTRADO")).get(),
                     serviceRequestType("CERTIDAO_CONCLUSAO_CURSO_MESTRADO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_PROVAS_APTIDAO_PEDAGOGICA")).get(),
                     serviceRequestType("CERTIDAO_PROVAS_APTIDAO_PEDAGOGICA", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_CONCLUSAO_CURSO_ESPECIALIZACAO")).get(),
                     serviceRequestType("CERTIDAO_CONCLUSAO_CURSO_ESPECIALIZACAO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_MATRICULA")).get(),
                     serviceRequestType("SCHOOL_REGISTRATION_CERTIFICATE", academicServiceRequestType("DOCUMENT"),
-                            documentRequestType("SCHOOL_REGISTRATION_CERTIFICATE")), AcademicServiceRequestSituationType.NEW,
-                    Sets.newHashSet());
+                            documentRequestType("SCHOOL_REGISTRATION_CERTIFICATE")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_INSCRICAO")).get(),
                     serviceRequestType("ENROLMENT_CERTIFICATE", academicServiceRequestType("DOCUMENT"),
-                            documentRequestType("ENROLMENT_CERTIFICATE")), AcademicServiceRequestSituationType.NEW, Sets
-                            .newHashSet());
+                            documentRequestType("ENROLMENT_CERTIFICATE")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIDAO_FREQUENCIA_EXAME")).get(),
                     serviceRequestType("CERTIDAO_FREQUENCIA_EXAME", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIDAO_CONDUTA_ACADEMICA")).get(),
                     serviceRequestType("CERTIDAO_CONDUTA_ACADEMICA", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIFICADO_NARRATIVA_TEOR")).get(),
                     serviceRequestType("CERTIFICADO_NARRATIVA_TEOR", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIFICADO_AVALIACAO_CAPACIDADE_M23")).get(),
                     serviceRequestType("CERTIFICADO_AVALIACAO_CAPACIDADE_M23", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CERTIDAO_CARGAS_HORARIAS_CONTEUDOS_PROGRAMATICOS")).get(),
                     serviceRequestType("PROGRAM_CERTIFICATE", academicServiceRequestType("DOCUMENT"),
-                            documentRequestType("PROGRAM_CERTIFICATE")), AcademicServiceRequestSituationType.NEW, Sets
-                            .newHashSet());
+                            documentRequestType("PROGRAM_CERTIFICATE")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIDAO_FOTOCOPIA")).get(),
                     serviceRequestType("PHOTOCOPY", academicServiceRequestType("DOCUMENT"), documentRequestType("PHOTOCOPY")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("PEDIDO_CREDITACAO_CONHECIMENTOS_COMPETENCIAS")).get(),
                     serviceRequestType("PEDIDO_CREDITACAO_CONHECIMENTOS_COMPETENCIAS", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("DIPLOMA_CURSO_DOUTORAMENTO")).get(),
                     serviceRequestType("DIPLOMA_CURSO_DOUTORAMENTO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("DIPLOMA_CURSO_MESTRADO")).get(),
                     serviceRequestType("DIPLOMA_CURSO_MESTRADO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("DIPLOMA_CURSO_ESPECIALIZACAO")).get(),
                     serviceRequestType("DIPLOMA_CURSO_ESPECIALIZACAO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("ADMISSAO_PROVAS_ACADEMICAS_AGREGACAO")).get(),
                     serviceRequestType("ADMISSAO_PROVAS_ACADEMICAS_AGREGACAO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(
                             translateProductCode("ADMISSAO_PROVAS_ACADEMICAS_HABILITACAO_COORDENACAO_CIENTIFICA")).get(),
                     serviceRequestType("ADMISSAO_PROVAS_ACADEMICAS_HABILITACAO_COORDENACAO_CIENTIFICA",
-                            academicServiceRequestType(""), documentRequestType("")), AcademicServiceRequestSituationType.NEW,
-                    Sets.newHashSet());
+                            academicServiceRequestType(""), documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO_ART_33_DL_74_2006"))
                             .get(),
                     serviceRequestType("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO_ART_33_DL_74_2006",
-                            academicServiceRequestType(""), documentRequestType("")), AcademicServiceRequestSituationType.NEW,
-                    Sets.newHashSet());
+                            academicServiceRequestType(""), documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO")).get(),
                     serviceRequestType("ADMISSAO_PROVAS_ACADEMICAS_DOUTORAMENTO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("ADMISSAO_PROVAS_ACADEMICAS_MESTRADO")).get(),
                     serviceRequestType("ADMISSAO_PROVAS_ACADEMICAS_MESTRADO", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("PEDIDO_CREDITACAO_COMPETENCIAS_ACADEMICAS")).get(),
                     serviceRequestType("PEDIDO_CREDITACAO_COMPETENCIAS_ACADEMICAS", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("PEDIDO_CREDITACAO_COMPETENCIAS_PROFISSIONAIS")).get(),
                     serviceRequestType("PEDIDO_CREDITACAO_COMPETENCIAS_PROFISSIONAIS", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CANDIDATURA_DOUTORAMENTO")).get(),
                     serviceRequestType("CANDIDATURA_DOUTORAMENTO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CANDIDATURA_MESTRADO")).get(),
                     serviceRequestType("CANDIDATURA_MESTRADO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CANDIDATURA_REINGRESSO")).get(),
                     serviceRequestType("CANDIDATURA_REINGRESSO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CANDIDATURA_REINGRESSO_ALUNOS_ULISBOA")).get(),
                     serviceRequestType("CANDIDATURA_REINGRESSO_ALUNOS_ULISBOA", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CANDIDATURA_TRANSFERENCIA")).get(),
                     serviceRequestType("CANDIDATURA_TRANSFERENCIA", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CANDIDATURA_TRANSFERENCIA_ALUNOS_ULISBOA")).get(),
                     serviceRequestType("CANDIDATURA_TRANSFERENCIA_ALUNOS_ULISBOA", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CANDIDATURA_MUDANCA_CURSO")).get(),
                     serviceRequestType("CANDIDATURA_MUDANCA_CURSO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CANDIDATURA_MUDANCA_CURSO_ALUNOS_ULISBOA")).get(),
                     serviceRequestType("CANDIDATURA_MUDANCA_CURSO_ALUNOS_ULISBOA", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CANDIDATURA_OUTRO")).get(),
                     serviceRequestType("CANDIDATURA_OUTRO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CANDIDATURA_OUTRO_ALUNOS_ULISBOA")).get(),
                     serviceRequestType("CANDIDATURA_OUTRO_ALUNOS_ULISBOA", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("CANDIDATURA_UNIDADES_CURRICULARES_ISOLADAS")).get(),
                     serviceRequestType("CANDIDATURA_UNIDADES_CURRICULARES_ISOLADAS", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("PRATICA_ATOS_FORA_PRAZO")).get(),
                     serviceRequestType("PRATICA_ATOS_FORA_PRAZO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("AVERBAMENTO")).get(),
                     serviceRequestType("AVERBAMENTO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("REVISAO_PROVAS_CAUCAO")).get(),
                     serviceRequestType("REVISAO_PROVAS_CAUCAO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("PEDIDO_PERMUTA")).get(),
                     serviceRequestType("PEDIDO_PERMUTA", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("VALIDACAO_PROCESSOS_ACESSO_M23_OUTRAS_INSTITUICOES")).get(),
                     serviceRequestType("VALIDACAO_PROCESSOS_ACESSO_M23_OUTRAS_INSTITUICOES", academicServiceRequestType(""),
-                            documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                            documentRequestType("")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMV").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("_2_VIA_LOGBOOK")).get(),
                     serviceRequestType("_2_VIA_LOGBOOK", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("FOTOCOPIA")).get(),
                     serviceRequestType("FOTOCOPIA", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("TAXA_ENVIO_CORREIO")).get(),
                     serviceRequestType("TAXA_ENVIO_CORREIO", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("TAXA_DEVOLUCAO_CHEQUE")).get(),
                     serviceRequestType("TAXA_DEVOLUCAO_CHEQUE", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FMV, FF, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("PORTES_CORREIO_NACIONAL")).get(),
                     serviceRequestType("PORTES_CORREIO_NACIONAL", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FMV, FF, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("PORTES_CORREIO_INTERNACIONAL")).get(),
                     serviceRequestType("PORTES_CORREIO_INTERNACIONAL", academicServiceRequestType(""), documentRequestType("")),
-                    AcademicServiceRequestSituationType.NEW, Sets.newHashSet());
+                    AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("DECLARACAO_INSCRICAO")).get(),
                     serviceRequestType("ENROLMENT_DECLARATION", academicServiceRequestType("DOCUMENT"),
-                            documentRequestType("ENROLMENT_DECLARATION")), AcademicServiceRequestSituationType.NEW, Sets
-                            .newHashSet());
+                            documentRequestType("ENROLMENT_DECLARATION")), AcademicServiceRequestSituationType.NEW);
         }
         if (!fromAcronymsToFinantialInstitutionList("FMD, FF, FMV, FL, RUL").isEmpty()) {
             ServiceRequestMapEntry.create(
                     Product.findUniqueByCode(translateProductCode("DECLARACAO_MATRICULA")).get(),
                     serviceRequestType("SCHOOL_REGISTRATION_DECLARATION", academicServiceRequestType("DOCUMENT"),
-                            documentRequestType("SCHOOL_REGISTRATION_DECLARATION")), AcademicServiceRequestSituationType.NEW,
-                    Sets.newHashSet());
+                            documentRequestType("SCHOOL_REGISTRATION_DECLARATION")), AcademicServiceRequestSituationType.NEW);
         }
 //            if (!fromAcronymsToFinantialInstitutionList("FMD, FMV, FF, FL, RUL").isEmpty()) {ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIDAO_APROVEITAMENTO")).get(), serviceRequestType("APPROVEMENT_MOBILITY_CERTIFICATE", academicServiceRequestType("DOCUMENT"), documentRequestType("APPROVEMENT_MOBILITY_CERTIFICATE")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());}                                                                                                                                     
 //            if (!fromAcronymsToFinantialInstitutionList("FF-DEPREC").isEmpty()) {ServiceRequestMapEntry.create(Product.findUniqueByCode(translateProductCode("CERTIDAO_APROVEITAMENTO_ESCOLAR_TRANSICAO_ANO")).get(), serviceRequestType("CERTIDAO_APROVEITAMENTO_ESCOLAR_TRANSICAO_ANO", academicServiceRequestType(""), documentRequestType("")), AcademicServiceRequestSituationType.NEW, Sets.newHashSet());}                                                                                                                                                   
@@ -10003,33 +9990,21 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
         if (academicServiceRequestType != null) {
             createdServiceRequestType =
                     ServiceRequestType.createLegacy(code, name, true, academicServiceRequestType, documentRequestType, payable,
-                            false, category);
+                            Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, category);
         } else {
-            createdServiceRequestType = ServiceRequestType.create(code, name, true, payable, false, category);
-        }
-
-        if (detailed) {
-            createdServiceRequestType.associateOption(ServiceRequestTypeOption.findDetailedOption().get());
+            createdServiceRequestType =
+                    ServiceRequestType.create(code, name, true, payable, Boolean.FALSE, Boolean.FALSE, Boolean.FALSE, category);
         }
 
         if (numberOfUnits) {
-            createdServiceRequestType.associateOption(ServiceRequestTypeOption.findNumberOfUnitsOption().get());
             createdServiceRequestType.edit(createdServiceRequestType.getCode(), createdServiceRequestType.getName(),
                     createdServiceRequestType.getActive(), createdServiceRequestType.getPayable(),
-                    createdServiceRequestType.getNotifyUponConclusion(), createdServiceRequestType.getServiceRequestCategory(),
+                    createdServiceRequestType.getNotifyUponConclusion(), createdServiceRequestType.getPrintable(),
+                    createdServiceRequestType.getRequestedOnline(), createdServiceRequestType.getServiceRequestCategory(),
                     new LocalizedString(pt(), numberOfUnitsDesignationPT));
         }
 
         return createdServiceRequestType;
-    }
-
-    private Set<ServiceRequestTypeOption> requestTypeDetailed(final boolean isDetailed) {
-
-        if (isDetailed) {
-            return Sets.newHashSet(ServiceRequestTypeOption.findDetailedOption().get());
-        }
-
-        return Sets.newHashSet();
     }
 
     private void createAcademicTaxes_FROM_SPREADSHEET() {
@@ -10196,18 +10171,6 @@ public class SchoolsBootstrapCustomTask extends CustomTask {
         }
 
         return result;
-    }
-
-    private static void createDefaultServiceRequestTypes() {
-        ServiceRequestTypeOption.create(
-                "DETAILED",
-                BundleUtil.getLocalizedString("resources.AcademicAdminOffice", ServiceRequestTypeOption.class.getSimpleName()
-                        + ".detailed"), true, false);
-
-        ServiceRequestTypeOption.create(
-                "NUMBER_OF_UNITS",
-                BundleUtil.getLocalizedString("resources.AcademicAdminOffice", ServiceRequestTypeOption.class.getSimpleName()
-                        + ".numberOfUnitsOption"), false, true);
     }
 
     private void createProducts_FROM_SPREADSHEET() {
