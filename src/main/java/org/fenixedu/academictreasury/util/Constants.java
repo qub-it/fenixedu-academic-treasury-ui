@@ -37,8 +37,8 @@ public class Constants {
     // HACK: org.joda.time.Interval does not allow open end dates so use this date in the future
     public static final DateTime INFINITY_DATE = new DateTime().plusYears(500);
 
-    public static final TupleDataSourceBean SELECT_OPTION =
-            new TupleDataSourceBean("", BundleUtil.getString(Constants.BUNDLE, "label.TupleDataSourceBean.select.description"));
+    public static final TupleDataSourceBean SELECT_OPTION = new TupleDataSourceBean("", BundleUtil.getString(Constants.BUNDLE,
+            "label.TupleDataSourceBean.select.description"));
 
     public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
     public static final String DEFAULT_COUNTRY = "PT";
@@ -106,14 +106,13 @@ public class Constants {
     // @formatter: on
 
     public static boolean isDateBetween(final LocalDate beginDate, final LocalDate endDate, final LocalDate when) {
-        return new Interval(beginDate.toDateTimeAtStartOfDay(),
-                endDate != null ? endDate.toDateTimeAtStartOfDay().minusSeconds(1) : INFINITY_DATE)
-                        .contains(when.toDateTimeAtStartOfDay());
+        return new Interval(beginDate.toDateTimeAtStartOfDay(), endDate != null ? endDate.toDateTimeAtStartOfDay()
+                .minusSeconds(1) : INFINITY_DATE).contains(when.toDateTimeAtStartOfDay());
     }
 
     public static boolean isDateBetween(final LocalDate beginDate, final LocalDate endDate, final DateTime when) {
-        return new Interval(beginDate.toDateTimeAtStartOfDay(),
-                endDate != null ? endDate.toDateTimeAtStartOfDay().minusSeconds(1) : INFINITY_DATE).contains(when);
+        return new Interval(beginDate.toDateTimeAtStartOfDay(), endDate != null ? endDate.toDateTimeAtStartOfDay()
+                .minusSeconds(1) : INFINITY_DATE).contains(when);
     }
 
     public static Integer getNumberOfUnits(ITreasuryServiceRequest request) {
@@ -128,8 +127,14 @@ public class Constants {
                     request.hasApprovedStandaloneCurriculum() ? request.getApprovedStandaloneCurriculum().size() : 0;
             Integer numberOfApprovedEnrolments = request.hasApprovedEnrolments() ? request.getApprovedEnrolments().size() : 0;
             Integer numberOfCurriculum = request.hasCurriculum() ? request.getCurriculum().size() : 0;
+
+            int numberOfEnrolments = request.hasEnrolmentsByYear() ? request.getEnrolmentsByYear().size() : 0;
+            numberOfEnrolments += request.hasStandaloneEnrolmentsByYear() ? request.getStandaloneEnrolmentsByYear().size() : 0;
+            numberOfEnrolments +=
+                    request.hasExtracurricularEnrolmentsByYear() ? request.getExtracurricularEnrolmentsByYear().size() : 0;
+
             return numberOfApprovedExtraCurriculum + numberOfApprovedStandaloneCurriculum + numberOfApprovedEnrolments
-                    + numberOfCurriculum;
+                    + numberOfCurriculum + numberOfEnrolments;
         }
     }
 }

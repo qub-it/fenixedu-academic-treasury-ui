@@ -109,6 +109,18 @@ public interface ITreasuryServiceRequest {
 
     public Set<ICurriculumEntry> getCurriculum();
 
+    public boolean hasEnrolmentsByYear();
+
+    public Set<ICurriculumEntry> getEnrolmentsByYear();
+
+    public boolean hasStandaloneEnrolmentsByYear();
+
+    public Set<ICurriculumEntry> getStandaloneEnrolmentsByYear();
+
+    public boolean hasExtracurricularEnrolmentsByYear();
+
+    public Set<ICurriculumEntry> getExtracurricularEnrolmentsByYear();
+
     public String getExternalId();
 
 }
