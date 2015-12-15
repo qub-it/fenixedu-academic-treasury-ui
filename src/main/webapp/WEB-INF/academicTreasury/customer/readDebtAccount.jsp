@@ -128,12 +128,18 @@ ${portal.angularToolkit()}
 </div>
 
 <h2>Conta Corrente</h2>
+
+<h4 style="margin-bottom: 30px; margin-top: 30px;">
+	<span class="label label-info">Para consultar as referências MB para pagamento clique no separador <strong>Referências para Pagamento</strong></span>
+</h4>
+
 <div id="content">
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 
         <li class="active"><a href="#pending" data-toggle="tab"><spring:message code="label.DebtAccount.pendingDocumentEntries" /></a></li>
         <li><a href="#details" data-toggle="tab"><spring:message code="label.DebtAccount.allDocumentEntries" /></a></li>
         <li><a href="#payments" data-toggle="tab"><spring:message code="label.DebtAccount.payments" /></a></li>
+        <li><a href="#paymentReferenceCodes" data-toggle="tab"><spring:message code="label.DebtAccount.paymentReferenceCodes" /></a></li>
     </ul>
     <div id="my-tab-content" class="tab-content">
         <div class="tab-pane active" id="pending">
@@ -159,12 +165,7 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.DebitNote.dueDate" />
                             </datatables:columnHead>
-                            <c:if test="${empty pendingEntry.finantialDocument }">
-                                <c:out value='${pendingEntry.dueDate.toString("YYYY-MM-dd")}' />
-                            </c:if>
-                            <c:if test="${not empty pendingEntry.finantialDocument }">
-                                <c:out value='${pendingEntry.finantialDocument.documentDueDate.toString("YYYY-MM-dd")}' />
-                            </c:if>
+							<c:out value='${pendingEntry.dueDate.toString("YYYY-MM-dd")}' />
                             <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column cssStyle="width:100px;">
@@ -232,6 +233,7 @@ ${portal.angularToolkit()}
                                 <%--                                 <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" /> --%>
                             </div>
                         </datatables:column>
+                        <%-- 
                         <datatables:column>
                             <datatables:columnHead>
                                 <spring:message code="label.PaymentReferenceCode" />
@@ -257,8 +259,10 @@ ${portal.angularToolkit()}
                                         </p>
                                     </c:if>
                                 </c:forEach>
+                                
                             </c:if>
                         </datatables:column>
+                        --%>
                     </datatables:table>
                     <script>
 																					createDataTables(
@@ -283,6 +287,7 @@ ${portal.angularToolkit()}
                 </c:otherwise>
             </c:choose>
         </div>
+        
         <div class="tab-pane" id="details">
             <!--             <h3>Extracto</h3> -->
             <p></p>
@@ -370,6 +375,7 @@ ${portal.angularToolkit()}
                 </c:otherwise>
             </c:choose>
         </div>
+        
         <div class="tab-pane" id="payments">
             <!--             <h3>Pagamentos</h3> -->
             <p></p>
@@ -450,6 +456,85 @@ ${portal.angularToolkit()}
                 </c:otherwise>
             </c:choose>
         </div>
+        
+        <div class="tab-pane" id="paymentReferenceCodes">
+            <c:choose>
+                <c:when test="${not empty usedPaymentCodeTargets}">
+                    <datatables:table id="usedPaymentCodeTargets" row="target" data="${usedPaymentCodeTargets}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
+                        <datatables:column cssStyle="width:5%">
+	                        <datatables:columnHead>
+	                            <spring:message code="label.DebitNote.dueDate" />
+	                    	</datatables:columnHead>
+	
+                        	<c:out value='${target.dueDate.toString("YYYY-MM-dd")}' />
+                        </datatables:column>
+                        	
+                        <datatables:column cssStyle="width:65%">
+	                        <datatables:columnHead>
+	                            <spring:message code="label.InvoiceEntry.description" />
+	                    	</datatables:columnHead>
+	
+                        	<c:if test="${target.finantialDocumentPaymentCode}">
+								<ul>
+									<c:forEach items="${target.finantialDocument.finantialDocumentEntriesSet}" var="entry">
+										<li><c:out value="${entry.description}" /></li>
+									</c:forEach>
+								</ul>
+                        	</c:if>
+                        	
+                        	<c:if test="${target.multipleEntriesPaymentCode}">
+								<ul>
+									<c:forEach items="${target.orderedInvoiceEntries}" var="invoiceEntry">
+									<li><c:out value="${invoiceEntry.description}" /></li>
+									</c:forEach>
+								</ul>
+                        	</c:if>
+                        	
+                        </datatables:column>
+
+                        <datatables:column cssStyle="width:30%">
+                            <datatables:columnHead>
+                                <spring:message code="label.PaymentReferenceCode" />
+                        	</datatables:columnHead>
+                        	
+                             <div>
+                                 <strong><spring:message code="label.customer.PaymentReferenceCode.entity" />: </strong>
+                                 <c:out value="[${target.paymentReferenceCode.paymentCodePool.entityReferenceCode}]" />
+                                 </br> <strong><spring:message code="label.customer.PaymentReferenceCode.reference" />: </strong>
+                                 <c:out value="${target.paymentReferenceCode.formattedCode}" />
+                                 </br> <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
+                                 <c:if test="${target.paymentReferenceCode.isFixedAmount() }">
+                                     <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(target.paymentReferenceCode.payableAmount)}" />
+                                 </c:if>
+
+                             </div>
+
+						</datatables:column>
+						
+					</datatables:table>                
+                    <script>
+						createDataTables(
+								'usedPaymentCodeTargets',
+								false,
+								false,
+								false,
+								"${pageContext.request.contextPath}",
+								"${datatablesI18NUrl}");
+					</script>
+                </c:when>
+                <c:otherwise>
+                    <div class="alert alert-warning" role="alert">
+
+                        <p>
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                            <spring:message code="label.noResultsFound" />
+                        </p>
+                    </div>
+                </c:otherwise>
+            </c:choose>
+        
+		</div>
+        
     </div>
 </div>
 
@@ -458,9 +543,19 @@ ${portal.angularToolkit()}
 		//Enable Bootstrap Tabs
 		$('#tabs').tab();
 		
-		var oTable = $('#pendingDocuments').dataTable();
-		if(oTable) {
-			oTable.fnSort([[1, 'asc']]);			
+		{
+			var oTable = $('#pendingDocuments').dataTable();
+			if(oTable) {
+				oTable.fnSort([[1, 'asc']]);			
+			}
 		}
+		
+		{
+			var oTable = $('#usedPaymentCodeTargets').dataTable();
+			if(oTable) {
+				oTable.fnSort([[0, 'asc']]);	
+			}
+		}
+		
 	});
 </script>

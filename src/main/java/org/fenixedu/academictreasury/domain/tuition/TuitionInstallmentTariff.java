@@ -26,9 +26,12 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
+import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+
+import pt.ist.fenixframework.Atomic;
 
 import com.google.common.collect.Maps;
 
@@ -566,6 +569,42 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 academicTreasuryEvent.getRegistration().getDegreeCurricularPlanName());
 
         return propertiesMap;
+    }
+
+    @Atomic
+    public void edit(final AcademicTariffBean bean) {
+        if (getInterestRate() == null && bean.isApplyInterests()) {
+            setInterestRate(InterestRate.createForTariff(this, bean.getInterestType(),
+                    bean.getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInFirstWorkday(),
+                    bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
+                    bean.getRate()));
+        } else if (getInterestRate() != null && !bean.isApplyInterests()) {
+            getInterestRate().delete();
+        } else if (getInterestRate() != null && bean.isApplyInterests()) {
+            getInterestRate().edit(bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
+                    bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
+                    bean.getRate());
+        }
+        
+        super.setBeginDate(bean.getBeginDate().toDateTimeAtStartOfDay());
+        super.setEndDate(bean.getEndDate() != null ? bean.getEndDate().toDateTimeAtStartOfDay() : null);
+
+        super.setTuitionCalculationType(bean.getTuitionCalculationType());
+        
+        
+        super.setDueDateCalculationType(bean.getDueDateCalculationType());
+        super.setFixedDueDate(bean.getFixedDueDate());
+        super.setNumberOfDaysAfterCreationForDueDate(bean.getNumberOfDaysAfterCreationForDueDate());
+        super.setApplyInterests(bean.isApplyInterests());
+        
+        super.setTuitionCalculationType(bean.getTuitionCalculationType());
+        super.setFixedAmount(bean.getFixedAmount());
+        super.setEctsCalculationType(bean.getEctsCalculationType());
+        super.setFactor(bean.getFactor());
+        super.setTotalEctsOrUnits(bean.getTotalEctsOrUnits());
+        super.setAcademicalActBlockingOff(bean.isAcademicalActBlockingOff());
+
+        checkRules();
     }
 
     @Override

@@ -71,7 +71,8 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
     @RequestMapping(value = _SEARCH_URI + "{debtAccountId}")
     public String search(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
 
-        final Person person = ((PersonCustomer) debtAccount.getCustomer()).getPerson();
+        final PersonCustomer customer = (PersonCustomer) debtAccount.getCustomer();
+        final Person person = customer.isActive() ? customer.getPerson() : customer.getPersonForInactivePersonCustomer();
         model.addAttribute(
                 "searchacademicactblockingsuspensionResultsDataSet",
                 AcademicActBlockingSuspension.find(person).sorted(AcademicActBlockingSuspension.COMPARE_BY_BEGIN_DATE)

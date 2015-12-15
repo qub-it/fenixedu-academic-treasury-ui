@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.dto.tariff;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
@@ -10,7 +11,9 @@ import org.fenixedu.academic.domain.degreeStructure.CycleType;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
+import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.bennu.IBean;
+import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
@@ -60,10 +63,17 @@ public class AcademicTariffBean implements IBean, Serializable {
     private TuitionCalculationType tuitionCalculationType;
     private BigDecimal fixedAmount;
     private EctsCalculationType ectsCalculationType;
-    private boolean academicalActBlockingOff;
+    private boolean academicalActBlockingOn;
     private BigDecimal factor;
     private BigDecimal totalEctsOrUnits;
 
+    /* Used in tuition installment tariff edition */
+    private List<TupleDataSourceBean> tuitionCalculationTypeDataSource = null;
+    private List<TupleDataSourceBean> ectsCalculationTypeDataSource = null;
+    private List<TupleDataSourceBean> interestTypeDataSource = null;
+    private List<TupleDataSourceBean> dueDateCalculationTypeDataSource = null;
+    private List<TupleDataSourceBean> tuitionInstallmentProductDataSource = null;
+    
     public AcademicTariffBean() {
         setBeginDate(new LocalDate());
         setEndDate(new LocalDate().plusYears(1));
@@ -139,6 +149,46 @@ public class AcademicTariffBean implements IBean, Serializable {
         setMaximumAmount(academicTariff.getMaximumAmount());
         setUrgencyRate(academicTariff.getUrgencyRate());
         setLanguageTranslationRate(academicTariff.getLanguageTranslationRate());
+    }
+    
+    public AcademicTariffBean(final TuitionInstallmentTariff tuitionInstallmentTariff) {
+        
+        /* Tariff */
+        this.setBeginDate(tuitionInstallmentTariff.getBeginDate().toLocalDate());
+        this.setEndDate(tuitionInstallmentTariff.getEndDate() != null ? tuitionInstallmentTariff.getEndDate().toLocalDate() : null);
+        this.setDueDateCalculationType(tuitionInstallmentTariff.getDueDateCalculationType());
+        this.setFixedDueDate(tuitionInstallmentTariff.getFixedDueDate());
+        this.setNumberOfDaysAfterCreationForDueDate(tuitionInstallmentTariff.getNumberOfDaysAfterCreationForDueDate());
+
+        /* InterestRate */
+        this.setApplyInterests(tuitionInstallmentTariff.getApplyInterests());
+        this.setInterestType(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getInterestType() : null);
+        this.setNumberOfDaysAfterDueDate(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
+                .getNumberOfDaysAfterDueDate() : 1);
+        this.setApplyInFirstWorkday(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getApplyInFirstWorkday() : false);
+        this.setMaximumDaysToApplyPenalty(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
+                .getMaximumDaysToApplyPenalty() : 0);
+        this.setMaximumMonthsToApplyPenalty(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
+                .getMaximumMonthsToApplyPenalty() : 0);
+        this.setInterestFixedAmount(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getInterestFixedAmount() : null);
+        this.setRate(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getRate() : null);
+
+        /* TuitionInstallment */
+        this.setTuitionInstallmentProduct(tuitionInstallmentTariff.getProduct());
+        this.setInstallmentOrder(tuitionInstallmentTariff.getInstallmentOrder());
+        this.setTuitionCalculationType(tuitionInstallmentTariff.getTuitionCalculationType());
+        this.setFixedAmount(tuitionInstallmentTariff.getFixedAmount());
+        this.setEctsCalculationType(tuitionInstallmentTariff.getEctsCalculationType());
+        this.setAcademicalActBlockingOn(!tuitionInstallmentTariff.getAcademicalActBlockingOff());
+        this.setFactor(tuitionInstallmentTariff.getFactor());
+        this.setTotalEctsOrUnits(tuitionInstallmentTariff.getTotalEctsOrUnits());
+        
+        this.tuitionCalculationTypeDataSource = TuitionPaymentPlanBean.tuitionCalculationTypeDataSource();
+        this.ectsCalculationTypeDataSource = TuitionPaymentPlanBean.ectsCalculationTypeDataSource();
+        this.interestTypeDataSource = TuitionPaymentPlanBean.interestTypeDataSource();
+        this.dueDateCalculationTypeDataSource = TuitionPaymentPlanBean.dueDateCalculationTypeDataSource();
+        this.tuitionInstallmentProductDataSource = TuitionPaymentPlanBean.tuitionInstallmentProductDataSource();
+        
     }
 
     public void resetFields() {
@@ -479,14 +529,17 @@ public class AcademicTariffBean implements IBean, Serializable {
     }
 
     public boolean isAcademicalActBlockingOff() {
-
-        return academicalActBlockingOff;
+        return !academicalActBlockingOn;
+    }
+    
+    public boolean isAcademicalActBlockingOn() {
+        return academicalActBlockingOn;
     }
 
-    public void setAcademicalActBlockingOff(boolean academicalActBlockingOff) {
-        this.academicalActBlockingOff = academicalActBlockingOff;
+    public void setAcademicalActBlockingOn(boolean academicalActBlockingOn) {
+        this.academicalActBlockingOn = academicalActBlockingOn;
     }
-
+    
     public BigDecimal getFactor() {
         return factor;
     }

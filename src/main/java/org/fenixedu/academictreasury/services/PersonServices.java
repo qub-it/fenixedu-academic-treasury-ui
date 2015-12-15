@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.services;
 
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.academicalAct.AcademicActBlockingSuspension;
@@ -31,6 +32,12 @@ public class PersonServices {
 
         if (AcademicActBlockingSuspension.isBlockingSuspended(person, when)) {
             return false;
+        }
+
+        for(final PersonCustomer personCustomer : PersonCustomer.findInactivePersonCustomers(person).collect(Collectors.<PersonCustomer> toSet())) {
+            if(personCustomer.isBlockingAcademicalActs(when)) {
+                return true;
+            }
         }
 
         return PersonCustomer.findUnique(person).get().isBlockingAcademicalActs(when);

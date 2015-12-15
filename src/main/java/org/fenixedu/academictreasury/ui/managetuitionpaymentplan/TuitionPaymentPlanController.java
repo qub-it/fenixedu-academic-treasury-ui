@@ -31,8 +31,10 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
+import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.util.Constants;
@@ -403,12 +405,11 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
                 degreeCurricularPlan.getExternalId()), model, redirectAttributes);
     }
 
-    
     /* *****************
      * COPY PAYMENT PLAN
      * *****************
      */
-    
+
     private static final String _COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_URI =
             "/copypaymentplanchooseexecutionyeardegreecurricularplans";
     public static final String COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_URL = CONTROLLER_URL
@@ -431,26 +432,26 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
     private String _copyPaymentPlanChooseExecutionYearDegreeCurricularPlans(
             @PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
-            @PathVariable("degreeCurricularPlanId") final DegreeCurricularPlan degreeCurricularPlan, 
-            final Model model,
+            @PathVariable("degreeCurricularPlanId") final DegreeCurricularPlan degreeCurricularPlan, final Model model,
             final TuitionPaymentPlanBean tuitionPaymentPlanBean) {
         model.addAttribute("tuitionPaymentPlanBean", tuitionPaymentPlanBean);
         model.addAttribute("tuitionPaymentPlanBeanJson", getBeanJson(tuitionPaymentPlanBean));
-        
+
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("degreeCurricularPlan", degreeCurricularPlan);
-        
+
         return jspPage("copypaymentplanchooseexecutionyeardegreecurricularplans");
     }
 
-    private static final String _COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_POSTBACK_URI = "/copypaymentplanchooseexecutionyeardegreecurricularplanspostback";
+    private static final String _COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_POSTBACK_URI =
+            "/copypaymentplanchooseexecutionyeardegreecurricularplanspostback";
     public static final String COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_POSTBACK__URL = CONTROLLER_URL
             + _COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_POSTBACK_URI;
 
-    @RequestMapping(value = _COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_POSTBACK_URI 
-            + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}",
-            method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = _COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_DEGREE_CURRICULAR_PLANS_POSTBACK_URI
+            + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}", method = RequestMethod.POST,
+            produces = "application/json;charset=UTF-8")
     public @ResponseBody ResponseEntity<String> copyPaymentPlanChooseExecutionYearDegreeCurricularPlansPostback(
             @PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
@@ -461,12 +462,11 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
 
         return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);
     }
-    
+
     private static final String _COPY_PAYMENT_PLAN_CONFIRM_URI = "/copypaymentplanconfirm";
     public static final String COPY_PAYMENT_PLAN_CONFIRM_URL = CONTROLLER_URL + _COPY_PAYMENT_PLAN_CONFIRM_URI;
 
-    @RequestMapping(value = _COPY_PAYMENT_PLAN_CONFIRM_URI
-            + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}",
+    @RequestMapping(value = _COPY_PAYMENT_PLAN_CONFIRM_URI + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}",
             method = RequestMethod.POST)
     public String copyPaymentPlanConfirm(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
@@ -475,22 +475,21 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             final RedirectAttributes redirectAttributes) {
 
         bean.updateDatesBasedOnSelectedExecutionYear();
-        
+
         model.addAttribute("tuitionPaymentPlanBean", bean);
         model.addAttribute("tuitionPaymentPlanBeanJson", getBeanJson(bean));
 
         model.addAttribute("finantialEntity", finantialEntity);
         model.addAttribute("executionYear", executionYear);
         model.addAttribute("degreeCurricularPlan", degreeCurricularPlan);
-        
+
         return jspPage("copypaymentplanconfirm");
     }
 
     private static final String _COPY_PAYMENT_PLAN_URI = "/copypaymentplan";
     public static final String COPY_PAYMENT_PLAN_URL = CONTROLLER_URL + _COPY_PAYMENT_PLAN_URI;
 
-    @RequestMapping(value = _COPY_PAYMENT_PLAN_URI
-            + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}",
+    @RequestMapping(value = _COPY_PAYMENT_PLAN_URI + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}",
             method = RequestMethod.POST)
     public String copyPaymentPlan(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
@@ -511,16 +510,14 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
                             finantialEntity.getExternalId(), bean.getExecutionYear().getExternalId()), model, redirectAttributes);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
-            return copyPaymentPlanConfirm(finantialEntity, executionYear, degreeCurricularPlan, bean, model,
-                    redirectAttributes);
+            return copyPaymentPlanConfirm(finantialEntity, executionYear, degreeCurricularPlan, bean, model, redirectAttributes);
         }
     }
 
     private static final String _CANCEL_COPY_PAYMENT_PLAN_URI = "/cancelcopypaymentplan";
     public static final String CANCEL_COPY_PAYMENT_PLAN_URL = CONTROLLER_URL + _CANCEL_COPY_PAYMENT_PLAN_URI;
 
-    @RequestMapping(value = _CANCEL_COPY_PAYMENT_PLAN_URI
-            + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}",
+    @RequestMapping(value = _CANCEL_COPY_PAYMENT_PLAN_URI + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}",
             method = RequestMethod.POST)
     public String cancelCopyPaymentPlan(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
@@ -538,15 +535,75 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             + _BACK_COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_URI;
 
     @RequestMapping(value = _BACK_COPY_PAYMENT_PLAN_CHOOSE_EXECUTION_YEAR_URI
-            + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}",
-            method = RequestMethod.POST)
+            + "/{finantialEntityId}/{executionYearId}/{degreeCurricularPlanId}", method = RequestMethod.POST)
     public String backCopyPaymentPlanChooseExecutionYear(
             @PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear,
             @PathVariable("degreeCurricularPlanId") final DegreeCurricularPlan degreeCurricularPlan,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
-        return _copyPaymentPlanChooseExecutionYearDegreeCurricularPlans(finantialEntity, executionYear, degreeCurricularPlan, model, bean);
+        return _copyPaymentPlanChooseExecutionYearDegreeCurricularPlans(finantialEntity, executionYear, degreeCurricularPlan,
+                model, bean);
+    }
+
+    /* ************************
+     * EDIT TUITION INSTALLMENT
+     * ************************
+     */
+
+    private static final String _EDIT_TUITION_INSTALLMENT_URI = "/edittuitioninstallment";
+    public static final String EDIT_TUITION_INSTALLMENT_URL = CONTROLLER_URL + _EDIT_TUITION_INSTALLMENT_URI;
+
+    @RequestMapping(value = _EDIT_TUITION_INSTALLMENT_URI + "/{tuitionInstallmentTariffId}", method = RequestMethod.GET)
+    public String editTuitionInstallment(@PathVariable("tuitionInstallmentTariffId") final TuitionInstallmentTariff tuitionInstallmentTariff, 
+            final Model model) {
+
+        return _editTuitionInstallment(tuitionInstallmentTariff, model, new AcademicTariffBean(tuitionInstallmentTariff));
+    }
+
+    private String _editTuitionInstallment(final TuitionInstallmentTariff tuitionInstallmentTariff, final Model model,
+            final AcademicTariffBean academicTariffBean) {
+
+        model.addAttribute("tuitionInstallmentTariff", tuitionInstallmentTariff);
+        model.addAttribute("bean", academicTariffBean);
+        model.addAttribute("academicTariffBeanJson", getBeanJson(academicTariffBean));
+
+        final FinantialEntity finantialEntity = tuitionInstallmentTariff.getFinantialEntity();
+        final ExecutionYear executionYear = tuitionInstallmentTariff.getTuitionPaymentPlan().getExecutionYear();
+        final DegreeCurricularPlan degreeCurricularPlan =
+                tuitionInstallmentTariff.getTuitionPaymentPlan().getDegreeCurricularPlan();
+        
+        model.addAttribute("finantialEntity", finantialEntity);
+        model.addAttribute("executionYear", executionYear);
+        model.addAttribute("degreeCurricularPlan", degreeCurricularPlan);
+        
+        return jspPage("edittuitioninstallment");
+    }
+
+    @RequestMapping(value = _EDIT_TUITION_INSTALLMENT_URI + "/{tuitionInstallmentTariffId}", method = RequestMethod.POST)
+    public String editTuitionInstallment(@PathVariable("tuitionInstallmentTariffId") final TuitionInstallmentTariff tuitionInstallmentTariff, 
+            final Model model, @RequestParam("bean") final AcademicTariffBean bean, 
+            final RedirectAttributes redirectAttributes) {
+
+        try {
+            tuitionInstallmentTariff.edit(bean);
+            
+            //Success Validation
+            //Add the bean to be used in the View
+            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.edit.success"), model);
+
+            final FinantialEntity finantialEntity = tuitionInstallmentTariff.getFinantialEntity();
+            final ExecutionYear executionYear = tuitionInstallmentTariff.getTuitionPaymentPlan().getExecutionYear();
+            final DegreeCurricularPlan degreeCurricularPlan =
+                    tuitionInstallmentTariff.getTuitionPaymentPlan().getDegreeCurricularPlan();
+
+            return redirect(String.format("%s/%s/%s/%s", TuitionPaymentPlanController.SEARCH_URL, finantialEntity.getExternalId(),
+                    executionYear.getExternalId(), degreeCurricularPlan.getExternalId()), model, redirectAttributes);
+            
+        } catch (final DomainException ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+            return _editTuitionInstallment(tuitionInstallmentTariff, model, bean);
+        }
     }
 
     private String jspPage(final String page) {

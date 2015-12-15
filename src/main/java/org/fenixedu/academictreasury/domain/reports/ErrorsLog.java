@@ -7,6 +7,7 @@ import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.ReimbursementEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
+import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
 
@@ -101,6 +102,15 @@ public class ErrorsLog {
         }        
     }
     
+    public void addError(TreasuryExemption treasuryExemption, Exception e) {
+        synchronized(this) {
+            final String oid = treasuryExemption.getExternalId();
+            
+            sb.append(String.format("[%s]\n", oid));
+            sb.append(ExceptionUtils.getFullStackTrace(e)).append("\n\n");
+        }
+    }
+
     public String getLog() {
         return sb.toString();
     }
