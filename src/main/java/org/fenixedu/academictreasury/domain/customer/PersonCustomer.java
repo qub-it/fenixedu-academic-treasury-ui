@@ -12,6 +12,7 @@ import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -65,10 +66,14 @@ public class PersonCustomer extends PersonCustomer_Base {
     public String getFiscalNumber() {
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
 
+        return fiscalNumber(person);
+    }
+
+    private static String fiscalNumber(final Person person) {
         if (Strings.isNullOrEmpty(person.getSocialSecurityNumber())) {
             return Customer.DEFAULT_FISCAL_NUMBER;
         }
-        
+
         return person.getSocialSecurityNumber();
     }
 
@@ -136,11 +141,19 @@ public class PersonCustomer extends PersonCustomer_Base {
     public String getCountryCode() {
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
 
+        return countryCode(person);
+    }
+
+    private static String countryCode(final Person person) {
         if (person.getDefaultPhysicalAddress() == null || person.getDefaultPhysicalAddress().getCountryOfResidence() == null) {
             return null;
         }
 
         return person.getDefaultPhysicalAddress().getCountryOfResidence().getCode();
+    }
+    
+    public static boolean isValidFiscalNumber(final Person person) {
+        return FiscalCodeValidation.isValidFiscalNumber(countryCode(person), fiscalNumber(person));
     }
 
     @Override
@@ -161,7 +174,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         if (person.getStudent() != null) {
             return person.getStudent().getNumber().toString();
         }
-        
+
         return this.getIdentificationNumber();
     }
 
@@ -220,24 +233,24 @@ public class PersonCustomer extends PersonCustomer_Base {
 
         return true;
     }
-    
+
     public BigDecimal getGlobalBalance() {
         BigDecimal globalBalance = BigDecimal.ZERO;
-        
+
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        
-        if(person.getPersonCustomer() != null) {
+
+        if (person.getPersonCustomer() != null) {
             for (final DebtAccount debtAccount : person.getPersonCustomer().getDebtAccountsSet()) {
                 globalBalance = globalBalance.add(debtAccount.getTotalInDebt());
             }
         }
-        
+
         for (final PersonCustomer personCustomer : person.getInactivePersonCustomersSet()) {
             for (final DebtAccount debtAccount : personCustomer.getDebtAccountsSet()) {
                 globalBalance = globalBalance.add(debtAccount.getTotalInDebt());
             }
         }
-        
+
         return globalBalance;
     }
 
@@ -251,12 +264,12 @@ public class PersonCustomer extends PersonCustomer_Base {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.merged.already.with.person");
         }
 
-        if(person.getPersonCustomer() != null) {
+        if (person.getPersonCustomer() != null) {
             final PersonCustomer personCustomer = person.getPersonCustomer();
             personCustomer.setPersonForInactivePersonCustomer(getPerson());
             personCustomer.setPerson(null);
         }
-        
+
         for (final PersonCustomer personCustomer : person.getInactivePersonCustomersSet()) {
             personCustomer.setPersonForInactivePersonCustomer(getPerson());
         }
@@ -281,7 +294,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     public static Optional<? extends PersonCustomer> findUnique(final Person person) {
         return PersonCustomer.findAll().filter(pc -> pc.getPerson() == person).findFirst();
     }
-    
+
     public static Stream<? extends PersonCustomer> findInactivePersonCustomers(final Person person) {
         return PersonCustomer.findAll().filter(pc -> pc.getPersonForInactivePersonCustomer() == person);
     }
