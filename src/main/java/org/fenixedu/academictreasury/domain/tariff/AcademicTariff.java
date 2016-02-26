@@ -736,7 +736,15 @@ public class AcademicTariff extends AcademicTariff_Base {
 
     public static AcademicTariff findMatch(final Product product, final AdministrativeOffice administrativeOffice,
             final DateTime when) {
-        return null;
+        // Fallback to administrativeOffice and return
+        final Set<? extends AcademicTariff> activeTariffs =
+                findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
+        
+        if (activeTariffs.size() > 1) {
+            throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+        }
+
+        return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
     }
 
     public static AcademicTariff findMatch(final Product product, final AdministrativeOffice administrativeOffice,
