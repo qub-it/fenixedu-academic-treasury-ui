@@ -73,7 +73,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     private List<TupleDataSourceBean> interestTypeDataSource = null;
     private List<TupleDataSourceBean> dueDateCalculationTypeDataSource = null;
     private List<TupleDataSourceBean> tuitionInstallmentProductDataSource = null;
-    
+
     public AcademicTariffBean() {
         setBeginDate(new LocalDate());
         setEndDate(new LocalDate().plusYears(1));
@@ -124,14 +124,16 @@ public class AcademicTariffBean implements IBean, Serializable {
         setApplyInterests(academicTariff.getApplyInterests());
 
         setInterestType(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getInterestType() : null);
-        setNumberOfDaysAfterDueDate(academicTariff.isApplyInterests() ? academicTariff.getInterestRate()
-                .getNumberOfDaysAfterDueDate() : 1);
-        setApplyInFirstWorkday(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getApplyInFirstWorkday() : false);
-        setMaximumDaysToApplyPenalty(academicTariff.isApplyInterests() ? academicTariff.getInterestRate()
-                .getMaximumDaysToApplyPenalty() : 0);
-        setMaximumMonthsToApplyPenalty(academicTariff.isApplyInterests() ? academicTariff.getInterestRate()
-                .getMaximumMonthsToApplyPenalty() : 0);
-        setInterestFixedAmount(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getInterestFixedAmount() : null);
+        setNumberOfDaysAfterDueDate(
+                academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getNumberOfDaysAfterDueDate() : 1);
+        setApplyInFirstWorkday(
+                academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getApplyInFirstWorkday() : false);
+        setMaximumDaysToApplyPenalty(
+                academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getMaximumDaysToApplyPenalty() : 0);
+        setMaximumMonthsToApplyPenalty(
+                academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getMaximumMonthsToApplyPenalty() : 0);
+        setInterestFixedAmount(
+                academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getInterestFixedAmount() : null);
         setRate(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getRate() : null);
 
         setAdministrativeOffice(academicTariff.getAdministrativeOffice());
@@ -150,27 +152,31 @@ public class AcademicTariffBean implements IBean, Serializable {
         setUrgencyRate(academicTariff.getUrgencyRate());
         setLanguageTranslationRate(academicTariff.getLanguageTranslationRate());
     }
-    
+
     public AcademicTariffBean(final TuitionInstallmentTariff tuitionInstallmentTariff) {
-        
+
         /* Tariff */
         this.setBeginDate(tuitionInstallmentTariff.getBeginDate().toLocalDate());
-        this.setEndDate(tuitionInstallmentTariff.getEndDate() != null ? tuitionInstallmentTariff.getEndDate().toLocalDate() : null);
+        this.setEndDate(
+                tuitionInstallmentTariff.getEndDate() != null ? tuitionInstallmentTariff.getEndDate().toLocalDate() : null);
         this.setDueDateCalculationType(tuitionInstallmentTariff.getDueDateCalculationType());
         this.setFixedDueDate(tuitionInstallmentTariff.getFixedDueDate());
         this.setNumberOfDaysAfterCreationForDueDate(tuitionInstallmentTariff.getNumberOfDaysAfterCreationForDueDate());
 
         /* InterestRate */
         this.setApplyInterests(tuitionInstallmentTariff.getApplyInterests());
-        this.setInterestType(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getInterestType() : null);
+        this.setInterestType(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
+                .getInterestType() : null);
         this.setNumberOfDaysAfterDueDate(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
                 .getNumberOfDaysAfterDueDate() : 1);
-        this.setApplyInFirstWorkday(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getApplyInFirstWorkday() : false);
+        this.setApplyInFirstWorkday(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
+                .getApplyInFirstWorkday() : false);
         this.setMaximumDaysToApplyPenalty(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
                 .getMaximumDaysToApplyPenalty() : 0);
-        this.setMaximumMonthsToApplyPenalty(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
-                .getMaximumMonthsToApplyPenalty() : 0);
-        this.setInterestFixedAmount(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getInterestFixedAmount() : null);
+        this.setMaximumMonthsToApplyPenalty(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff
+                .getInterestRate().getMaximumMonthsToApplyPenalty() : 0);
+        this.setInterestFixedAmount(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
+                .getInterestFixedAmount() : null);
         this.setRate(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getRate() : null);
 
         /* TuitionInstallment */
@@ -182,13 +188,13 @@ public class AcademicTariffBean implements IBean, Serializable {
         this.setAcademicalActBlockingOn(!tuitionInstallmentTariff.getAcademicalActBlockingOff());
         this.setFactor(tuitionInstallmentTariff.getFactor());
         this.setTotalEctsOrUnits(tuitionInstallmentTariff.getTotalEctsOrUnits());
-        
+
         this.tuitionCalculationTypeDataSource = TuitionPaymentPlanBean.tuitionCalculationTypeDataSource();
         this.ectsCalculationTypeDataSource = TuitionPaymentPlanBean.ectsCalculationTypeDataSource();
         this.interestTypeDataSource = TuitionPaymentPlanBean.interestTypeDataSource();
         this.dueDateCalculationTypeDataSource = TuitionPaymentPlanBean.dueDateCalculationTypeDataSource();
         this.tuitionInstallmentProductDataSource = TuitionPaymentPlanBean.tuitionInstallmentProductDataSource();
-        
+
     }
 
     public void resetFields() {
@@ -196,7 +202,8 @@ public class AcademicTariffBean implements IBean, Serializable {
             setNumberOfDaysAfterCreationForDueDate(0);
         }
 
-        if (getDueDateCalculationType() == null || !getDueDateCalculationType().isFixedDate()) {
+        if (getDueDateCalculationType() == null || !(getDueDateCalculationType().isFixedDate()
+                || getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation())) {
             setFixedDueDate(null);
         }
 
@@ -237,9 +244,9 @@ public class AcademicTariffBean implements IBean, Serializable {
         if (!isApplyMaximumAmount()) {
             setMaximumAmount(BigDecimal.ZERO);
         }
-        
-        if (getDueDateCalculationType() != null && (getDueDateCalculationType().isFixedDate() || 
-                getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation()) && getFixedDueDate() == null) {
+
+        if (getDueDateCalculationType() != null && (getDueDateCalculationType().isFixedDate()
+                || getDueDateCalculationType().isBestOfFixedDateAndDaysAfterCreation()) && getFixedDueDate() == null) {
             setFixedDueDate(new LocalDate());
         }
     }
@@ -531,7 +538,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     public boolean isAcademicalActBlockingOff() {
         return !academicalActBlockingOn;
     }
-    
+
     public boolean isAcademicalActBlockingOn() {
         return academicalActBlockingOn;
     }
@@ -539,7 +546,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     public void setAcademicalActBlockingOn(boolean academicalActBlockingOn) {
         this.academicalActBlockingOn = academicalActBlockingOn;
     }
-    
+
     public BigDecimal getFactor() {
         return factor;
     }
