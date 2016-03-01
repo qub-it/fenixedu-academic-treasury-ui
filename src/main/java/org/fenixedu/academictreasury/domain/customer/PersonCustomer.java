@@ -16,7 +16,6 @@ import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
-import sun.security.jca.GetInstance;
 
 import com.google.common.base.Strings;
 

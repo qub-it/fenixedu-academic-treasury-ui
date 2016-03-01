@@ -6,10 +6,10 @@ import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.academictreasury.util.FiscalCodeValidation;
 import org.fenixedu.academictreasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.DateTime;
 import org.springframework.util.StringUtils;
 
