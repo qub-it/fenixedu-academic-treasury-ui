@@ -4,7 +4,6 @@ import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.treasury.services.reports.dataproviders.AbstractDataProvider;
 
 import com.qubit.terra.docs.util.IDocumentFieldsData;
-import com.qubit.terra.docs.util.IFieldsExporter;
 import com.qubit.terra.docs.util.IReportDataProvider;
 
 public class RegistrationDataProvider extends AbstractDataProvider implements IReportDataProvider {
@@ -26,12 +25,6 @@ public class RegistrationDataProvider extends AbstractDataProvider implements IR
     @Override
     public void registerFieldsAndImages(IDocumentFieldsData arg0) {
         // TODO Auto-generated method stub
-    }
-
-    @Override
-    public void registerFieldsMetadata(IFieldsExporter arg0) {
-        // TODO Auto-generated method stub
-
     }
 
 }
