@@ -23,6 +23,7 @@ import org.springframework.util.StringUtils;
 
 public class DebtReportEntryBean implements SpreadsheetRow {
 
+    // @formatter:off
     public static String[] SPREADSHEET_DEBIT_HEADERS = { Constants.bundle("label.DebtReportEntryBean.header.identification"),
             Constants.bundle("label.DebtReportEntryBean.header.entryType"),
             Constants.bundle("label.DebtReportEntryBean.header.versioningCreator"),
@@ -62,7 +63,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions") };
 
-    public static String[] SPREADSHEET_CREDIT_HEADERS = { Constants.bundle("label.DebtReportEntryBean.header.identification"),
+    public static String[] SPREADSHEET_CREDIT_HEADERS = { 
+            Constants.bundle("label.DebtReportEntryBean.header.identification"),
             Constants.bundle("label.DebtReportEntryBean.header.entryType"),
             Constants.bundle("label.DebtReportEntryBean.header.versioningCreator"),
             Constants.bundle("label.DebtReportEntryBean.header.creationDate"),
@@ -77,6 +79,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.email"),
             Constants.bundle("label.DebtReportEntryBean.header.address"),
             Constants.bundle("label.DebtReportEntryBean.header.studentNumber"),
+            Constants.bundle("label.DebtReportEntryBean.header.degreeType"),            
             Constants.bundle("label.DebtReportEntryBean.header.degreeCode"),
             Constants.bundle("label.DebtReportEntryBean.header.degreeName"),
             Constants.bundle("label.DebtReportEntryBean.header.executionYear"),
@@ -99,6 +102,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.numberOfExtracurricularEnrolments"),
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions") };
+    // @formatter:on
 
     private InvoiceEntry invoiceEntry;
     private boolean completed = false;

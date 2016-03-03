@@ -17,7 +17,9 @@ import com.google.common.base.Strings;
 
 public class DebtAccountReportEntryBean implements SpreadsheetRow {
 
-    public static String[] SPREADSHEET_HEADERS = { Constants.bundle("label.DebtAccountReportEntryBean.header.identification"),
+    // @formatter:off
+    public static String[] SPREADSHEET_HEADERS = { 
+            Constants.bundle("label.DebtAccountReportEntryBean.header.identification"),
             Constants.bundle("label.DebtAccountReportEntryBean.header.versioningCreator"),
             Constants.bundle("label.DebtAccountReportEntryBean.header.creationDate"),
             Constants.bundle("label.DebtAccountReportEntryBean.header.finantialInstitutionName"),
@@ -32,6 +34,7 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtAccountReportEntryBean.header.studentNumber"),
             Constants.bundle("label.DebtAccountReportEntryBean.header.vatNumberValid"),
             Constants.bundle("label.DebtAccountReportEntryBean.header.totalInDebt") };
+    // @formatter:on
 
     final DebtAccount debtAccount;
     boolean completed = false;
