@@ -117,6 +117,7 @@ class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff 
  
 class emoluments.ServiceRequestMapEntry {
 	AcademicServiceRequestSituationTypeT createEventOnSituation;
+	boolean generatePaymentCode;
 }
 
 	relation ServiceRequestMapEntryBennu {
@@ -149,6 +150,16 @@ class emoluments.ServiceRequestMapEntry {
 		}
 	}
 
+    relation ServiceRequestMapEntryPaymentCodePool {
+        .org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool playsRole paymentCodePool {
+            multiplicity 0..1;
+        }
+        
+        emoluments.ServiceRequestMapEntry playsRole serviceRequestMapEntries {
+            multiplicity *;
+        }
+    }	
+	
 class emoluments.AcademicTax {
 	boolean appliedOnRegistration;
 	boolean appliedOnRegistrationFirstYear;

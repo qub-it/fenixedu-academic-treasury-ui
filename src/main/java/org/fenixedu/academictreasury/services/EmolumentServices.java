@@ -30,6 +30,8 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -239,6 +241,20 @@ public class EmolumentServices {
 
             debitNote.addDebitNoteEntries(Collections.singletonList(debitEntry));
             debitNote.closeDocument();
+
+            if (serviceRequestMapEntry.getGeneratePaymentCode()) {
+                PaymentCodePool pool = serviceRequestMapEntry.getPaymentCodePool();
+                if (pool == null) {
+                    throw new AcademicTreasuryDomainException(
+                            "error.EmolumentServices.academicServiceRequest.paymentCodePool.is.required");
+                }
+                final LocalDate dueDate = academicTresuryEvent.getDueDate();
+                final LocalDate now = new LocalDate();
+                PaymentReferenceCode referenceCode = pool.getReferenceCodeGenerator().generateNewCodeFor(personCustomer,
+                        academicTresuryEvent.getRemainingAmountToPay(), now, dueDate.compareTo(now) > 0 ? dueDate : now, true);
+
+                referenceCode.createPaymentTargetTo(debitNote);
+            }
         }
 
         return true;

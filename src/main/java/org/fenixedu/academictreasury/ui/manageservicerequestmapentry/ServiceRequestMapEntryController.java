@@ -38,6 +38,7 @@ import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -87,6 +88,8 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
 
         model.addAttribute("ServiceRequestMapEntry_product_options", Product.findAllActive().collect(Collectors.toList()));
         model.addAttribute("ServiceRequestMapEntry_situationType_options", AcademicServiceRequestSituationType.values());
+        model.addAttribute("ServiceRequestMapEntry_paymentPool_options",
+                PaymentCodePool.findAll().filter(pool -> Boolean.TRUE.equals(pool.getActive())).collect(Collectors.toList()));
 
         return "academicTreasury/manageservicerequestmapentry/servicerequestmapentry/create";
     }
@@ -95,12 +98,16 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
     public String create(
             @RequestParam(value = "servicerequesttype", required = false) final ServiceRequestType serviceRequestType,
             @RequestParam(value = "product", required = false) final Product product,
-            @RequestParam(value = "createEventOnSituation", required = true) final AcademicServiceRequestSituationType createEventOnSituationType,
-            Model model, RedirectAttributes redirectAttributes) {
+            @RequestParam(value = "createEventOnSituation",
+                    required = true) final AcademicServiceRequestSituationType createEventOnSituationType,
+            @RequestParam(value = "generatePaymentCode", required = true) final boolean generatePaymentCode,
+            @RequestParam(value = "paymentCodePool", required = true) final PaymentCodePool paymentCodePool, Model model,
+            RedirectAttributes redirectAttributes) {
 
         try {
 
-            ServiceRequestMapEntry.create(product, serviceRequestType, createEventOnSituationType);
+            ServiceRequestMapEntry.create(product, serviceRequestType, createEventOnSituationType, generatePaymentCode,
+                    paymentCodePool);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.ServiceRequestMapEntry.create.success"), model);
 

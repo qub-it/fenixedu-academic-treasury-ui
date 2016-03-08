@@ -8,6 +8,7 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -19,12 +20,15 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
     }
 
     protected ServiceRequestMapEntry(final Product product, final ServiceRequestType requestType,
-            final AcademicServiceRequestSituationType createEventOnSituation) {
+            final AcademicServiceRequestSituationType createEventOnSituation, final boolean generatePaymentCode,
+            final PaymentCodePool paymentCodePool) {
         this();
 
         setProduct(product);
         setServiceRequestType(requestType);
         setCreateEventOnSituation(createEventOnSituation);
+        setGeneratePaymentCode(generatePaymentCode);
+        setPaymentCodePool(paymentCodePool);
 
         checkRules();
     }
@@ -105,7 +109,14 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
     @Atomic
     public static ServiceRequestMapEntry create(final Product product, final ServiceRequestType requestType,
             AcademicServiceRequestSituationType situationType) {
-        return new ServiceRequestMapEntry(product, requestType, situationType);
+        return new ServiceRequestMapEntry(product, requestType, situationType, false, null);
+    }
+
+    @Atomic
+    public static ServiceRequestMapEntry create(final Product product, final ServiceRequestType requestType,
+            AcademicServiceRequestSituationType situationType, final boolean generatePaymentCode,
+            final PaymentCodePool paymentCodePool) {
+        return new ServiceRequestMapEntry(product, requestType, situationType, generatePaymentCode, paymentCodePool);
     }
 
 }

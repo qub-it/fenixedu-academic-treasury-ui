@@ -167,6 +167,10 @@ ${portal.toolkit()}
                             code="label.ServiceRequestMapEntry.product" /></th>
                     <th><spring:message
                             code="label.ServiceRequestMapEntry.createEventOnSituation" /></th>
+                    <th><spring:message
+                            code="label.ServiceRequestMapEntry.generatePaymentCode" /></th>
+                    <th><spring:message
+                            code="label.ServiceRequestMapEntry.paymentCodePool" /></th>                            
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -179,6 +183,15 @@ ${portal.toolkit()}
                         <td>${searchResult.serviceRequestType.name.content}</td>
                         <td>${searchResult.product.name.content}</td>
                         <td>${searchResult.createEventOnSituation.localizedName}</td>
+                        <td>
+                            <c:if test="${ searchResult.generatePaymentCode }">
+                                <spring:message code="label.yes" />
+                            </c:if>
+                            <c:if test="${ not searchResult.generatePaymentCode }">
+                                <spring:message code="label.no" />
+                            </c:if>
+                        </td>
+                        <td>${searchResult.paymentCodePool.name }</td>
                         <td><a class="btn btn-xs btn-warning"
                             href="#"
                             onClick="javascript:processDelete('${searchResult.externalId}')">
@@ -213,29 +226,16 @@ ${portal.toolkit()}
 											language : {
 												url : "${datatablesI18NUrl}",
 											},
-											"columns" : [
-													{
-														data : 'servicerequesttype'
-													},
-													{
-														data : 'servicerequesttypeoptionbooleanvalues'
-													}, {
-														data : 'product'
-													}, {
-														data : 'actions'
-													} ],
-											//CHANGE_ME adjust the actions column width if needed
 											"columnDefs" : [
 											//74
 											{
 												"width" : "74px",
-												"targets" : 3
+												"targets" : 5
 											} ],
-											"data" : searchservicerequestmapentryDataSet,
 											//Documentation: https://datatables.net/reference/option/dom
-											"dom" : '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+											//"dom" : '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
 											//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-											//"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+											"dom": '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
 											//"dom": '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
 											"tableTools" : {
 												"sSwfPath" : "${pageContext.request.contextPath}/static/academictreasury/swf/copy_csv_xls_pdf.swf"
