@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.dto.person.PersonBean;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.treasury.domain.Customer;
@@ -143,12 +144,24 @@ public class PersonCustomer extends PersonCustomer_Base {
         return countryCode(person);
     }
 
-    private static String countryCode(final Person person) {
+    public static String countryCode(final Person person) {
         if (person.getDefaultPhysicalAddress() == null || person.getDefaultPhysicalAddress().getCountryOfResidence() == null) {
             return null;
         }
 
         return person.getDefaultPhysicalAddress().getCountryOfResidence().getCode();
+    }
+    
+    public static String countryCode(final PersonBean personBean) {
+        if(personBean == null) {
+            return null;
+        }
+        
+        if(personBean.getCountryOfResidence() == null) {
+            return null;
+        }
+        
+        return personBean.getCountryOfResidence().getCode();
     }
     
     public static boolean isValidFiscalNumber(final Person person) {
