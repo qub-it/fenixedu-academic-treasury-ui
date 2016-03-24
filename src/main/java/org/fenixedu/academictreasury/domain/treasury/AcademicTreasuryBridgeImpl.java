@@ -211,12 +211,16 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
 
     @Override
     public String getRegistrationAccountTreasuryManagementURL(Registration registration) {
-        FinantialInstitution inst =
+        if(registration.getDegree().getAdministrativeOffice().getFinantialEntity() == null) {
+            return getPersonAccountTreasuryManagementURL(registration.getPerson());
+        }
+        
+        final FinantialInstitution inst =
                 registration.getDegree().getAdministrativeOffice().getFinantialEntity().getFinantialInstitution();
-        Person person = registration.getPerson();
-        PersonCustomer customer = PersonCustomer.findUnique(person).get();
+        final Person person = registration.getPerson();
+        final PersonCustomer customer = PersonCustomer.findUnique(person).get();
 
-        DebtAccount account = customer.getDebtAccountFor(inst);
+        final DebtAccount account = customer.getDebtAccountFor(inst);
         if (account != null) {
             return DebtAccountController.READ_URL + customer.getDebtAccountFor(inst).getExternalId();
         } else {
