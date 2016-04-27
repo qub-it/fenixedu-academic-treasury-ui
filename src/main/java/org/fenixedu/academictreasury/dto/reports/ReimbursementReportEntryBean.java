@@ -6,12 +6,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.academictreasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Customer;
-import org.fenixedu.treasury.domain.document.PaymentEntry;
 import org.fenixedu.treasury.domain.document.ReimbursementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
+import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
 import org.springframework.util.StringUtils;
 
@@ -116,7 +116,9 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
     }
 
     @Override
-    public void writeCellValues(final Row row, final ErrorsLog errorsLog) {
+    public void writeCellValues(final Row row, final IErrorsLog ierrorsLog) {
+        final ErrorsLog errorsLog = (ErrorsLog) ierrorsLog;
+        
         try {
             row.createCell(0).setCellValue(identification);
 

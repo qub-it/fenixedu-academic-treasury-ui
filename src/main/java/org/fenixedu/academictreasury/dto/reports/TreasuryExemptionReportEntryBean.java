@@ -4,6 +4,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.joda.time.DateTime;
 
 public class TreasuryExemptionReportEntryBean extends AbstractReportEntryBean {
@@ -60,7 +61,9 @@ public class TreasuryExemptionReportEntryBean extends AbstractReportEntryBean {
     }
 
     @Override
-    public void writeCellValues(final Row row, final ErrorsLog errorsLog) {
+    public void writeCellValues(final Row row, final IErrorsLog ierrorsLog) {
+        final ErrorsLog errorsLog = (ErrorsLog) ierrorsLog;
+        
         try {
             row.createCell(0).setCellValue(identification);
 

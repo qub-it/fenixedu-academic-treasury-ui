@@ -6,6 +6,7 @@ import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -92,7 +93,9 @@ public class AcademicActBlockingSuspensionReportEntryBean extends AbstractReport
     }
     
     @Override
-    public void writeCellValues(final Row row, final ErrorsLog errorsLog) {
+    public void writeCellValues(final Row row, final IErrorsLog ierrorsLog) {
+        final ErrorsLog errorsLog = (ErrorsLog) ierrorsLog;
+        
         try {
             row.createCell(0).setCellValue(identification);
 

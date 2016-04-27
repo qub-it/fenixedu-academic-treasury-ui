@@ -1,8 +1,8 @@
 package org.fenixedu.academictreasury.dto.reports;
 
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.academictreasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;

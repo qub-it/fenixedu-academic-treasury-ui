@@ -15,11 +15,11 @@ import org.fenixedu.academictreasury.dto.reports.SibsTransactionDetailEntryBean;
 import org.fenixedu.academictreasury.dto.reports.TreasuryExemptionReportEntryBean;
 import org.fenixedu.academictreasury.services.debtReports.DebtReportService;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.academictreasury.util.streaming.spreadsheet.ExcelSheet;
-import org.fenixedu.academictreasury.util.streaming.spreadsheet.Spreadsheet;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
+import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
+import org.fenixedu.treasury.util.streaming.spreadsheet.Spreadsheet;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;

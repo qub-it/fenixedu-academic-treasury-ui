@@ -10,8 +10,9 @@ import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
+import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 
-public class ErrorsLog {
+public class ErrorsLog implements IErrorsLog {
     final StringBuilder sb = new StringBuilder();
 
     public void addError(final InvoiceEntry entry, final Exception e) {
