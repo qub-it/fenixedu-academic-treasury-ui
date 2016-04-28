@@ -545,7 +545,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             }
 
             final PaymentReferenceCode paymentReferenceCode =
-                    getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(debitNote.getDebtAccount().getCustomer(),
+                    getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(
                             debitNote.getOpenAmount(), new LocalDate(), debitNote.getDocumentDueDate(), true);
 
             FinantialDocumentPaymentCode paymentCode = FinantialDocumentPaymentCode.create(debitNote, paymentReferenceCode, true);

@@ -250,7 +250,7 @@ public class EmolumentServices {
                 }
                 final LocalDate dueDate = academicTresuryEvent.getDueDate();
                 final LocalDate now = new LocalDate();
-                PaymentReferenceCode referenceCode = pool.getReferenceCodeGenerator().generateNewCodeFor(personCustomer,
+                PaymentReferenceCode referenceCode = pool.getReferenceCodeGenerator().generateNewCodeFor(
                         academicTresuryEvent.getRemainingAmountToPay(), now, dueDate.compareTo(now) > 0 ? dueDate : now, true);
 
                 referenceCode.createPaymentTargetTo(debitNote);
