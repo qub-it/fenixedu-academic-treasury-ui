@@ -16,17 +16,24 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
+import org.fenixedu.treasury.services.reports.DocumentPrinter;
 import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Sets;
+import com.qubit.terra.docs.util.ReportGenerationException;
 
 //@Component("org.fenixedu.treasury.ui.customer.viewAccounting") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.customer.viewAccount",
@@ -231,6 +238,29 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public String customernotcreated(final Model model) {
         return jspPage("customernotcreated");
     }
+
+    private static final String PRINT_SETTLEMENT_NOTE_URI = "/printsettlementnote";
+    public static final String PRINT_SETTLEMENT_NOTE_URL = CONTROLLER_URL + PRINT_SETTLEMENT_NOTE_URI;
+
+    @RequestMapping(value = PRINT_SETTLEMENT_NOTE_URI + "/{settlementNoteId}", produces = "application/pdf")
+    @ResponseBody
+    public Object printsettlementnote(@PathVariable("settlementNoteId") final SettlementNote settlementNote, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        try {
+            byte[] report = DocumentPrinter.printFinantialDocument(settlementNote, DocumentPrinter.PDF);
+            return new ResponseEntity<byte[]>(report, HttpStatus.OK);
+        } catch (ReportGenerationException rex) {
+            addErrorMessage(rex.getLocalizedMessage(), model);
+            addErrorMessage(rex.getCause().getLocalizedMessage(), model);
+
+            return redirect(getReadAccountUrl() + settlementNote.getExternalId(), model, redirectAttributes);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+
+            return redirect(getReadAccountUrl() + settlementNote.getExternalId(), model, redirectAttributes);
+        }
+    }
+
     
     public String jspPage(final String page) {
         return JSP_PATH + page;

@@ -399,16 +399,24 @@ ${portal.angularToolkit()}
                                 </c:if>
                             </ul>
                         </datatables:column>
+                        <datatables:column>
+                            <form id="printsettlementnoteform" 
+                            	action="${pageContext.request.contextPath}<%= CustomerAccountingController.PRINT_SETTLEMENT_NOTE_URL %>/${payment.externalId}">
+                            </form>
+                            <button type="submit" class="btn btn-default btn-xs" form="printsettlementnoteform">
+                                <spring:message code="label.print" />
+                            </button>
+                        </datatables:column>
                     </datatables:table>
                     <script>
-																					createDataTables(
-																							'paymentsDataSet',
-																							false,
-																							false,
-																							false,
-																							"${pageContext.request.contextPath}",
-																							"${datatablesI18NUrl}");
-																				</script>
+						createDataTables(
+								'paymentsDataSet',
+								false,
+								false,
+								false,
+								"${pageContext.request.contextPath}",
+								"${datatablesI18NUrl}");
+					</script>
                 </c:when>
                 <c:otherwise>
                     <div class="alert alert-warning" role="alert">
