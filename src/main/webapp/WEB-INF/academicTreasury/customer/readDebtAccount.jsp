@@ -401,7 +401,7 @@ ${portal.angularToolkit()}
                         </datatables:column>
                         <datatables:column>
                             <form id="printsettlementnoteform" 
-                            	action="${pageContext.request.contextPath}<%= CustomerAccountingController.PRINT_SETTLEMENT_NOTE_URL %>/${payment.externalId}">
+                            	action="${pageContext.request.contextPath}${printSettlementNoteUrl}/${payment.externalId}">
                             </form>
                             <button type="submit" class="btn btn-default btn-xs" form="printsettlementnoteform">
                                 <spring:message code="label.print" />

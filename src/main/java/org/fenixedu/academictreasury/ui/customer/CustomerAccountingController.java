@@ -65,6 +65,10 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public static String FORWARD_PAYMENT_URL(final DebtAccount debtAccount) {
         return String.format(CONTROLLER_URL + "/read/%s/forwardpayment", debtAccount.getExternalId());
     }
+    
+    protected String getPrintSettlementNote() {
+        return PRINT_SETTLEMENT_NOTE_URL;
+    }
 
     @RequestMapping
     public String home(Model model) {
@@ -101,6 +105,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public String readAccount(@PathVariable(value = "oid") final DebtAccount debtAccount, final Model model) {
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount));
+        model.addAttribute("printSettlementNoteUrl", getPrintSettlementNote());
         
         List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
         List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
