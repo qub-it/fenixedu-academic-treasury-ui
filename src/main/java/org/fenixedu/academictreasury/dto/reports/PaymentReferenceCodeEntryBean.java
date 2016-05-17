@@ -82,18 +82,29 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
                 this.name = referenceDebtAccount.getCustomer().getName();
 
                 if (referenceDebtAccount.getCustomer().isPersonCustomer()
+                        && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPerson() != null
                         && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPerson().getIdDocumentType() != null) {
                     this.identificationType =
                             ((PersonCustomer) referenceDebtAccount.getCustomer()).getPerson().getIdDocumentType()
+                                    .getLocalizedNameI18N();
+                } else if(referenceDebtAccount.getCustomer().isPersonCustomer()
+                        && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPersonForInactivePersonCustomer() != null
+                        && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPersonForInactivePersonCustomer().getIdDocumentType() != null) {
+                    this.identificationType =
+                            ((PersonCustomer) referenceDebtAccount.getCustomer()).getPersonForInactivePersonCustomer().getIdDocumentType()
                                     .getLocalizedNameI18N();
                 }
 
                 this.identificationNumber = referenceDebtAccount.getCustomer().getIdentificationNumber();
                 this.vatNumber = referenceDebtAccount.getCustomer().getFiscalNumber();
 
-                if (referenceDebtAccount.getCustomer().isPersonCustomer()) {
+                if (referenceDebtAccount.getCustomer().isPersonCustomer() && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPerson() != null) {
                     this.email =
                             ((PersonCustomer) referenceDebtAccount.getCustomer()).getPerson()
+                                    .getInstitutionalOrDefaultEmailAddressValue();
+                } else if(referenceDebtAccount.getCustomer().isPersonCustomer() && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPersonForInactivePersonCustomer() != null) {
+                    this.email =
+                            ((PersonCustomer) referenceDebtAccount.getCustomer()).getPersonForInactivePersonCustomer()
                                     .getInstitutionalOrDefaultEmailAddressValue();
                 }
 
@@ -101,9 +112,15 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
                 this.countryCode = referenceDebtAccount.getCustomer().getCountryCode();
 
                 if (referenceDebtAccount.getCustomer().isPersonCustomer()
+                        && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPerson() != null
                         && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPerson().getStudent() != null) {
                     this.studentNumber =
                             ((PersonCustomer) referenceDebtAccount.getCustomer()).getPerson().getStudent().getNumber();
+                } else if(referenceDebtAccount.getCustomer().isPersonCustomer()
+                        && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPersonForInactivePersonCustomer() != null
+                        && ((PersonCustomer) referenceDebtAccount.getCustomer()).getPersonForInactivePersonCustomer().getStudent() != null) {
+                    this.studentNumber =
+                            ((PersonCustomer) referenceDebtAccount.getCustomer()).getPersonForInactivePersonCustomer().getStudent().getNumber();
                 }
             }
 

@@ -68,25 +68,39 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
             this.name = debtAccount.getCustomer().getName();
 
             if (debtAccount.getCustomer().isPersonCustomer()
+                    && ((PersonCustomer) debtAccount.getCustomer()).getPerson() != null
                     && ((PersonCustomer) debtAccount.getCustomer()).getPerson().getIdDocumentType() != null) {
                 this.identificationType =
                         ((PersonCustomer) debtAccount.getCustomer()).getPerson().getIdDocumentType().getLocalizedNameI18N();
+            } else if(debtAccount.getCustomer().isPersonCustomer()
+                    && ((PersonCustomer) debtAccount.getCustomer()).getPersonForInactivePersonCustomer() != null
+                    && ((PersonCustomer) debtAccount.getCustomer()).getPersonForInactivePersonCustomer().getIdDocumentType() != null) {
+                this.identificationType =
+                        ((PersonCustomer) debtAccount.getCustomer()).getPersonForInactivePersonCustomer().getIdDocumentType().getLocalizedNameI18N();
             }
 
             this.identificationNumber = debtAccount.getCustomer().getIdentificationNumber();
             this.vatNumber = debtAccount.getCustomer().getFiscalNumber();
 
-            if (debtAccount.getCustomer().isPersonCustomer()) {
+            if (debtAccount.getCustomer().isPersonCustomer() && ((PersonCustomer) debtAccount.getCustomer()).getPerson() != null) {
                 this.email =
                         ((PersonCustomer) debtAccount.getCustomer()).getPerson().getInstitutionalOrDefaultEmailAddressValue();
+            } else if(debtAccount.getCustomer().isPersonCustomer() && ((PersonCustomer) debtAccount.getCustomer()).getPersonForInactivePersonCustomer() != null) {
+                this.email =
+                        ((PersonCustomer) debtAccount.getCustomer()).getPersonForInactivePersonCustomer().getInstitutionalOrDefaultEmailAddressValue();
             }
 
             this.address = debtAccount.getCustomer().getAddress();
             this.countryCode = debtAccount.getCustomer().getCountryCode();
 
             if (debtAccount.getCustomer().isPersonCustomer()
+                    && ((PersonCustomer) debtAccount.getCustomer()).getPerson() != null
                     && ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent() != null) {
                 this.studentNumber = ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getNumber();
+            } else if(debtAccount.getCustomer().isPersonCustomer()
+                    && ((PersonCustomer) debtAccount.getCustomer()).getPersonForInactivePersonCustomer() != null
+                    && ((PersonCustomer) debtAccount.getCustomer()).getPersonForInactivePersonCustomer().getStudent() != null) {
+                this.studentNumber = ((PersonCustomer) debtAccount.getCustomer()).getPersonForInactivePersonCustomer().getStudent().getNumber();
             }
 
             this.vatNumberValid =

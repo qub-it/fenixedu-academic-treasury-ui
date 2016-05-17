@@ -17,28 +17,26 @@ import org.springframework.util.StringUtils;
 
 public class ReimbursementReportEntryBean implements SpreadsheetRow {
 
-    public static String[] SPREADSHEET_HEADERS = { 
-        Constants.bundle("label.ReimbursementReportEntryBean.header.identification"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.creationDate"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.responsible"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.settlementNoteNumber"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.settlementNoteDocumentDate"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.reimbursementDate"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.settlementNoteAnnuled"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.documentExportationPending"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.paymentMethod"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.amount"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.customerId"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.debtAccountId"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.name"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.identificationType"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.identificationNumber"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.vatNumber"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.email"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.address"),
-        Constants.bundle("label.ReimbursementReportEntryBean.header.studentNumber") };
- 
-    
+    public static String[] SPREADSHEET_HEADERS = { Constants.bundle("label.ReimbursementReportEntryBean.header.identification"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.creationDate"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.responsible"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.settlementNoteNumber"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.settlementNoteDocumentDate"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.reimbursementDate"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.settlementNoteAnnuled"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.documentExportationPending"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.paymentMethod"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.amount"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.customerId"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.debtAccountId"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.name"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.identificationType"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.identificationNumber"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.vatNumber"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.email"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.address"),
+            Constants.bundle("label.ReimbursementReportEntryBean.header.studentNumber") };
+
     private ReimbursementEntry paymentEntry;
     private boolean completed;
 
@@ -64,7 +62,7 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
 
     public ReimbursementReportEntryBean(final ReimbursementEntry entry, final ErrorsLog errorsLog) {
         paymentEntry = entry;
-        
+
         try {
             final SettlementNote settlementNote = entry.getSettlementNote();
 
@@ -77,58 +75,73 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
             this.settlementNoteAnnuled = settlementNote.isAnnulled();
             this.documentExportationPending = settlementNote.isDocumentToExport();
             this.paymentMethod = entry.getPaymentMethod().getName().getContent();
-            this.amount = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(entry.getReimbursedAmount());
-            
+            this.amount = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency()
+                    .getValueWithScale(entry.getReimbursedAmount());
+
             fillStudentInformation(entry);
-            
+
             this.completed = true;
-            
-        } catch(final Exception e) {
+
+        } catch (final Exception e) {
             e.printStackTrace();
             errorsLog.addError(entry, e);
         }
     }
-    
+
     private void fillStudentInformation(final ReimbursementEntry entry) {
         final Customer customer = entry.getSettlementNote().getDebtAccount().getCustomer();
 
         this.customerId = customer.getExternalId();
         this.debtAccountId = entry.getSettlementNote().getDebtAccount().getExternalId();
-        
+
         this.name = customer.getName();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson().getIdDocumentType() != null) {
+        if (customer.isPersonCustomer() 
+                && ((PersonCustomer) customer).getPerson() != null
+                && ((PersonCustomer) customer).getPerson().getIdDocumentType() != null) {
             this.identificationType = ((PersonCustomer) customer).getPerson().getIdDocumentType().getLocalizedNameI18N();
+        } else if (customer.isPersonCustomer() 
+                && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null
+                && ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getIdDocumentType() != null) {
+            this.identificationType =
+                    ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getIdDocumentType().getLocalizedNameI18N();
         }
 
         this.identificationNumber = customer.getIdentificationNumber();
         this.vatNumber = customer.getFiscalNumber();
 
-        if (customer.isPersonCustomer()) {
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null) {
             this.email = ((PersonCustomer) customer).getPerson().getInstitutionalOrDefaultEmailAddressValue();
+        } else if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null) {
+            this.email =
+                    ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getInstitutionalOrDefaultEmailAddressValue();
         }
 
         this.address = customer.getAddress();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson().getStudent() != null) {
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null && ((PersonCustomer) customer).getPerson().getStudent() != null) {
             this.studentNumber = ((PersonCustomer) customer).getPerson().getStudent().getNumber();
+        } else if(customer.isPersonCustomer() 
+                && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null 
+                && ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent() != null) {
+            this.studentNumber = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent().getNumber();
         }
     }
 
     @Override
     public void writeCellValues(final Row row, final IErrorsLog ierrorsLog) {
         final ErrorsLog errorsLog = (ErrorsLog) ierrorsLog;
-        
+
         try {
             row.createCell(0).setCellValue(identification);
 
-            if(!completed) {
+            if (!completed) {
                 row.createCell(1).setCellValue(Constants.bundle("error.DebtReportEntryBean.report.generation.verify.entry"));
                 return;
             }
-            
+
             int i = 1;
-            
+
             row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
             row.createCell(i++).setCellValue(valueOrEmpty(responsible));
             row.createCell(i++).setCellValue(valueOrEmpty(settlementNoteNumber));
@@ -147,13 +160,13 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(email));
             row.createCell(i++).setCellValue(valueOrEmpty(address));
             row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
-            
-        } catch(final Exception e) {
+
+        } catch (final Exception e) {
             e.printStackTrace();
             errorsLog.addError(paymentEntry, e);
         }
     }
-    
+
     private String valueOrEmpty(final DateTime value) {
         if (value == null) {
             return "";
