@@ -7,6 +7,7 @@ import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
@@ -33,6 +34,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
         Constants.bundle("label.SettlementReportEntryBean.header.settlementEntryDescription"),
         Constants.bundle("label.SettlementReportEntryBean.header.invoiceEntryIdentification"),
         Constants.bundle("label.SettlementReportEntryBean.header.invoiceEntryType"),        
+        Constants.bundle("label.SettlementReportEntryBean.header.invoiceEntryAmountToPay"),
         Constants.bundle("label.SettlementReportEntryBean.header.invoiceDocumentNumber"),
         Constants.bundle("label.SettlementReportEntryBean.header.customerId"),
         Constants.bundle("label.SettlementReportEntryBean.header.debtAccountId"),
@@ -52,6 +54,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
     private String responsible;
     private String invoiceEntryIdentification;
     private String invoiceEntryType;
+    private String invoiceEntryAmountToPay;
     private String invoiceDocumentNumber;
     private String settlementNoteNumber;
     private DateTime settlementNoteDocumentDate;
@@ -77,7 +80,8 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
 
         try {
             final SettlementNote settlementNote = (SettlementNote) entry.getFinantialDocument();
-
+            final Currency currency = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency();
+            
             this.identification = entry.getExternalId();
             this.creationDate = entry.getVersioningCreationDate();
             this.responsible = entry.getVersioningCreator();
@@ -88,6 +92,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
             this.settlementNoteAnnuled = settlementNote.isAnnulled();
             this.documentExportationPending = settlementNote.isDocumentToExport();
             this.invoiceEntryType = entryType(entry.getInvoiceEntry());
+            this.invoiceEntryAmountToPay = currency.getValueWithScale(entry.getInvoiceEntry().getAmountWithVat()).toString();
             this.invoiceDocumentNumber = entry.getInvoiceEntry().getFinantialDocument().getUiDocumentNumber();
             this.settlementEntryOrder = entry.getEntryOrder();
             this.amount =
@@ -176,6 +181,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(settlementEntryDescription));
             row.createCell(i++).setCellValue(valueOrEmpty(invoiceEntryIdentification));
             row.createCell(i++).setCellValue(valueOrEmpty(invoiceEntryType));
+            row.createCell(i++).setCellValue(valueOrEmpty(invoiceEntryAmountToPay));
             row.createCell(i++).setCellValue(valueOrEmpty(invoiceDocumentNumber));
             row.createCell(i++).setCellValue(customerId);
             row.createCell(i++).setCellValue(debtAccountId);
