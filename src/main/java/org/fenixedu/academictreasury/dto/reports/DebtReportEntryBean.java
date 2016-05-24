@@ -10,17 +10,22 @@ import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.bennu.core.util.CoreConfiguration;
+import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
+import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
+
+import com.google.common.base.Strings;
 
 public class DebtReportEntryBean implements SpreadsheetRow {
 
@@ -320,6 +325,20 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                         fillStudentConditionsInformation(iTreasuryServiceRequest.getRegistration(),
                                 iTreasuryServiceRequest.getExecutionYear());
                     }
+                }
+            } else if(debitEntry.getTreasuryEvent() != null) {
+                final TreasuryEvent treasuryEvent = debitEntry.getTreasuryEvent();
+                
+                if(!Strings.isNullOrEmpty(treasuryEvent.getDegreeCode())) {
+                    this.degreeCode = treasuryEvent.getDegreeCode();
+                }
+                
+                if(!Strings.isNullOrEmpty(treasuryEvent.getDegreeName())) {
+                    this.degreeName = new LocalizedString(I18N.getLocale(), treasuryEvent.getDegreeName()) ;
+                }
+                
+                if(!Strings.isNullOrEmpty(treasuryEvent.getExecutionYearName())) {
+                    this.executionYear = treasuryEvent.getExecutionYearName();
                 }
             }
         }
