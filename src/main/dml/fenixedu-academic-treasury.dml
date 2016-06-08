@@ -821,3 +821,44 @@ class reports.DebtReportRequestResultErrorsFile extends .org.fenixedu.bennu.io.d
 		}
 		
 	}
+
+	
+/* ***********************
+ * DEBT GENERATION REQUEST
+ * ***********************
+ */
+ 
+class debtGeneration.requests.MassiveDebtGenerationRequestFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	LocalDate debtDate;
+	DateTime whenProcessed;
+}
+
+	relation MassiveDebtGenerationRequestBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		debtGeneration.requests.MassiveDebtGenerationRequestFile playsRole massiveDebtGenerationRequestFiles {
+			multiplicity *;
+		}
+	}
+
+	relation MassiveDebtGenerationRequestExecutionYear {
+		.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear {
+			multiplicity 1..1;
+		}
+
+		debtGeneration.requests.MassiveDebtGenerationRequestFile playsRole massiveDebtGenerationRequestFiles {
+			multiplicity *;
+		}
+	}
+
+	relation MassiveDebtGenerationRequest {
+		tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroup {
+			multiplicity 1..1;
+		}
+
+		debtGeneration.requests.MassiveDebtGenerationRequestFile playsRole massiveDebtGenerationRequestFiles {
+			multiplicity *;
+		}
+	}

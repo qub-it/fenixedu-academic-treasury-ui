@@ -114,9 +114,8 @@ ${portal.angularToolkit()}
 							'$scope',
 							function($scope) {
 
-								$scope.object = angular
-										.fromJson('${academicTaxDebtCreationBeanJson}');
-								// $scope.$apply();
+								$scope.object = ${academicTaxDebtCreationBeanJson};
+
 								$scope.booleanvalues = [
 										{
 											name : '<spring:message code="label.no"/>',

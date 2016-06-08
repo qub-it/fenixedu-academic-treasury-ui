@@ -113,9 +113,7 @@ ${portal.angularToolkit()}
 							'$scope',
 							function($scope) {
 
-								$scope.object = angular
-										.fromJson('${academicServiceRequestDebtCreationBeanJson}');
-								// $scope.$apply();
+								$scope.object = ${academicServiceRequestDebtCreationBeanJson};
 
 								$scope.postBack = createAngularPostbackFunction($scope);
 

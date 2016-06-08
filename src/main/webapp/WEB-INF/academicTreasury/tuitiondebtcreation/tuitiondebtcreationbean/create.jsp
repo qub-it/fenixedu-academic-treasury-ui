@@ -113,8 +113,7 @@ ${portal.angularToolkit()}
 							'$scope',
 							function($scope) {
 
-								$scope.object = angular
-										.fromJson('${tuitionDebtCreationBeanJson}');
+								$scope.object = ${tuitionDebtCreationBeanJson};
 								// $scope.$apply();
 								$scope.booleanvalues = [
 										{
