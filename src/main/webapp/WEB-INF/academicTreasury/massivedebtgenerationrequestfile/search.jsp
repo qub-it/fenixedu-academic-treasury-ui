@@ -130,7 +130,7 @@ ${portal.toolkit()}
 
 			<datatables:column cssStyle="width:10%">
 				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.download" />
+					<spring:message code="label.MassiveDebtGenerationRequestFile.content" />
 				</datatables:columnHead>
 				<a class="btn btn-default" href="${pageContext.request.contextPath}<%= MassiveDebtGenerationRequestFileController.DOWNLOAD_URL %>/${requestFile.externalId}">
 					<spring:message code="label.download" />
