@@ -83,8 +83,7 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
 
     @RequestMapping(value = _CREATE_URI, method = RequestMethod.GET)
     public String create(final Model model) {
-        final MassiveDebtGenerationRequestFileBean bean =
-                new MassiveDebtGenerationRequestFileBean(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get());
+        final MassiveDebtGenerationRequestFileBean bean = new MassiveDebtGenerationRequestFileBean();
         return _createFirstPage(bean, model);
     }
 
@@ -126,10 +125,12 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
             if (bean.getExecutionYear() == null) {
             }
 
-            MassiveDebtGenerationRequestFile.readExcel(content, bean.getTuitionPaymentPlanGroup(), bean.getExecutionYear(), bean.getDebtDate());
+            MassiveDebtGenerationRequestFile.readExcel(content, bean.getTuitionPaymentPlanGroup(), bean.getAcademicTax(),
+                    bean.getExecutionYear(), bean.getDebtDate());
 
-            MassiveDebtGenerationRequestFile file = MassiveDebtGenerationRequestFile.create(bean.getTuitionPaymentPlanGroup(),
-                    bean.getExecutionYear(), bean.getDebtDate(), requestFile.getOriginalFilename(), content);
+            MassiveDebtGenerationRequestFile file =
+                    MassiveDebtGenerationRequestFile.create(bean.getTuitionPaymentPlanGroup(), bean.getAcademicTax(),
+                            bean.getExecutionYear(), bean.getDebtDate(), requestFile.getOriginalFilename(), content);
 
             return redirect(CONFIRMDEBTCREATION_URL + "/" + file.getExternalId(), model, redirectAttributes);
         } catch (final Exception e) {
@@ -152,8 +153,9 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
             model.addAttribute("rows",
                     MassiveDebtGenerationRequestFile.readExcel(massiveDebtGenerationRequestFile.getContent(),
                             massiveDebtGenerationRequestFile.getTuitionPaymentPlanGroup(),
+                            massiveDebtGenerationRequestFile.getAcademicTax(),
                             massiveDebtGenerationRequestFile.getExecutionYear(), massiveDebtGenerationRequestFile.getDebtDate()));
-            
+
             model.addAttribute("requestFile", massiveDebtGenerationRequestFile);
             model.addAttribute("processable", true);
         } catch (DomainException de) {
@@ -172,7 +174,7 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
 
         try {
             massiveDebtGenerationRequestFile.process();
-            
+
             addInfoMessage("label.MassiveDebtGenerationRequestFile.success", model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (final Exception e) {
@@ -191,8 +193,8 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
             final HttpServletRequest request, final HttpServletResponse response, final Model model) {
 
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setHeader("Content-disposition","attachment; filename=" + massiveDebtGenerationRequestFile.getFilename());
-        
+        response.setHeader("Content-disposition", "attachment; filename=" + massiveDebtGenerationRequestFile.getFilename());
+
         return massiveDebtGenerationRequestFile.getContent();
     }
 

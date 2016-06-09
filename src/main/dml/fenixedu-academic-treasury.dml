@@ -853,12 +853,22 @@ class debtGeneration.requests.MassiveDebtGenerationRequestFile extends .org.feni
 		}
 	}
 
-	relation MassiveDebtGenerationRequest {
+	relation MassiveDebtGenerationRequestTuitionPaymentPlanGroup {
 		tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroup {
-			multiplicity 1..1;
+			multiplicity 0..1;
 		}
 
 		debtGeneration.requests.MassiveDebtGenerationRequestFile playsRole massiveDebtGenerationRequestFiles {
 			multiplicity *;
 		}
 	}
+
+	relation MassiveDebtGenerationRequestAcademicTax {	
+		emoluments.AcademicTax playsRole academicTax {
+			multiplicity 0..1;
+		}
+		
+		debtGeneration.requests.MassiveDebtGenerationRequestFile playsRole massiveDebtGenerationRequestFiles {
+			multiplicity *;
+		}
+	 }

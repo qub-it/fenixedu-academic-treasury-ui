@@ -96,9 +96,15 @@ ${portal.toolkit()}
 
 			<datatables:column cssStyle="width:20%">
 				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.tuitionPaymentPlanGroup" />
+					<spring:message code="label.MassiveDebtGenerationRequestFile.debtType" />
 				</datatables:columnHead>
-				<c:out value="${requestFile.tuitionPaymentPlanGroup.name.content}" />
+				
+				<c:if test="${not empty requestFile.tuitionPaymentPlanGroup}">
+					<c:out value="${requestFile.tuitionPaymentPlanGroup.name.content}" />
+				</c:if>
+				<c:if test="${not empty requestFile.academicTax}">
+					<c:out value="${requestFile.academicTax.product.name.content}" />
+				</c:if>
 			</datatables:column>
 
 			<datatables:column cssStyle="width:20%">

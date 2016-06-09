@@ -90,14 +90,18 @@ ${portal.angularToolkit()}
 				$scope.object = ${beanJson};
 
 				$scope.booleanvalues = [ {
-					name : '<spring:message code="label.no"/>',
+					name : '<spring:message code="label.MassiveDebtGenerationRequestFile.forAcademicTax.false" />',
 					value : false
 				}, {
-					name : '<spring:message code="label.yes"/>',
+					name : '<spring:message code="label.MassiveDebtGenerationRequestFile.forAcademicTax.true" />',
 					value : true
 				} ];
 
 				$scope.postBack = createAngularPostbackFunction($scope);
+
+				$scope.onBeanChange = function(model) {
+					$scope.postBack(model);
+				}
 			} ]);
 </script>
 
@@ -126,6 +130,38 @@ ${portal.angularToolkit()}
 				</div>
 			</div>
 
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.MassiveDebtGenerationRequestFile.forAcademicTax" />
+                </div>
+
+                <div class="col-sm-2">
+                    <select id="massiveDebtGenerationRequestFile_forAcademicTax"
+                        name="forAcademicTax" class="form-control"
+                        ng-model="object.forAcademicTax"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues"
+                        ng-change="onBeanChange($model)">
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group row" ng-show="object.forAcademicTax === true">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.AcademicTaxDebtCreationBean.academicTax" />
+                </div>
+
+                <div class="col-sm-6">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <ui-select id="massiveDebtGenerationRequestFile_academicTax" name="academicTax"
+                        ng-model="$parent.object.academicTax" theme="bootstrap" ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+	                    <ui-select-choices repeat="academicTax.id as academicTax in object.academicTaxesDataSource | filter: $select.search">
+							<span ng-bind-html="academicTax.text | highlight: $select.search"></span>
+	                    </ui-select-choices> 
+                   </ui-select>
+                </div>
+            </div>
+            
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.MassiveDebtGenerationRequestFile.debtDate" />
