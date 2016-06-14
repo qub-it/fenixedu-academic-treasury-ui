@@ -279,6 +279,16 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                     </div>
                 </div>
                 
+                <div class="form-group row" ng-show="object.toCloseDebitNote === true">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.numberOfDaysToDueDate" />
+                    </div>
+
+                    <div class="col-sm-4">
+                    	<input type="number" name="numberofdaystoduedate" ng-model="object.numberOfDaysToDueDate" pattern="[1-9]?[0-9]?[0-9]" />
+                    </div>
+				</div>
             </div>
         </div>
     </form>

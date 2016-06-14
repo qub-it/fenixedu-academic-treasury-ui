@@ -315,6 +315,18 @@ ${portal.toolkit()}
 									</c:if>
 								</span>
 							</p>
+
+							<p>
+								<span>
+									<strong>
+										<spring:message code="label.AcademicDebtGenerationRule.numberOfDaysToDueDate" />
+										:
+									</strong>
+								</span>
+								<span>
+									<c:out value="${rule.numberOfDays}" />
+								</span>
+							</p>
 							&nbsp;
 							<c:if test="${rule.active}">
 								<span class="label label-success">

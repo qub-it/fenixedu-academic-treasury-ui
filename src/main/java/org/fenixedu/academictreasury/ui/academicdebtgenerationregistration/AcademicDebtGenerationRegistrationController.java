@@ -26,6 +26,9 @@
  */
 package org.fenixedu.academictreasury.ui.academicdebtgenerationregistration;
 
+import java.util.stream.Collectors;
+
+import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
@@ -46,8 +49,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @RequestMapping(AcademicDebtGenerationRegistrationController.CONTROLLER_URL)
 public class AcademicDebtGenerationRegistrationController extends AcademicTreasuryBaseController {
 
-    public static final String CONTROLLER_URL = "/academictreasury/academicdebtgenerationregistration/academicdebtgenerationregistration";
-    private static final String JSP_PATH = "academicTreasury/academicdebtgenerationregistration/academicdebtgenerationregistration";
+    public static final String CONTROLLER_URL =
+            "/academictreasury/academicdebtgenerationregistration/academicdebtgenerationregistration";
+    private static final String JSP_PATH =
+            "academicTreasury/academicdebtgenerationregistration/academicdebtgenerationregistration";
 
     @RequestMapping
     public String home(Model model) {
@@ -63,22 +68,28 @@ public class AcademicDebtGenerationRegistrationController extends AcademicTreasu
     }
 
     private String _createFirstPage(final DebtAccount debtAccount, final Model model) {
-        model.addAttribute("AcademicDebtGenerationRegistration_registration_options", ((PersonCustomer) debtAccount.getCustomer())
-                .getPerson().getStudent().getRegistrationsSet());
-        
+        model.addAttribute("AcademicDebtGenerationRegistration_registration_options",
+                ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet());
+
+        model.addAttribute("AcademicDebtGenerationRegistration_executionYear_options",
+                AcademicDebtGenerationRule.findActive().map(r -> r.getExecutionYear()).collect(Collectors.toSet()).stream()
+                        .sorted(ExecutionYear.COMPARATOR_BY_YEAR).collect(Collectors.toList()));
+
         model.addAttribute("debtAccount", debtAccount);
-        
+
         return jspPage("create");
     }
 
     @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "registrationId",
-            required = false) final Registration registration, final Model model, final RedirectAttributes redirectAttributes) {
+    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "registrationId", required = false) final Registration registration,
+            @RequestParam(value = "executionYearId") final ExecutionYear executionYear, final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         try {
 
-            AcademicDebtGenerationRule.runAllActiveForRegistration(registration, false);
-            
+            AcademicDebtGenerationRule.runAllActiveForRegistrationAtomically(registration, executionYear, false);
+
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);

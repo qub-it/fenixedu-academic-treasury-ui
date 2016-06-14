@@ -4,7 +4,10 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.bennu.core.domain.Bennu;
+
+import com.google.common.base.Strings;
 
 public class AcademicDebtGenerationRuleType extends AcademicDebtGenerationRuleType_Base {
     
@@ -19,20 +22,45 @@ public class AcademicDebtGenerationRuleType extends AcademicDebtGenerationRuleTy
         
     };
     
-    public static final String DEPRECATED_STRATEGY_CODE = "DEPRECATED_STRATEGY";
-    
     protected AcademicDebtGenerationRuleType() {
         super();
         setBennu(Bennu.getInstance());
     }
     
-    public AcademicDebtGenerationRuleType(final String code, final String name, final String strategyImplementation) {
+    public AcademicDebtGenerationRuleType(final String code, final String name, final String strategyImplementation, final int orderNumber) {
         this();
         setCode(code);
         setName(name);
         setStrategyImplementation(strategyImplementation);
+        setOrderNumber(orderNumber);
+        
+        checkRules();
     }
     
+    private void checkRules() {
+        if(Strings.isNullOrEmpty(getCode())) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleType.code.required");
+        }
+        
+        if(findByCodeIgnoresCase(getCode()).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleType.code.already.exists");
+        }
+
+        if(Strings.isNullOrEmpty(getName())) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleType.name.required");
+        }
+        
+        strategyImplementation();
+        
+        if(findAll().filter(i -> i.getOrderNumber() == getOrderNumber()).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleType.orderNumber.already.exists");
+        }
+        
+        if(findAll().filter(l -> l.getStrategyImplementation().equals(getStrategyImplementation())).count() > 1) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleType.strategyImplementation.already.exists");
+        }
+    }
+
     public IAcademicDebtGenerationRuleStrategy strategyImplementation() {
         try {
             return (IAcademicDebtGenerationRuleStrategy) Class.forName(getStrategyImplementation()).newInstance();
@@ -40,7 +68,6 @@ public class AcademicDebtGenerationRuleType extends AcademicDebtGenerationRuleTy
             throw new RuntimeException(e);
         }
     }
-    
 
     // @formatter: off
     /************
@@ -56,8 +83,12 @@ public class AcademicDebtGenerationRuleType extends AcademicDebtGenerationRuleTy
         return findAll().filter(l -> l.getCode().equals(code)).findAny();
     }
     
-    public static AcademicDebtGenerationRuleType create(final String code, final String name, final String strategyImplementation) {
-        return new AcademicDebtGenerationRuleType(code, name, strategyImplementation);
+    private static Stream<AcademicDebtGenerationRuleType> findByCodeIgnoresCase(final String code) {
+        return findAll().filter(l -> l.getCode().toLowerCase().equals(code.toLowerCase()));
+    }
+    
+    public static AcademicDebtGenerationRuleType create(final String code, final String name, final String strategyImplementation, final int orderNumber) {
+        return new AcademicDebtGenerationRuleType(code, name, strategyImplementation, orderNumber);
     }
 
 }

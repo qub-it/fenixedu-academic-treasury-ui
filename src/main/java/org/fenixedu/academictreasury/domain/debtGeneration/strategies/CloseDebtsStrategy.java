@@ -38,7 +38,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
 
     @Override
     public boolean isAppliedOnAcademicTaxDebitEntries() {
-        return true;
+        return false;
     }
 
     @Override
@@ -112,8 +112,6 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
             Set<DebitEntry> grabbedDebitEntries = null;
             if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == product.getProductGroup()) {
                 grabbedDebitEntries = grabDebitEntryForTuitions(rule, registration, entry);
-            } else if (AcademicTax.findUnique(product).isPresent()) {
-                grabbedDebitEntries = grabDebitEntryForAcademicTax(rule, registration, entry);
             }
             
             for(final DebitEntry grabbedDebitEntry : grabbedDebitEntries) {
@@ -122,7 +120,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
                 }
                 
                 final LocalDate dueDate = grabbedDebitEntry.getDueDate();
-                if(dueDate.plusDays(rule.getDays()).isAfter(new LocalDate())) {
+                if(dueDate.minusDays(rule.getDays()).isAfter(new LocalDate())) {
                     continue;
                 }
                 

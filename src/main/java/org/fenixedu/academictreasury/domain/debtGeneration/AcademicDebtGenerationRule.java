@@ -16,8 +16,6 @@ import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRu
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean.ProductEntry;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
@@ -26,8 +24,6 @@ import pt.ist.fenixframework.Atomic.TxMode;
 import pt.ist.fenixframework.FenixFramework;
 
 public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base {
-
-    public static final String TREASURY_OPERATION_LOG_TYPE = "AcademicDebtGenerationRuleLog";
 
     public static final Comparator<AcademicDebtGenerationRule> COMPARE_BY_ORDER_NUMBER =
             new Comparator<AcademicDebtGenerationRule>() {
@@ -82,6 +78,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         final Optional<AcademicDebtGenerationRule> max = findAll().max(COMPARE_BY_ORDER_NUMBER);
 
         setOrderNumber(max.isPresent() ? max.get().getOrderNumber() + 1 : 1);
+        
+        setDays(bean.getNumberOfDaysToDueDate());
 
         checkRules();
     }
@@ -359,13 +357,17 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     }
 
     @Atomic(mode = TxMode.WRITE)
-    public static void runAllActiveForRegistrationAtomically(final Registration registration,
+    public static void runAllActiveForRegistrationAtomically(final Registration registration, final ExecutionYear executionYear,
             final boolean runOnlyWithBackgroundExecution) {
         for (final AcademicDebtGenerationRuleType type : AcademicDebtGenerationRuleType.findAll()
                 .sorted(AcademicDebtGenerationRuleType.COMPARE_BY_ORDER_NUMBER).collect(Collectors.toList())) {
             for (final AcademicDebtGenerationRule rule : AcademicDebtGenerationRule.findActiveByType(type)
                     .sorted(COMPARE_BY_ORDER_NUMBER).collect(Collectors.toList())) {
-
+                
+                if(rule.getExecutionYear() != executionYear) {
+                    continue;
+                }
+                
                 if (runOnlyWithBackgroundExecution && !rule.isBackgroundExecution()) {
                     continue;
                 }

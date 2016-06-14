@@ -135,13 +135,6 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
             return;
         }
 
-        if (!registration.hasAnyEnrolmentsIn(rule.getExecutionYear())) {
-            // only return is this rule has not entry that forces creation
-            if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
-                return;
-            }
-        }
-
         processDebtsForRegistration(rule, registration);
     }
 
@@ -194,7 +187,7 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         if (debitEntries.stream().filter(d -> d.getFinantialDocument() == null || d.getFinantialDocument().isAnnulled())
                 .count() > 0) {
             throw new AcademicTreasuryDomainException(
-                    "error.AcademicDebtGenerationRule.debitEntry.with.annuled.finantial.document");
+                    "error.AcademicDebtGenerationRule.debitEntry.with.none.or.annuled.finantial.document");
         }
 
         if (MultipleEntriesPaymentCode.findUsedByDebitEntriesSet(debitEntries).count() > 0

@@ -122,6 +122,20 @@ ${portal.angularToolkit()}
                     </select>
                 </div>
             </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.AcademicDebtGenerationRegistration.executionYear" />
+                </div>
+
+                <div class="col-sm-6">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <select id="academicDebtGenerationRegistration_executionYear" name="executionYearId">
+                    <c:forEach var="executionYear" items="${AcademicDebtGenerationRegistration_executionYear_options}">
+                        <option value="${executionYear.externalId}"><c:out value="${executionYear.qualifiedName}" /></option>
+                    </c:forEach>
+                    </select>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />
@@ -132,5 +146,6 @@ ${portal.angularToolkit()}
 <script>
 	$(document).ready(function() {
 		$("#academicDebtGenerationRegistration_registration").select2().select2('val', '${param.registrationId != null ? param.registrationId : null}');
+		$("#academicDebtGenerationRegistration_executionYear").select2().select2('val', '${param.executionYearId != null ? param.executionYearId : null}');
 	});
 </script>

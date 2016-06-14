@@ -153,7 +153,7 @@ ${portal.angularToolkit()}
                         code="label.AcademicTaxDebtCreationBean.academicTax" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <ui-select
                         id="academicTaxDebtCreationBean_academicTax"
@@ -175,7 +175,7 @@ ${portal.angularToolkit()}
                         code="label.TuitionDebtCreationBean.forceCreation" />
                 </div>
 
-                <div class="col-sm-2">
+                <div class="col-sm-10">
 
                     <select id="tuitionDebtCreationBean_forceCreation"
                         name="forceCreation" class="form-control"
@@ -192,7 +192,7 @@ ${portal.angularToolkit()}
                         code="label.AcademicTaxDebtCreationBean.registration" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <ui-select
                         id="academicTaxDebtCreationBean_registration"
@@ -214,7 +214,7 @@ ${portal.angularToolkit()}
                         code="label.AcademicTaxDebtCreationBean.executionYear" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <ui-select
                         id="academicTaxDebtCreationBean_executionYear"
@@ -237,7 +237,7 @@ ${portal.angularToolkit()}
                         code="label.AcademicTaxDebtCreationBean.enrolmentEvaluation" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <ui-select
                         id="academicTaxDebtCreationBean_enrolmentEvaluations"
                         name="enrolmentEvaluations"
@@ -258,7 +258,7 @@ ${portal.angularToolkit()}
                         code="label.AcademicTaxDebtCreationBean.debtDate" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <input id="academicTaxDebtCreationBean_debtDate"
                         class="form-control" type="text" name="debtDate"
                         bennu-date="object.debtDate" />

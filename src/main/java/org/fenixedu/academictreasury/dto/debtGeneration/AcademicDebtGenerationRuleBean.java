@@ -10,6 +10,7 @@ import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRuleType;
+import org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.util.Constants;
@@ -87,6 +88,8 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     private boolean forceCreation;
     private boolean limitToRegisteredOnExecutionYear;
     private PaymentCodePool paymentCodePool;
+    
+    private int numberOfDaysToDueDate = 0;
 
     private List<TupleDataSourceBean> executionYearDataSource = Lists.newArrayList();
     private List<TupleDataSourceBean> productDataSource = Lists.newArrayList();
@@ -111,11 +114,20 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
         final List<Product> availableProducts = Lists.newArrayList();
 
-        availableProducts.addAll(AcademicTax.findAll().filter(AcademicTax::isAppliedAutomatically).map(l -> l.getProduct())
-                .collect(Collectors.toList()));
-        availableProducts.addAll(AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet());
-        availableProducts.add(TreasurySettings.getInstance().getInterestProduct());
-
+        final IAcademicDebtGenerationRuleStrategy strategyImplementation = getType().strategyImplementation();
+        if(strategyImplementation.isAppliedOnAcademicTaxDebitEntries()) {
+            availableProducts.addAll(AcademicTax.findAll().filter(AcademicTax::isAppliedAutomatically).map(l -> l.getProduct())
+                    .collect(Collectors.toList()));
+        }
+        
+        if(strategyImplementation.isAppliedOnTuitionDebitEntries()) {
+            availableProducts.addAll(AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet());
+        }
+        
+        if(strategyImplementation.isAppliedOnOtherDebitEntries()) {
+            availableProducts.add(TreasurySettings.getInstance().getInterestProduct());
+        }
+        
         productDataSource =
                 availableProducts.stream().sorted(Product.COMPARE_BY_NAME)
                         .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
@@ -128,8 +140,6 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         degreeTypeDataSource =
                 DegreeType.all().map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
                         .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
-
-        
         
         this.aggregateOnDebitNote = false;
         this.aggregateAllOrNothing = false;
@@ -350,6 +360,14 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     
     public void setLimitToRegisteredOnExecutionYear(boolean limitToRegisteredOnExecutionYear) {
         this.limitToRegisteredOnExecutionYear = limitToRegisteredOnExecutionYear;
+    }
+    
+    public int getNumberOfDaysToDueDate() {
+        return numberOfDaysToDueDate;
+    }
+    
+    public void setNumberOfDaysToDueDate(int numberOfDaysToDueDate) {
+        this.numberOfDaysToDueDate = numberOfDaysToDueDate;
     }
     
 }
