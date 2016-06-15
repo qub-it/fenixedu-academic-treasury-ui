@@ -324,7 +324,7 @@ ${portal.toolkit()}
 									</strong>
 								</span>
 								<span>
-									<c:out value="${rule.numberOfDays}" />
+									<c:out value="${rule.days}" />
 								</span>
 							</p>
 							&nbsp;
