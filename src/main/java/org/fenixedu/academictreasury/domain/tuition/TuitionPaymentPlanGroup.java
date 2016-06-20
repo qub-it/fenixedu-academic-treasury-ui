@@ -1,5 +1,6 @@
 package org.fenixedu.academictreasury.domain.tuition;
 
+import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -10,11 +11,21 @@ import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.base.Strings;
 
+import pt.ist.fenixframework.Atomic;
+
 public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
+
+    public static final Comparator<TuitionPaymentPlanGroup> COMPARE_BY_NAME = new Comparator<TuitionPaymentPlanGroup>() {
+
+        @Override
+        public int compare(TuitionPaymentPlanGroup o1, TuitionPaymentPlanGroup o2) {
+            int c = o1.getName().getContent().compareTo(o2.getName().getContent());
+
+            return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+        }
+    };
 
     protected TuitionPaymentPlanGroup() {
         super();
