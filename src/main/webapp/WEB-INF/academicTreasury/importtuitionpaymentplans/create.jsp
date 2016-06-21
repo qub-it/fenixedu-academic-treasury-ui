@@ -38,7 +38,7 @@ ${portal.toolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
 	&nbsp;
 	<a class="" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.SEARCH_URL %>">
 		<spring:message code="label.back" />

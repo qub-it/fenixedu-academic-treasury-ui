@@ -48,7 +48,7 @@ public class ImportTuitionPaymentPlansController extends AcademicTreasuryBaseCon
     @RequestMapping(_SEARCH_URI)
     public String search(final Model model) {
 
-        model.addAttribute("requestsFile", TuitionPaymentPlanImportFile.findAll());
+        model.addAttribute("requestFiles", TuitionPaymentPlanImportFile.findAll().collect(Collectors.toList()));
 
         return jspPage(_SEARCH_URI);
     }
@@ -109,6 +109,7 @@ public class ImportTuitionPaymentPlansController extends AcademicTreasuryBaseCon
             @PathVariable("tuitionPaymentPlanImportFileId") final TuitionPaymentPlanImportFile tuitionPaymentPlanImportFile,
             final Model model) {
 
+        model.addAttribute("tuitionPaymentPlanImportFile", tuitionPaymentPlanImportFile);
         model.addAttribute("tuitionPaymentPlanBeans", tuitionPaymentPlanImportFile.readTuitions());
 
         return jspPage(_VIEW_URI);
@@ -148,7 +149,6 @@ public class ImportTuitionPaymentPlansController extends AcademicTreasuryBaseCon
         response.setHeader("Content-disposition", "attachment; filename=" + tuitionPaymentPlanImportFile.getFilename());
 
         return tuitionPaymentPlanImportFile.getContent();
-
     }
 
     private String jspPage(final String page) {

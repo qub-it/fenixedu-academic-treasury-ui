@@ -38,10 +38,17 @@ ${portal.toolkit()}
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+    &nbsp; 
+    <a class="" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.SEARCH_URL %>">
+        <spring:message code="label.event.back" />
+    </a> 
+    &nbsp;|&nbsp;
+
+	<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
 	&nbsp;
-	<a class="" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.CREATE_URL %>">
-		<spring:message code="label.event.create" />
+	<a class="" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.DOWNLOAD_URL %>/${tuitionPaymentPlanImportFile.externalId}">
+		<spring:message code="label.ImportTuitionPaymentPlans.download" />
 	</a>
 </div>
 
@@ -82,21 +89,42 @@ ${portal.toolkit()}
 	</div>
 </c:if>
 
+<c:set var="finantialEntity" value="${tuitionPaymentPlanImportFile.finantialEntity}" />
+
+<c:if test="${not tuitionPaymentPlanImportFile.processed}">
+	<form id="processForm" method="post" action="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.PROCESS_URL %>/${tuitionPaymentPlanImportFile.externalId}">
+		<button class="btn btn-primary">
+			<spring:message code="label.ImportTuitionPaymentPlans.process" />
+		</button>
+	</form>
+</c:if>
+
+<c:if test="${tuitionPaymentPlanImportFile.processed}">
+	<div class="alert alert-info" role="alert">
+		<p>
+			<span class="glyphicon glyphicon-ok-sign" aria-hidden="true">&nbsp;</span>
+			<spring:message code="error.TuitionPaymentPlanImportFile.already.processed" />
+		</p>
+	</div>
+</c:if>
+
+<p>&nbsp;</p>
+
 <div>
 
 	<!-- Nav tabs -->
-	<ul class="nav nav-tabs" role="tablist">
+	<ul class="nav nav-tabs" role="tablist" id="myTabs" data-tabs="tabs">
 		<c:forEach var="tuitionPaymentPlanBean" items="${tuitionPaymentPlanBeans}" varStatus="it">
-			<li role="presentation" class="active">
-				<a href="#tab-${it.index}" aria-controls="tab-${it.index}" role="tab" data-toggle="tab">tab-${it.index}</a>
+			<li role="presentation" data-toggle="tab">
+				<a href="#tab-${it.index}" aria-controls="tab-${it.index}" role="tab" data-toggle="tab"><spring:message code="label.ImportTuitionPaymentPlans.tuition.payment.plan" /> - ${it.index + 1}</a>
 			</li>
 		</c:forEach>
 	</ul>
 
 	<!-- Tab panes -->
-	<div class="tab-content">
+	<div id="my-tab-content" class="tab-content">
 		<c:forEach var="tuitionPaymentPlanBean" items="${tuitionPaymentPlanBeans}" varStatus="it">
-			<div role="tabpanel" class="tab-pane" id="#tab-${it.index}">
+			<div role="tabpanel" class="tab-pane" id="tab-${it.index}">
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 						<h3 class="panel-title">
@@ -385,3 +413,10 @@ ${portal.toolkit()}
 	</div>
 
 </div>
+
+<script>
+	$(document).ready(function() {
+		$('#myTabs').tab();
+		$('#myTabs a:first').tab('show');
+	});
+</script>

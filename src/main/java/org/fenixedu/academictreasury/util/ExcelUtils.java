@@ -36,6 +36,10 @@ public class ExcelUtils {
             spreadsheetContent.add(rowContent);
             
             if(row == null) {
+                for(int j = 0; j < maxCols; j++) {
+                    rowContent.add("");
+                }
+                
                 continue;
             }
 
@@ -84,6 +88,10 @@ public class ExcelUtils {
                 spreadsheetContent.add(rowContent);
                 
                 if(row == null) {
+                    for(int j = 0; j < maxCols; j++) {
+                        rowContent.add("");
+                    }
+                    
                     continue;
                 }
                 

@@ -116,24 +116,24 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
         setProduct(product);
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup);
         setExecutionYear(executionYear);
-        
+
         checkRules();
     }
 
     private void checkRules() {
-        
-        if(getFinantialEntity() == null) {
+
+        if (getFinantialEntity() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.finantialEntity.required");
         }
-        
-        if(getProduct() == null) {
+
+        if (getProduct() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.product.required");
         }
-        
-        if(getTuitionPaymentPlanGroup() == null) {
+
+        if (getTuitionPaymentPlanGroup() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.tuitionPaymentPlanGroup.required");
         }
-        
+
         if (getExecutionYear() == null) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.executionYear.required");
         }
@@ -148,46 +148,44 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
         return getWhenProcessed() != null;
     }
 
-    
     public List<TuitionPaymentPlanBean> readTuitions() {
         return readExcel(getFinantialEntity(), getTuitionPaymentPlanGroup(), getProduct(), getExecutionYear(), getContent());
     }
 
-    
     @Atomic
     public void process() {
-        if(isProcessed()) {
+        if (isProcessed()) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.already.processed");
         }
-        
+
         final List<TuitionPaymentPlanBean> tuitionPaymentPlanBeans = readTuitions();
 
         for (final TuitionPaymentPlanBean tuitionPaymentPlanBean : tuitionPaymentPlanBeans) {
             TuitionPaymentPlan.create(tuitionPaymentPlanBean);
         }
-        
+
         setWhenProcessed(new DateTime());
     }
-    
-    
+
     // @formatter:off
     /* ********
      * SERVICES
      * ********
      */
     // @formatter:on
-    
+
     public static Stream<TuitionPaymentPlanImportFile> findAll() {
         return Bennu.getInstance().getTuitionPaymentPlanImportFilesSet().stream();
     }
 
+    @Atomic
     public static TuitionPaymentPlanImportFile create(final FinantialEntity finantialEntity,
             final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Product product, final ExecutionYear executionYear,
             final String filename, final byte[] content) {
-        return new TuitionPaymentPlanImportFile(finantialEntity, tuitionPaymentPlanGroup, product, executionYear, filename, content);
+        return new TuitionPaymentPlanImportFile(finantialEntity, tuitionPaymentPlanGroup, product, executionYear, filename,
+                content);
     }
-    
-    
+
     public static List<TuitionPaymentPlanBean> readExcel(final FinantialEntity finantialEntity,
             final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Product product, final ExecutionYear executionYear,
             final byte[] content) {
@@ -203,8 +201,8 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
             if (executionYear == null) {
                 throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.executionYear.required");
             }
-            
-            if(finantialEntity == null) {
+
+            if (finantialEntity == null) {
                 throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.finantialEntity.required");
             }
 
@@ -212,19 +210,25 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
             final List<ExcelSheet> excelSheets = ExcelUtils.readExcelSheets(new ByteArrayInputStream(content), MAX_COLS);
 
-            boolean readInstallments = false;
-            boolean readPaymentPlanHeader = false;
-            boolean readInstallmentsHeader = false;
             for (final ExcelSheet sheet : excelSheets) {
+
+                boolean readInstallments = false;
+                boolean readPaymentPlanHeader = false;
+                boolean readInstallmentsHeader = false;
 
                 final List<TuitionPaymentPlanBean> paymentPlanBeansFromSheet = Lists.newArrayList();
 
                 final List<AcademicTariffBean> installmentsList = Lists.newArrayList();
 
-                int installmentOrder = 0;
+                int installmentOrder = 1;
                 for (int r = 0; r < sheet.getRows().size(); r++) {
 
                     if (readInstallments) {
+
+                        if (paymentPlanBeansFromSheet.isEmpty()) {
+                            throw new AcademicTreasuryDomainException(
+                                    "error.TuitionPaymentPlanImportFile.sheet.has.no.payment.plans", sheet.getName());
+                        }
 
                         if (!readInstallmentsHeader) {
                             readInstallmentsHeader = true;
@@ -233,7 +237,8 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                         final List<String> row = sheet.getRows().get(r);
 
-                        final AcademicTariffBean installmentBean = new AcademicTariffBean(installmentOrder);
+                        final AcademicTariffBean installmentBean = new AcademicTariffBean(installmentOrder++);
+                        installmentsList.add(installmentBean);
 
                         final String productValue = row.get(PRODUCT_IDX);
                         final String tuitionCalculationTypeValue = row.get(TUITION_CALCULATION_TYPE_IDX);
@@ -257,7 +262,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                         if (installmentProduct == null) {
                             throw new AcademicTreasuryDomainException(
-                                    "error.TuitionPaymentPlanImportFile.installment.product.not.found", String.valueOf(r),
+                                    "error.TuitionPaymentPlanImportFile.installment.product.not.found", String.valueOf(r + 1),
                                     productValue);
                         }
 
@@ -266,7 +271,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                         if (Strings.isNullOrEmpty(tuitionCalculationTypeValue)) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.tuitionCalculationType.required",
-                                    String.valueOf(r));
+                                    String.valueOf(r + 1));
                         }
 
                         final TuitionCalculationType tuitionCalculationType = Lists.newArrayList(TuitionCalculationType.values())
@@ -276,7 +281,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                         if (tuitionCalculationType == null) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.tuitionCalculationType.not.found",
-                                    String.valueOf(r), tuitionCalculationTypeValue);
+                                    String.valueOf(r + 1), tuitionCalculationTypeValue);
                         }
 
                         installmentBean.setTuitionCalculationType(tuitionCalculationType);
@@ -287,17 +292,17 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (Strings.isNullOrEmpty(ectsCalculationTypeValue)) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.installment.ectsCalculationType.required",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             ectsCalculationType = Lists.newArrayList(EctsCalculationType.values()).stream()
-                                    .filter(e -> e.getDescriptionI18N().getContent().equals(ectsCalculationTypeValue)).findFirst()
+                                    .filter(e -> e.getDescriptionI18N().getContent().toLowerCase().equals(ectsCalculationTypeValue.toLowerCase())).findFirst()
                                     .orElse(null);
 
                             if (ectsCalculationType == null) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.installment.ectsCalculationType.not.found",
-                                        String.valueOf(r), ectsCalculationTypeValue);
+                                        String.valueOf(r + 1), ectsCalculationTypeValue);
                             }
                         }
 
@@ -310,33 +315,33 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                             if (Strings.isNullOrEmpty(fixedAmountValue)) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.installment.fixedAmount.required", String.valueOf(r));
+                                        "error.TuitionPaymentPlanImportFile.installment.fixedAmount.required", String.valueOf(r + 1));
                             }
 
                             try {
                                 fixedAmount = new BigDecimal(fixedAmountValue);
                             } catch (final NumberFormatException e) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.installment.fixedAmount.invalid", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.installment.fixedAmount.invalid", String.valueOf(r + 1),
                                         fixedAmountValue);
                             }
                         } else {
                             if (Strings.isNullOrEmpty(factorValue)) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.installment.factor.required", String.valueOf(r));
+                                        "error.TuitionPaymentPlanImportFile.installment.factor.required", String.valueOf(r + 1));
                             }
 
                             if (Strings.isNullOrEmpty(totalEctsOrUnitsValue)) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.installment.totalEctsOrUnits.required",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             try {
                                 factor = new BigDecimal(factorValue);
                             } catch (final NumberFormatException e) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.installment.factor.invalid", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.installment.factor.invalid", String.valueOf(r + 1),
                                         factorValue);
                             }
 
@@ -345,7 +350,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             } catch (final NumberFormatException e) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.installment.totalEctsOrUnits.invalid",
-                                        String.valueOf(r), totalEctsOrUnitsValue);
+                                        String.valueOf(r + 1), totalEctsOrUnitsValue);
                             }
                         }
 
@@ -355,15 +360,22 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                         if (Strings.isNullOrEmpty(beginDateValue)) {
                             throw new AcademicTreasuryDomainException(
-                                    "error.TuitionPaymentPlanImportFile.installment.beginDate.required", String.valueOf(r));
+                                    "error.TuitionPaymentPlanImportFile.installment.beginDate.required", String.valueOf(r + 1));
                         }
 
-                        final LocalDate beginDate = DateTimeFormat.forPattern(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)
-                                .parseLocalDate(beginDateValue);
-
+                        LocalDate beginDate = null;
+                        try {
+                            beginDate = DateTimeFormat.forPattern(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)
+                                    .parseLocalDate(beginDateValue);
+                        } catch (final IllegalArgumentException e) {
+                            throw new AcademicTreasuryDomainException(
+                                    "error.TuitionPaymentPlanImportFile.installment.beginDate.invalid", String.valueOf(r + 1),
+                                    beginDateValue);
+                        }
+                        
                         if (beginDate == null) {
                             throw new AcademicTreasuryDomainException(
-                                    "error.TuitionPaymentPlanImportFile.installment.beginDate.invalid", String.valueOf(r),
+                                    "error.TuitionPaymentPlanImportFile.installment.beginDate.invalid", String.valueOf(r + 1),
                                     beginDateValue);
                         }
 
@@ -372,26 +384,26 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                         if (Strings.isNullOrEmpty(dueDateCalculationTypeValue)) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.dueDateCalculationType.required",
-                                    String.valueOf(r));
+                                    String.valueOf(r + 1));
                         }
 
                         DueDateCalculationType dueDateCalculationType = Lists.newArrayList(DueDateCalculationType.values())
-                                .stream().filter(d -> d.getDescriptionI18N().getContent().equals(dueDateCalculationTypeValue))
+                                .stream().filter(d -> d.getDescriptionI18N().getContent().toLowerCase().equals(dueDateCalculationTypeValue.toLowerCase()))
                                 .findFirst().orElse(null);
 
                         if (dueDateCalculationType == null) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.dueDateCalculationType.invalid",
-                                    String.valueOf(r), dueDateCalculationTypeValue);
+                                    String.valueOf(r + 1), dueDateCalculationTypeValue);
                         }
 
                         installmentBean.setDueDateCalculationType(dueDateCalculationType);
 
-                        if (!dueDateCalculationType.isFixedDate()
+                        if (!dueDateCalculationType.isDaysAfterCreation()
                                 && !dueDateCalculationType.isBestOfFixedDateAndDaysAfterCreation()) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.dueDateCalculationType.invalid",
-                                    String.valueOf(r), dueDateCalculationTypeValue);
+                                    String.valueOf(r + 1), dueDateCalculationTypeValue);
                         }
 
                         LocalDate fixedDueDate = null;
@@ -400,15 +412,21 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (Strings.isNullOrEmpty(fixedDueDateValue)) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.installment.fixedDueDate.required",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
-                            fixedDueDate = DateTimeFormat.forPattern(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)
-                                    .parseLocalDate(fixedDueDateValue);
+                            try {
+                                fixedDueDate = DateTimeFormat.forPattern(Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD)
+                                        .parseLocalDate(fixedDueDateValue);
+                            } catch (final IllegalArgumentException e) {
+                                throw new AcademicTreasuryDomainException(
+                                        "error.TuitionPaymentPlanImportFile.installment.fixedDueDate.invalid", String.valueOf(r + 1),
+                                        fixedDueDateValue);
+                            }
 
                             if (fixedDueDate == null) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.installment.fixedDueDate.invalid", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.installment.fixedDueDate.invalid", String.valueOf(r + 1),
                                         fixedDueDateValue);
                             }
                         }
@@ -419,7 +437,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (Strings.isNullOrEmpty(fixedDueDateValue)) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.installment.numberOfDaysAfterCreation.required",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
                         }
 
@@ -429,13 +447,13 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                         } catch (final NumberFormatException e) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.numberOfDaysAfterCreation.invalid",
-                                    String.valueOf(r), numberOfDaysAfterCreationValue);
+                                    String.valueOf(r + 1), numberOfDaysAfterCreationValue);
                         }
 
                         if (numberOfDaysAfterCreationForDueDate == null) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.numberOfDaysAfterCreation.invalid",
-                                    String.valueOf(r), numberOfDaysAfterCreationValue);
+                                    String.valueOf(r + 1), numberOfDaysAfterCreationValue);
                         }
 
                         installmentBean.setNumberOfDaysAfterCreationForDueDate(numberOfDaysAfterCreationForDueDate);
@@ -443,27 +461,27 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                         if (Strings.isNullOrEmpty(blockAcademicalActsValue)) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.blockAcademicalActs.required",
-                                    String.valueOf(r));
+                                    String.valueOf(r + 1));
                         }
 
                         if (!YES.equals(blockAcademicalActsValue) && !NO.equals(blockAcademicalActsValue)) {
                             throw new AcademicTreasuryDomainException(
                                     "error.TuitionPaymentPlanImportFile.installment.blockAcademicalActs.invalid",
-                                    String.valueOf(r), blockAcademicalActsValue);
+                                    String.valueOf(r + 1), blockAcademicalActsValue);
                         }
 
                         final boolean blockAcademicalActs = YES.equals(blockAcademicalActsValue) ? true : false;
 
                         if (Strings.isNullOrEmpty(applyInterestsValue)) {
                             throw new AcademicTreasuryDomainException(
-                                    "error.TuitionPaymentPlanImportFile.installment.applyInterests.required", String.valueOf(r));
+                                    "error.TuitionPaymentPlanImportFile.installment.applyInterests.required", String.valueOf(r + 1));
                         }
 
                         installmentBean.setAcademicalActBlockingOn(blockAcademicalActs);
 
                         if (!YES.equals(applyInterestsValue) && !NO.equals(applyInterestsValue)) {
                             throw new AcademicTreasuryDomainException(
-                                    "error.TuitionPaymentPlanImportFile.installment.applyInterests.invalid", String.valueOf(r),
+                                    "error.TuitionPaymentPlanImportFile.installment.applyInterests.invalid", String.valueOf(r + 1),
                                     applyInterestsValue);
                         }
 
@@ -477,40 +495,39 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (Strings.isNullOrEmpty(interestsTypeValue)) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.installment.interestsType.required",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             interestType = Lists.newArrayList(InterestType.values()).stream()
-                                    .filter(i -> i.getDescriptionI18N().getContent().equals(interestsTypeValue)).findFirst()
+                                    .filter(i -> i.getDescriptionI18N().getContent().toLowerCase().equals(interestsTypeValue.toLowerCase())).findFirst()
                                     .orElse(null);
 
                             if (interestType == null) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.installment.interestType.invalid", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.installment.interestType.invalid", String.valueOf(r + 1),
                                         interestsTypeValue);
                             }
 
                             if (!interestType.isFixedAmount() && !interestType.isGlobalRate()) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.installment.interestType.invalid", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.installment.interestType.invalid", String.valueOf(r + 1),
                                         interestsTypeValue);
                             }
                         }
 
                         installmentBean.setInterestType(interestType);
-
-                        installmentsList.add(installmentBean);
-
                     } else {
                         if (!readPaymentPlanHeader) {
                             readPaymentPlanHeader = true;
                             continue;
                         }
 
-                        final TuitionPaymentPlanBean tuitionPaymentPlanBean =
-                                new TuitionPaymentPlanBean(product, tuitionPaymentPlanGroup, finantialEntity, executionYear);
-
+                        
                         final List<String> row = sheet.getRows().get(r);
+
+                        if (row.size() != MAX_COLS) {
+                            continue;
+                        }
 
                         final String defaultPaymentPlanValue = row.get(DEFAULT_PAYMENT_PLAN_IDX);
                         final String degreeTypeValue = row.get(DEGREE_TYPE_IDX);
@@ -535,9 +552,13 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             continue;
                         }
 
+                        final TuitionPaymentPlanBean tuitionPaymentPlanBean =
+                                new TuitionPaymentPlanBean(product, tuitionPaymentPlanGroup, finantialEntity, executionYear);
+                        paymentPlanBeansFromSheet.add(tuitionPaymentPlanBean);
+
                         if (!YES.equals(defaultPaymentPlanValue) && !NO.equals(defaultPaymentPlanValue)) {
                             throw new AcademicTreasuryDomainException(
-                                    "error.TuitionPaymentPlanImportFile.invalid.default.payment.plan.value", String.valueOf(r),
+                                    "error.TuitionPaymentPlanImportFile.invalid.default.payment.plan.value", String.valueOf(r + 1),
                                     defaultPaymentPlanValue);
                         }
 
@@ -547,16 +568,16 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                         if (Strings.isNullOrEmpty(degreeTypeValue)) {
                             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.degreeType.required",
-                                    String.valueOf(r));
+                                    String.valueOf(r + 1));
                         }
 
                         final DegreeType degreeType = findDegreeTypeByName(degreeTypeValue);
 
                         if (degreeType == null) {
                             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.degreeType.not.found",
-                                    String.valueOf(r), degreeTypeValue);
+                                    String.valueOf(r + 1), degreeTypeValue);
                         }
-                        
+
                         tuitionPaymentPlanBean.setDegreeType(degreeType);
 
                         Degree degree = null;
@@ -566,28 +587,32 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                             if (degree == null) {
                                 throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.degree.not.found",
-                                        String.valueOf(r), degreeCodeValue);
+                                        String.valueOf(r + 1), degreeCodeValue);
                             }
 
                             if (degree.getDegreeType() != degreeType) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.degree.not.of.degreeType", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.degree.not.of.degreeType", String.valueOf(r + 1),
                                         degreeType.getName().getContent(), degreeCodeValue);
                             }
 
                             if (!degree.getPresentationNameI18N().getContent().equals(degreeNameValue)) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.degreeName.not.equals", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.degreeName.not.equals", String.valueOf(r + 1),
                                         degreeNameValue, degree.getPresentationNameI18N().getContent());
                             }
-                            
+
+                            if (Strings.isNullOrEmpty(dcpValue)) {
+                                throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.dcp.required",
+                                        String.valueOf(r + 1));
+                            }
                         }
 
                         DegreeCurricularPlan degreeCurricularPlan = null;
                         if (!Strings.isNullOrEmpty(dcpValue)) {
                             if (degree == null) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.dcp.requires.degree.code", String.valueOf(r));
+                                        "error.TuitionPaymentPlanImportFile.dcp.requires.degree.code", String.valueOf(r + 1));
                             }
 
                             degreeCurricularPlan =
@@ -598,23 +623,28 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                             if (degreeCurricularPlan == null) {
                                 throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.dcp.not.found",
-                                        String.valueOf(r), degreeNameValue, dcpValue);
+                                        String.valueOf(r + 1), degreeNameValue, dcpValue);
                             }
                         }
 
                         if (degreeCurricularPlan != null) {
-                            
-                            if(degreeCurricularPlan.getDegree().getAdministrativeOffice() != finantialEntity.getAdministrativeOffice()) {
+
+                            if (degreeCurricularPlan.getDegree().getAdministrativeOffice() != finantialEntity
+                                    .getAdministrativeOffice()) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.not.allowed.to.add.degree", String.valueOf(r), degreeCurricularPlan.getDegree().getPresentationNameI18N().getContent());
+                                        "error.TuitionPaymentPlanImportFile.not.allowed.to.add.degree", String.valueOf(r + 1),
+                                        degreeCurricularPlan.getDegree().getPresentationNameI18N().getContent());
                             }
-                            
+
                             tuitionPaymentPlanBean.setDegreeCurricularPlans(Sets.newHashSet(degreeCurricularPlan));
                         } else {
-                            tuitionPaymentPlanBean.setDegreeCurricularPlans(degreeType.getDegreeSet().stream()
-                                    .filter(d -> d.getAdministrativeOffice() == finantialEntity.getAdministrativeOffice())
-                                    .flatMap(d -> d.getExecutionDegreesForExecutionYear(executionYear).stream())
-                                    .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toSet()));
+                            tuitionPaymentPlanBean
+                                    .setDegreeCurricularPlans(
+                                            degreeType.getDegreeSet().stream()
+                                                    .filter(d -> d.getAdministrativeOffice() == finantialEntity
+                                                            .getAdministrativeOffice())
+                                            .flatMap(d -> d.getExecutionDegreesForExecutionYear(executionYear).stream())
+                                            .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toSet()));
                         }
 
                         RegistrationRegimeType regimeType = null;
@@ -623,7 +653,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (defaultPaymentPlan) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.defaultPaymentPlan.requires.regimeType.empty",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             regimeType = ((List<RegistrationRegimeType>) Arrays.asList(RegistrationRegimeType.values())).stream()
@@ -631,7 +661,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                             if (regimeType == null) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.regimeType.not.found", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.regimeType.not.found", String.valueOf(r + 1),
                                         regimeTypeValue);
                             }
                         }
@@ -644,7 +674,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (defaultPaymentPlan) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.defaultPaymentPlan.requires.ingressionType.empty",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             ingressionType = Bennu.getInstance().getIngressionTypesSet().stream()
@@ -653,7 +683,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                             if (ingressionType == null) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.ingression.type.not.found", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.ingression.type.not.found", String.valueOf(r + 1),
                                         ingressionTypeValue);
                             }
                         }
@@ -666,7 +696,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (defaultPaymentPlan) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.defaultPaymentPlan.requires.curricularYearValue.empty",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             curricularYear = Bennu.getInstance().getCurricularYearsSet().stream()
@@ -674,7 +704,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                             if (curricularYear == null) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.curricularYear.type.not.found", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.curricularYear.type.not.found", String.valueOf(r + 1),
                                         curricularYearValue);
                             }
                         }
@@ -687,7 +717,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (defaultPaymentPlan) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.defaultPaymentPlan.requires.semesterValue.empty",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             executionSemester = executionYear.getExecutionPeriodsSet().stream()
@@ -695,7 +725,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
 
                             if (executionSemester == null) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.executionSemester.not.found", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.executionSemester.not.found", String.valueOf(r + 1),
                                         semesterValue);
                             }
                         }
@@ -708,15 +738,15 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (defaultPaymentPlan) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.defaultPaymentPlan.requires.statute.empty",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             statuteType = Bennu.getInstance().getStatuteTypesSet().stream()
-                                    .filter(s -> s.getName().getContent().equals(statuteValue)).findFirst().orElse(null);
+                                    .filter(s -> s.getName().getContent().toLowerCase().equals(statuteValue.toLowerCase())).findFirst().orElse(null);
 
                             if (statuteType == null) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.statuteType.not.found", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.statuteType.not.found", String.valueOf(r + 1),
                                         statuteValue);
                             }
                         }
@@ -729,12 +759,12 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (defaultPaymentPlan) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.defaultPaymentPlan.requires.firstTimeStudentValue.empty",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             if (!YES.equals(firstTimeStudentValue) && !NO.equals(firstTimeStudentValue)) {
                                 throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.invalid.firstTimeStudent.invalid", String.valueOf(r),
+                                        "error.TuitionPaymentPlanImportFile.invalid.firstTimeStudent.invalid", String.valueOf(r + 1),
                                         firstTimeStudentValue);
                             }
 
@@ -751,13 +781,12 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (defaultPaymentPlan) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.defaultPaymentPlan.requires.customizedValue.empty",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
 
                             if (!YES.equals(customizedValue) && !NO.equals(customizedValue)) {
-                                throw new AcademicTreasuryDomainException(
-                                        "error.TuitionPaymentPlanImportFile.customized.invalid", String.valueOf(r),
-                                        customizedValue);
+                                throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.customized.invalid",
+                                        String.valueOf(r + 1), customizedValue);
                             }
 
                             customized = YES.equals(customizedValue) ? true : false;
@@ -765,7 +794,7 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             if (customized && Strings.isNullOrEmpty(tuitionPaymentPlanName)) {
                                 throw new AcademicTreasuryDomainException(
                                         "error.TuitionPaymentPlanImportFile.invalid.customized.requires.paymentPlanName",
-                                        String.valueOf(r));
+                                        String.valueOf(r + 1));
                             }
                         }
 
@@ -777,9 +806,32 @@ public class TuitionPaymentPlanImportFile extends TuitionPaymentPlanImportFile_B
                             }
                         }
 
-                        paymentPlanBeansFromSheet.add(tuitionPaymentPlanBean);
+                        if (!tuitionPaymentPlanBean.isDefaultPaymentPlan()) {
+
+                            boolean atLeastOneOption = false;
+
+                            atLeastOneOption |= tuitionPaymentPlanBean.getRegistrationRegimeType() != null;
+                            atLeastOneOption |= tuitionPaymentPlanBean.getIngression() != null;
+                            atLeastOneOption |= tuitionPaymentPlanBean.getCurricularYear() != null;
+                            atLeastOneOption |= tuitionPaymentPlanBean.getExecutionSemester() != null;
+                            atLeastOneOption |= tuitionPaymentPlanBean.getStatuteType() != null;
+                            atLeastOneOption |= tuitionPaymentPlanBean.isFirstTimeStudent();
+                            atLeastOneOption |= tuitionPaymentPlanBean.isCustomized();
+
+                            if (!atLeastOneOption) {
+                                throw new AcademicTreasuryDomainException(
+                                        "error.TuitionPaymentPlanImportFile.select.default.or.at.least.one.option",
+                                        String.valueOf(r + 1));
+                            }
+                        }
+                        
                     }
 
+                }
+
+                if (installmentsList.isEmpty()) {
+                    throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanImportFile.sheet.with.installments.empty",
+                            sheet.getName());
                 }
 
                 for (final TuitionPaymentPlanBean paymentPlanBean : paymentPlanBeansFromSheet) {
