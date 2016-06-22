@@ -204,7 +204,7 @@ ${portal.toolkit()}
                                 test="${(not empty tariff.degree) && (not empty tariff.cycleType)}">
                                 <p>
                                     <strong> <c:out
-                                            value="${tariff.cycleType.descriptionI18N.name}" />
+                                            value="${tariff.cycleType.descriptionI18N.content}" />
                                     </strong>
                                 </p>
                             </c:if>
