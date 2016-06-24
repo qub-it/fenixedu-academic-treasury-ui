@@ -50,7 +50,7 @@ public class EmolumentServices {
         }
 
         return Product.create(AcademicTreasurySettings.getInstance().getEmolumentsProductGroup(), code, name,
-                Product.defaultUnitOfMeasure(), true, vatType, Collections.singletonList(finantialInstitution), null);
+                Product.defaultUnitOfMeasure(), true, false, vatType, Collections.singletonList(finantialInstitution), null);
     }
 
     public static Stream<Product> findEmoluments(final FinantialEntity finantialEntity) {

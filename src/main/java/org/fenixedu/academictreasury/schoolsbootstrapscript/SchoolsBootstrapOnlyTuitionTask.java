@@ -2182,7 +2182,7 @@ public class SchoolsBootstrapOnlyTuitionTask extends CustomTask {
 
         final ProductGroup productGroup = ProductGroup.findByCode("OTHER");
         LocalizedString productName = new LocalizedString(pt(), "Juro").with(en(), "Interest");
-        Product.create(productGroup, INTEREST_CODE, productName, defaultUnitOfMeasure(), true, VatType.findByCode("ISE"),
+        Product.create(productGroup, INTEREST_CODE, productName, defaultUnitOfMeasure(), true, false, VatType.findByCode("ISE"),
                 FinantialInstitution.findAll().collect(Collectors.toList()), VatExemptionReason.findByCode("M1"));
 
     }
@@ -2194,7 +2194,7 @@ public class SchoolsBootstrapOnlyTuitionTask extends CustomTask {
 
         final ProductGroup productGroup = ProductGroup.findByCode("OTHER");
         LocalizedString productName = new LocalizedString(pt(), "Pagamento em avanço").with(en(), "Advanced payment");
-        Product.create(productGroup, PAGAMENTO_EM_AVANCO, productName, defaultUnitOfMeasure(), true, VatType.findByCode("ISE"),
+        Product.create(productGroup, PAGAMENTO_EM_AVANCO, productName, defaultUnitOfMeasure(), true, false, VatType.findByCode("ISE"),
                 FinantialInstitution.findAll().collect(Collectors.toList()), null);
     }
 
