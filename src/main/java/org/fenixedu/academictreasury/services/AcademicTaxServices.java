@@ -16,16 +16,12 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.dto.academictax.AcademicTaxDebitEntryBean;
+import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.document.CreditEntry;
-import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
-import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
-import org.fenixedu.treasury.domain.document.FinantialDocumentType;
-import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
@@ -328,21 +324,21 @@ public class AcademicTaxServices {
         final DebitEntry debitEntry =
                 academicTreasuryEvent.findActiveEnrolmentEvaluationDebitEntry(improvementEnrolmentEvaluation).get();
 
-        if (!debitEntry.isProcessedInDebitNote() || ((DebitNote) debitEntry.getFinantialDocument()).isPreparing()) {
-            debitEntry.setCurricularCourse(null);
-            debitEntry.setExecutionSemester(null);
-            debitEntry.setEvaluationSeason(null);
+        final DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
 
-            debitEntry.delete();
-
-            return true;
-        } else if (((DebitNote) debitEntry.getFinantialDocument()).isClosed() && debitEntry.getCreditEntriesSet().isEmpty()) {
-            ((DebitNote) debitEntry.getFinantialDocument())
-                .anullDebitNoteWithCreditNote(org.fenixedu.academictreasury.util.Constants
-                            .bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"));
+        if (!debitEntry.isProcessedInDebitNote()) {
+            debitEntry.annulDebitEntry(Constants
+                    .bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"));
             
-            debitEntry.annulOnEvent();
-
+//            debitEntry.setCurricularCourse(null);
+//            debitEntry.setExecutionSemester(null);
+//            debitEntry.setEvaluationSeason(null);
+            
+            return true;
+        } else if (debitEntry.getCreditEntriesSet().isEmpty()) {
+            debitNote
+                .anullDebitNoteWithCreditNote(Constants
+                            .bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"), false);
             return true;
         }
 

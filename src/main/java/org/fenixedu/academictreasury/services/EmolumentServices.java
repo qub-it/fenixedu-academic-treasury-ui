@@ -36,6 +36,7 @@ import org.fenixedu.treasury.util.Constants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
 import pt.ist.fenixframework.Atomic;
@@ -234,27 +235,28 @@ public class EmolumentServices {
             throw new AcademicTreasuryDomainException("error.EmolumentServices.academicServiceRequest.amount.equals.to.zero");
         }
 
+        final DebitNote debitNote = DebitNote.create(personDebtAccount, DocumentNumberSeries
+                .findUniqueDefault(FinantialDocumentType.findForDebitNote(), personDebtAccount.getFinantialInstitution())
+                .get(), new DateTime());
+
+        debitNote.addDebitNoteEntries(Collections.singletonList(debitEntry));
+
         if (AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
-            final DebitNote debitNote = DebitNote.create(personDebtAccount, DocumentNumberSeries
-                    .findUniqueDefault(FinantialDocumentType.findForDebitNote(), personDebtAccount.getFinantialInstitution())
-                    .get(), new DateTime());
-
-            debitNote.addDebitNoteEntries(Collections.singletonList(debitEntry));
             debitNote.closeDocument();
-
-            if (serviceRequestMapEntry.getGeneratePaymentCode()) {
-                PaymentCodePool pool = serviceRequestMapEntry.getPaymentCodePool();
-                if (pool == null) {
-                    throw new AcademicTreasuryDomainException(
-                            "error.EmolumentServices.academicServiceRequest.paymentCodePool.is.required");
-                }
-                final LocalDate dueDate = academicTresuryEvent.getDueDate();
-                final LocalDate now = new LocalDate();
-                PaymentReferenceCode referenceCode = pool.getReferenceCodeGenerator().generateNewCodeFor(
-                        academicTresuryEvent.getRemainingAmountToPay(), now, dueDate.compareTo(now) > 0 ? dueDate : now, true);
-
-                referenceCode.createPaymentTargetTo(debitNote);
+        }
+        
+        if (serviceRequestMapEntry.getGeneratePaymentCode()) {
+            PaymentCodePool pool = serviceRequestMapEntry.getPaymentCodePool();
+            if (pool == null) {
+                throw new AcademicTreasuryDomainException(
+                        "error.EmolumentServices.academicServiceRequest.paymentCodePool.is.required");
             }
+            final LocalDate dueDate = academicTresuryEvent.getDueDate();
+            final LocalDate now = new LocalDate();
+            PaymentReferenceCode referenceCode = pool.getReferenceCodeGenerator().generateNewCodeFor(
+                    academicTresuryEvent.getRemainingAmountToPay(), now, dueDate.compareTo(now) > 0 ? dueDate : now, true);
+
+            referenceCode.createPaymentTargetTo(Sets.newHashSet(debitEntry), debitEntry.getOpenAmount());
         }
 
         return true;
@@ -297,16 +299,18 @@ public class EmolumentServices {
 
         final DebitEntry debitEntry = academicTreasuryEvent.findActiveAcademicServiceRequestDebitEntry().get();
 
-        if (!debitEntry.isProcessedInDebitNote() || ((DebitNote) debitEntry.getFinantialDocument()).isPreparing()) {
+        final DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
+        if (!debitEntry.isProcessedInDebitNote()) {
+            debitEntry.annulDebitEntry(org.fenixedu.academictreasury.util.Constants
+                    .bundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"));
             debitEntry.delete();
 
             return true;
-        } else if (((DebitNote) debitEntry.getFinantialDocument()).isClosed() && debitEntry.getCreditEntriesSet().isEmpty()) {
-            ((DebitNote) debitEntry.getFinantialDocument())
+        } else if (debitEntry.getCreditEntriesSet().isEmpty()) {
+            debitNote
                     .anullDebitNoteWithCreditNote(org.fenixedu.academictreasury.util.Constants
-                            .bundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"));
+                            .bundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"), false);
 
-            debitEntry.annulOnEvent();
 
             return true;
         }

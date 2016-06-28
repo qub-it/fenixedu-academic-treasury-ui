@@ -433,7 +433,7 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);
 
-        if (debitEntry != null && AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+        if (debitEntry != null) {
             DebtAccount debtAccount = academicTreasuryEvent.getDebtAccount();
             final DebitNote debitNote = DebitNote.create(debtAccount,
                     DocumentNumberSeries
@@ -442,7 +442,10 @@ public class AcademicTariff extends AcademicTariff_Base {
                     new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(debitEntry));
-            debitNote.closeDocument();
+            
+            if(AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+                debitNote.closeDocument();
+            }
         }
 
         return debitEntry;

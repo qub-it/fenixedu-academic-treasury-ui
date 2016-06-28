@@ -415,7 +415,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
         }
 
-        if (createdDebitEntries && AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+        if (createdDebitEntries) {
             final DebitNote debitNote =
                     DebitNote.create(
                             debtAccount,
@@ -423,7 +423,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                                     debtAccount.getFinantialInstitution()).get(), new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(createdDebitEntriesSet));
-            debitNote.closeDocument();
+            
+            if(AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+                debitNote.closeDocument();
+            }
         }
 
         return createdDebitEntries;
@@ -451,7 +454,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
         }
 
-        if (createdDebitEntries && AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+        if (createdDebitEntries) {
             final DebitNote debitNote =
                     DebitNote.create(
                             debtAccount,
@@ -459,7 +462,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                                     debtAccount.getFinantialInstitution()).get(), new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(createdDebitEntriesSet));
-            debitNote.closeDocument();
+            
+            if(AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+                debitNote.closeDocument();
+            }
         }
 
         return createdDebitEntries;
