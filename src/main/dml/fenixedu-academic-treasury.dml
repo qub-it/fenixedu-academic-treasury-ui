@@ -76,6 +76,7 @@ class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff 
 	BigDecimalAT languageTranslationRate;
 	CycleType cycleType;
 	boolean academicalActBlockingOff;
+	boolean blockAcademicActsOnDebt;
 }
 
 	relation AcademicTariffAdministrativeOffice {
@@ -385,6 +386,7 @@ class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tar
 	BigDecimal factor;
 	BigDecimal totalEctsOrUnits;
 	boolean academicalActBlockingOff;
+	boolean blockAcademicActsOnDebt;
 }
 
 	relation TuitionInstallmentTariffTuitionPaymentPlan {

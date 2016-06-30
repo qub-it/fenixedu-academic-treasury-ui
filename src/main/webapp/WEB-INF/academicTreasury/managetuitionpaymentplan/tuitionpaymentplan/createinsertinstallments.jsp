@@ -219,6 +219,12 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				</span></p>
 			</c:if>
 			
+ 			<c:if test="${installment.blockAcademicActsOnDebt}"> 
+				<p><span class="label label-warning">
+						<spring:message code="label.TuitionPaymentPlan.blockAcademicActsOnDebt" />
+				</span></p>
+			</c:if>
+			
 		</datatables:column>
 
 		<datatables:column cssStyle="width:10%">
@@ -522,6 +528,19 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					</select>
 					<script>
 						$("#tuitionInstallmentTariff_academicalActBlockingOn").select2().select2('val', '<c:out value='${bean.academicalActBlockingOn }'/>');
+					</script>	
+				</div>
+			</div>			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.blockAcademicActsOnDebt"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionInstallmentTariff_blockAcademicActsOnDebt" name="blockacademicactsondebt" class="form-control" ng-model="object.blockAcademicActsOnDebt">
+						<option value="false"><spring:message code="label.no"/></option>
+						<option value="true"><spring:message code="label.yes"/></option>				
+					</select>
+					<script>
+						$("#tuitionInstallmentTariff_blockAcademicActsOnDebt").select2().select2('val', '<c:out value='${bean.blockAcademicActsOnDebt}'/>');
 					</script>	
 				</div>
 			</div>			

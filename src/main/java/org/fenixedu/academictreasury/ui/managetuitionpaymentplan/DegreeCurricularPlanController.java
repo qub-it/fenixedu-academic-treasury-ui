@@ -79,16 +79,7 @@ public class DegreeCurricularPlanController extends AcademicTreasuryBaseControll
         
         final List<ExecutionYear> executionYearList = new ArrayList<ExecutionYear>(ExecutionYear.readNotClosedExecutionYears());
 
-        Collections.sort(executionYearList, Collections.reverseOrder(new Comparator<ExecutionYear>() {
-
-            @Override
-            public int compare(final ExecutionYear o1, final ExecutionYear o2) {
-                int c = o1.getBeginLocalDate().compareTo(o2.getBeginLocalDate());
-                
-                return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
-            }
-        }));
-        
+        Collections.sort(executionYearList, ExecutionYear.REVERSE_COMPARATOR_BY_YEAR);
         model.addAttribute("executionYearOptions", executionYearList);
 
         return jspPage("choosedegreecurricularplan");

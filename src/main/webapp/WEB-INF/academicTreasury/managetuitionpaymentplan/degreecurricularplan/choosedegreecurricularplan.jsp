@@ -213,15 +213,7 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 
 <script>
 $(document).ready(function() {
-	executionYear_options = [
- 			<c:forEach items="${executionYearOptions}" var="element"> 
- 				{
- 					text : "${element.qualifiedName}",
- 					id : "${element.externalId}"
- 				},
- 			</c:forEach>
- 		];
-     		
+
 	$("#executionYearOptions").select2();
     $("#executionYearOptions").select2().select2('val', '<c:out value='${executionYear.externalId}'/>');
 

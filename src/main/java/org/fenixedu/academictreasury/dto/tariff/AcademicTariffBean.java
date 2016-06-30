@@ -66,6 +66,8 @@ public class AcademicTariffBean implements IBean, Serializable {
     private boolean academicalActBlockingOn;
     private BigDecimal factor;
     private BigDecimal totalEctsOrUnits;
+    
+    private boolean blockAcademicActsOnDebt;
 
     /* Used in tuition installment tariff edition */
     private List<TupleDataSourceBean> tuitionCalculationTypeDataSource = null;
@@ -547,6 +549,14 @@ public class AcademicTariffBean implements IBean, Serializable {
         this.academicalActBlockingOn = academicalActBlockingOn;
     }
 
+    public boolean isBlockAcademicActsOnDebt() {
+        return blockAcademicActsOnDebt;
+    }
+    
+    public void setBlockAcademicActsOnDebt(boolean blockAcademicActsOnDebt) {
+        this.blockAcademicActsOnDebt = blockAcademicActsOnDebt;
+    }
+    
     public BigDecimal getFactor() {
         return factor;
     }

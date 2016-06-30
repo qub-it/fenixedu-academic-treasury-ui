@@ -90,6 +90,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         super.setFactor(bean.getFactor());
         super.setTotalEctsOrUnits(bean.getTotalEctsOrUnits());
         super.setAcademicalActBlockingOff(bean.isAcademicalActBlockingOff());
+        this.setBlockAcademicActsOnDebt(bean.isBlockAcademicActsOnDebt());
 
         checkRules();
     }
@@ -180,6 +181,10 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
     public boolean isAcademicalActBlockingOff() {
         return super.getAcademicalActBlockingOff();
+    }
+    
+    public boolean isBlockAcademicActsOnDebt() {
+        return super.getBlockAcademicActsOnDebt();
     }
 
     public BigDecimal getAmountPerEctsOrUnit() {
@@ -300,6 +305,10 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
         if (isAcademicalActBlockingOff()) {
             debitEntry.markAcademicalActBlockingSuspension();
+        }
+        
+        if(isBlockAcademicActsOnDebt()) {
+            debitEntry.markBlockAcademicActsOnDebt();
         }
 
         return debitEntry;
@@ -603,7 +612,8 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         super.setFactor(bean.getFactor());
         super.setTotalEctsOrUnits(bean.getTotalEctsOrUnits());
         super.setAcademicalActBlockingOff(bean.isAcademicalActBlockingOff());
-
+        super.setBlockAcademicActsOnDebt(bean.isBlockAcademicActsOnDebt());
+        
         checkRules();
     }
 

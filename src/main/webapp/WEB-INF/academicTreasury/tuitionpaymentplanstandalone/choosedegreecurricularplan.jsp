@@ -76,6 +76,9 @@ ${portal.angularToolkit()}
             ng-change="change(executionYearId, '{{ executionYearId }}')"
             ng-model="executionYearId">
             <option value=""></option>
+            <c:forEach items="${executionYearOptions}" var="e">
+                <option value="${e.externalId}">${e.qualifiedName}</option>
+            </c:forEach>
         </select>
     </div>
 </div>
@@ -226,16 +229,8 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 
 <script>
 $(document).ready(function() {
-	executionYear_options = [
- 			<c:forEach items="${executionYearOptions}" var="element"> 
- 				{
- 					text : "${element.qualifiedName}",
- 					id : "${element.externalId}"
- 				},
- 			</c:forEach>
- 		];
-     		
-	$("#executionYearOptions").select2({ data : executionYear_options });
+
+	$("#executionYearOptions").select2();
     $("#executionYearOptions").select2().select2('val', '<c:out value='${executionYear.externalId}'/>');
 
 });

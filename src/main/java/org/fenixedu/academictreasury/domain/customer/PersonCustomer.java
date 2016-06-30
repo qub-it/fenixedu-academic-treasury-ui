@@ -255,7 +255,7 @@ public class PersonCustomer extends PersonCustomer_Base {
             return false;
         }
 
-        if (!debitEntry.isDueDateExpired(when)) {
+        if (!debitEntry.isBlockAcademicActsOnDebt() && !debitEntry.isDueDateExpired(when)) {
             return false;
         }
 
@@ -266,7 +266,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         if (debitEntry.isAcademicalActBlockingSuspension()) {
             return false;
         }
-
+        
         return true;
     }
 

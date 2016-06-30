@@ -36,6 +36,7 @@ import org.fenixedu.academictreasury.domain.debtGeneration.requests.MassiveDebtG
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
+import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -175,7 +176,7 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
         try {
             massiveDebtGenerationRequestFile.process();
 
-            addInfoMessage("label.MassiveDebtGenerationRequestFile.success", model);
+            addInfoMessage(Constants.bundle("label.MassiveDebtGenerationRequestFile.success"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);

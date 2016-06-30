@@ -286,7 +286,12 @@ ${portal.toolkit()}
                             <p><span class="label label-warning">
                                     <spring:message code="label.TuitionPaymentPlan.academicalActBlockingOff" />
                             </span></p>
-                        </c:if>                        
+                        </c:if>
+                        <c:if test="${installment.blockAcademicActsOnDebt}"> 
+                            <p><span class="label label-warning">
+                                    <spring:message code="label.TuitionPaymentPlan.blockAcademicActsOnDebt" />
+                            </span></p>
+                        </c:if>
                     </datatables:column>
                     <datatables:column>
                         <datatables:columnHead>

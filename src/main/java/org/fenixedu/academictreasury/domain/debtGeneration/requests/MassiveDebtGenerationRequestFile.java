@@ -104,15 +104,15 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
                         getDebtDate(), true, massiveDebtGenerationRowResult.getTuitionPaymentPlan());
 
                 if (!createdTuition) {
-                    final Integer studentNumber =
-                            massiveDebtGenerationRowResult.getStudentCurricularPlan().getRegistration().getStudent().getNumber();
+                    final Integer registrationNumber =
+                            massiveDebtGenerationRowResult.getStudentCurricularPlan().getRegistration().getNumber();
                     final String studentName =
                             massiveDebtGenerationRowResult.getStudentCurricularPlan().getRegistration().getStudent().getName();
                     final String tuitionPaymentPlanName =
                             massiveDebtGenerationRowResult.getTuitionPaymentPlan().getConditionsDescription().getContent();
 
                     throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequestFile.tuition.not.created",
-                            String.valueOf(studentNumber), studentName, tuitionPaymentPlanName);
+                            String.valueOf(registrationNumber), studentName, tuitionPaymentPlanName);
                 }
             } else if (getAcademicTax() != null) {
                 boolean createdAcademicTax = AcademicTaxServices.createAcademicTax(
@@ -120,13 +120,13 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
                         getAcademicTax(), getDebtDate(), true);
 
                 if (!createdAcademicTax) {
-                    final Integer studentNumber =
-                            massiveDebtGenerationRowResult.getStudentCurricularPlan().getRegistration().getStudent().getNumber();
+                    final Integer registrationNumber =
+                            massiveDebtGenerationRowResult.getStudentCurricularPlan().getRegistration().getNumber();
                     final String studentName =
                             massiveDebtGenerationRowResult.getStudentCurricularPlan().getRegistration().getStudent().getName();
 
                     throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequestFile.academicTax.not.created",
-                            String.valueOf(studentNumber), studentName);
+                            String.valueOf(registrationNumber), studentName);
                 }
             }
         }
@@ -207,14 +207,9 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
                             String.valueOf(rowNum));
                 }
 
-                if (Strings.isNullOrEmpty(row.get(DCP_IDX))) {
-                    throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequest.dcp.code.invalid",
-                            String.valueOf(rowNum));
-                }
-
-                int studentNumber = -1;
+                int registrationNumber = -1;
                 try {
-                    studentNumber = Integer.parseInt(row.get(STUDENT_NUMBER_IDX).trim());
+                    registrationNumber = Integer.parseInt(row.get(STUDENT_NUMBER_IDX).trim());
                 } catch (final NumberFormatException e) {
                     throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequest.student.number.invalid",
                             String.valueOf(rowNum));
@@ -225,18 +220,6 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
                 final String dcpName = row.get(DCP_IDX).trim();
                 final String tuitionPaymentPlanName = row.get(TUITION_PLAN_IDX) != null ? row.get(TUITION_PLAN_IDX).trim() : null;
 
-                final Student student = Student.readStudentByNumber(studentNumber);
-
-                if (student == null) {
-                    throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequest.student.not.found",
-                            String.valueOf(rowNum));
-                }
-
-                if (!student.getName().equals(studentName)) {
-                    throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequest.student.name.not.equal",
-                            String.valueOf(rowNum));
-                }
-
                 final Degree degree = Degree.find(degreeCode);
 
                 if (degree == null) {
@@ -244,16 +227,26 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
                             String.valueOf(rowNum));
                 }
 
-                final Registration registration = findActiveRegistration(executionYear, student, degree, dcpName, rowNum);
+                final Registration registration = findActiveRegistration(executionYear, registrationNumber, degree, dcpName, rowNum);
 
                 if (registration == null) {
                     throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequest.registration.not.found",
                             String.valueOf(rowNum));
                 }
+                
+                if (!registration.getStudent().getName().equals(studentName)) {
+                    throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequest.student.name.not.equal",
+                            String.valueOf(rowNum));
+                }
+                
+                StudentCurricularPlan studentCurricularPlan = null;
+                if(!Strings.isNullOrEmpty(dcpName)) {
+                    studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
+                } else {
+                    studentCurricularPlan = registration.getLastStudentCurricularPlan();                    
+                }
 
-                final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
-
-                if (!studentCurricularPlan.getName().equals(dcpName)) {
+                if (!Strings.isNullOrEmpty(dcpName) && !studentCurricularPlan.getName().equals(dcpName)) {
                     throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationRequest.dcp.name.not.equal",
                             String.valueOf(rowNum));
                 }
@@ -267,7 +260,7 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
                     if (tuitionPaymentPlan == null) {
                         throw new AcademicTreasuryDomainException(
                                 "error.MassiveDebtGenerationRequest.tuition.payment.plan.not.found", String.valueOf(rowNum),
-                                dcpName, tuitionPaymentPlanName);
+                                !Strings.isNullOrEmpty(dcpName) ? dcpName : "", tuitionPaymentPlanName);
                     }
 
                     result.add(new MassiveDebtGenerationRowResult(executionYear, studentCurricularPlan, tuitionPaymentPlan,
@@ -287,10 +280,10 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
         }
     }
 
-    private static Registration findActiveRegistration(final ExecutionYear executionYear, final Student student,
+    private static Registration findActiveRegistration(final ExecutionYear executionYear, final int registrationNumber,
             final Degree degree, final String dcpName, final int rowNum) {
         Registration result = null;
-        for (final Registration registration : student.getRegistrationsSet()) {
+        for (final Registration registration : Registration.readByNumber(registrationNumber)) {
             if (registration.getLastStateType() == null && !registration.getLastStateType().isActive()) {
                 continue;
             }
@@ -299,11 +292,13 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
                 continue;
             }
 
-            if (registration.getStudentCurricularPlan(executionYear) == null) {
+            if (!Strings.isNullOrEmpty(dcpName) && registration.getStudentCurricularPlan(executionYear) == null) {
+                continue;
+            } else if(Strings.isNullOrEmpty(dcpName) && registration.getLastStudentCurricularPlan() == null) {
                 continue;
             }
 
-            if (!registration.getStudentCurricularPlan(executionYear).getName().equals(dcpName)) {
+            if (!Strings.isNullOrEmpty(dcpName) && !registration.getStudentCurricularPlan(executionYear).getName().equals(dcpName)) {
                 continue;
             }
 
