@@ -12,8 +12,10 @@ import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
+import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
@@ -69,6 +71,12 @@ public class AcademicTariffBean implements IBean, Serializable {
     
     private boolean blockAcademicActsOnDebt;
 
+    
+    /* Used in importation */
+    private FinantialEntity finantialEntity;
+    private Product emolumentProduct;
+    private String sheetName;
+    
     /* Used in tuition installment tariff edition */
     private List<TupleDataSourceBean> tuitionCalculationTypeDataSource = null;
     private List<TupleDataSourceBean> ectsCalculationTypeDataSource = null;
@@ -273,6 +281,18 @@ public class AcademicTariffBean implements IBean, Serializable {
         return getMaximumMonthsToApplyPenalty() > 0;
     }
 
+    public boolean isApplyUrgencyRate() {
+        return Constants.isPositive(getUrgencyRate());
+    }
+
+    public boolean isApplyLanguageTranslationRate() {
+        return Constants.isPositive(getLanguageTranslationRate());
+    }
+
+    public boolean isApplyBaseAmount() {
+        return Constants.isPositive(getBaseAmount());
+    }
+    
     /*
      * GETTERS & SETTERS
      */
@@ -571,5 +591,29 @@ public class AcademicTariffBean implements IBean, Serializable {
 
     public void setTotalEctsOrUnits(BigDecimal totalEctsOrUnits) {
         this.totalEctsOrUnits = totalEctsOrUnits;
+    }
+    
+    public FinantialEntity getFinantialEntity() {
+        return finantialEntity;
+    }
+    
+    public void setFinantialEntity(FinantialEntity finantialEntity) {
+        this.finantialEntity = finantialEntity;
+    }
+    
+    public Product getEmolumentProduct() {
+        return emolumentProduct;
+    }
+    
+    public void setEmolumentProduct(Product emolumentProduct) {
+        this.emolumentProduct = emolumentProduct;
+    }
+    
+    public String getSheetName() {
+        return sheetName;
+    }
+    
+    public void setSheetName(String sheetName) {
+        this.sheetName = sheetName;
     }
 }
