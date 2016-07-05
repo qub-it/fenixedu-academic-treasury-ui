@@ -85,10 +85,12 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     public List<AcademicTariffBean> tuitionInstallmentBeans = Lists.newArrayList();
 
+    // @formatter:off
     /*--------------
      * TARIFF FIELDS
      * -------------
      */
+    // @formatter:on
 
     /* Tariff */
     private LocalDate beginDate = new LocalDate();
@@ -118,14 +120,19 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private boolean academicalActBlockingOn;
     private boolean blockAcademicActsOnDebt;
 
+    // @formatter:off
     /*---------------------
      * END OF TARIFF FIELDS
      * --------------------
      */
+    // @formatter:on
 
     // To be used on copy tuition payment plan
     private ExecutionYear copiedExecutionYear;
 
+    // Named in tuition importation
+    private String sheetName;
+    
     public TuitionPaymentPlanBean(final Product product, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final FinantialEntity finantialEntity, final ExecutionYear executionYear) {
         this.product = product;
@@ -769,6 +776,14 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     public void setStatuteType(StatuteType statuteType) {
         this.statuteType = statuteType;
+    }
+    
+    public String getSheetName() {
+        return sheetName;
+    }
+    
+    public void setSheetName(String sheetName) {
+        this.sheetName = sheetName;
     }
 
     /*

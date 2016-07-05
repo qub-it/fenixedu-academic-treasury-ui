@@ -1,4 +1,5 @@
-<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.ImportTuitionPaymentPlansController"%>
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.ImportTreasuryController"%>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -40,14 +41,14 @@ ${portal.toolkit()}
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
     &nbsp; 
-    <a class="" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.SEARCH_URL %>">
+    <a class="" href="${pageContext.request.contextPath}<%= ImportTreasuryController.SEARCH_URL %>">
         <spring:message code="label.event.back" />
     </a> 
     &nbsp;|&nbsp;
 
 	<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
 	&nbsp;
-	<a class="" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.DOWNLOAD_URL %>/${tuitionPaymentPlanImportFile.externalId}">
+	<a class="" href="${pageContext.request.contextPath}<%= ImportTreasuryController.DOWNLOAD_URL %>/${treasuryImportFile.externalId}">
 		<spring:message code="label.ImportTuitionPaymentPlans.download" />
 	</a>
 </div>
@@ -114,7 +115,7 @@ ${portal.toolkit()}
 
 	<!-- Nav tabs -->
 	<ul class="nav nav-tabs" role="tablist" id="myTabs" data-tabs="tabs">
-		<c:forEach var="tuitionPaymentPlanBean" items="${tuitionPaymentPlanBeans}" varStatus="it">
+		<c:forEach var="tuitionPaymentPlanBean" items="${objects}" varStatus="it">
 			<li role="presentation" data-toggle="tab">
 				<a href="#tab-${it.index}" aria-controls="tab-${it.index}" role="tab" data-toggle="tab"><spring:message code="label.ImportTuitionPaymentPlans.tuition.payment.plan" /> - ${it.index + 1}</a>
 			</li>
@@ -123,7 +124,7 @@ ${portal.toolkit()}
 
 	<!-- Tab panes -->
 	<div id="my-tab-content" class="tab-content">
-		<c:forEach var="tuitionPaymentPlanBean" items="${tuitionPaymentPlanBeans}" varStatus="it">
+		<c:forEach var="tuitionPaymentPlanBean" items="${objects}" varStatus="it">
 			<div role="tabpanel" class="tab-pane" id="tab-${it.index}">
 				<div class="panel panel-primary">
 					<div class="panel-heading">

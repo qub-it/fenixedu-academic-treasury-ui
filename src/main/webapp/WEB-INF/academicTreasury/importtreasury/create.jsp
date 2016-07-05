@@ -1,4 +1,4 @@
-<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.ImportTuitionPaymentPlansController"%>
+<%@page import="org.fenixedu.academictreasury.ui.managetuitionpaymentplan.ImportTreasuryController" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -31,17 +31,17 @@ ${portal.toolkit()}
 
 <div class="page-header">
 	<h1>
-		<spring:message code="label.ImportTuitionPaymentPlans.search" />
+		<spring:message code="label.ImportTreasury.create" />
 		<small></small>
 	</h1>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
 	&nbsp;
-	<a class="" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.CREATE_URL %>">
-		<spring:message code="label.event.create" />
+	<a class="" href="${pageContext.request.contextPath}<%= ImportTreasuryController.SEARCH_URL %>">
+		<spring:message code="label.back" />
 	</a>
 </div>
 
@@ -82,80 +82,47 @@ ${portal.toolkit()}
 	</div>
 </c:if>
 
-<c:choose>
-	<c:when test="${not empty requestFiles}">
 
-		<datatables:table id="simpletable" row="requestFile" data="${requestFiles}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
+<form method="post" class="form-horizontal" enctype="multipart/form-data">
+	<div class="panel panel-default">
+		<div class="panel-body">
 
-			<datatables:column cssStyle="width:10%">
-				<datatables:columnHead>
-					<spring:message code="label.TuitionPaymentPlanImportFile.versioningCreationDate" />
-				</datatables:columnHead>
-				<c:out value='${requestFile.versioningCreationDate.toString("yyyy-MM-dd HH:mm:ss")}' />
-			</datatables:column>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.TreasuryImportFile.treasuryImportType" />
+				</div>
 
-			<datatables:column cssStyle="width:20%">
-				<datatables:columnHead>
-					<spring:message code="label.TuitionPaymentPlanImportFile.finantialEntity" />
-				</datatables:columnHead>
-				
-				<c:out value="${requestFile.finantialEntity.name.content}" />
-			</datatables:column>
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<select id="treasuryImportType" class="js-example-basic-single" name="treasuryImportTypeId">
+						<option value="">&nbsp;</option>
+						<c:forEach var="e" items="${treasuryImportTypes}">
+							<option value="${e.externalId}"><c:out value="${e.name}" /></option>
+						</c:forEach>
+					</select>
+					<script>
+						$(document).ready(function() {
+							$("#treasuryImportType").select2().select2("val", '<c:out value="${param.treasuryImportTypeId}" />');
+						});
+					</script>
+				</div>
+			</div>
 
-			<datatables:column cssStyle="width:20%">
-				<datatables:columnHead>
-					<spring:message code="label.TuitionPaymentPlanImportFile.tuitionPaymentPlanGroup" />
-				</datatables:columnHead>
-				
-				<c:out value="${requestFile.tuitionPaymentPlanGroup.name.content}" />
-			</datatables:column>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.TreasuryImportFile.requestFile" />
+				</div>
 
-			<datatables:column cssStyle="width:20%">
-				<datatables:columnHead>
-					<spring:message code="label.TuitionPaymentPlanImportFile.executionYear" />
-				</datatables:columnHead>
-				<c:out value="${requestFile.executionYear.qualifiedName}" />
-			</datatables:column>
+				<div class="col-sm-6">
+					<input type="file" name="requestFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
+				</div>
+			</div>
 
-			<datatables:column cssStyle="width:10%">
-				<datatables:columnHead>
-					<spring:message code="label.TuitionPaymentPlanImportFile.product" />
-				</datatables:columnHead>
-				
-				<c:out value="${requestFile.product.name.content}" />
-			</datatables:column>
-
-			<datatables:column cssStyle="width:10%">
-				<datatables:columnHead>
-					<spring:message code="label.TuitionPaymentPlanImportFile.whenProcessed" />
-				</datatables:columnHead>
-				<c:out value='${requestFile.whenProcessed.toString("yyyy-MM-dd HH:mm:ss")}' />
-			</datatables:column>
-
-			<datatables:column cssStyle="width:10%">
-				<datatables:columnHead>
-				</datatables:columnHead>
-				<a class="btn btn-default" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.VIEW_URL %>/${requestFile.externalId}">
-					<spring:message code="label.view" />
-				</a>
-			</datatables:column>
-
-		</datatables:table>
-		<script>
-			createDataTables(
-					'simpletable',
-					false,
-					false,
-					true,
-					"${pageContext.request.contextPath}",
-					"${datatablesI18NUrl}");
-		</script>
-		
-	</c:when>
-	<c:otherwise>
-		<p>
-			<spring:message code="label.noResultsFound" />
-		</p>
-	</c:otherwise>
-</c:choose>
+		</div>
+		<div class="panel-footer">
+			<input type="submit" class="btn btn-default" role="button"
+				value="<spring:message code="label.submit" />" />
+		</div>
+	</div>
+</form>
 

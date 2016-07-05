@@ -910,58 +910,42 @@ class debtGeneration.requests.MassiveDebtGenerationRequestFile extends .org.feni
  * ******************************
  */
  
-class tuition.importation.TuitionPaymentPlanImportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
-	DateTime whenProcessed;
+class importation.TreasuryImportType {
+	String name;
+	String clazz;
 }
 
-	relation TuitionPaymentPlanImportFileBennu {
+	relation TreasuryImportTypeBennu {
 		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 			multiplicity 1..1;
 		}
 		
-		tuition.importation.TuitionPaymentPlanImportFile playsRole tuitionPaymentPlanImportFiles {
+		importation.TreasuryImportType playsRole treasuryImportTypes {
 			multiplicity *;
 		}
 	}
-	
-	relation TuitionPaymentPlanImportFileExecutionYear {
-		.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear {
-			multiplicity 1..1;
-		}
-	
-		tuition.importation.TuitionPaymentPlanImportFile playsRole tuitionPaymentPlanImportFiles {
-			multiplicity *;
-		}
-	}
-	
-	relation TuitionPaymentPlanImportFileTuitionPaymentPlanGroup {
-		tuition.TuitionPaymentPlanGroup playsRole tuitionPaymentPlanGroup {
-			multiplicity 1..1;
-		}
 
-		tuition.importation.TuitionPaymentPlanImportFile playsRole tuitionPaymentPlanImportFiles {
-			multiplicity *;
-		}
-	}
-	
-	relation TuitionPaymentPlanImportFileProduct {
-		.org.fenixedu.treasury.domain.Product playsRole product {
-			multiplicity 1..1;
-		}
-	
-		tuition.importation.TuitionPaymentPlanImportFile playsRole tuitionPaymentPlanImportFiles {
-			multiplicity *;
-		}
-	}
-	
-	relation TuitionPaymentPlanImportFileFinantialEntity {
-		.org.fenixedu.treasury.domain.FinantialEntity playsRole finantialEntity {
+class importation.TreasuryImportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	DateTime whenProcessed;
+}
+
+	relation TreasuryImportFileBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
 			multiplicity 1..1;
 		}
 		
-		tuition.importation.TuitionPaymentPlanImportFile playsRole tuitionPaymentPlanImportFiles {
+		importation.TreasuryImportFile playsRole treasuryImportFiles {
 			multiplicity *;
 		}
 	}
 	
-	
+	relation TreasuryImportFileTreasuryImportType {
+		importation.TreasuryImportType playsRole treasuryImportType {
+			multiplicity 1..1;
+		}
+		
+		importation.TreasuryImportFile playsRole treasuryImportFiles {
+			multiplicity *;
+		}
+		
+	}
