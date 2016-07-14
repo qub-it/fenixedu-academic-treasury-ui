@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.academictreasury.ui.academicdebtgenerationregistration.AcademicDebtGenerationRegistrationController"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -60,11 +61,10 @@ ${portal.angularToolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
-    &nbsp; 
-    <a class="" href="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.SEARCH_URL %>">
+    &nbsp; <a class=""
+        href="${pageContext.request.contextPath}<%= DebtAccountController.READ_URL %>${debtAccount.externalId}">
         <spring:message code="label.event.back" />
-    </a> 
-    &nbsp;|&nbsp;
+    </a> &nbsp;
 </div>
 
 <c:if test="${not empty infoMessages}">
