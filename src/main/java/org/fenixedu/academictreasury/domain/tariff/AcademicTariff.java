@@ -190,20 +190,20 @@ public class AcademicTariff extends AcademicTariff_Base {
         if (getCycleType() != null) {
             if (findInInterval(getProduct(), getAdministrativeOffice(), getDegreeType(), getDegree(), getCycleType(),
                     getInterval()).count() > 1) {
-                throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other");
+                throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other", getProduct().getName().getContent());
             };
         } else if (getDegree() != null) {
             if (findInInterval(getProduct(), getAdministrativeOffice(), getDegreeType(), getDegree(), getInterval())
                     .count() > 1) {
-                throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other");
+                throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other", getProduct().getName().getContent());
             }
         } else if (getDegreeType() != null) {
             if (findInInterval(getProduct(), getAdministrativeOffice(), getDegreeType(), getInterval()).count() > 1) {
-                throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other");
+                throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other", getProduct().getName().getContent());
             };
         } else {
             if (findInInterval(getProduct(), getAdministrativeOffice(), getInterval()).count() > 1) {
-                throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other");
+                throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other", getProduct().getName().getContent());
             };
         }
     }

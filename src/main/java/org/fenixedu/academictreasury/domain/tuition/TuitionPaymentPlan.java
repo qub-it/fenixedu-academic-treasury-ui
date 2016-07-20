@@ -47,8 +47,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     private static final String CONDITIONS_DESCRIPTION_SEPARATOR = ", ";
 
-    public static final Comparator<TuitionPaymentPlan> COMPARE_BY_PAYMENT_PLAN_ORDER = (o1, o2) -> Integer.compare(
-            o1.getPaymentPlanOrder(), o2.getPaymentPlanOrder());
+    public static final Comparator<TuitionPaymentPlan> COMPARE_BY_PAYMENT_PLAN_ORDER =
+            (o1, o2) -> Integer.compare(o1.getPaymentPlanOrder(), o2.getPaymentPlanOrder());
 
     private static final int MAX_PAYMENT_PLANS_LIMIT = 50;
 
@@ -77,8 +77,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                 .getSemester() : null);
         setFirstTimeStudent(tuitionPaymentPlanBean.isFirstTimeStudent());
         setCustomized(tuitionPaymentPlanBean.isCustomized());
-        setCustomizedName(new LocalizedString(CoreConfiguration.supportedLocales().iterator().next(),
-                tuitionPaymentPlanBean.getName()));
+        setCustomizedName(
+                new LocalizedString(CoreConfiguration.supportedLocales().iterator().next(), tuitionPaymentPlanBean.getName()));
 
         setWithLaboratorialClasses(tuitionPaymentPlanBean.isWithLaboratorialClasses());
         setPaymentPlanOrder((int) find(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear())
@@ -129,10 +129,12 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         }
 
         if (findDefaultPaymentPlans(getDegreeCurricularPlan(), getExecutionYear()).count() > 1) {
-            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.defaultPaymentPlan.not.unique");
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.defaultPaymentPlan.not.unique",
+                    getDegreeCurricularPlan().getPresentationName());
         }
 
-        if (find(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), getPaymentPlanOrder()).count() > 1) {
+        if (find(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), getPaymentPlanOrder())
+                .count() > 1) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.paymentPlan.with.order.already.exists");
         }
 
@@ -187,10 +189,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             final String paymentPlanLabel =
                     isCustomized() ? "label.TuitionPaymentPlan.paymentPlanName.customized" : "label.TuitionPaymentPlan.paymentPlanName";
 
-            result =
-                    result.with(locale, BundleUtil.getString(Constants.BUNDLE, paymentPlanLabel, getDegreeCurricularPlan()
-                            .getDegree().getPresentationNameI18N().getContent(locale), getExecutionYear().getQualifiedName(),
-                            isCustomized() ? getCustomizedName().getContent(locale) : null));
+            result = result.with(locale, BundleUtil.getString(Constants.BUNDLE, paymentPlanLabel,
+                    getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale),
+                    getExecutionYear().getQualifiedName(), isCustomized() ? getCustomizedName().getContent(locale) : null));
         }
 
         return result;
@@ -202,13 +203,13 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             StringBuilder description = new StringBuilder();
 
             if (isDefaultPaymentPlan()) {
-                description.append(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.defaultPaymentPlan")).append(
-                        CONDITIONS_DESCRIPTION_SEPARATOR);
+                description.append(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.defaultPaymentPlan"))
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getTuitionPaymentPlanGroup().isForStandalone()) {
-                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.standalone")).append(
-                        CONDITIONS_DESCRIPTION_SEPARATOR);
+                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.standalone"))
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
 
             } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
                 description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.extracurricular"))
@@ -220,8 +221,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (getRegistrationProtocol() != null) {
-                description.append(getRegistrationProtocol().getDescription().getContent(locale)).append(
-                        CONDITIONS_DESCRIPTION_SEPARATOR);
+                description.append(getRegistrationProtocol().getDescription().getContent(locale))
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getIngression() != null) {
@@ -229,15 +230,16 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (getCurricularYear() != null) {
-                description.append(
-                        BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.curricularYear.description",
-                                String.valueOf(getCurricularYear().getYear()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+                description.append(BundleUtil.getString(Constants.BUNDLE, locale,
+                        "label.TuitionPaymentPlan.curricularYear.description", String.valueOf(getCurricularYear().getYear())))
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getSemester() != null) {
-                description.append(
-                        BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.curricularSemester.description",
-                                String.valueOf(getSemester()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
+                description
+                        .append(BundleUtil.getString(Constants.BUNDLE, locale,
+                                "label.TuitionPaymentPlan.curricularSemester.description", String.valueOf(getSemester())))
+                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getStatuteType() != null) {
@@ -329,8 +331,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     }
 
     public boolean isFirst() {
-        return findSortedByPaymentPlanOrder(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear()).collect(
-                Collectors.toList()).get(0) == this;
+        return findSortedByPaymentPlanOrder(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear())
+                .collect(Collectors.toList()).get(0) == this;
     }
 
     public boolean isLast() {
@@ -409,22 +411,22 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         final Set<DebitEntry> createdDebitEntriesSet = Sets.newHashSet();
         for (final TuitionInstallmentTariff tariff : getTuitionInstallmentTariffsSet()) {
             if (!academicTreasuryEvent.isChargedWithDebitEntry(standaloneEnrolment)) {
-                createdDebitEntriesSet.add(tariff.createDebitEntryForStandalone(debtAccount, academicTreasuryEvent,
-                        standaloneEnrolment, when));
+                createdDebitEntriesSet
+                        .add(tariff.createDebitEntryForStandalone(debtAccount, academicTreasuryEvent, standaloneEnrolment, when));
                 createdDebitEntries = true;
             }
         }
 
         if (createdDebitEntries) {
-            final DebitNote debitNote =
-                    DebitNote.create(
-                            debtAccount,
-                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
-                                    debtAccount.getFinantialInstitution()).get(), new DateTime());
+            final DebitNote debitNote = DebitNote.create(debtAccount,
+                    DocumentNumberSeries
+                            .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution())
+                            .get(),
+                    new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(createdDebitEntriesSet));
-            
-            if(AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+
+            if (AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
                 debitNote.closeDocument();
             }
         }
@@ -455,15 +457,15 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         }
 
         if (createdDebitEntries) {
-            final DebitNote debitNote =
-                    DebitNote.create(
-                            debtAccount,
-                            DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
-                                    debtAccount.getFinantialInstitution()).get(), new DateTime());
+            final DebitNote debitNote = DebitNote.create(debtAccount,
+                    DocumentNumberSeries
+                            .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution())
+                            .get(),
+                    new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(createdDebitEntriesSet));
-            
-            if(AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
+
+            if (AcademicTreasurySettings.getInstance().isCloseServiceRequestEmolumentsWithDebitNote()) {
                 debitNote.closeDocument();
             }
         }
@@ -571,8 +573,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     public static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final DegreeCurricularPlan degreeCurricularPlan, final ExecutionYear executionYear) {
 
-        return find(tuitionPaymentPlanGroup).filter(
-                t -> t.getExecutionYear() == executionYear && t.getDegreeCurricularPlan() == degreeCurricularPlan);
+        return find(tuitionPaymentPlanGroup)
+                .filter(t -> t.getExecutionYear() == executionYear && t.getDegreeCurricularPlan() == degreeCurricularPlan);
     }
 
     public static Stream<TuitionPaymentPlan> findSortedByPaymentPlanOrder(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
@@ -583,8 +585,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     protected static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final DegreeCurricularPlan degreeCurricularPlan, final ExecutionYear executionYear, final int paymentPlanOrder) {
-        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear).filter(
-                t -> t.getPaymentPlanOrder() == paymentPlanOrder);
+        return find(tuitionPaymentPlanGroup, degreeCurricularPlan, executionYear)
+                .filter(t -> t.getPaymentPlanOrder() == paymentPlanOrder);
     }
 
     protected static Optional<TuitionPaymentPlan> findUnique(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
@@ -622,10 +624,10 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         final Set<StatuteType> statutes =
                 Sets.newHashSet(registration.getStudent().getStatutesTypesValidOnAnyExecutionSemesterFor(executionYear));
 
-        final List<TuitionPaymentPlan> plans =
-                TuitionPaymentPlan.findSortedByPaymentPlanOrder(
-                        TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(), degreeCurricularPlan,
-                        executionYear).collect(Collectors.toList());
+        final List<TuitionPaymentPlan> plans = TuitionPaymentPlan
+                .findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
+                        degreeCurricularPlan, executionYear)
+                .collect(Collectors.toList());
 
         final List<TuitionPaymentPlan> filtered = Lists.newArrayList();
         for (final TuitionPaymentPlan t : plans) {
@@ -680,15 +682,12 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         final IngressionType ingression = registration.getIngressionType();
         boolean laboratorial = laboratorial(enrolment);
 
-        final Stream<TuitionPaymentPlan> stream =
-                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone()
-                        .get(), degreeCurricularPlan, executionYear);
+        final Stream<TuitionPaymentPlan> stream = TuitionPaymentPlan.findSortedByPaymentPlanOrder(
+                TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(), degreeCurricularPlan, executionYear);
 
         final List<TuitionPaymentPlan> l = stream.collect(Collectors.toList());
 
-        return Lists
-                .newArrayList(l)
-                .stream()
+        return Lists.newArrayList(l).stream()
                 .filter(t -> (t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol)
                         && (t.getIngression() == null || t.getIngression() == ingression)
                         && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial) && !t.isCustomized())
@@ -707,15 +706,12 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         final IngressionType ingression = registration.getIngressionType();
         boolean laboratorial = laboratorial(enrolment);
 
-        final Stream<TuitionPaymentPlan> stream =
-                TuitionPaymentPlan.findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup
-                        .findUniqueDefaultGroupForExtracurricular().get(), degreeCurricularPlan, executionYear);
+        final Stream<TuitionPaymentPlan> stream = TuitionPaymentPlan.findSortedByPaymentPlanOrder(
+                TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get(), degreeCurricularPlan, executionYear);
 
         final List<TuitionPaymentPlan> l = stream.collect(Collectors.toList());
 
-        return Lists
-                .newArrayList(l)
-                .stream()
+        return Lists.newArrayList(l).stream()
                 .filter(t -> (t.getRegistrationProtocol() == null || t.getRegistrationProtocol() == registrationProtocol)
                         && (t.getIngression() == null || t.getIngression() == ingression)
                         && (!t.isWithLaboratorialClasses() || t.isWithLaboratorialClasses() == laboratorial) && !t.isCustomized())
@@ -723,8 +719,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     }
 
     private static boolean laboratorial(final Enrolment enrolment) {
-        return Constants.isPositive(new BigDecimal(enrolment.getCurricularCourse().getCompetenceCourse()
-                .getLaboratorialHours(enrolment.getExecutionPeriod())));
+        return Constants.isPositive(new BigDecimal(
+                enrolment.getCurricularCourse().getCompetenceCourse().getLaboratorialHours(enrolment.getExecutionPeriod())));
     }
 
     private static boolean firstTimeStudent(final Registration registration, final ExecutionYear executionYear) {
@@ -741,22 +737,22 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     }
 
     private TuitionPaymentPlan getPreviousTuitionPaymentPlan() {
-        for(int i = getPaymentPlanOrder() - 1; i >= 0; i--) {
-            if(findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).isPresent()) {
+        for (int i = getPaymentPlanOrder() - 1; i >= 0; i--) {
+            if (findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).isPresent()) {
                 return findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).get();
             }
         }
-        
+
         return null;
     }
 
     private TuitionPaymentPlan getNextTuitionPaymentPlan() {
-        for(int i = getPaymentPlanOrder() + 1; i <= MAX_PAYMENT_PLANS_LIMIT; i++) {
-            if(findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).isPresent()) {
+        for (int i = getPaymentPlanOrder() + 1; i <= MAX_PAYMENT_PLANS_LIMIT; i++) {
+            if (findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).isPresent()) {
                 return findUnique(getTuitionPaymentPlanGroup(), getDegreeCurricularPlan(), getExecutionYear(), i).get();
             }
         }
-        
+
         return null;
     }
 
