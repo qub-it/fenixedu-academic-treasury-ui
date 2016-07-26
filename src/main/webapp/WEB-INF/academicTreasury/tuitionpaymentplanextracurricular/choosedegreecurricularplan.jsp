@@ -188,7 +188,7 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 
         					if ((Long) request.getAttribute("tuitionPaymentPlanCount") == 0) {
         %>
-        <p style="color: red;">
+        <p class="label label-warning">
             <em><spring:message
                     code="label.TuitionPaymentPlan.tuition.count.on.degree.curricular.plan.zero" /></em>
         </p>

@@ -269,6 +269,15 @@ ${portal.toolkit()}
                             </c:when>
                         </c:choose>
 
+                        <c:choose>
+                            <c:when test="${installment.applyMaximumAmount}">
+                                <p>
+                                    <em><spring:message code="label.TuitionPaymentPlan.maximumAmount" />:&nbsp;</em>
+	                                <c:out value="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.maximumAmount)}" />
+                                </p>
+							</c:when>
+						</c:choose>
+						
                         <c:if test="${installment.academicalActBlockingOff}"> 
                             <p><span class="label label-warning">
                                     <spring:message code="label.TuitionPaymentPlan.academicalActBlockingOff" />

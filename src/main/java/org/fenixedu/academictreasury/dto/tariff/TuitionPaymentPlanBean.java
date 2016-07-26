@@ -117,9 +117,12 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private EctsCalculationType ectsCalculationType;
     private BigDecimal factor;
     private BigDecimal totalEctsOrUnits;
+    private boolean applyMaximumAmount;
+    private BigDecimal maximumAmount;
     private boolean academicalActBlockingOn;
     private boolean blockAcademicActsOnDebt;
-
+    
+    
     // @formatter:off
     /*---------------------
      * END OF TARIFF FIELDS
@@ -194,6 +197,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
             this.ectsCalculationType = tuitionInstallmentTariff.getEctsCalculationType();
             this.factor = tuitionInstallmentTariff.getFactor();
             this.totalEctsOrUnits = tuitionInstallmentTariff.getTotalEctsOrUnits();
+            this.applyMaximumAmount = tuitionInstallmentTariff.isApplyMaximumAmount();
+            this.maximumAmount = tuitionInstallmentTariff.getMaximumAmount();
             this.academicalActBlockingOn = !tuitionInstallmentTariff.getAcademicalActBlockingOff();
 
             addInstallment();
@@ -285,6 +290,10 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 && this.totalEctsOrUnits == null) {
             errorMessages.add("error.TuitionPaymentPlan.totalEctsOrUnits.required");
         }
+        
+        if(this.applyMaximumAmount && (this.maximumAmount == null || !Constants.isPositive(this.maximumAmount))) {
+            errorMessages.add("error.TuitionPaymentPlan.maximumAmount.required");
+        }
 
         if (this.beginDate == null) {
             errorMessages.add("error.TuitionPaymentPlan.beginDate.required");
@@ -349,6 +358,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         installmentBean.setEctsCalculationType(this.ectsCalculationType);
         installmentBean.setFactor(this.factor);
         installmentBean.setTotalEctsOrUnits(this.totalEctsOrUnits);
+        installmentBean.setApplyMaximumAmount(this.applyMaximumAmount);
+        installmentBean.setMaximumAmount(this.maximumAmount);
         installmentBean.setAcademicalActBlockingOn(this.academicalActBlockingOn);
         installmentBean.setBlockAcademicActsOnDebt(this.blockAcademicActsOnDebt);
 
@@ -402,6 +413,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.ectsCalculationType = EctsCalculationType.FIXED_AMOUNT;
         this.factor = null;
         this.totalEctsOrUnits = null;
+        this.applyMaximumAmount = false;
+        this.maximumAmount = null;
         this.academicalActBlockingOn = true;
         this.blockAcademicActsOnDebt = false;
     }
@@ -784,6 +797,22 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     
     public void setSheetName(String sheetName) {
         this.sheetName = sheetName;
+    }
+
+    public boolean isApplyMaximumAmount() {
+        return applyMaximumAmount;
+    }
+
+    public void setApplyMaximumAmount(boolean applyMaximumAmount) {
+        this.applyMaximumAmount = applyMaximumAmount;
+    }
+
+    public BigDecimal getMaximumAmount() {
+        return maximumAmount;
+    }
+
+    public void setMaximumAmount(BigDecimal maximumAmount) {
+        this.maximumAmount = maximumAmount;
     }
 
     /*

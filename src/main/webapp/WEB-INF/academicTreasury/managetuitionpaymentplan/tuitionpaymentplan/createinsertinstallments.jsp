@@ -138,6 +138,9 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 		$("#createPaymentPlanform").attr("action", $("#backUrl").attr("value"));
 		$("#createPaymentPlanform").submit();
 	}
+	
+	$scope.booleanvalues = [{name : '<spring:message code="label.no"/>', value : false},
+							{name : '<spring:message code="label.yes"/>', value : true}];
  	
 }]);
 </script>
@@ -213,6 +216,15 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				</c:when>
 			</c:choose>
 			
+			<c:choose>
+				<c:when test="${installment.applyMaximumAmount}">
+					<p>
+						<em><spring:message code="label.TuitionPaymentPlan.maximumAmount" />:&nbsp;</em>
+						<c:out value="${finantialEntity.finantialInstitution.currency.getValueFor(installment.maximumAmount)}" />
+					</p>
+				</c:when>
+			</c:choose>
+
  			<c:if test="${installment.academicalActBlockingOff}"> 
 				<p><span class="label label-warning">
 						<spring:message code="label.TuitionPaymentPlan.academicalActBlockingOff" />
@@ -418,7 +430,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 				</div>
 
 				<div class="col-sm-6">
-                 <div class="input-group">
+                <div class="input-group">
                         <div class="input-group-addon">
                             <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
                         </div>
@@ -427,7 +439,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						name="fixedamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
 						value="<c:out value='${bean.fixedAmount}'/>" ng-required="object.tuitionCalculationType == 'FIXED_AMOUNT' || object.ectsCalculationType == 'FIXED_AMOUNT'" />
 				</div>
-                </div>
+				</div>
 			</div>
 			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')">
 				<div class="col-sm-2 control-label">
@@ -438,7 +450,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<input id="tuitionInstallmentTariff_factor" class="form-control"
 						type="number" pattern="\d+(\.\d{4})?" min="0" step="0.001" 
                         ng-model="object.factor" name="factor"
-						value='<c:out value='${bean.factor}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')" pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.factor}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')" />
 				</div>
 			</div>
 			<div class="form-group row" ng-show="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' || object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')">
@@ -457,9 +469,41 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 					<input id="tuitionInstallmentTariff_totalEctsOrUnits"
 						class="form-control" type="number" pattern="[0-9]?" min="0" step="1"
 						ng-model="object.totalEctsOrUnits" name="totalectsorunits"
-						value='<c:out value='${bean.totalEctsOrUnits}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')" pattern="\d+(\.\d{2})?" />
+						value='<c:out value='${bean.totalEctsOrUnits}'/>' ng-required="(object.tuitionCalculationType == 'ECTS' || object.tuitionCalculationType == 'UNITS') && (object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_INDEXED' object.ectsCalculationType == 'DEFAULT_PAYMENT_PLAN_COURSE_FUNCTION_COST_INDEXED')" />
 				</div>
 			</div>
+			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.TuitionInstallmentTariff.applyMaximumAmount" />
+				</div>
+				<div class="col-sm-6">
+					<select id="tuitionInstallmentTariff_applyMaximumAmount"
+						name="applyMaximumAmount" class="form-control"
+						ng-model="object.applyMaximumAmount"
+						ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+					</select>
+				</div>
+			</div>
+			
+			<div class="form-group row" ng-show="object.applyMaximumAmount">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.TuitionInstallmentTariff.maximumAmount" />
+				</div>
+
+				<div class="col-sm-6">
+                <div class="input-group">
+                    <div class="input-group-addon">
+                        <c:out value="${finantialEntity.finantialInstitution.currency.symbol}" />
+                    </div>
+					<input id="tuitionInstallmentTariff_maximumAmount"
+						class="form-control" type="number" ng-model="object.maximumAmount"
+						name="maximumamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
+						value="<c:out value='${bean.maximumAmount}'/>" ng-required="object.applyMaximumAmount" />
+				</div>
+				</div>
+			</div>
+			
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.beginDate" />

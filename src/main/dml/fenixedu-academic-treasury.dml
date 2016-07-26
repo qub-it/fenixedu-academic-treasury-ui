@@ -387,6 +387,7 @@ class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tar
 	BigDecimal totalEctsOrUnits;
 	boolean academicalActBlockingOff;
 	boolean blockAcademicActsOnDebt;
+	BigDecimalAT maximumAmount;
 }
 
 	relation TuitionInstallmentTariffTuitionPaymentPlan {

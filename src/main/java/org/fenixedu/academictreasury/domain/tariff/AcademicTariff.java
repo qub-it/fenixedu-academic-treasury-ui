@@ -520,46 +520,44 @@ public class AcademicTariff extends AcademicTariff_Base {
         final Currency currency = academicTreasuryEvent.getDebtAccount().getFinantialInstitution().getCurrency();
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.BASE_AMOUNT.getDescriptionI18N().getContent(),
-                currency.getValueFor(getBaseAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+                currency.getValueFor(getBaseAmount()));
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.UNITS_FOR_BASE.getDescriptionI18N().getContent(),
                 String.valueOf(getUnitsForBase()));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.UNIT_AMOUNT.getDescriptionI18N().getContent(),
-                currency.getValueFor(getUnitAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS).toString());
+                currency.getValueFor(getUnitAmount()).toString());
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ADDITIONAL_UNITS.getDescriptionI18N().getContent(),
                 String.valueOf(numberOfAdditionalUnits(academicTreasuryEvent)));
         propertiesMap.put(
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_UNITS_AMOUNT.getDescriptionI18N().getContent(),
-                currency.getValueFor(amountForAdditionalUnits(academicTreasuryEvent),
-                        Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+                currency.getValueFor(amountForAdditionalUnits(academicTreasuryEvent)));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.PAGE_AMOUNT.getDescriptionI18N().getContent(),
-                currency.getValueFor(getPageAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS).toString());
+                currency.getValueFor(getPageAmount()).toString());
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.NUMBER_OF_PAGES.getDescriptionI18N().getContent(),
                 String.valueOf(academicTreasuryEvent.getNumberOfPages()));
         propertiesMap.put(
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_PAGES_AMOUNT.getDescriptionI18N().getContent(),
-                currency.getValueFor(amountForPages(academicTreasuryEvent), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+                currency.getValueFor(amountForPages(academicTreasuryEvent)));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.MAXIMUM_AMOUNT.getDescriptionI18N().getContent(),
-                currency.getValueFor(getMaximumAmount(), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+                currency.getValueFor(getMaximumAmount()));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FOREIGN_LANGUAGE_RATE.getDescriptionI18N().getContent(),
                 getLanguageTranslationRate().toString());
         propertiesMap.put(
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_FOREIGN_LANGUAGE_RATE.getDescriptionI18N()
                         .getContent(),
-                currency.getValueFor(amountForLanguageTranslationRate(academicTreasuryEvent),
-                        Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+                currency.getValueFor(amountForLanguageTranslationRate(academicTreasuryEvent)));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.URGENT_PERCENTAGE.getDescriptionI18N().getContent(),
                 getUrgencyRate().toString());
         propertiesMap.put(
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.CALCULATED_URGENT_AMOUNT.getDescriptionI18N().getContent(),
-                currency.getValueFor(amountForUrgencyRate(academicTreasuryEvent), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+                currency.getValueFor(amountForUrgencyRate(academicTreasuryEvent)));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FINAL_AMOUNT.getDescriptionI18N().getContent(),
-                currency.getValueFor(amountToPay(academicTreasuryEvent), Constants.EXTENDED_CURRENCY_DECIMAL_DIGITS));
+                currency.getValueFor(amountToPay(academicTreasuryEvent)));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.USED_DATE.getDescriptionI18N().getContent(),
                 when.toString(Constants.DATE_FORMAT));
