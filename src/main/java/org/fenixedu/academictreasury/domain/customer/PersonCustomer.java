@@ -135,8 +135,20 @@ public class PersonCustomer extends PersonCustomer_Base {
         if (person.getDefaultPhysicalAddress() == null) {
             return null;
         }
+        
+        if(!Strings.isNullOrEmpty(person.getDefaultPhysicalAddress().getArea())) {
+            return person.getDefaultPhysicalAddress().getArea();
+        }
+        
+        if(!Strings.isNullOrEmpty(person.getDefaultPhysicalAddress().getDistrictSubdivisionOfResidence())) {
+            return person.getDefaultPhysicalAddress().getDistrictSubdivisionOfResidence();
+        }
+        
+        if(!Strings.isNullOrEmpty(person.getDefaultPhysicalAddress().getDistrictOfResidence())) {
+            return person.getDefaultPhysicalAddress().getDistrictOfResidence();
+        }
 
-        return person.getDefaultPhysicalAddress().getArea();
+        return null;
     }
 
     @Override
