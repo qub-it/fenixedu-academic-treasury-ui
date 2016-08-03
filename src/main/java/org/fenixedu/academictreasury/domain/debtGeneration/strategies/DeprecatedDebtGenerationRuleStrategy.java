@@ -71,6 +71,11 @@ public class DeprecatedDebtGenerationRuleStrategy implements IAcademicDebtGenera
     public boolean isToCreatePaymentReferenceCodes() {
         return true;
     }
+
+    @Override
+    public boolean isEntriesRequired() {
+        return true;
+    }
     
     @Atomic(mode = TxMode.READ)
     @Override

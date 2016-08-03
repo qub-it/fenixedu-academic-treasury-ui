@@ -29,6 +29,7 @@
 package org.fenixedu.academictreasury.domain.serviceRequests;
 
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import org.fenixedu.academic.domain.ExecutionYear;
@@ -122,5 +123,7 @@ public interface ITreasuryServiceRequest {
     public Set<ICurriculumEntry> getExtracurricularEnrolmentsByYear();
 
     public String getExternalId();
+    
+    public Map<String, String> getPropertyValuesMap();
 
 }

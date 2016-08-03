@@ -30,8 +30,8 @@ public class AcademicTaxServices {
 
     public static List<IAcademicTreasuryEvent> findAllTreasuryEventsForAcademicTaxes(final Registration registration,
             final ExecutionYear executionYear) {
-        return AcademicTreasuryEvent.findAllForAcademicTax(registration, executionYear).collect(
-                Collectors.<IAcademicTreasuryEvent> toList());
+        return AcademicTreasuryEvent.findAllForAcademicTax(registration, executionYear)
+                .collect(Collectors.<IAcademicTreasuryEvent> toList());
     }
 
     public static AcademicTreasuryEvent findAcademicTreasuryEvent(final Registration registration,
@@ -46,7 +46,7 @@ public class AcademicTaxServices {
 
     @Atomic
     public static AcademicTaxDebitEntryBean calculateAcademicTax(final Registration registration,
-            final ExecutionYear executionYear, final AcademicTax academicTax, final LocalDate debtDate, 
+            final ExecutionYear executionYear, final AcademicTax academicTax, final LocalDate debtDate,
             final boolean forceCreation) {
 
         if (!forceCreation && TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
@@ -76,9 +76,8 @@ public class AcademicTaxServices {
                         PersonCustomer.findUnique(registration.getPerson()).get());
             }
 
-            final DebtAccount debtAccount =
-                    DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(),
-                            PersonCustomer.findUnique(registration.getPerson()).get()).get();
+            final DebtAccount debtAccount = DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(),
+                    PersonCustomer.findUnique(registration.getPerson()).get()).get();
 
             AcademicTreasuryEvent.createForAcademicTax(debtAccount, academicTax, registration, executionYear);
         }
@@ -101,7 +100,7 @@ public class AcademicTaxServices {
             final AcademicTax academicTax, final boolean forceCreation) {
         return createAcademicTax(registration, executionYear, academicTax, new LocalDate(), forceCreation);
     }
-    
+
     @Atomic
     public static boolean createAcademicTax(final Registration registration, final ExecutionYear executionYear,
             final AcademicTax academicTax, final LocalDate when, final boolean forceCreation) {
@@ -132,9 +131,8 @@ public class AcademicTaxServices {
                         PersonCustomer.findUnique(registration.getPerson()).get());
             }
 
-            final DebtAccount debtAccount =
-                    DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(),
-                            PersonCustomer.findUnique(registration.getPerson()).get()).get();
+            final DebtAccount debtAccount = DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(),
+                    PersonCustomer.findUnique(registration.getPerson()).get()).get();
 
             AcademicTreasuryEvent.createForAcademicTax(debtAccount, academicTax, registration, executionYear);
         }
@@ -160,17 +158,18 @@ public class AcademicTaxServices {
     public static boolean isRegistrationFirstYear(final Registration registration, final ExecutionYear executionYear) {
         return registration.getRegistrationYear() == executionYear;
     }
-    
+
     public static boolean isRegistrationSubsequentYear(final Registration registration, final ExecutionYear executionYear) {
         return registration.getRegistrationYear().isBefore(executionYear);
     }
 
     public static boolean isAppliableOnRegistration(final AcademicTax academicTax, final Registration registration,
             final ExecutionYear executionYear) {
-        return (isRegistrationFirstYear(registration, executionYear) && academicTax.isAppliedOnRegistrationFirstYear()) ||
-                (isRegistrationSubsequentYear(registration, executionYear) && academicTax.isAppliedOnRegistrationSubsequentYears());
+        return (isRegistrationFirstYear(registration, executionYear) && academicTax.isAppliedOnRegistrationFirstYear())
+                || (isRegistrationSubsequentYear(registration, executionYear)
+                        && academicTax.isAppliedOnRegistrationSubsequentYears());
     }
-    
+
     /* ***********
      * IMPROVEMENT
      * ***********
@@ -193,6 +192,12 @@ public class AcademicTaxServices {
             final LocalDate debtDate) {
         if (!enrolmentEvaluation.getEvaluationSeason().isImprovement()) {
             throw new AcademicTreasuryDomainException("error.AcademicTaxServices.enrolmentEvaluation.is.not.improvement");
+        }
+
+        final AcademicTax improvementAcademicTax = AcademicTreasurySettings.getInstance().getImprovementAcademicTax();
+
+        if (improvementAcademicTax == null) {
+            return null;
         }
 
         final Registration registration = enrolmentEvaluation.getRegistration();
@@ -231,9 +236,8 @@ public class AcademicTaxServices {
             return null;
         }
 
-        final AcademicTariff academicTariff =
-                AcademicTariff.findMatch(AcademicTreasurySettings.getInstance().getImprovementAcademicTax().getProduct(),
-                        registration.getDegree(), debtDate.toDateTimeAtStartOfDay());
+        final AcademicTariff academicTariff = AcademicTariff.findMatch(improvementAcademicTax.getProduct(),
+                registration.getDegree(), debtDate.toDateTimeAtStartOfDay());
 
         if (academicTariff == null) {
             return null;
@@ -258,6 +262,18 @@ public class AcademicTaxServices {
         final Registration registration = enrolmentEvaluation.getRegistration();
         final ExecutionYear executionYear = enrolmentEvaluation.getExecutionPeriod().getExecutionYear();
 
+        AcademicTreasurySettings instance = AcademicTreasurySettings.getInstance();
+
+        if (instance == null) {
+            return false;
+        }
+
+        final AcademicTax improvementAcademicTax = instance.getImprovementAcademicTax();
+
+        if (improvementAcademicTax == null) {
+            return false;
+        }
+
         if (findAcademicTreasuryEventForImprovementTax(registration, executionYear) == null) {
             final Person person = registration.getPerson();
 
@@ -267,9 +283,8 @@ public class AcademicTaxServices {
 
             final PersonCustomer personCustomer = PersonCustomer.findUnique(person).get();
 
-            final AcademicTariff academicTariff =
-                    AcademicTariff.findMatch(AcademicTreasurySettings.getInstance().getImprovementAcademicTax().getProduct(),
-                            registration.getDegree(), when.toDateTimeAtStartOfDay());
+            final AcademicTariff academicTariff = AcademicTariff.findMatch(improvementAcademicTax.getProduct(),
+                    registration.getDegree(), when.toDateTimeAtStartOfDay());
 
             if (academicTariff == null) {
                 return false;
@@ -293,9 +308,8 @@ public class AcademicTaxServices {
             return false;
         }
 
-        final AcademicTariff academicTariff =
-                AcademicTariff.findMatch(AcademicTreasurySettings.getInstance().getImprovementAcademicTax().getProduct(),
-                        registration.getDegree(), when.toDateTimeAtStartOfDay());
+        final AcademicTariff academicTariff = AcademicTariff.findMatch(improvementAcademicTax.getProduct(),
+                registration.getDegree(), when.toDateTimeAtStartOfDay());
 
         if (academicTariff == null) {
             return false;
@@ -327,18 +341,16 @@ public class AcademicTaxServices {
         final DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
 
         if (!debitEntry.isProcessedInDebitNote()) {
-            debitEntry.annulDebitEntry(Constants
-                    .bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"));
-            
+            debitEntry.annulDebitEntry(Constants.bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"));
+
 //            debitEntry.setCurricularCourse(null);
 //            debitEntry.setExecutionSemester(null);
 //            debitEntry.setEvaluationSeason(null);
-            
+
             return true;
         } else if (debitEntry.getCreditEntriesSet().isEmpty()) {
-            debitNote
-                .anullDebitNoteWithCreditNote(Constants
-                            .bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"), false);
+            debitNote.anullDebitNoteWithCreditNote(
+                    Constants.bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"), false);
             return true;
         }
 

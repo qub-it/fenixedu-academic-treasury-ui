@@ -62,7 +62,7 @@ public class AcademicTreasurySettingsController extends AcademicTreasuryBaseCont
 
     @RequestMapping(value = _READ_URI)
     public String read(final Model model) {
-        model.addAttribute("products", Product.findAllActive().sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
+        model.addAttribute("products", Product.findAll().sorted(Product.COMPARE_BY_NAME).collect(Collectors.toList()));
 
         model.addAttribute("academicTreasurySettings", AcademicTreasurySettings.getInstance());
 

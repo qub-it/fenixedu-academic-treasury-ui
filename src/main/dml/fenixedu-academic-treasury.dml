@@ -119,6 +119,7 @@ class tariff.AcademicTariff extends .org.fenixedu.treasury.domain.tariff.Tariff 
 class emoluments.ServiceRequestMapEntry {
 	AcademicServiceRequestSituationTypeT createEventOnSituation;
 	boolean generatePaymentCode;
+	String debitEntryDescriptionExtensionFormat;
 }
 
 	relation ServiceRequestMapEntryBennu {

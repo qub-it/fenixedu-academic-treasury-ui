@@ -73,6 +73,11 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
     }
 
     @Override
+    public boolean isEntriesRequired() {
+        return true;
+    }
+    
+    @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule) {
 

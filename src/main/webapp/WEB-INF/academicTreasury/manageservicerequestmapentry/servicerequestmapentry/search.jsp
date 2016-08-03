@@ -181,7 +181,16 @@ ${portal.toolkit()}
                     var="searchResult">
                     <tr>
                         <td>${searchResult.serviceRequestType.name.content}</td>
-                        <td>${searchResult.product.name.content}</td>
+                        <td>
+                        	<p>${searchResult.product.name.content}</p>
+                        	
+                        	<c:if test="${not empty searchResult.debitEntryDescriptionExtensionFormat}">
+                        		<p>
+                        			<spring:message code="label.ServiceRequestMapEntry.debitEntryDescriptionExtensionFormat" />:
+                        			<em><c:out value="${searchResult.debitEntryDescriptionExtensionFormat}" /></em>
+                        		</p>
+                        	</c:if>
+                        </td>
                         <td>${searchResult.createEventOnSituation.localizedName}</td>
                         <td>
                             <c:if test="${ searchResult.generatePaymentCode }">

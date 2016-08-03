@@ -68,15 +68,14 @@ public class AcademicTariffBean implements IBean, Serializable {
     private boolean academicalActBlockingOn;
     private BigDecimal factor;
     private BigDecimal totalEctsOrUnits;
-    
+
     private boolean blockAcademicActsOnDebt;
 
-    
     /* Used in importation */
     private FinantialEntity finantialEntity;
     private Product emolumentProduct;
     private String sheetName;
-    
+
     /* Used in tuition installment tariff edition */
     private List<TupleDataSourceBean> tuitionCalculationTypeDataSource = null;
     private List<TupleDataSourceBean> ectsCalculationTypeDataSource = null;
@@ -200,14 +199,14 @@ public class AcademicTariffBean implements IBean, Serializable {
         this.setTotalEctsOrUnits(tuitionInstallmentTariff.getTotalEctsOrUnits());
         this.setApplyMaximumAmount(tuitionInstallmentTariff.isApplyMaximumAmount());
         this.setMaximumAmount(tuitionInstallmentTariff.getMaximumAmount());
-        
-        
+
         this.tuitionCalculationTypeDataSource = TuitionPaymentPlanBean.tuitionCalculationTypeDataSource();
         this.ectsCalculationTypeDataSource = TuitionPaymentPlanBean.ectsCalculationTypeDataSource();
         this.interestTypeDataSource = TuitionPaymentPlanBean.interestTypeDataSource();
         this.dueDateCalculationTypeDataSource = TuitionPaymentPlanBean.dueDateCalculationTypeDataSource();
-        this.tuitionInstallmentProductDataSource = TuitionPaymentPlanBean.tuitionInstallmentProductDataSource();
-
+        this.tuitionInstallmentProductDataSource = TuitionPaymentPlanBean.tuitionInstallmentProductDataSource(
+                tuitionInstallmentTariff.getTuitionPaymentPlan().getTuitionPaymentPlanGroup(),
+                tuitionInstallmentTariff.getProduct().getTuitionInstallmentOrder());
     }
 
     public void resetFields() {
@@ -295,7 +294,7 @@ public class AcademicTariffBean implements IBean, Serializable {
     public boolean isApplyBaseAmount() {
         return Constants.isPositive(getBaseAmount());
     }
-    
+
     /*
      * GETTERS & SETTERS
      */
@@ -575,11 +574,11 @@ public class AcademicTariffBean implements IBean, Serializable {
     public boolean isBlockAcademicActsOnDebt() {
         return blockAcademicActsOnDebt;
     }
-    
+
     public void setBlockAcademicActsOnDebt(boolean blockAcademicActsOnDebt) {
         this.blockAcademicActsOnDebt = blockAcademicActsOnDebt;
     }
-    
+
     public BigDecimal getFactor() {
         return factor;
     }
@@ -595,27 +594,27 @@ public class AcademicTariffBean implements IBean, Serializable {
     public void setTotalEctsOrUnits(BigDecimal totalEctsOrUnits) {
         this.totalEctsOrUnits = totalEctsOrUnits;
     }
-    
+
     public FinantialEntity getFinantialEntity() {
         return finantialEntity;
     }
-    
+
     public void setFinantialEntity(FinantialEntity finantialEntity) {
         this.finantialEntity = finantialEntity;
     }
-    
+
     public Product getEmolumentProduct() {
         return emolumentProduct;
     }
-    
+
     public void setEmolumentProduct(Product emolumentProduct) {
         this.emolumentProduct = emolumentProduct;
     }
-    
+
     public String getSheetName() {
         return sheetName;
     }
-    
+
     public void setSheetName(String sheetName) {
         this.sheetName = sheetName;
     }

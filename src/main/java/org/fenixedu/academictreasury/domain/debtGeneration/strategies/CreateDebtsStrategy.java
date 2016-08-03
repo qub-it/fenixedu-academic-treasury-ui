@@ -70,6 +70,11 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
     }
 
     @Override
+    public boolean isEntriesRequired() {
+        return true;
+    }
+    
+    @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule) {
 
@@ -323,5 +328,4 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
         return debitNote;
     }
 
-    
 }

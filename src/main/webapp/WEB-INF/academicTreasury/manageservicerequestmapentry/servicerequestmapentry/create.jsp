@@ -132,7 +132,16 @@ ${portal.toolkit()}
                         <option value=""></option>
                     </select>
                 </div>
-            </div>   
+            </div>
+            
+            <div class="form-group row">
+                <div class="col-sm-2 control-label"><spring:message code="label.ServiceRequestMapEntry.debitEntryDescriptionExtensionFormat"/></div> 
+            
+                <div class="col-sm-4">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <input type="text" id="serviceRequestMapEntry_debitEntryDescriptionExtensionFormat" name="debitEntryDescriptionExtensionFormat" />
+                </div>
+            </div>
 		</div>
 		<div class="panel-footer">
 		<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />"/>

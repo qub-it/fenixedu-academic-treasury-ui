@@ -12,6 +12,7 @@ public interface IAcademicDebtGenerationRuleStrategy {
     public boolean isToAggregateDebitEntries();
     public boolean isToCloseDebitNote();
     public boolean isToCreatePaymentReferenceCodes();
+    public boolean isEntriesRequired();
     
     public void process(final AcademicDebtGenerationRule rule);
     public void process(final AcademicDebtGenerationRule rule, final Registration registration);

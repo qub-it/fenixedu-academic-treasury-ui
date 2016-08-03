@@ -121,8 +121,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private BigDecimal maximumAmount;
     private boolean academicalActBlockingOn;
     private boolean blockAcademicActsOnDebt;
-    
-    
+
     // @formatter:off
     /*---------------------
      * END OF TARIFF FIELDS
@@ -135,7 +134,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     // Named in tuition importation
     private String sheetName;
-    
+
     public TuitionPaymentPlanBean(final Product product, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final FinantialEntity finantialEntity, final ExecutionYear executionYear) {
         this.product = product;
@@ -225,7 +224,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         this.dueDateCalculationTypeDataSource = dueDateCalculationTypeDataSource();
 
-        this.tuitionInstallmentProductDataSource = tuitionInstallmentProductDataSource();
+        this.tuitionInstallmentProductDataSource = tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
 
         this.statuteTypeDataSource = statuteTypeDataSource();
 
@@ -290,8 +289,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 && this.totalEctsOrUnits == null) {
             errorMessages.add("error.TuitionPaymentPlan.totalEctsOrUnits.required");
         }
-        
-        if(this.applyMaximumAmount && (this.maximumAmount == null || !Constants.isPositive(this.maximumAmount))) {
+
+        if (this.applyMaximumAmount && (this.maximumAmount == null || !Constants.isPositive(this.maximumAmount))) {
             errorMessages.add("error.TuitionPaymentPlan.maximumAmount.required");
         }
 
@@ -365,10 +364,16 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         this.tuitionInstallmentBeans.add(installmentBean);
 
+        this.tuitionInstallmentProductDataSource = tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
+
         return errorMessages;
     }
-    
+
     public void removeInstallment(final int installmentNumber) {
+        if(findTariffBeanByInstallmentNumber(installmentNumber + 1) != null) {
+            throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.delete.after.first");
+        }
+        
         AcademicTariffBean removeBean = findTariffBeanByInstallmentNumber(installmentNumber);
 
         if (removeBean != null) {
@@ -379,6 +384,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 academicTariffBean.setInstallmentOrder(i++);
             }
         }
+    
+        this.tuitionInstallmentProductDataSource = tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
     }
 
     private AcademicTariffBean findTariffBeanByInstallmentNumber(int installmentNumber) {
@@ -774,11 +781,11 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     public void setAcademicalActBlockingOn(boolean academicalActBlockingOn) {
         this.academicalActBlockingOn = academicalActBlockingOn;
     }
-    
+
     public boolean isBlockAcademicActsOnDebt() {
         return blockAcademicActsOnDebt;
     }
-    
+
     public void setBlockAcademicActsOnDebt(boolean blockAcademicActsOnDebt) {
         this.blockAcademicActsOnDebt = blockAcademicActsOnDebt;
     }
@@ -790,11 +797,11 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     public void setStatuteType(StatuteType statuteType) {
         this.statuteType = statuteType;
     }
-    
+
     public String getSheetName() {
         return sheetName;
     }
-    
+
     public void setSheetName(String sheetName) {
         this.sheetName = sheetName;
     }
@@ -940,10 +947,18 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    public static List<TupleDataSourceBean> tuitionInstallmentProductDataSource() {
-        final List<TupleDataSourceBean> result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet()
-                .stream().map(p -> new TupleDataSourceBean(p.getExternalId(), p.getName().getContent()))
-                .collect(Collectors.toList());
+    public static List<TupleDataSourceBean> tuitionInstallmentProductDataSource(
+            final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, int desiredTuitionInstallmentOrder) {
+        List<TupleDataSourceBean> result = null;
+
+        if (tuitionPaymentPlanGroup != null && tuitionPaymentPlanGroup.isForRegistration()) {
+            result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet().stream()
+                    .filter(p -> p.isActive() && p.getTuitionInstallmentOrder() == desiredTuitionInstallmentOrder)
+                    .map(p -> new TupleDataSourceBean(p.getExternalId(), p.getName().getContent())).collect(Collectors.toList());
+        } else {
+            result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet().stream().filter(p -> p.isActive())
+                    .map(p -> new TupleDataSourceBean(p.getExternalId(), p.getName().getContent())).collect(Collectors.toList());
+        }
 
         result.add(Constants.SELECT_OPTION);
 

@@ -67,6 +67,11 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
     }
 
     @Override
+    public boolean isEntriesRequired() {
+        return true;
+    }
+    
+    @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule) {
 

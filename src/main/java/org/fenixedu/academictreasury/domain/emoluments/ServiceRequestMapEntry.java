@@ -21,7 +21,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
 
     protected ServiceRequestMapEntry(final Product product, final ServiceRequestType requestType,
             final AcademicServiceRequestSituationType createEventOnSituation, final boolean generatePaymentCode,
-            final PaymentCodePool paymentCodePool) {
+            final PaymentCodePool paymentCodePool, final String debitEntryDescriptionExtensionFormat) {
         this();
 
         setProduct(product);
@@ -29,6 +29,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
         setCreateEventOnSituation(createEventOnSituation);
         setGeneratePaymentCode(generatePaymentCode);
         setPaymentCodePool(paymentCodePool);
+        setDebitEntryDescriptionExtensionFormat(debitEntryDescriptionExtensionFormat);
 
         checkRules();
     }
@@ -108,15 +109,16 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
 
     @Atomic
     public static ServiceRequestMapEntry create(final Product product, final ServiceRequestType requestType,
-            AcademicServiceRequestSituationType situationType) {
-        return new ServiceRequestMapEntry(product, requestType, situationType, false, null);
+            AcademicServiceRequestSituationType situationType, final String debitEntryDescriptionExtensionFormat) {
+        return new ServiceRequestMapEntry(product, requestType, situationType, false, null, debitEntryDescriptionExtensionFormat);
     }
 
     @Atomic
     public static ServiceRequestMapEntry create(final Product product, final ServiceRequestType requestType,
             AcademicServiceRequestSituationType situationType, final boolean generatePaymentCode,
-            final PaymentCodePool paymentCodePool) {
-        return new ServiceRequestMapEntry(product, requestType, situationType, generatePaymentCode, paymentCodePool);
+            final PaymentCodePool paymentCodePool, final String debitEntryDescriptionExtensionFormat) {
+        return new ServiceRequestMapEntry(product, requestType, situationType, generatePaymentCode, paymentCodePool,
+                debitEntryDescriptionExtensionFormat);
     }
 
 }

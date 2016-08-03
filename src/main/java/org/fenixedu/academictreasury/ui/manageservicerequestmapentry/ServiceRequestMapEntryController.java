@@ -101,13 +101,15 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
             @RequestParam(value = "createEventOnSituation",
                     required = true) final AcademicServiceRequestSituationType createEventOnSituationType,
             @RequestParam(value = "generatePaymentCode", required = true) final boolean generatePaymentCode,
-            @RequestParam(value = "paymentCodePool", required = true) final PaymentCodePool paymentCodePool, Model model,
+            @RequestParam(value = "paymentCodePool", required = true) final PaymentCodePool paymentCodePool, 
+            @RequestParam(value = "debitEntryDescriptionExtensionFormat", required = false) final String debitEntryDescriptionExtensionFormat,
+            Model model,
             RedirectAttributes redirectAttributes) {
 
         try {
 
             ServiceRequestMapEntry.create(product, serviceRequestType, createEventOnSituationType, generatePaymentCode,
-                    paymentCodePool);
+                    paymentCodePool, debitEntryDescriptionExtensionFormat);
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.ServiceRequestMapEntry.create.success"), model);
 

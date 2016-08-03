@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.text.StrSubstitutor;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.EnrolmentEvaluation;
@@ -46,6 +47,7 @@ import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.joda.time.LocalDate;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
@@ -433,13 +435,24 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     private LocalizedString descriptionForAcademicServiceRequest() {
+        final ServiceRequestMapEntry serviceRequestMapEntry = ServiceRequestMapEntry.findMatch(getITreasuryServiceRequest());
+        
         LocalizedString result = new LocalizedString();
 
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
-            result = result.with(locale, getProduct().getName().getContent(locale) + ": "
-                    + getITreasuryServiceRequest().getServiceRequestNumberYear());
-        }
+            String text = getProduct().getName().getContent(locale) + ": "
+                    + getITreasuryServiceRequest().getServiceRequestNumberYear();
 
+            if(!Strings.isNullOrEmpty(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat())) {
+                final StrSubstitutor str = new StrSubstitutor(getITreasuryServiceRequest().getPropertyValuesMap());
+                
+                final String extString = str.replace(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat());
+                text += " " + extString;
+            }
+            
+            result = result.with(locale, text);
+        }
+        
         return result;
     }
 

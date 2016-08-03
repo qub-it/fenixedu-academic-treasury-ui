@@ -103,7 +103,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     "error.AcademicDebtGenerationRule.aggregateAllOrNothing.requires.aggregateOnDebitNote");
         }
 
-        if (getAcademicDebtGenerationRuleEntriesSet().isEmpty()) {
+        if (getAcademicDebtGenerationRuleType().strategyImplementation().isEntriesRequired() && getAcademicDebtGenerationRuleEntriesSet().isEmpty()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.entries.required");
         }
 

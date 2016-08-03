@@ -285,7 +285,12 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @PathVariable("installmentNumber") final int installmentNumber,
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
-        bean.removeInstallment(installmentNumber);
+        try {
+            bean.removeInstallment(installmentNumber);
+        } catch (final DomainException de) {
+            addErrorMessage(de.getLocalizedMessage(), model);
+        }
+
         bean.resetInstallmentFields();
 
         model.addAttribute("finantialEntity", finantialEntity);
