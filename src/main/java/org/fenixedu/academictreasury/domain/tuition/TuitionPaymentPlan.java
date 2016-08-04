@@ -618,7 +618,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         final RegistrationRegimeType regimeType = registration.getRegimeType(executionYear);
         final RegistrationProtocol registrationProtocol = registration.getRegistrationProtocol();
         final IngressionType ingression = registration.getIngressionType();
-        final int semesterWithFirstEnrolments = semesterWithFirstEnrolments(registration, executionYear);
+        final Set<Integer> semestersWithEnrolments = semestersWithEnrolments(registration, executionYear);
         final CurricularYear curricularYear = CurricularYear.readByYear(curricularYear(registration, executionYear));
         final boolean firstTimeStudent = firstTimeStudent(registration, executionYear);
         final Set<StatuteType> statutes =
@@ -644,8 +644,16 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                 continue;
             }
 
-            if (t.getSemester() != null && t.getSemester() != semesterWithFirstEnrolments) {
-                continue;
+            if (t.getSemester() != null) {
+                if(semestersWithEnrolments.size() != 1) {
+                    continue;
+                }
+                
+                final Integer semester = semestersWithEnrolments.iterator().next();
+                
+                if(!t.getSemester().equals(semester)) {
+                    continue;
+                }
             }
 
             if (t.getCurricularYear() != null && t.getCurricularYear() != curricularYear) {
@@ -731,9 +739,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         return registration.getCurricularYear(executionYear);
     }
 
-    private static int semesterWithFirstEnrolments(final Registration registration, final ExecutionYear executionYear) {
-        return registration.getEnrolments(executionYear).stream().map(e -> e.getExecutionPeriod().getSemester()).sorted()
-                .findFirst().orElse(1);
+    private static Set<Integer> semestersWithEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        return registration.getEnrolments(executionYear).stream().map(e -> (Integer) e.getExecutionPeriod().getSemester())
+                .collect(Collectors.toSet());
     }
 
     private TuitionPaymentPlan getPreviousTuitionPaymentPlan() {

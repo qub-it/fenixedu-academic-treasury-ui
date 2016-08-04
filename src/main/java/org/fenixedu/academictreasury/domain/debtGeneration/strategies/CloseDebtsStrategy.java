@@ -38,7 +38,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
 
     @Override
     public boolean isAppliedOnAcademicTaxDebitEntries() {
-        return false;
+        return true;
     }
 
     @Override
@@ -117,6 +117,9 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
             Set<DebitEntry> grabbedDebitEntries = null;
             if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == product.getProductGroup()) {
                 grabbedDebitEntries = grabDebitEntryForTuitions(rule, registration, entry);
+            } else if (AcademicTax.findUnique(product).isPresent()) {
+                // Check if the product is an academic tax
+                grabbedDebitEntries = grabDebitEntryForAcademicTax(rule, registration, entry);
             }
             
             for(final DebitEntry grabbedDebitEntry : grabbedDebitEntries) {

@@ -172,7 +172,6 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
                 // Check if the product is an academic tax
                 grabbedDebitEntry = grabDebitEntryForAcademicTax(rule, registration, entry);
             } else {
-                // Check if the product is an academic tax
                 grabbedDebitEntry = grabDebitEntry(rule, registration, entry);
             }
 
