@@ -190,7 +190,9 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                     isCustomized() ? "label.TuitionPaymentPlan.paymentPlanName.customized" : "label.TuitionPaymentPlan.paymentPlanName";
 
             result = result.with(locale, BundleUtil.getString(Constants.BUNDLE, paymentPlanLabel,
-                    getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale),
+                    "[" + getDegreeCurricularPlan().getDegree().getCode() + "] " + 
+                    getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale)
+                    + " - " + getDegreeCurricularPlan().getName(),
                     getExecutionYear().getQualifiedName(), isCustomized() ? getCustomizedName().getContent(locale) : null));
         }
 

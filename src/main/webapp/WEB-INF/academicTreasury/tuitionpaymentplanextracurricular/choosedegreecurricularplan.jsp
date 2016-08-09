@@ -168,10 +168,8 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
         <c:set var="dcp" scope="request" value="${dcp}" />
 
         <p>
-            <strong><c:out
-                    value="${dcp.getPresentationName(executionYear)}" /></strong>
+            <strong><c:out value="[${dcp.degree.code}] ${dcp.getPresentationName(executionYear)}" /></strong>
         </p>
-
 
         <%
             request.setAttribute(

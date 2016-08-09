@@ -178,9 +178,6 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
                 new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get(),
                         finantialEntity, executionYear);
 
-        bean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().get()
-                .getCurrentProduct());
-
         return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
     }
 

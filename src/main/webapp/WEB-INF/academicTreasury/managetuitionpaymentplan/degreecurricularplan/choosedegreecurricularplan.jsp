@@ -171,7 +171,7 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
 
         <p>
             <strong><c:out
-                    value="${dcp.getPresentationName(executionYear)}" /></strong>
+                    value="[${dcp.degree.code}] ${dcp.getPresentationName(executionYear)}" /></strong>
         </p>
 
 

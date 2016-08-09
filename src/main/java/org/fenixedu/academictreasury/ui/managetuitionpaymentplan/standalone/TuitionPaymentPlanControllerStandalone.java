@@ -180,8 +180,6 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
                 new TuitionPaymentPlanBean(null, TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get(),
                         finantialEntity, executionYear);
 
-        bean.setTuitionInstallmentProduct(TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get().getCurrentProduct());
-
         return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
     }
 

@@ -224,7 +224,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         this.dueDateCalculationTypeDataSource = dueDateCalculationTypeDataSource();
 
-        this.tuitionInstallmentProductDataSource = tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
+        this.tuitionInstallmentProductDataSource =
+                tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
 
         this.statuteTypeDataSource = statuteTypeDataSource();
 
@@ -364,16 +365,17 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
         this.tuitionInstallmentBeans.add(installmentBean);
 
-        this.tuitionInstallmentProductDataSource = tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
+        this.tuitionInstallmentProductDataSource =
+                tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
 
         return errorMessages;
     }
 
     public void removeInstallment(final int installmentNumber) {
-        if(findTariffBeanByInstallmentNumber(installmentNumber + 1) != null) {
+        if (findTariffBeanByInstallmentNumber(installmentNumber + 1) != null) {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.delete.after.first");
         }
-        
+
         AcademicTariffBean removeBean = findTariffBeanByInstallmentNumber(installmentNumber);
 
         if (removeBean != null) {
@@ -384,8 +386,9 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 academicTariffBean.setInstallmentOrder(i++);
             }
         }
-    
-        this.tuitionInstallmentProductDataSource = tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
+
+        this.tuitionInstallmentProductDataSource =
+                tuitionInstallmentProductDataSource(getTuitionPaymentPlanGroup(), this.tuitionInstallmentBeans.size() + 1);
     }
 
     private AcademicTariffBean findTariffBeanByInstallmentNumber(int installmentNumber) {
@@ -424,6 +427,10 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.maximumAmount = null;
         this.academicalActBlockingOn = true;
         this.blockAcademicActsOnDebt = false;
+        
+        if (tuitionPaymentPlanGroup.isForExtracurricular() || tuitionPaymentPlanGroup.isForStandalone()) {
+            setTuitionInstallmentProduct(tuitionPaymentPlanGroup.getCurrentProduct());
+        }
     }
 
     public FinantialEntity getFinantialEntity() {
@@ -864,8 +871,9 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         final List<TupleDataSourceBean> result =
                 ExecutionDegree.getAllByExecutionYearAndDegreeType(getExecutionYear(), getDegreeType()).stream()
                         .map(e -> e.getDegreeCurricularPlan())
-                        .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(), dcp.getPresentationName(getExecutionYear())))
-                        .collect(Collectors.toList());
+                        .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(),
+                                "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
+                .collect(Collectors.toList());
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -956,8 +964,9 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                     .filter(p -> p.isActive() && p.getTuitionInstallmentOrder() == desiredTuitionInstallmentOrder)
                     .map(p -> new TupleDataSourceBean(p.getExternalId(), p.getName().getContent())).collect(Collectors.toList());
         } else {
-            result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet().stream().filter(p -> p.isActive())
-                    .map(p -> new TupleDataSourceBean(p.getExternalId(), p.getName().getContent())).collect(Collectors.toList());
+            result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet().stream()
+                    .filter(p -> p.isActive()).map(p -> new TupleDataSourceBean(p.getExternalId(), p.getName().getContent()))
+                    .collect(Collectors.toList());
         }
 
         result.add(Constants.SELECT_OPTION);
