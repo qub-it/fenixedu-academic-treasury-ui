@@ -30,9 +30,9 @@ import com.google.common.collect.Sets;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
-public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
+public class AggregateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
 
-    private static Logger logger = LoggerFactory.getLogger(CreateDebtsStrategy.class);
+    private static Logger logger = LoggerFactory.getLogger(AggregateDebtsStrategy.class);
 
     @Override
     public boolean isAppliedOnTuitionDebitEntries() {
@@ -51,7 +51,7 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
 
     @Override
     public boolean isToCreateDebitEntries() {
-        return true;
+        return false;
     }
 
     @Override
@@ -99,18 +99,6 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
                     continue;
                 }
 
-                // Discard registrations not active and with no enrolments
-                if (!registration.hasAnyActiveState(rule.getExecutionYear())) {
-                    continue;
-                }
-                
-                if(!registration.hasAnyEnrolmentsIn(rule.getExecutionYear())) {
-                    // only return is this rule has not entry that forces creation
-                    if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
-                        continue;
-                    }
-                }
-                
                 try {
                     processDebtsForRegistration(rule, registration);
                 } catch(final AcademicTreasuryDomainException e) {
@@ -142,19 +130,6 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
             
             logger.debug("AcademicDebtGenerationRule: Start");
             
-            // Discard registrations not active and with no enrolments
-            if (!registration.hasAnyActiveState(rule.getExecutionYear())) {
-                return;
-            }
-            
-            if (!registration.hasAnyEnrolmentsIn(rule.getExecutionYear())) {
-                
-                // only return is this rule has not entry that forces creation
-                if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
-                    return;
-                }
-            }
-            
             processDebtsForRegistration(rule, registration);
         } catch(final AcademicTreasuryDomainException e) {
             logger.info(e.getMessage());
@@ -162,19 +137,6 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
             e.printStackTrace();
         }
     }
-
-    private boolean isRuleWithOnlyOneAcademicTaxEntryForcingCreation(final AcademicDebtGenerationRule rule) {
-        if(rule.getAcademicDebtGenerationRuleEntriesSet().size() != 1) {
-            return false;
-        }
-        
-        if(!AcademicTax.findUnique(rule.getAcademicDebtGenerationRuleEntriesSet().iterator().next().getProduct()).isPresent()) {
-            return false;
-        }
-        
-        return rule.getAcademicDebtGenerationRuleEntriesSet().iterator().next().isForceCreation();
-    }
-
 
     @Atomic(mode = TxMode.WRITE)
     private void processDebtsForRegistration(final AcademicDebtGenerationRule rule, final Registration registration) {
@@ -187,10 +149,10 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
             final Product product = entry.getProduct();
             
             if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == product.getProductGroup()) {
-                grabbedDebitEntry = grabOrCreateDebitEntryForTuition(rule, registration, entry);
+                grabbedDebitEntry = grabDebitEntryForTuition(rule, registration, entry);
             } else if (AcademicTax.findUnique(product).isPresent()) {
                 // Check if the product is an academic tax
-                grabbedDebitEntry = grabOrCreateDebitEntryForAcademicTax(rule, registration, entry);
+                grabbedDebitEntry = grabDebitEntryForAcademicTax(rule, registration, entry);
             }
             
             if(grabbedDebitEntry != null) {
@@ -237,83 +199,42 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
         }
     }
 
-    private DebitEntry grabOrCreateDebitEntryForAcademicTax(final AcademicDebtGenerationRule rule, final Registration registration,
+    private DebitEntry grabDebitEntryForAcademicTax(final AcademicDebtGenerationRule rule, final Registration registration,
             final AcademicDebtGenerationRuleEntry entry) {
         final Product product = entry.getProduct();
         final ExecutionYear executionYear = rule.getExecutionYear();
         final AcademicTax academicTax = AcademicTax.findUnique(product).get();
 
-        {
-            AcademicTreasuryEvent t = AcademicTaxServices.findAcademicTreasuryEvent(registration, executionYear, academicTax);
-            if (t == null || !t.isChargedWithDebitEntry()) {
-                if (!entry.isCreateDebt()) {
-                    return null;
-                }
-
-                /* HACK: For now limit forcing for first time students only */
-                boolean forceCreation = entry.isCreateDebt() && registration.isFirstTime(rule.getExecutionYear());
-
-                AcademicTaxServices.createAcademicTax(registration, executionYear, academicTax, forceCreation);
-            }
+        AcademicTreasuryEvent t = AcademicTaxServices.findAcademicTreasuryEvent(registration, executionYear, academicTax);
+        if (t == null || !t.isChargedWithDebitEntry()) {
+                return null;
         }
 
-        final AcademicTreasuryEvent academicTreasuryEvent =
-                AcademicTaxServices.findAcademicTreasuryEvent(registration, executionYear, academicTax);
-
-        if (academicTreasuryEvent != null && academicTreasuryEvent.isChargedWithDebitEntry()) {
-            return DebitEntry.findActive(academicTreasuryEvent).filter(d -> d.isInDebt()).findFirst().orElse(null);
+        if (t != null && t.isChargedWithDebitEntry()) {
+            return DebitEntry.findActive(t).filter(d -> d.isInDebt()).findFirst().orElse(null);
         }
 
         return null;
     }
 
-    private DebitEntry grabOrCreateDebitEntryForTuition(final AcademicDebtGenerationRule rule, final Registration registration,
+    private DebitEntry grabDebitEntryForTuition(final AcademicDebtGenerationRule rule, final Registration registration,
             final AcademicDebtGenerationRuleEntry entry) {
         final Product product = entry.getProduct();
         final ExecutionYear executionYear = rule.getExecutionYear();
 
         // Is of tuition kind try to catch the tuition event
-        {
-            AcademicTreasuryEvent t =
-                    TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear);
-
-            if (t == null || !t.isChargedWithDebitEntry(product)) {
-
-                if (!entry.isCreateDebt()) {
-                    return null;
-                }
-
-                if (entry.isToCreateAfterLastRegistrationStateDate()) {
-                    final LocalDate lastRegisteredStateDate = TuitionServices.lastRegisteredDate(registration, executionYear);
-                    if (lastRegisteredStateDate == null) {
-                        return null;
-                    } else if (lastRegisteredStateDate.isAfter(new LocalDate())) {
-                        return null;
-                    } else {
-                        TuitionServices.createInferedTuitionForRegistration(registration, executionYear,
-                                        lastRegisteredStateDate, false);
-                    }
-                } else {
-                    final LocalDate enrolmentDate = TuitionServices.enrolmentDate(registration, executionYear, false);
-                    TuitionServices
-                                    .createInferedTuitionForRegistration(registration, executionYear, enrolmentDate, false);
-                }
-            }
-        }
-
-        if (TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear) == null) {
-            // Did not create exit with nothing
-            return null;
-        }
-
-        final AcademicTreasuryEvent academicTreasuryEvent =
+        final AcademicTreasuryEvent t =
                 TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear);
 
-        if (!academicTreasuryEvent.isChargedWithDebitEntry(product)) {
+        if (t == null || !t.isChargedWithDebitEntry(product)) {
             return null;
         }
 
-        return DebitEntry.findActive(academicTreasuryEvent, product).filter(d -> d.isInDebt()).findFirst().orElse(null);
+        if (!t.isChargedWithDebitEntry(product)) {
+            return null;
+        }
+
+        return DebitEntry.findActive(t, product).filter(d -> d.isInDebt()).findFirst().orElse(null);
     }
 
     private DebitNote grabPreparingOrCreateDebitNote(final Set<DebitEntry> debitEntries) {

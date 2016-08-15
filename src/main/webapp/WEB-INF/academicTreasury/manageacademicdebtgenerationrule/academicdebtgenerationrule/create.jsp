@@ -202,65 +202,31 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                         </select>
                     </div>
                 </div>
-                <div class="form-group row"
-                    ng-show="object.toCloseDebitNote === true && object.aggregateOnDebitNote === true">
+
+                <div class="form-group row" ng-show="object.toAlignAcademicTaxesDueDate === true">
                     <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.closeDebitNote" />
+                        <spring:message code="label.AcademicDebtGenerationRule.academicTaxDueDateAlignmentType" />
                     </div>
 
-                    <div class="col-sm-2">
-                        <select
-                            id="academicDebtGenerationRule_closeDebitNote"
-                            name="closedebitnote" class="form-control"
-                            ng-model="object.closeDebitNote" 
-                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                    <div class="col-sm-4">
+                        <ui-select
+                            id="academicDebtGenerationRule_academicTaxDueDateAlignmentType"
+                            class="" name="academictaxduedatealignmenttype"
+                            ng-model="$parent.object.academicTaxDueDateAlignmentType"
+                            theme="bootstrap" ng-disabled="disabled">
+	                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+	                        <ui-select-choices repeat="academicTaxDueDateAlignmentType.id as academicTaxDueDateAlignmentType in object.academicTaxDueDateAlignmentTypeDataSource | filter: $select.search">
+		                        <span ng-bind-html="academicTaxDueDateAlignmentType.text | highlight: $select.search"></span>
+	                        </ui-select-choices>
+                        </ui-select>
+                    
                         </select>
                     </div>
                 </div>
-
-                <div class="form-group row"
-                    ng-show="object.toCloseDebitNote === true && object.closeDebitNote === true">
+				
+                <div class="form-group row" ng-show="object.toCreatePaymentReferenceCodes === true">
                     <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.alignAllAcademicTaxesDebitToMaxDueDate" />
-                    </div>
-
-                    <div class="col-sm-2">
-                        <select
-                            id="academicDebtGenerationRule_alignAllAcademicTaxesDebitToMaxDueDate"
-                            name="alignallacademictaxesdebittomaxduedate"
-                            class="form-control"
-                            ng-model="object.alignAllAcademicTaxesDebitToMaxDueDate" 
-                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-group row"
-                    ng-show="object.toCreatePaymentReferenceCodes === true">
-                    <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.createPaymentReferenceCode" />
-                    </div>
-
-                    <div class="col-sm-2">
-                        <select
-                            id="academicDebtGenerationRule_createPaymentReferenceCode"
-                            name="createpaymentreferencecode"
-                            class="form-control"
-                            ng-model="object.createPaymentReferenceCode" 
-                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
-                        </select>
-                    </div>
-                </div>
-                
-                
-                <div class="form-group row"
-                	ng-show="object.createPaymentReferenceCode === true">
-                    <div class="col-sm-2 control-label">
-                        <spring:message
-                            code="label.AcademicDebtGenerationRule.paymentCodePool" />
+                        <spring:message code="label.AcademicDebtGenerationRule.paymentCodePool" />
                     </div>
 
                     <div class="col-sm-4">
@@ -270,12 +236,11 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                             class="" name="paymentcodepool"
                             ng-model="$parent.object.paymentCodePool"
                             theme="bootstrap" ng-disabled="disabled">
-                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
-                        <ui-select-choices
-                            repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search">
-                        <span
-                            ng-bind-html="paymentCodePool.text | highlight: $select.search"></span>
-                        </ui-select-choices> </ui-select>
+	                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+	                        <ui-select-choices repeat="paymentCodePool.id as paymentCodePool in object.paymentCodePoolDataSource | filter: $select.search">
+		                        <span ng-bind-html="paymentCodePool.text | highlight: $select.search"></span>
+	                        </ui-select-choices>
+                        </ui-select>
                     </div>
                 </div>
                 
@@ -297,78 +262,77 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 
 	<h3 style="margin-top:100px;"><spring:message code="label.AcademicDebtGenerationRule.associated.products" /></h3>
 
-
 <c:choose>
 	<c:when test="${not empty academicDebtGenerationRuleBean.entries}">
 		<table id="searchacademicdebtgenerationruleTable"
 			class="table responsive table-bordered table-hover" width="100%">
 			<thead>
 				<tr>
-					<%--!!!  Field names here --%>
-					<th><spring:message
-							code="label.AcademicDebtGenerationRuleEntry.product" /></th>
-					<th><spring:message
-							code="label.AcademicDebtGenerationRuleEntry.createDebt" /></th>
-					<th><spring:message
-							code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" /></th>
-					<th><spring:message
-							code="label.AcademicDebtGenerationRuleEntry.forceCreation" /></th>
-					<th><spring:message
-							code="label.AcademicDebtGenerationRuleEntry.limitToRegisteredOnExecutionYear" /></th>
-					<%-- Operations Column --%>
-					<th></th>
+						<%--!!!  Field names here --%>
+						<th><spring:message code="label.AcademicDebtGenerationRuleEntry.product" /></th>
+					
+					<c:if test="${academicDebtGenerationRuleBean.toCreateDebitEntries}">
+						<th><spring:message code="label.AcademicDebtGenerationRuleEntry.createDebt" /></th>
+						<th><spring:message code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" /></th>
+						<th><spring:message code="label.AcademicDebtGenerationRuleEntry.forceCreation" /></th>
+						<th><spring:message code="label.AcademicDebtGenerationRuleEntry.limitToRegisteredOnExecutionYear" /></th>
+					</c:if>
+						<%-- Operations Column --%>
+						<th></th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:forEach var="entry" items="${academicDebtGenerationRuleBean.entries}" varStatus="loopStatus">
 					<tr>
-						<td>
-							<p>${entry.product.name.content}</p>
-						</td>
-						<td>
-							<c:if test="${entry.createDebt}">
-								<p><strong><spring:message code="label.true" /></strong></p>
-							</c:if>
-	
-							<c:if test="${not entry.createDebt}">
-								<p><strong><spring:message code="label.false" /></strong></p>
-							</c:if>
-						</td>
-						<td>
-							<c:if test="${entry.toCreateAfterLastRegistrationStateDate}">
-								<p><strong><spring:message code="label.true" /></strong></p>
-							</c:if>
-	
-							<c:if test="${not entry.toCreateAfterLastRegistrationStateDate}">
-								<p><strong><spring:message code="label.false" /></strong></p>
-							</c:if>
-						</td>
-						<td>
-							<c:if test="${entry.forceCreation}">
-								<p><strong><spring:message code="label.true" /></strong></p>
-							</c:if>
-	
-							<c:if test="${not entry.forceCreation}">
-								<p><strong><spring:message code="label.false" /></strong></p>
-							</c:if>
-						</td>
-						<td>
-							<c:if test="${entry.limitToRegisteredOnExecutionYear}">
-								<p><strong><spring:message code="label.true" /></strong></p>
-							</c:if>
-	
-							<c:if test="${not entry.limitToRegisteredOnExecutionYear}">
-								<p><strong><spring:message code="label.false" /></strong></p>
-							</c:if>
-						</td>
-						<td>
-							<form name='form' method="post" class="form-horizontal"
-								action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.REMOVEPRODUCT_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${loopStatus.index}'>
-								<input name="bean" type="hidden" value="{{ object }}" />
-								
-								<input type="submit" class="btn btn-xs btn-default" role="button" value="<spring:message code="label.delete" />" />
-							</form>
-						</td>
+							<td>
+								<p>${entry.product.name.content}</p>
+							</td>
+						<c:if test="${academicDebtGenerationRuleBean.toCreateDebitEntries}">
+							<td>
+								<c:if test="${entry.createDebt}">
+									<p><strong><spring:message code="label.true" /></strong></p>
+								</c:if>
+		
+								<c:if test="${not entry.createDebt}">
+									<p><strong><spring:message code="label.false" /></strong></p>
+								</c:if>
+							</td>
+							<td>
+								<c:if test="${entry.toCreateAfterLastRegistrationStateDate}">
+									<p><strong><spring:message code="label.true" /></strong></p>
+								</c:if>
+		
+								<c:if test="${not entry.toCreateAfterLastRegistrationStateDate}">
+									<p><strong><spring:message code="label.false" /></strong></p>
+								</c:if>
+							</td>
+							<td>
+								<c:if test="${entry.forceCreation}">
+									<p><strong><spring:message code="label.true" /></strong></p>
+								</c:if>
+		
+								<c:if test="${not entry.forceCreation}">
+									<p><strong><spring:message code="label.false" /></strong></p>
+								</c:if>
+							</td>
+							<td>
+								<c:if test="${entry.limitToRegisteredOnExecutionYear}">
+									<p><strong><spring:message code="label.true" /></strong></p>
+								</c:if>
+		
+								<c:if test="${not entry.limitToRegisteredOnExecutionYear}">
+									<p><strong><spring:message code="label.false" /></strong></p>
+								</c:if>
+							</td>
+						</c:if>
+							<td>
+								<form name='form' method="post" class="form-horizontal"
+									action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.REMOVEPRODUCT_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${loopStatus.index}'>
+									<input name="bean" type="hidden" value="{{ object }}" />
+									
+									<input type="submit" class="btn btn-xs btn-default" role="button" value="<spring:message code="label.delete" />" />
+								</form>
+							</td>
 					</tr>
 				</c:forEach>
 			</tbody>
@@ -399,20 +363,19 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 
 				<div class="col-sm-4">
 					<%-- Relation to side 1 drop down rendered in input --%>
-					<ui-select id="academicDebtGenerationRule_product"
-						class="" name="product"
+					<ui-select id="academicDebtGenerationRule_product" class="" name="product"
 						ng-model="$parent.object.product" theme="bootstrap"
-						ng-disabled="disabled"> <ui-select-match>{{$select.selected.text}}</ui-select-match>
-					<ui-select-choices
-						repeat="product.id as product in object.productDataSource | filter: $select.search">
-					<span ng-bind-html="product.text | highlight: $select.search"></span>
-					</ui-select-choices> </ui-select>
+						ng-disabled="disabled">
+						<ui-select-match>{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="product.id as product in object.productDataSource | filter: $select.search">
+							<span ng-bind-html="product.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.toAggregateDebitEntries === true" >
+			<div class="form-group row" ng-show="object.toCreateDebitEntries === true" >
 				<div class="col-sm-2 control-label">
-					<spring:message
-						code="label.AcademicDebtGenerationRuleEntry.createDebt" />
+					<spring:message code="label.AcademicDebtGenerationRuleEntry.createDebt" />
 				</div>
 
 				<div class="col-sm-2">
@@ -439,8 +402,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                 </div>
             </div>
             
-			<div class="form-group row" 
-				ng-show="object.forceCreation === true">
+			<div class="form-group row" ng-show="object.forceCreation === true">
 				<div class="col-sm-2 control-label">
 					<spring:message
 						code="label.AcademicDebtGenerationRuleEntry.limitToRegisteredOnExecutionYear" />
@@ -455,11 +417,9 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                 </div>
             </div>
             
-            
-			<div class="form-group row">
+			<div class="form-group row" ng-show="object.createDebt === true">
 				<div class="col-sm-2 control-label">
-					<spring:message
-						code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" />
+					<spring:message code="label.AcademicDebtGenerationRuleEntry.toCreateAfterLastRegistrationStateDate" />
 				</div>
 
 				<div class="col-sm-2">
@@ -468,7 +428,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 						ng-model="object.toCreateAfterLastRegistrationStateDate" 
 						ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
-                    </div>
+                </div>
             </div>            
 			<div class="form-group row">
 				<div class="col-sm-6">
@@ -482,7 +442,6 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
     <h3 style="margin-top:100px;">
         <spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlans" />
     </h3>
-    
     
 <c:choose>
 	<c:when test="${not empty academicDebtGenerationRuleBean.degreeCurricularPlans}">
@@ -506,14 +465,17 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 							<p><c:out value="${dcp.degree.degreeType.name.content}" /></p>
 						</td>
 						<td>
-							<p><c:out value="${dcp.getPresentationName(academicDebtGenerationRuleBean.executionYear)}" /></p>
+							<p><c:out value="[${dcp.degree.code}] ${dcp.getPresentationName(academicDebtGenerationRuleBean.executionYear)}" /></p>
 						</td>
 						<td>
 							<form name='form' method="post" class="form-horizontal"
 								action='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.REMOVEDEGREECURRICULARPLAN_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${loopStatus.index}'>
 								<input name="bean" type="hidden" value="{{ object }}" />
 								
-								<input type="submit" class="btn btn-xs btn-default" role="button" value="<spring:message code="label.delete" />" />
+								<button class="btn btn-xs btn-default">
+									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
+									<spring:message code="label.delete" />
+								</button>
 							</form>
 						</td>
 					</tr>
@@ -545,7 +507,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicDebtGenerationRule.degreeType"/></div> 
 					
-					<div class="col-sm-4">
+					<div class="col-sm-6">
 						<ui-select id="academicDebtGenerationRule_degreeType" name="degreeType" ng-model="$parent.object.degreeType" theme="bootstrap" ng-disabled="disabled" 
 							on-select="onDegreeTypeChange($product, $model)" >
 							<ui-select-match>{{$select.selected.text}}</ui-select-match>
@@ -557,7 +519,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 				</div>		
 				<div class="form-group row">
 					<div class="col-sm-2 control-label"><spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlans"/></div> 
-					<div class="col-sm-4">
+					<div class="col-sm-6">
 	                    <div ng-hide="object.degreeCurricularPlanDataSource" class="alert alert-warning">
 	                        <spring:message code="label.AcademicDebtGenerationRule.degreeCurricularPlanDataSource.is.empty"/>
 	                    </div>
@@ -572,7 +534,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 					</div>
 				</div>		
 				<div class="form-group row">
-					<div class="col-sm-6">
+					<div class="col-sm-8">
 			            <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" style="float:right;"/>
 					</div>
 				</div>
@@ -598,10 +560,3 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 </c:if>
 
 </div>
-
-
-<script>
-$(document).ready(function() {
-
-	});
-</script>

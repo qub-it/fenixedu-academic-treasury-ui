@@ -237,7 +237,7 @@ ${portal.toolkit()}
                                     </p>
                                     <p>&nbsp;</p>
 
-									<c:if test="${!installment.ectsCalculationType.defaultPaymentPlanCourseFunctionCostIndexed}">
+									<c:if test="${installment.defaultPaymentPlanDefined && !installment.ectsCalculationType.defaultPaymentPlanCourseFunctionCostIndexed}">
 	                                    <p>
 	                                        <spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
 	                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
@@ -246,6 +246,13 @@ ${portal.toolkit()}
 	                                        <em><spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" /></em>
 	                                    </p>
                                     </c:if>
+                                    
+	                                <c:if test="${!installment.defaultPaymentPlanDefined}">
+	                                    <p>
+	                                        <span class="label label-danger"><em><spring:message code="error.TuitionInstallmentTariff.default.payment.plan.not.defined" /></em></span>
+	                                    </p>
+	                                </c:if>
+	                                
                                 </c:if>
                             </c:when>
                             <c:when test="${installment.tuitionCalculationType.units}">
@@ -270,7 +277,7 @@ ${portal.toolkit()}
                                     </p>
                                     <p>&nbsp;</p>
 									
-									<c:if test="${!installment.ectsCalculationType.defaultPaymentPlanCourseFunctionCostIndexed}">
+									<c:if test="${installment.defaultPaymentPlanDefined && !installment.ectsCalculationType.defaultPaymentPlanCourseFunctionCostIndexed}">
 	                                    <p>
 	                                        <spring:message code="label.TuitionInstallmentTariff.amountPerUnits"
 	                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
@@ -279,6 +286,13 @@ ${portal.toolkit()}
 	                                        <em><spring:message code="label.TuitionInstallmentTariff.calculatedAutomaticaly" /></em>
 	                                    </p>
 	                                </c:if>
+	                                
+	                                <c:if test="${!installment.defaultPaymentPlanDefined}">
+	                                    <p>
+	                                        <span class="label label-danger"><em><spring:message code="error.TuitionInstallmentTariff.default.payment.plan.not.defined" /></em></span>
+	                                    </p>
+	                                </c:if>
+	                                
                                 </c:if>
                             </c:when>
                         </c:choose>

@@ -183,6 +183,21 @@ ${portal.toolkit()}
 					<tr>
 						<td>
 							<c:out value="${rule.orderNumber}" />
+							
+							<p>&nbsp;</p>							
+							<p>
+								<c:if test="${not rule.first}">
+									<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.ORDER_UP_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
+											<span class="glyphicon glyphicon-arrow-up"></span>
+									</a>
+								</c:if>
+								
+								<c:if test="${not rule.last}">
+									<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.ORDER_DOWN_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
+											<span class="glyphicon glyphicon-arrow-down"></span>
+									</a>
+								</c:if>
+							</p>
 						</td>
 						<td>
 							<c:forEach var="entry" items="${rule.academicDebtGenerationRuleEntriesSet}">
@@ -219,114 +234,143 @@ ${portal.toolkit()}
 									</p>
 								</c:if>
 							</c:forEach>
+							
+							<p>&nbsp;</p>							
+							<p>
+								<%
+								    final AcademicDebtGenerationRule rule = (AcademicDebtGenerationRule) pageContext.getAttribute("rule");
+									final List<String> dcps = Lists.newArrayList();
+	
+									for (final DegreeCurricularPlan dcp : rule.getDegreeCurricularPlansSet()) {
+										dcps.add(dcp.getPresentationName(rule.getExecutionYear()));
+									}
+	
+									request.setAttribute(rule.getExternalId(), String.join("<br/>", dcps));
+								%>
+							
+								<a class="btn btn-xs btn-default" href="#"
+									onclick="javascript:processShowDcps('<%=request.getAttribute(((AcademicDebtGenerationRule) pageContext.getAttribute("rule")).getExternalId())%>')">
+									<span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;
+									<spring:message code='label.manageacademicdebtgenerationrule.show.dcps' />
+								</a>
+								
+								<a class="btn btn-xs btn-default" 
+									href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.EDIT_DEGREECURRICULARPLANS_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
+									<span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>&nbsp;
+									<spring:message code='label.manageacademicdebtgenerationrule.editDegreeCurricularPlans' />
+								</a>
+							</p>
+							
 						</td>
 						<td>
-							<p>
-								<span>
-									<strong>
-										<spring:message code="label.AcademicDebtGenerationRule.executionYear" />
-										:
-									</strong>
-								</span>
-								<span>${rule.executionYear.qualifiedName}</span>
-							</p>
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.executionYear" />
+											:
+										</strong>
+									</span>
+									<span>${rule.executionYear.qualifiedName}</span>
+								</p>
+							
+							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToAggregateDebitEntries()}">
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.aggregateOnDebitNote" />:
+										</strong>
+									</span>
+									<span>
+										<c:if test="${rule.aggregateOnDebitNote}">
+											<spring:message code="label.true" />
+										</c:if>
+										<c:if test="${not rule.aggregateOnDebitNote}">
+											<spring:message code="label.false" />
+										</c:if>
+									</span>
+								</p>
+							</c:if>
 
-							<p>
-								<span>
-									<strong>
-										<spring:message code="label.AcademicDebtGenerationRule.aggregateOnDebitNote" />
-										:
-									</strong>
-								</span>
-								<span>
-									<c:if test="${rule.aggregateOnDebitNote}">
-										<spring:message code="label.true" />
-									</c:if>
-									<c:if test="${not rule.aggregateOnDebitNote}">
-										<spring:message code="label.false" />
-									</c:if>
-								</span>
-							</p>
+							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToAggregateDebitEntries()}">
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.aggregateAllOrNothing" />:
+										</strong>
+									</span>
+									<span>
+										<c:if test="${rule.aggregateAllOrNothing}">
+											<spring:message code="label.true" />
+										</c:if>
+										<c:if test="${not rule.aggregateAllOrNothing}">
+											<spring:message code="label.false" />
+										</c:if>
+									</span>
+								</p>
+							</c:if>
+							
+							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToCloseDebitNote()}">
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.closeDebitNote" />:
+										</strong>
+									</span>
+									<span>
+										<c:if test="${rule.closeDebitNote}">
+											<spring:message code="label.true" />
+										</c:if>
+										<c:if test="${not rule.closeDebitNote}">
+											<spring:message code="label.false" />
+										</c:if>
+									</span>
+								</p>
+							</c:if>
+							
+							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToAlignAcademicTaxesDueDate()}">
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.academicTaxDueDateAlignmentType" />:
+										</strong>
+									</span>
+									<span>
+										<c:if test="${not empty rule.academicTaxDueDateAlignmentType}">
+											<c:out value="${rule.academicTaxDueDateAlignmentType.descriptionI18N.content}" />
+										</c:if>
+										<c:if test="${empty rule.academicTaxDueDateAlignmentType}">
+											<spring:message code="label.AcademicDebtGenerationRule.alignment.not.applied" />
+										</c:if>
+									</span>
+								</p>
+							</c:if>
+							
+							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToCreatePaymentReferenceCodes()}">
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.paymentCodePool" />:
+										</strong>
+									</span>
+									<span>
+										<c:out value="${rule.paymentCodePool.name}" />
+									</span>
+								</p>
+							</c:if>
+							
+							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToCloseDebitNote()}">
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.numberOfDaysToDueDate" />:
+										</strong>
+									</span>
+									<span>
+										<c:out value="${rule.days}" />
+									</span>
+								</p>
+							</c:if>
 
-							<p>
-								<span>
-									<strong>
-										<spring:message code="label.AcademicDebtGenerationRule.aggregateAllOrNothing" />
-										:
-									</strong>
-								</span>
-								<span>
-									<c:if test="${rule.aggregateAllOrNothing}">
-										<spring:message code="label.true" />
-									</c:if>
-									<c:if test="${not rule.aggregateAllOrNothing}">
-										<spring:message code="label.false" />
-									</c:if>
-								</span>
-							</p>
-
-							<p>
-								<span>
-									<strong>
-										<spring:message code="label.AcademicDebtGenerationRule.closeDebitNote" />
-										:
-									</strong>
-								</span>
-								<span>
-									<c:if test="${rule.closeDebitNote}">
-										<spring:message code="label.true" />
-									</c:if>
-									<c:if test="${not rule.closeDebitNote}">
-										<spring:message code="label.false" />
-									</c:if>
-								</span>
-							</p>
-
-							<p>
-								<span>
-									<strong>
-										<spring:message code="label.AcademicDebtGenerationRule.alignAllAcademicTaxesDebitToMaxDueDate" />
-										:
-									</strong>
-								</span>
-								<span>
-									<c:if test="${rule.alignAllAcademicTaxesDebitToMaxDueDate}">
-										<spring:message code="label.true" />
-									</c:if>
-									<c:if test="${not rule.alignAllAcademicTaxesDebitToMaxDueDate}">
-										<spring:message code="label.false" />
-									</c:if>
-								</span>
-							</p>
-
-							<p>
-								<span>
-									<strong>
-										<spring:message code="label.AcademicDebtGenerationRule.createPaymentReferenceCode" />
-										:
-									</strong>
-								</span>
-								<span>
-									<c:if test="${rule.createPaymentReferenceCode}">
-										<spring:message code="label.true" />
-									</c:if>
-									<c:if test="${not rule.createPaymentReferenceCode}">
-										<spring:message code="label.false" />
-									</c:if>
-								</span>
-							</p>
-
-							<p>
-								<span>
-									<strong>
-										<spring:message code="label.AcademicDebtGenerationRule.numberOfDaysToDueDate" />
-										:
-									</strong>
-								</span>
-								<span>
-									<c:out value="${rule.days}" />
-								</span>
-							</p>
 							&nbsp;
 							<c:if test="${rule.active}">
 								<span class="label label-success">
@@ -353,71 +397,49 @@ ${portal.toolkit()}
 									<strong><spring:message code="label.AcademicDebtGenerationRule.background.not.executed" /></strong>
 								</span>
 							</c:if>
+							
+							<p>&nbsp;</p>							
+							<p>&nbsp;</p>							
+							
+							<p>
+								<c:if test="${rule.active}">
+									<a class="btn-default btn btn-xs" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_INACTIVATE_ACTION_URL %>${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
+										<span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;
+										<spring:message code='label.manageacademicdebtgenerationrule.inactivate' />
+									</a>
+								</c:if>
+								<c:if test="${not rule.active}">
+									<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_ACTIVATE_ACTION_URL %>${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
+										<span class="glyphicon glyphicon-off" aria-hidden="true"></span>&nbsp;
+										<spring:message code='label.manageacademicdebtgenerationrule.activate' />
+									</a>
+								</c:if>
+								<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.TOGGLE_BACKGROUND_EXECUTION_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
+									<c:if test="${not rule.backgroundExecution}">
+										<spring:message code='label.manageacademicdebtgenerationrule.execute.background' />
+									</c:if>
+									<c:if test="${rule.backgroundExecution}">
+										<spring:message code='label.manageacademicdebtgenerationrule.not.execute.background' />
+									</c:if>
+								</a>
+							</p>
 						</td>
 						<td>
-							<%
-							    final AcademicDebtGenerationRule rule = (AcademicDebtGenerationRule) pageContext
-															.getAttribute("rule");
-													final List<String> dcps = Lists.newArrayList();
-
-													for (final DegreeCurricularPlan dcp : rule.getDegreeCurricularPlansSet()) {
-														dcps.add(dcp.getPresentationName(rule.getExecutionYear()));
-													}
-
-													request.setAttribute(rule.getExternalId(), String.join("<br/>", dcps));
-							%>
-							<a class="btn btn-warning" href="#" onClick="javascript:processDelete('${rule.externalId}')">
-								<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-								&nbsp;
-								<spring:message code='label.delete' />
-							</a>
-							<c:if test="${rule.active}">
-
-								<a class="btn-default btn" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.PROCESS_ACTION_URL %>${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-									<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+							<p>
+								<a class="btn btn-warning btn-xs" href="#" onClick="javascript:processDelete('${rule.externalId}')">
+									<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
 									&nbsp;
-									<spring:message code='label.manageacademicdebtgenerationrule.process' />
+									<spring:message code='label.delete' />
 								</a>
-
-								<a class="btn-default btn" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_INACTIVATE_ACTION_URL %>${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-									<spring:message code='label.manageacademicdebtgenerationrule.inactivate' />
-								</a>
-							</c:if>
-							<c:if test="${not rule.active}">
-								<a class="btn btn-default" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_ACTIVATE_ACTION_URL %>${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-									<spring:message code='label.manageacademicdebtgenerationrule.activate' />
-								</a>
-							</c:if>
-							<a class="btn-default btn" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.SEARCH_TO_READ_LOG_ACTION_URL %>${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-								<spring:message code='label.manageacademicdebtgenerationrule.readlog' />
-							</a>
-							<a class="btn btn-default" href="#"
-								onClick="javascript:processShowDcps('<%=request.getAttribute(
-								((AcademicDebtGenerationRule) pageContext.getAttribute("rule")).getExternalId())%>')">
-								<span class="glyphicon glyphicon-trash" aria-hidden="true"></span>
-								&nbsp;
-								<spring:message code='label.manageacademicdebtgenerationrule.show.dcps' />
-							</a>
-							<a class="btn btn-default" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.TOGGLE_BACKGROUND_EXECUTION_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-								<c:if test="${not rule.backgroundExecution}">
-									<spring:message code='label.manageacademicdebtgenerationrule.execute.background' />
+								<c:if test="${rule.active}">
+	
+									<a class="btn-default btn btn-xs" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.PROCESS_ACTION_URL %>${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
+										<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+										&nbsp;
+										<spring:message code='label.manageacademicdebtgenerationrule.process' />
+									</a>
 								</c:if>
-								<c:if test="${rule.backgroundExecution}">
-									<spring:message code='label.manageacademicdebtgenerationrule.not.execute.background' />
-								</c:if>
-							</a>
-
-							<c:if test="${not rule.first}">
-							<a class="btn btn-default" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.ORDER_UP_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-									<span class="glyphicon glyphicon-arrow-up"></span>
-							</a>
-							</c:if>
-							
-							<c:if test="${not rule.last}">
-							<a class="btn btn-default" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.ORDER_DOWN_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-									<span class="glyphicon glyphicon-arrow-down"></span>
-							</a>
-							</c:if>
+							</p>
 
 						</td>
 					</tr>
@@ -453,13 +475,10 @@ ${portal.toolkit()}
 											"order": [[ 0, "asc" ]],
 											
 											//CHANGE_ME adjust the actions column width if needed
-											"columnDefs" : [
-											//74
-											//222
-											{
+											"columnDefs" : [{
 												"width" : "222px",
 												"targets" : 3
-											} ],
+											}],
 											//Documentation: https://datatables.net/reference/option/dom
 											//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
 											//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES

@@ -77,6 +77,11 @@ public class DeprecatedDebtGenerationRuleStrategy implements IAcademicDebtGenera
         return true;
     }
     
+    @Override
+    public boolean isToAlignAcademicTaxesDueDate() {
+        return true;
+    }
+    
     @Atomic(mode = TxMode.READ)
     @Override
     public void process(final AcademicDebtGenerationRule rule) {

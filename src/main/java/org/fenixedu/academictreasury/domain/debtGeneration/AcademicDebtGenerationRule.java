@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -30,6 +31,13 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
                 @Override
                 public int compare(final AcademicDebtGenerationRule o1, final AcademicDebtGenerationRule o2) {
+                    int v = Integer.compare(o1.getAcademicDebtGenerationRuleType().getOrderNumber(),
+                            o2.getAcademicDebtGenerationRuleType().getOrderNumber());
+
+                    if(v != 0) {
+                        return v;
+                    }
+                    
                     int c = Integer.compare(o1.getOrderNumber(), o2.getOrderNumber());
                     return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
                 }
@@ -61,10 +69,14 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         setExecutionYear(bean.getExecutionYear());
         setAggregateOnDebitNote(bean.isAggregateOnDebitNote());
         setAggregateAllOrNothing(bean.isAggregateAllOrNothing());
-        setCloseDebitNote(bean.isCloseDebitNote());
-        setAlignAllAcademicTaxesDebitToMaxDueDate(bean.isAlignAllAcademicTaxesDebitToMaxDueDate());
-        setCreatePaymentReferenceCode(bean.isCreatePaymentReferenceCode());
+        setCloseDebitNote(false);
+        setAlignAllAcademicTaxesDebitToMaxDueDate(false);
+        setCreatePaymentReferenceCode(bean.isToCreatePaymentReferenceCodes());
         setPaymentCodePool(bean.getPaymentCodePool());
+
+        if (bean.isToAlignAcademicTaxesDueDate()) {
+            setAcademicTaxDueDateAlignmentType(bean.getAcademicTaxDueDateAlignmentType());
+        }
 
         for (final ProductEntry productEntry : bean.getEntries()) {
             AcademicDebtGenerationRuleEntry.create(this, productEntry.getProduct(), productEntry.isCreateDebt(),
@@ -78,7 +90,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         final Optional<AcademicDebtGenerationRule> max = findAll().max(COMPARE_BY_ORDER_NUMBER);
 
         setOrderNumber(max.isPresent() ? max.get().getOrderNumber() + 1 : 1);
-        
+
         setDays(bean.getNumberOfDaysToDueDate());
 
         checkRules();
@@ -103,7 +115,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     "error.AcademicDebtGenerationRule.aggregateAllOrNothing.requires.aggregateOnDebitNote");
         }
 
-        if (getAcademicDebtGenerationRuleType().strategyImplementation().isEntriesRequired() && getAcademicDebtGenerationRuleEntriesSet().isEmpty()) {
+        if (getAcademicDebtGenerationRuleType().strategyImplementation().isEntriesRequired()
+                && getAcademicDebtGenerationRuleEntriesSet().isEmpty()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.entries.required");
         }
 
@@ -284,6 +297,12 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         this.setOrderNumber(t);
     }
 
+    @Atomic
+    public void editDegreeCurricularPlans(final Set<DegreeCurricularPlan> degreeCurricularPlans) {
+        getDegreeCurricularPlansSet().clear();
+        getDegreeCurricularPlansSet().addAll(degreeCurricularPlans);
+    }
+    
     // @formatter: off
     /************
      * SERVICES *
@@ -363,11 +382,11 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 .sorted(AcademicDebtGenerationRuleType.COMPARE_BY_ORDER_NUMBER).collect(Collectors.toList())) {
             for (final AcademicDebtGenerationRule rule : AcademicDebtGenerationRule.findActiveByType(type)
                     .sorted(COMPARE_BY_ORDER_NUMBER).collect(Collectors.toList())) {
-                
-                if(rule.getExecutionYear() != executionYear) {
+
+                if (rule.getExecutionYear() != executionYear) {
                     continue;
                 }
-                
+
                 if (runOnlyWithBackgroundExecution && !rule.isBackgroundExecution()) {
                     continue;
                 }
@@ -415,4 +434,5 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             }
         }
     }
+
 }

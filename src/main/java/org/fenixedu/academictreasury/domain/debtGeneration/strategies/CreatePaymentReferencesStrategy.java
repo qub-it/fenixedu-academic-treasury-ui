@@ -76,7 +76,12 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
     public boolean isEntriesRequired() {
         return true;
     }
-    
+
+    @Override
+    public boolean isToAlignAcademicTaxesDueDate() {
+        return true;
+    }
+
     @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule) {
@@ -190,8 +195,13 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         // Ensure all debit entries are in debit note
         if (debitEntries.stream().filter(d -> d.getFinantialDocument() == null || d.getFinantialDocument().isAnnulled())
                 .count() > 0) {
+
+            final DebitEntry debitEntryWithoutDebitNote = debitEntries.stream()
+                    .filter(d -> d.getFinantialDocument() == null || d.getFinantialDocument().isAnnulled()).iterator().next();
+
             throw new AcademicTreasuryDomainException(
-                    "error.AcademicDebtGenerationRule.debitEntry.with.none.or.annuled.finantial.document");
+                    "error.AcademicDebtGenerationRule.debitEntry.with.none.or.annuled.finantial.document",
+                    debitEntryWithoutDebitNote.getDescription());
         }
 
         if (MultipleEntriesPaymentCode.findUsedByDebitEntriesSet(debitEntries).count() > 0
@@ -204,13 +214,18 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         final BigDecimal amount =
                 debitEntries.stream().map(d -> d.getOpenAmount()).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
 
-        final PaymentReferenceCode paymentCode = rule.getPaymentCodePool().getReferenceCodeGenerator()
-                .generateNewCodeFor(currency.getValueWithScale(amount), new LocalDate(), maxDebitEntryDueDate(debitEntries), false);
+        final PaymentReferenceCode paymentCode = rule.getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(
+                currency.getValueWithScale(amount), new LocalDate(), maxDebitEntryDueDate(debitEntries), false);
         paymentCode.createPaymentTargetTo(debitEntries, amount);
+        
+        if(rule.getAcademicTaxDueDateAlignmentType() != null) {
+            rule.getAcademicTaxDueDateAlignmentType().applyDueDate(rule, debitEntries);
+        }
+        
     }
 
-    private DebitEntry grabDebitEntryForAcademicTax(final AcademicDebtGenerationRule rule,
-            final Registration registration, final AcademicDebtGenerationRuleEntry entry) {
+    private DebitEntry grabDebitEntryForAcademicTax(final AcademicDebtGenerationRule rule, final Registration registration,
+            final AcademicDebtGenerationRuleEntry entry) {
         final Product product = entry.getProduct();
         final ExecutionYear executionYear = rule.getExecutionYear();
         final AcademicTax academicTax = AcademicTax.findUnique(product).get();

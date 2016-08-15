@@ -72,6 +72,11 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
     }
     
     @Override
+    public boolean isToAlignAcademicTaxesDueDate() {
+        return true;
+    }
+    
+    @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule) {
 
@@ -111,6 +116,8 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
     
     @Atomic(mode = TxMode.WRITE)
     private void processDebtsForRegistration(final AcademicDebtGenerationRule rule, final Registration registration) {
+        final Set<DebitEntry> debitEntriesSetForAlignment = Sets.newHashSet();
+        
         for (final AcademicDebtGenerationRuleEntry entry : rule.getAcademicDebtGenerationRuleEntriesSet()) {
             final Product product = entry.getProduct();
 
@@ -122,34 +129,33 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
                 grabbedDebitEntries = grabDebitEntryForAcademicTax(rule, registration, entry);
             }
             
-            for(final DebitEntry grabbedDebitEntry : grabbedDebitEntries) {
-                if(grabbedDebitEntry.getFinantialDocument() == null || !grabbedDebitEntry.getFinantialDocument().isPreparing()) {
-                    continue;
-                }
-                
-                final LocalDate dueDate = grabbedDebitEntry.getDueDate();
-                if(dueDate.minusDays(rule.getDays()).isAfter(new LocalDate())) {
-                    continue;
-                }
-                
-                final DebitNote debitNote = (DebitNote) grabbedDebitEntry.getFinantialDocument();
-                
-                final LocalDate maxDebitEntryDueDate = maxDebitEntryDueDate(debitNote);
-                debitNote.setDocumentDueDate(maxDebitEntryDueDate);
-                
-                if (rule.isAlignAllAcademicTaxesDebitToMaxDueDate()) {
-                    for (final DebitEntry debitEntry : debitNote.getDebitEntriesSet()) {
-                        if (!AcademicTax.findUnique(debitEntry.getProduct()).isPresent()) {
-                            continue;
-                        }
-                        
-                        debitEntry.setDueDate(maxDebitEntryDueDate);
-                    }
-                }
-                
-                debitNote.closeDocument();
+            if(grabbedDebitEntries != null) {
+                debitEntriesSetForAlignment.addAll(grabbedDebitEntries);
             }
         }
+        
+        if(rule.getAcademicTaxDueDateAlignmentType() != null) {
+            rule.getAcademicTaxDueDateAlignmentType().applyDueDate(rule, debitEntriesSetForAlignment);
+        }
+
+        for(final DebitEntry grabbedDebitEntry : debitEntriesSetForAlignment) {
+            if(grabbedDebitEntry.getFinantialDocument() == null || !grabbedDebitEntry.getFinantialDocument().isPreparing()) {
+                continue;
+            }
+            
+            final LocalDate dueDate = grabbedDebitEntry.getDueDate();
+            if(dueDate.minusDays(rule.getDays()).isAfter(new LocalDate())) {
+                continue;
+            }
+            
+            final DebitNote debitNote = (DebitNote) grabbedDebitEntry.getFinantialDocument();
+            
+            final LocalDate maxDebitEntryDueDate = maxDebitEntryDueDate(debitNote);
+            debitNote.setDocumentDueDate(maxDebitEntryDueDate);
+            
+            debitNote.closeDocument();
+        }
+
     }
 
     private Set<DebitEntry> grabDebitEntryForTuitions(final AcademicDebtGenerationRule rule, final Registration registration,

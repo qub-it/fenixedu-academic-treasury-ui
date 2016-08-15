@@ -5,6 +5,7 @@ enum org.fenixedu.academic.domain.student.RegistrationRegimeType                
 enum org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType                                as TuitionCalculationType;
 enum org.fenixedu.academictreasury.domain.tuition.EctsCalculationType                                   as EctsCalculationType;
 enum org.fenixedu.academictreasury.domain.reports.DebtReportRequestType                                 as DebtReportRequestType;
+enum org.fenixedu.academictreasury.domain.debtGeneration.AcademicTaxDueDateAlignmentType                as AcademicTaxDueDateAlignmentType;
 
 valueType java.math.BigDecimal as BigDecimalAT
 {
@@ -518,6 +519,7 @@ class debtGeneration.AcademicDebtGenerationRule {
 	boolean createPaymentReferenceCode;
 	int days;
 	int orderNumber;
+	AcademicTaxDueDateAlignmentType academicTaxDueDateAlignmentType;
 }
 
 	relation AcademicDebtGenerationRuleGenerationRuleType {

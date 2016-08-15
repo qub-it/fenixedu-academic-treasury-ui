@@ -405,6 +405,97 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
                 redirectAttributes);
     }
 
+    private static final String _EDIT_DEGREECURRICULARPLANS_URI = "/editdegreecurricularplans";
+    public static final String EDIT_DEGREECURRICULARPLANS_URL = CONTROLLER_URL + _EDIT_DEGREECURRICULARPLANS_URI;
+
+    @RequestMapping(value = _EDIT_DEGREECURRICULARPLANS_URI + "/{typeId}/{executionYearId}/{oid}", method = RequestMethod.GET)
+    public String editdegreecurricularplans(@PathVariable("typeId") final AcademicDebtGenerationRuleType type,
+            @PathVariable("executionYearId") final ExecutionYear executionYear,
+            @PathVariable("oid") final AcademicDebtGenerationRule academicDebtGenerationRule, final Model model) {
+        AcademicDebtGenerationRuleBean bean = new AcademicDebtGenerationRuleBean(academicDebtGenerationRule);
+
+        return _editdegreecurricularplans(type, executionYear, academicDebtGenerationRule, bean, model);
+    }
+
+    private String _editdegreecurricularplans(final AcademicDebtGenerationRuleType type, final ExecutionYear executionYear,
+            final AcademicDebtGenerationRule academicDebtGenerationRule, final AcademicDebtGenerationRuleBean bean,
+            final Model model) {
+
+        model.addAttribute("academicDebtGenerationRuleType", type);
+        model.addAttribute("executionYear", executionYear);
+        model.addAttribute("academicDebtGenerationRule", academicDebtGenerationRule);
+
+        model.addAttribute("academicDebtGenerationRuleBean", bean);
+        model.addAttribute("academicDebtGenerationRuleBeanJson", getBeanJson(bean));
+
+        return jspPage("editdegreecurricularplans");
+    }
+
+    @RequestMapping(value = _EDIT_DEGREECURRICULARPLANS_URI + "/{typeId}/{executionYearId}/{oid}", method = RequestMethod.POST)
+    public String editdegreecurricularplans(@PathVariable("typeId") final AcademicDebtGenerationRuleType type,
+            @PathVariable("executionYearId") final ExecutionYear executionYear,
+            @PathVariable("oid") final AcademicDebtGenerationRule academicDebtGenerationRule,
+            @RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, final Model model,
+            final RedirectAttributes redirectAttributes) {
+
+        try {
+
+            academicDebtGenerationRule.editDegreeCurricularPlans(Sets.newHashSet(bean.getDegreeCurricularPlans()));
+
+            return redirect(String.format("%s/%s/%s", SEARCH_URL, type.getExternalId(), executionYear.getExternalId()), model,
+                    redirectAttributes);
+        } catch (DomainException de) {
+            addErrorMessage(de.getLocalizedMessage(), model);
+
+            return _editdegreecurricularplans(type, executionYear, academicDebtGenerationRule, bean, model);
+        }
+    }
+
+    
+    private static final String _EDIT_DCP_ADDDEGREECURRICULARPLANS_URI = "/editdcpadddegreecurricularplans";
+    public static final String EDIT_DCP_ADDDEGREECURRICULARPLANS_URL = CONTROLLER_URL + _EDIT_DCP_ADDDEGREECURRICULARPLANS_URI;
+
+    @RequestMapping(value = _EDIT_DCP_ADDDEGREECURRICULARPLANS_URI + "/{typeId}/{executionYearId}/{oid}", method = RequestMethod.POST)
+    public String editdcpadddegreecurricularplans(@PathVariable("typeId") final AcademicDebtGenerationRuleType type,
+            @PathVariable("executionYearId") final ExecutionYear executionYear,
+            @PathVariable("oid") final AcademicDebtGenerationRule academicDebtGenerationRule,
+            @RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, final Model model) {
+
+        bean.addDegreeCurricularPlans();
+
+        return _editdegreecurricularplans(type, executionYear, academicDebtGenerationRule, bean, model);
+    }
+
+    private static final String _EDIT_DCP_CHOOSEDEGREETYPEPOSTBACK_URI = "/editdcpchoosedegreetypepostback";
+    public static final String EDIT_DCP_CHOOSEDEGREETYPEPOSTBACK_URL = CONTROLLER_URL + _EDIT_DCP_CHOOSEDEGREETYPEPOSTBACK_URI;
+
+    @RequestMapping(value = _EDIT_DCP_CHOOSEDEGREETYPEPOSTBACK_URI + "/{typeId}/{executionYearId}/{oid}", method = RequestMethod.POST)
+    public String chooseDegreeTypePostback(@PathVariable("typeId") final AcademicDebtGenerationRuleType type,
+            @PathVariable("executionYearId") final ExecutionYear executionYear,
+            @PathVariable("oid") final AcademicDebtGenerationRule academicDebtGenerationRule,
+            @RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, final Model model) {
+
+        bean.chooseDegreeType();
+        return _editdegreecurricularplans(type, executionYear, academicDebtGenerationRule, bean, model);
+    }
+
+    private static final String _EDIT_DCP_REMOVEDEGREECURRICULARPLAN_URI = "/editdcpremovedegreecurricularplan";
+    public static final String EDIT_DCP_REMOVEDEGREECURRICULARPLAN_URL = CONTROLLER_URL + _EDIT_DCP_REMOVEDEGREECURRICULARPLAN_URI;
+
+    @RequestMapping(value = _EDIT_DCP_REMOVEDEGREECURRICULARPLAN_URI + "/{typeId}/{executionYearId}/{oid}/{entryIndex}",
+            method = RequestMethod.POST)
+    public String editdcpremovedegreecurricularplan(@PathVariable("typeId") final AcademicDebtGenerationRuleType type,
+            @PathVariable("executionYearId") final ExecutionYear executionYear, 
+            @PathVariable("oid") final AcademicDebtGenerationRule academicDebtGenerationRule,
+            @PathVariable("entryIndex") int entryIndex,
+            @RequestParam(value = "bean", required = false) final AcademicDebtGenerationRuleBean bean, final Model model) {
+
+        bean.removeDegreeCurricularPlan(entryIndex);
+
+        return _editdegreecurricularplans(type, executionYear, academicDebtGenerationRule, bean, model);
+    }
+
+    
     private String jspPage(final String page) {
         return JSP_PATH + "/" + page;
     }
