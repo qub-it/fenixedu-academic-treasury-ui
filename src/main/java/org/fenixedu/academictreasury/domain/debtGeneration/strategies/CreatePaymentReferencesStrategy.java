@@ -102,18 +102,6 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
                     continue;
                 }
 
-                // Discard registrations not active and with no enrolments
-                if (!registration.hasAnyActiveState(rule.getExecutionYear())) {
-                    continue;
-                }
-
-                if (!registration.hasAnyEnrolmentsIn(rule.getExecutionYear())) {
-                    // only return is this rule has not entry that forces creation
-                    if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
-                        continue;
-                    }
-                }
-
                 try {
                     processDebtsForRegistration(rule, registration);
                 } catch (final AcademicTreasuryDomainException e) {
@@ -140,24 +128,7 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
             return;
         }
 
-        // Discard registrations not active and with no enrolments
-        if (!registration.hasAnyActiveState(rule.getExecutionYear())) {
-            return;
-        }
-
         processDebtsForRegistration(rule, registration);
-    }
-
-    private boolean isRuleWithOnlyOneAcademicTaxEntryForcingCreation(final AcademicDebtGenerationRule rule) {
-        if (rule.getAcademicDebtGenerationRuleEntriesSet().size() != 1) {
-            return false;
-        }
-
-        if (!AcademicTax.findUnique(rule.getAcademicDebtGenerationRuleEntriesSet().iterator().next().getProduct()).isPresent()) {
-            return false;
-        }
-
-        return rule.getAcademicDebtGenerationRuleEntriesSet().iterator().next().isForceCreation();
     }
 
     @Atomic(mode = TxMode.WRITE)
