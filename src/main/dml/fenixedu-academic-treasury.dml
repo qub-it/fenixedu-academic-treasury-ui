@@ -909,6 +909,38 @@ class debtGeneration.requests.MassiveDebtGenerationRequestFile extends .org.feni
 		}
 	 }
 
+
+/* *****************************
+ * EXEMPTIONS GENERATION REQUEST
+ * *****************************
+ */
+
+class exemptions.requests.ExemptionsGenerationRequestFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+	LocalDate debtDate;
+	DateTime whenProcessed;
+}
+
+	relation ExemptionsGenerationRequestFileBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		exemptions.requests.ExemptionsGenerationRequestFile playsRole exemptionsGenerationRequestFile {
+			multiplicity *;
+		}
+	}
+	
+	relation ExemptionsGenerationRequestFileTreasuryExemptionType {
+		.org.fenixedu.treasury.domain.exemption.TreasuryExemptionType playsRole treasuryExemptionType {
+			multiplicity 1..1;
+		}
+
+		exemptions.requests.ExemptionsGenerationRequestFile playsRole exemptionsGenerationRequestFile {
+			multiplicity *;
+		}
+	}
+
+
 /* ******************************
  * TUITION PAYMENT PLANS IMPORTER
  * ******************************

@@ -8,26 +8,29 @@ import org.joda.time.LocalDate;
 
 public class MassiveDebtGenerationRowResult {
 
+    private int rowNum;
     private ExecutionYear executionYear;
     private StudentCurricularPlan studentCurricularPlan;
     private TuitionPaymentPlan tuitionPaymentPlan;
     private LocalDate debtDate;
     private AcademicTax academicTax;
 
-    public MassiveDebtGenerationRowResult(final ExecutionYear executionYear, final StudentCurricularPlan studentCurricularPlan,
+    public MassiveDebtGenerationRowResult(final int rowNum, final ExecutionYear executionYear, final StudentCurricularPlan studentCurricularPlan,
             final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate debtDate) {
         super();
 
+        this.rowNum = rowNum;
         this.executionYear = executionYear;
         this.studentCurricularPlan = studentCurricularPlan;
         this.tuitionPaymentPlan = tuitionPaymentPlan;
         this.debtDate = debtDate;
     }
 
-    public MassiveDebtGenerationRowResult(final ExecutionYear executionYear, final StudentCurricularPlan studentCurricularPlan,
+    public MassiveDebtGenerationRowResult(final int rowNum, final ExecutionYear executionYear, final StudentCurricularPlan studentCurricularPlan,
             final AcademicTax academicTax, final LocalDate debtDate) {
         super();
         
+        this.rowNum = rowNum;
         this.executionYear = executionYear;
         this.studentCurricularPlan = studentCurricularPlan;
         this.academicTax = academicTax;
@@ -41,6 +44,10 @@ public class MassiveDebtGenerationRowResult {
      */
     // @formatter:on
 
+    public int getRowNum() {
+        return rowNum;
+    }
+    
     public ExecutionYear getExecutionYear() {
         return executionYear;
     }

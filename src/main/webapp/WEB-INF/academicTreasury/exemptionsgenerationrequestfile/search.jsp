@@ -1,4 +1,4 @@
-<%@page import="org.fenixedu.academictreasury.ui.createdebts.massive.tuitions.MassiveDebtGenerationRequestFileController"%>
+<%@page import="org.fenixedu.academictreasury.ui.exemptions.requests.ExemptionsGenerationRequestFileController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -31,17 +31,17 @@ ${portal.toolkit()}
 
 <div class="page-header">
 	<h1>
-		<spring:message code="label.MassiveDebtGenerationRequestFile.confirmdebtcreation" />
-		<small><c:out value="${requestFile.executionYear.qualifiedName}" /></small>
+		<spring:message code="label.ExemptionsGenerationRequestFile.search" />
+		<small></small>
 	</h1>
 </div>
 
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 	&nbsp;
-	<a class="" href="${pageContext.request.contextPath}<%= MassiveDebtGenerationRequestFileController.SEARCH_URL %>">
-		<spring:message code="label.back" />
+	<a class="" href="${pageContext.request.contextPath}<%= ExemptionsGenerationRequestFileController.CREATE_URL %>">
+		<spring:message code="label.event.create" />
 	</a>
 </div>
 
@@ -83,56 +83,39 @@ ${portal.toolkit()}
 </c:if>
 
 <c:choose>
-	<c:when test="${not empty rows}">
+	<c:when test="${not empty requestFiles}">
 
-		<datatables:table id="simpletable" row="r" data="${rows}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
-
-			<datatables:column cssStyle="width:7%">
-				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.studentNumber" />
-				</datatables:columnHead>
-				<c:out value='${r.studentCurricularPlan.registration.student.number}' />
-			</datatables:column>
-
-			<datatables:column cssStyle="width:23%">
-				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.studentName" />
-				</datatables:columnHead>
-				<c:out value="${r.studentCurricularPlan.registration.student.name}" />
-			</datatables:column>
-
-			<datatables:column cssStyle="width:30%">
-				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.degree" />
-				</datatables:columnHead>
-				<strong>
-					<c:out value="${r.studentCurricularPlan.registration.degree.code}" />&nbsp;-&nbsp;
-					<c:out value="${r.studentCurricularPlan.registration.degree.presentationNameI18N.content}" />
-				</strong>
-				<br/>
-				<br/>
-				<em><c:out value="${r.studentCurricularPlan.name}" /></em>
-			</datatables:column>
+		<datatables:table id="simpletable" row="requestFile" data="${requestFiles}" cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 
 			<datatables:column cssStyle="width:10%">
 				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.registration.startExecutionYear" />
+					<spring:message code="label.ExemptionsGenerationRequestFile.versioningCreationDate" />
 				</datatables:columnHead>
-				<c:out value="${r.studentCurricularPlan.registration.startExecutionYear.qualifiedName}" />
-			</datatables:column>
-
-			<datatables:column cssStyle="width:10%">
-				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.debtDate" />
-				</datatables:columnHead>
-				<c:out value='${r.debtDate.toString("yyyy-MM-dd")}' />
+				<c:out value='${requestFile.versioningCreationDate.toString("yyyy-MM-dd HH:mm:ss")}' />
 			</datatables:column>
 
 			<datatables:column cssStyle="width:20%">
 				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.tuitionPaymentPlan" />
+					<spring:message code="label.ExemptionsGenerationRequestFile.treasuryExemptionType" />
 				</datatables:columnHead>
-				<c:out value='${r.tuitionPaymentPlan.conditionsDescription.content}' />
+				
+				<c:out value="${requestFile.treasuryExemptionType.name.content}" />
+			</datatables:column>
+
+			<datatables:column cssStyle="width:10%">
+				<datatables:columnHead>
+					<spring:message code="label.ExemptionsGenerationRequestFile.whenProcessed" />
+				</datatables:columnHead>
+				<c:out value='${requestFile.whenProcessed.toString("yyyy-MM-dd HH:mm:ss")}' />
+			</datatables:column>
+
+			<datatables:column cssStyle="width:10%">
+				<datatables:columnHead>
+					<spring:message code="label.ExemptionsGenerationRequestFile.content" />
+				</datatables:columnHead>
+				<a class="btn btn-default" href="${pageContext.request.contextPath}<%= ExemptionsGenerationRequestFileController.DOWNLOAD_URL %>/${requestFile.externalId}">
+					<spring:message code="label.download" />
+				</a>
 			</datatables:column>
 
 		</datatables:table>
@@ -145,16 +128,12 @@ ${portal.toolkit()}
 					"${pageContext.request.contextPath}",
 					"${datatablesI18NUrl}");
 		</script>
-	
-		<c:if test="${processable}">
-			<form action="${pageContext.request.contextPath}<%= MassiveDebtGenerationRequestFileController.PROCESSREQUEST_URL %>/${requestFile.externalId}" method="post">
-				<button class="btn btn-primary">
-					<spring:message code="label.confirm" />
-				</button>
-			</form>
-		</c:if>		
 		
 	</c:when>
-	
+	<c:otherwise>
+		<p>
+			<spring:message code="label.noResultsFound" />
+		</p>
+	</c:otherwise>
 </c:choose>
 
