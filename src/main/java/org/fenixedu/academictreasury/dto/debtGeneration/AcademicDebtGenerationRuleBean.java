@@ -12,7 +12,9 @@ import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRuleType;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicTaxDueDateAlignmentType;
+import org.fenixedu.academictreasury.domain.debtGeneration.DebtGenerationRuleRestriction;
 import org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy;
+import org.fenixedu.academictreasury.domain.debtGeneration.IDebtGenerationRuleRestrictionStrategy;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.util.Constants;
@@ -75,6 +77,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     private boolean aggregateOnDebitNote;
     private boolean aggregateAllOrNothing;
     private AcademicTaxDueDateAlignmentType academicTaxDueDateAlignmentType;
+    private DebtGenerationRuleRestriction debtGenerationRuleRestriction;
 
     private List<ProductEntry> entries = Lists.newArrayList();
 
@@ -99,6 +102,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     private List<TupleDataSourceBean> degreeTypeDataSource = Lists.newArrayList();
     private List<TupleDataSourceBean> degreeCurricularPlanDataSource = Lists.newArrayList();
     private List<TupleDataSourceBean> academicTaxDueDateAlignmentTypeDataSource = Lists.newArrayList();
+    private List<TupleDataSourceBean> debtGenerationRuleRestrictionDataSource = Lists.newArrayList();
 
     private boolean toAggregateDebitEntries;
     private boolean toCloseDebitNote;
@@ -153,6 +157,12 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         toCreatePaymentReferenceCodes = type.strategyImplementation().isToCreatePaymentReferenceCodes();
         toCreateDebitEntries = type.strategyImplementation().isToCreateDebitEntries();
         toAlignAcademicTaxesDueDate = type.strategyImplementation().isToAlignAcademicTaxesDueDate();
+
+        debtGenerationRuleRestrictionDataSource =
+                DebtGenerationRuleRestriction.findAll().map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName()))
+                        .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+
+        debtGenerationRuleRestrictionDataSource.add(0, Constants.SELECT_OPTION);
     }
 
     public AcademicDebtGenerationRuleBean(final AcademicDebtGenerationRule rule) {
@@ -361,6 +371,14 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     public List<TupleDataSourceBean> getAcademicTaxDueDateAlignmentTypeDataSource() {
         return academicTaxDueDateAlignmentTypeDataSource;
     }
+    
+    public List<TupleDataSourceBean> getDebtGenerationRuleRestrictionDataSource() {
+        return debtGenerationRuleRestrictionDataSource;
+    }
+    
+    public void setDebtGenerationRuleRestrictionDataSource(List<TupleDataSourceBean> debtGenerationRuleRestrictionDataSource) {
+        this.debtGenerationRuleRestrictionDataSource = debtGenerationRuleRestrictionDataSource;
+    }
 
     public boolean isForceCreation() {
         return isToCreateDebitEntries() && forceCreation;
@@ -384,6 +402,14 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     public void setNumberOfDaysToDueDate(int numberOfDaysToDueDate) {
         this.numberOfDaysToDueDate = numberOfDaysToDueDate;
+    }
+
+    public DebtGenerationRuleRestriction getDebtGenerationRuleRestriction() {
+        return debtGenerationRuleRestriction;
+    }
+
+    public void setDebtGenerationRuleRestriction(DebtGenerationRuleRestriction debtGenerationRuleRestriction) {
+        this.debtGenerationRuleRestriction = debtGenerationRuleRestriction;
     }
 
 }

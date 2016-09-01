@@ -733,7 +733,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                 enrolment.getCurricularCourse().getCompetenceCourse().getLaboratorialHours(enrolment.getExecutionPeriod())));
     }
 
-    private static boolean firstTimeStudent(final Registration registration, final ExecutionYear executionYear) {
+    public static boolean firstTimeStudent(final Registration registration, final ExecutionYear executionYear) {
         return registration.isFirstTime(executionYear);
     }
 

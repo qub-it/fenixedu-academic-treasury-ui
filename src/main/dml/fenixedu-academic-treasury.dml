@@ -509,6 +509,23 @@ class debtGeneration.AcademicDebtGenerationRuleType {
 		}
 	}
 
+class debtGeneration.DebtGenerationRuleRestriction {
+	String name;
+	String strategyImplementation;
+}
+
+	relation DebtGenerationRuleRestrictionBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+	
+		debtGeneration.DebtGenerationRuleRestriction playsRole debtGenerationRuleRestrictions {
+			multiplicity *;
+		}
+	}
+	
+
+
 class debtGeneration.AcademicDebtGenerationRule {
 	boolean active;
 	boolean backgroundExecution;
@@ -565,6 +582,16 @@ class debtGeneration.AcademicDebtGenerationRule {
 	relation AcademicDebtGenerationRuleDegreeCurricularPlan {
 		.org.fenixedu.academic.domain.DegreeCurricularPlan playsRole degreeCurricularPlans {
 			multiplicity *;
+		}
+		
+		debtGeneration.AcademicDebtGenerationRule playsRole academicDebtGenerationRules {
+			multiplicity *;
+		}
+	}
+	
+	relation AcademicDebtGenerationRuleDebtGenerationRuleRestriction {
+		debtGeneration.DebtGenerationRuleRestriction playsRole debtGenerationRuleRestriction {
+			multiplicity 0..1;
 		}
 		
 		debtGeneration.AcademicDebtGenerationRule playsRole academicDebtGenerationRules {

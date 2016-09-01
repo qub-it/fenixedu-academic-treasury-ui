@@ -236,6 +236,12 @@ ${portal.toolkit()}
 							</c:forEach>
 							
 							<p>&nbsp;</p>							
+
+							<c:if test="${not empty rule.debtGenerationRuleRestriction}">
+								<p><span class="label label-info"><strong><c:out value="${rule.debtGenerationRuleRestriction.name}" /></strong></span></p>
+							</c:if>
+							
+							<p>&nbsp;</p>							
 							<p>
 								<%
 								    final AcademicDebtGenerationRule rule = (AcademicDebtGenerationRule) pageContext.getAttribute("rule");
@@ -260,6 +266,7 @@ ${portal.toolkit()}
 									<spring:message code='label.manageacademicdebtgenerationrule.editDegreeCurricularPlans' />
 								</a>
 							</p>
+							
 							
 						</td>
 						<td>

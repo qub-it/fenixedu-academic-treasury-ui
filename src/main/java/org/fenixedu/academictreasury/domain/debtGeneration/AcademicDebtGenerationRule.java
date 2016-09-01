@@ -92,6 +92,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         setOrderNumber(max.isPresent() ? max.get().getOrderNumber() + 1 : 1);
 
         setDays(bean.getNumberOfDaysToDueDate());
+        
+        setDebtGenerationRuleRestriction(bean.getDebtGenerationRuleRestriction());
 
         checkRules();
     }
@@ -189,6 +191,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             getAcademicDebtGenerationRuleEntriesSet().iterator().next().delete();
         }
 
+        setDebtGenerationRuleRestriction(null);
         super.deleteDomainObject();
     }
 

@@ -93,6 +93,10 @@ public class DeprecatedDebtGenerationRuleStrategy implements IAcademicDebtGenera
         for (final DegreeCurricularPlan degreeCurricularPlan : rule.getDegreeCurricularPlansSet()) {
             for (final Registration registration : degreeCurricularPlan.getRegistrations()) {
 
+                if(rule.getDebtGenerationRuleRestriction() != null && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+                    continue;
+                }
+                
                 if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
                     continue;
                 }
@@ -132,6 +136,10 @@ public class DeprecatedDebtGenerationRuleStrategy implements IAcademicDebtGenera
         try {
             if (!rule.isActive()) {
                 throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
+            }
+            
+            if(rule.getDebtGenerationRuleRestriction() != null && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+                return;
             }
             
             if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {

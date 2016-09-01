@@ -219,8 +219,6 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 		                        <span ng-bind-html="academicTaxDueDateAlignmentType.text | highlight: $select.search"></span>
 	                        </ui-select-choices>
                         </ui-select>
-                    
-                        </select>
                     </div>
                 </div>
 				
@@ -254,6 +252,26 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                     	<input type="number" name="numberofdaystoduedate" ng-model="object.numberOfDaysToDueDate" pattern="[1-9]?[0-9]?[0-9]" />
                     </div>
 				</div>
+				
+                <div class="form-group row">
+                    <div class="col-sm-2 control-label">
+                        <spring:message code="label.AcademicDebtGenerationRule.debtGenerationRuleRestriction" />
+                    </div>
+
+                    <div class="col-sm-4">
+                        <ui-select
+                            id="academicDebtGenerationRule_debtGenerationRuleRestriction"
+                            class="" name="debtgenerationrulerestriction"
+                            ng-model="$parent.object.debtGenerationRuleRestriction"
+                            theme="bootstrap" ng-disabled="disabled">
+	                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+	                        <ui-select-choices repeat="debtGenerationRuleRestriction.id as debtGenerationRuleRestriction in object.debtGenerationRuleRestrictionDataSource | filter: $select.search">
+		                        <span ng-bind-html="debtGenerationRuleRestriction.text | highlight: $select.search"></span>
+	                        </ui-select-choices>
+                        </ui-select>
+                    </div>
+                </div>
+				
             </div>
         </div>
     </form>

@@ -75,7 +75,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
     public boolean isToAlignAcademicTaxesDueDate() {
         return true;
     }
-    
+
     @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule) {
@@ -84,8 +84,13 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
 
+
         for (final DegreeCurricularPlan degreeCurricularPlan : rule.getDegreeCurricularPlansSet()) {
             for (final Registration registration : degreeCurricularPlan.getRegistrations()) {
+
+                if(rule.getDebtGenerationRuleRestriction() != null && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+                    continue;
+                }
 
                 try {
                     processDebtsForRegistration(rule, registration);
@@ -105,6 +110,10 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
         
+        if(rule.getDebtGenerationRuleRestriction() != null && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+            return;
+        }
+
         try {
             processDebtsForRegistration(rule, registration);
         } catch(final AcademicTreasuryDomainException e) {
