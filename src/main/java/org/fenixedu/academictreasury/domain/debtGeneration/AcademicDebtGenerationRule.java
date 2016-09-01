@@ -87,7 +87,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         getDegreeCurricularPlansSet().addAll((bean.getDegreeCurricularPlans()));
 
         setOrderNumber(-1);
-        final Optional<AcademicDebtGenerationRule> max = findAll().max(COMPARE_BY_ORDER_NUMBER);
+        final Optional<AcademicDebtGenerationRule> max = find(getAcademicDebtGenerationRuleType(), getExecutionYear()).max(COMPARE_BY_ORDER_NUMBER);
 
         setOrderNumber(max.isPresent() ? max.get().getOrderNumber() + 1 : 1);
 

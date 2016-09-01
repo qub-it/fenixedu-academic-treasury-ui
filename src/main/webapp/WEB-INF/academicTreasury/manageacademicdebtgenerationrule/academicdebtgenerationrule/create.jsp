@@ -379,7 +379,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 						code="label.AcademicDebtGenerationRuleEntry.product" />
 				</div>
 
-				<div class="col-sm-4">
+				<div class="col-sm-6">
 					<%-- Relation to side 1 drop down rendered in input --%>
 					<ui-select id="academicDebtGenerationRule_product" class="" name="product"
 						ng-model="$parent.object.product" theme="bootstrap"
@@ -449,7 +449,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                 </div>
             </div>            
 			<div class="form-group row">
-				<div class="col-sm-6">
+				<div class="col-sm-8">
 	                <input style="float:right;" type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" />
                 </div>
             </div>

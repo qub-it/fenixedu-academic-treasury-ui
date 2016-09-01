@@ -143,26 +143,7 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
     private void processDebtsForRegistration(final AcademicDebtGenerationRule rule, final Registration registration) {
 
         // For each product try to grab or create if requested
-        final Set<DebitEntry> debitEntries = Sets.newHashSet();
-
-        for (final AcademicDebtGenerationRuleEntry entry : rule.getAcademicDebtGenerationRuleEntriesSet()) {
-            final Product product = entry.getProduct();
-
-            DebitEntry grabbedDebitEntry = null;
-            // Check if the product is tuition kind
-            if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == product.getProductGroup()) {
-                grabbedDebitEntry = grabDebitEntryForTuition(rule, registration, entry);
-            } else if (AcademicTax.findUnique(product).isPresent()) {
-                // Check if the product is an academic tax
-                grabbedDebitEntry = grabDebitEntryForAcademicTax(rule, registration, entry);
-            } else {
-                grabbedDebitEntry = grabDebitEntry(rule, registration, entry);
-            }
-
-            if (grabbedDebitEntry != null) {
-                debitEntries.add(grabbedDebitEntry);
-            }
-        }
+        final Set<DebitEntry> debitEntries = grabDebitEntries(rule, registration);
 
         if (!Sets
                 .difference(rule.getAcademicDebtGenerationRuleEntriesSet().stream().map(e -> e.getProduct())
@@ -203,7 +184,32 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         
     }
 
-    private DebitEntry grabDebitEntryForAcademicTax(final AcademicDebtGenerationRule rule, final Registration registration,
+    public static Set<DebitEntry> grabDebitEntries(final AcademicDebtGenerationRule rule, final Registration registration) {
+        final Set<DebitEntry> debitEntries = Sets.newHashSet();
+        
+        for (final AcademicDebtGenerationRuleEntry entry : rule.getAcademicDebtGenerationRuleEntriesSet()) {
+            final Product product = entry.getProduct();
+
+            DebitEntry grabbedDebitEntry = null;
+            // Check if the product is tuition kind
+            if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == product.getProductGroup()) {
+                grabbedDebitEntry = grabDebitEntryForTuition(rule, registration, entry);
+            } else if (AcademicTax.findUnique(product).isPresent()) {
+                // Check if the product is an academic tax
+                grabbedDebitEntry = grabDebitEntryForAcademicTax(rule, registration, entry);
+            } else {
+                grabbedDebitEntry = grabDebitEntry(rule, registration, entry);
+            }
+
+            if (grabbedDebitEntry != null) {
+                debitEntries.add(grabbedDebitEntry);
+            }
+        }
+        
+        return debitEntries;
+    }
+
+    private static DebitEntry grabDebitEntryForAcademicTax(final AcademicDebtGenerationRule rule, final Registration registration,
             final AcademicDebtGenerationRuleEntry entry) {
         final Product product = entry.getProduct();
         final ExecutionYear executionYear = rule.getExecutionYear();
@@ -219,7 +225,7 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         return null;
     }
 
-    private DebitEntry grabDebitEntryForTuition(final AcademicDebtGenerationRule rule, final Registration registration,
+    private static DebitEntry grabDebitEntryForTuition(final AcademicDebtGenerationRule rule, final Registration registration,
             final AcademicDebtGenerationRuleEntry entry) {
         final Product product = entry.getProduct();
         final ExecutionYear executionYear = rule.getExecutionYear();
@@ -239,7 +245,7 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         return DebitEntry.findActive(academicTreasuryEvent, product).filter(d -> d.isInDebt()).findFirst().orElse(null);
     }
 
-    private DebitEntry grabDebitEntry(final AcademicDebtGenerationRule rule, final Registration registration,
+    private static DebitEntry grabDebitEntry(final AcademicDebtGenerationRule rule, final Registration registration,
             final AcademicDebtGenerationRuleEntry entry) {
         if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == entry.getProduct().getProductGroup()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.entry.is.tuition");

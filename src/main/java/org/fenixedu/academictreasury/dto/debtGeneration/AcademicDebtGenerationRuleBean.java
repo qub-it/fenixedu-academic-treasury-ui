@@ -135,7 +135,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         }
 
         productDataSource = availableProducts.stream().sorted(Product.COMPARE_BY_NAME)
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
+                .map(l -> new TupleDataSourceBean(l.getExternalId(), String.format("%s [%s]", l.getName().getContent(), l.getCode()))).collect(Collectors.toList());
 
         paymentCodePoolDataSource = PaymentCodePool.findAll().filter(PaymentCodePool::getActive)
                 .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName())).collect(Collectors.toList());
