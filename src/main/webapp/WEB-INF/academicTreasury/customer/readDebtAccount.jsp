@@ -478,9 +478,7 @@ ${portal.angularToolkit()}
                                  </br> <strong><spring:message code="label.customer.PaymentReferenceCode.reference" />: </strong>
                                  <c:out value="${target.paymentReferenceCode.formattedCode}" />
                                  </br> <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
-                                 <c:if test="${target.paymentReferenceCode.isFixedAmount() }">
-                                     <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(target.paymentReferenceCode.payableAmount)}" />
-                                 </c:if>
+                                 <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(target.paymentReferenceCode.payableAmount)}" />
 
                              </div>
 
