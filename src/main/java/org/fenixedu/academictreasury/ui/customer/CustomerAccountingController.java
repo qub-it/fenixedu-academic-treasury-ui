@@ -205,7 +205,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("exemptionDataSet", exemptionEntries);
 
         final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
-        for (final InvoiceEntry invoiceEntry : pendingInvoiceEntries) {
+        for (final InvoiceEntry invoiceEntry : debtAccount.getPendingInvoiceEntriesSet()) {
             if (!invoiceEntry.isDebitNoteEntry()) {
                 continue;
             }
