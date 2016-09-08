@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.academictreasury.domain.debtGeneration.requests.MassiveDebtGenerationRequestFile;
 import org.fenixedu.academictreasury.domain.debtGeneration.requests.MassiveDebtGenerationRequestFileBean;
-import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
@@ -51,7 +51,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.JstlView;
+import org.springframework.web.servlet.view.RedirectView;
 
 @BennuSpringController(value = CustomerController.class)
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.massivetuitiondebtcreation",
@@ -73,7 +76,7 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
     @RequestMapping(value = _SEARCH_URI, method = RequestMethod.GET)
     public String search(final Model model) {
 
-        model.addAttribute("requestFiles", MassiveDebtGenerationRequestFile.findAll()
+        model.addAttribute("requestFiles", MassiveDebtGenerationRequestFile.findAllActive()
                 .sorted(MassiveDebtGenerationRequestFile.COMPARE_BY_CREATION_DATE).collect(Collectors.toList()));
 
         return jspPage("search");
@@ -123,15 +126,15 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
         try {
             byte[] content = requestFile.getBytes();
 
-            if (bean.getExecutionYear() == null) {
+            if (bean.getMassiveDebtGenerationType() == null) {
+                throw new AcademicTreasuryDomainException(
+                        "error.MassiveDebtGenerationRequestFile.massiveDebtGenerationType.required");
             }
 
-            MassiveDebtGenerationRequestFile.readExcel(content, bean.getTuitionPaymentPlanGroup(), bean.getAcademicTax(),
-                    bean.getExecutionYear(), bean.getDebtDate());
+            bean.getMassiveDebtGenerationType().implementation().readExcel(content, bean);
 
             MassiveDebtGenerationRequestFile file =
-                    MassiveDebtGenerationRequestFile.create(bean.getTuitionPaymentPlanGroup(), bean.getAcademicTax(),
-                            bean.getExecutionYear(), bean.getDebtDate(), requestFile.getOriginalFilename(), content);
+                    MassiveDebtGenerationRequestFile.create(bean, requestFile.getOriginalFilename(), content);
 
             return redirect(CONFIRMDEBTCREATION_URL + "/" + file.getExternalId(), model, redirectAttributes);
         } catch (final Exception e) {
@@ -145,17 +148,16 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
     public static final String CONFIRMDEBTCREATION_URL = CONTROLLER_URL + _CONFIRMDEBTCREATION_URI;
 
     @RequestMapping(value = _CONFIRMDEBTCREATION_URI + "/{fileId}", method = RequestMethod.GET)
-    public String confirmdebtcreation(
+    public View confirmdebtcreation(
             @PathVariable("fileId") final MassiveDebtGenerationRequestFile massiveDebtGenerationRequestFile, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
             model.addAttribute("massiveDebtGenerationRequestFile", massiveDebtGenerationRequestFile);
             model.addAttribute("rows",
-                    MassiveDebtGenerationRequestFile.readExcel(massiveDebtGenerationRequestFile.getContent(),
-                            massiveDebtGenerationRequestFile.getTuitionPaymentPlanGroup(),
-                            massiveDebtGenerationRequestFile.getAcademicTax(),
-                            massiveDebtGenerationRequestFile.getExecutionYear(), massiveDebtGenerationRequestFile.getDebtDate()));
+                    massiveDebtGenerationRequestFile.getMassiveDebtGenerationType().implementation().readExcel(
+                            massiveDebtGenerationRequestFile.getContent(),
+                            new MassiveDebtGenerationRequestFileBean(massiveDebtGenerationRequestFile)));
 
             model.addAttribute("requestFile", massiveDebtGenerationRequestFile);
             model.addAttribute("processable", true);
@@ -163,21 +165,30 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
             addErrorMessage(de.getLocalizedMessage(), model);
         }
 
-        return jspPage("confirmdebtcreation");
+        return new JstlView(massiveDebtGenerationRequestFile.getMassiveDebtGenerationType().implementation().viewUrl()) {
+            @Override
+            protected void exposeHelpers(HttpServletRequest request) throws Exception {
+                setServletContext(request.getServletContext());
+                super.exposeHelpers(request);
+            }
+        };
     }
 
     private static final String _PROCESSREQUEST_URI = "/processrequest";
     public static final String PROCESSREQUEST_URL = CONTROLLER_URL + _PROCESSREQUEST_URI;
 
     @RequestMapping(value = _PROCESSREQUEST_URI + "/{fileId}", method = RequestMethod.POST)
-    public String processrequest(@PathVariable("fileId") final MassiveDebtGenerationRequestFile massiveDebtGenerationRequestFile,
+    public View processrequest(@PathVariable("fileId") final MassiveDebtGenerationRequestFile massiveDebtGenerationRequestFile,
             final Model model, final RedirectAttributes redirectAttributes) {
 
         try {
             massiveDebtGenerationRequestFile.process();
 
             addInfoMessage(Constants.bundle("label.MassiveDebtGenerationRequestFile.success"), model);
-            return redirect(SEARCH_URL, model, redirectAttributes);
+
+            redirect(SEARCH_URL, model, redirectAttributes);
+
+            return new RedirectView(SEARCH_URL);
         } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return confirmdebtcreation(massiveDebtGenerationRequestFile, model, redirectAttributes);

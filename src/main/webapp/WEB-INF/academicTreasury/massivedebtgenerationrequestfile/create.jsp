@@ -105,6 +105,15 @@ ${portal.angularToolkit()}
 			} ]);
 </script>
 
+
+<div class="alert alert-warning" role="alert">
+	<strong>
+		<span class="glyphicon glyphicon-warning-sign" aria-hidden="true"></span>&nbsp;
+		<spring:message code="label.MassiveDebtGenerationRequestFile.test.before.do" />
+	</strong>
+</div>
+
+
 <form name='form' method="post" class="form-horizontal" ng-app="app" ng-controller="controller"
 	action='${pageContext.request.contextPath}<%= MassiveDebtGenerationRequestFileController.CREATE_URL %>' enctype="multipart/form-data">
 
@@ -115,6 +124,24 @@ ${portal.angularToolkit()}
 		<div class="panel-body">
 
 			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.MassiveDebtGenerationRequestFile.massiveDebtGenerationType" />
+				</div>
+
+				<div class="col-sm-6">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<ui-select id="massiveDebtGenerationRequestFile_massiveDebtGenerationType" name="massivedebtgenerationtype" 
+					ng-model="$parent.object.massiveDebtGenerationType" theme="bootstrap" 
+					ng-disabled="disabled" ng-change="onBeanChange($model)"> 
+						<ui-select-match>{{$select.selected.text}}</ui-select-match> 
+						<ui-select-choices repeat="massiveDebtGenerationType.id as massiveDebtGenerationType in object.massiveDebtGenerationTypeDataSource | filter: $select.search">
+							<span ng-bind-html="massiveDebtGenerationType.text | highlight: $select.search"></span> 
+						</ui-select-choices>
+					</ui-select>
+				</div>
+			</div>
+
+			<div class="form-group row" ng-show="object.executionYearRequired">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.MassiveDebtGenerationRequestFile.executionYear" />
 				</div>
@@ -130,7 +157,7 @@ ${portal.angularToolkit()}
 				</div>
 			</div>
 
-            <div class="form-group row">
+            <div class="form-group row" ng-show="object.academicTaxRequired">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.MassiveDebtGenerationRequestFile.forAcademicTax" />
                 </div>
@@ -145,7 +172,7 @@ ${portal.angularToolkit()}
                 </div>
             </div>
             
-            <div class="form-group row" ng-show="object.forAcademicTax === true">
+            <div class="form-group row" ng-show="object.academicTaxRequired && object.forAcademicTax === true">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.AcademicTaxDebtCreationBean.academicTax" />
                 </div>
@@ -162,7 +189,7 @@ ${portal.angularToolkit()}
                 </div>
             </div>
             
-			<div class="form-group row">
+			<div class="form-group row" ng-show="object.debtDateRequired">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.MassiveDebtGenerationRequestFile.debtDate" />
 				</div>
@@ -171,6 +198,33 @@ ${portal.angularToolkit()}
 					<input id="massiveDebtGenerationRequestFile_debtDate" class="form-control" type="text" name="debtDate" bennu-date="object.debtDate" />
 				</div>
 			</div>
+
+			<div class="form-group row" ng-show="object.reasonRequired">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.MassiveDebtGenerationRequestFile.reason" />
+				</div>
+
+				<div class="col-sm-6">
+					<input id="massiveDebtGenerationRequestFile_reason" class="form-control" type="text" name="reason" ng-model="object.reason" />
+				</div>
+			</div>
+
+            <div class="form-group row" ng-show="object.finantialInstitutionRequired">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.MassiveDebtGenerationRequestFile.finantialInstitution" />
+                </div>
+
+                <div class="col-sm-6">
+                    <%-- Relation to side 1 drop down rendered in input --%>
+                    <ui-select id="massiveDebtGenerationRequestFile_finantialInstitution" name="finantialInstitution"
+                        ng-model="$parent.object.finantialInstitution" theme="bootstrap" ng-disabled="disabled"> 
+                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
+	                    <ui-select-choices repeat="finantialInstitution.id as finantialInstitution in object.finantialInstitutionDataSource | filter: $select.search">
+							<span ng-bind-html="finantialInstitution.text | highlight: $select.search"></span>
+	                    </ui-select-choices> 
+                   </ui-select>
+                </div>
+            </div>
 
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
@@ -181,6 +235,9 @@ ${portal.angularToolkit()}
 					<input type="file" name="requestFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />
 				</div>
 			</div>
+			
+			
+			
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />

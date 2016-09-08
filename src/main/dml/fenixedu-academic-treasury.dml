@@ -891,9 +891,26 @@ class reports.DebtReportRequestResultErrorsFile extends .org.fenixedu.bennu.io.d
  * ***********************
  */
  
+class debtGeneration.requests.MassiveDebtGenerationType {
+	String name;
+	String implementationClass;
+	boolean active;
+}
+
+	relation MassiveDebtGenerationTypeBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		debtGeneration.requests.MassiveDebtGenerationType playsRole massiveDebtGenerationTypes {
+			multiplicity *;
+		}
+	}
+
 class debtGeneration.requests.MassiveDebtGenerationRequestFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 	LocalDate debtDate;
 	DateTime whenProcessed;
+	String reason;
 }
 
 	relation MassiveDebtGenerationRequestBennu {
@@ -906,9 +923,20 @@ class debtGeneration.requests.MassiveDebtGenerationRequestFile extends .org.feni
 		}
 	}
 
+	relation MassiveDebtGenerationRequestMassiveDebtGenerationType {
+
+		debtGeneration.requests.MassiveDebtGenerationType playsRole massiveDebtGenerationType {
+			multiplicity 1..1;
+		}
+
+		debtGeneration.requests.MassiveDebtGenerationRequestFile playsRole massiveDebtGenerationRequestFiles {
+			multiplicity *;
+		}
+	}
+
 	relation MassiveDebtGenerationRequestExecutionYear {
 		.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear {
-			multiplicity 1..1;
+			multiplicity 0..1;
 		}
 
 		debtGeneration.requests.MassiveDebtGenerationRequestFile playsRole massiveDebtGenerationRequestFiles {
@@ -935,8 +963,17 @@ class debtGeneration.requests.MassiveDebtGenerationRequestFile extends .org.feni
 			multiplicity *;
 		}
 	 }
-
-
+	 
+	relation MassiveDebtGenerationRequestFileFinantialInstitution {	
+		.org.fenixedu.treasury.domain.FinantialInstitution playsRole finantialInstitution {
+			multiplicity 0..1;
+		}
+		
+		debtGeneration.requests.MassiveDebtGenerationRequestFile playsRole massiveDebtGenerationRequestFiles {
+			multiplicity *;
+		}
+	 }
+	 
 /* *****************************
  * EXEMPTIONS GENERATION REQUEST
  * *****************************

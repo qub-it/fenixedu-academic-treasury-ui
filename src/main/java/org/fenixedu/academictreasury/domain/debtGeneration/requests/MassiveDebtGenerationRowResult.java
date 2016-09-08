@@ -4,6 +4,7 @@ import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.StudentCurricularPlan;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
+import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.joda.time.LocalDate;
 
 public class MassiveDebtGenerationRowResult {
@@ -14,6 +15,7 @@ public class MassiveDebtGenerationRowResult {
     private TuitionPaymentPlan tuitionPaymentPlan;
     private LocalDate debtDate;
     private AcademicTax academicTax;
+    private DebitEntry debitEntry;
 
     public MassiveDebtGenerationRowResult(final int rowNum, final ExecutionYear executionYear, final StudentCurricularPlan studentCurricularPlan,
             final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate debtDate) {
@@ -35,6 +37,13 @@ public class MassiveDebtGenerationRowResult {
         this.studentCurricularPlan = studentCurricularPlan;
         this.academicTax = academicTax;
         this.debtDate = debtDate;
+    }
+
+    public MassiveDebtGenerationRowResult(final int rowNum, final DebitEntry debitEntry) {
+        super();
+        
+        this.rowNum = rowNum;
+        this.debitEntry = debitEntry;
     }
     
     // @formatter:off
@@ -66,5 +75,9 @@ public class MassiveDebtGenerationRowResult {
 
     public LocalDate getDebtDate() {
         return debtDate;
+    }
+    
+    public DebitEntry getDebitEntry() {
+        return debitEntry;
     }
 }

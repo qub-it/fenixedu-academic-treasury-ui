@@ -96,29 +96,20 @@ ${portal.toolkit()}
 
 			<datatables:column cssStyle="width:20%">
 				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.debtType" />
+					<spring:message code="label.MassiveDebtGenerationRequestFile.massiveDebtGenerationType" />
 				</datatables:columnHead>
 				
-				<c:if test="${not empty requestFile.tuitionPaymentPlanGroup}">
-					<c:out value="${requestFile.tuitionPaymentPlanGroup.name.content}" />
-				</c:if>
-				<c:if test="${not empty requestFile.academicTax}">
-					<c:out value="${requestFile.academicTax.product.name.content}" />
-				</c:if>
+				<c:out value="${requestFile.massiveDebtGenerationType.name}" />
 			</datatables:column>
 
-			<datatables:column cssStyle="width:20%">
+			<datatables:column cssStyle="width:40%">
 				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.executionYear" />
+					<spring:message code="label.MassiveDebtGenerationRequestFile.dataDescription" />
 				</datatables:columnHead>
-				<c:out value="${requestFile.executionYear.qualifiedName}" />
-			</datatables:column>
 
-			<datatables:column cssStyle="width:10%">
-				<datatables:columnHead>
-					<spring:message code="label.MassiveDebtGenerationRequestFile.debtDate" />
-				</datatables:columnHead>
-				<c:out value='${requestFile.debtDate.toString("yyyy-MM-dd")}' />
+				<div>
+					${requestFile.dataDescription}
+				</div>
 			</datatables:column>
 
 			<datatables:column cssStyle="width:10%">
