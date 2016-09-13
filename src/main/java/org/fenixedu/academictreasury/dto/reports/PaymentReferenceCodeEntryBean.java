@@ -139,7 +139,7 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
                 this.finantialDocumentNumber =
                         String.join(
                                 ", ",
-                                multipleEntriesPaymentCode.getInvoiceEntriesSet().stream()
+                                multipleEntriesPaymentCode.getInvoiceEntriesSet().stream().filter(i -> i.getFinantialDocument() != null)
                                         .map(i -> i.getFinantialDocument().getUiDocumentNumber()).collect(Collectors.toList()));
             }
 
