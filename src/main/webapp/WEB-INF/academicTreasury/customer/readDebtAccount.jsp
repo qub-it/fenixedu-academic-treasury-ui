@@ -49,6 +49,13 @@ ${portal.angularToolkit()}
 		<a class="" href="${pageContext.request.contextPath}${fowardPaymentUrl}">
 			<spring:message code="label.event.accounting.manageCustomer.forwardPayment" />
 		</a>
+		
+ 		&nbsp;|&nbsp;
+ 		<span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;
+ 		<a target="_blank" href="${pageContext.request.contextPath}/academictreasury/customer/viewaccount/printpaymentreferences/${debtAccount.externalId}">
+	        <spring:message code="label.CustomerAccounting.printpaymentplan" />
+    	</a> &nbsp;
+		
 	<% } %>
 </div>
 

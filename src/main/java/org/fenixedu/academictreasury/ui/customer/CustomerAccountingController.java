@@ -5,7 +5,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.services.reports.DocumentPrinter;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.ui.customer.forwardpayments.CustomerAccountingForwardPaymentController;
@@ -16,14 +19,11 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
-import org.fenixedu.treasury.services.reports.DocumentPrinter;
-import org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController;
+import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -61,11 +61,11 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     protected String getForwardPaymentUrl(final DebtAccount debtAccount) {
         return FORWARD_PAYMENT_URL(debtAccount);
     }
-    
+
     public static String FORWARD_PAYMENT_URL(final DebtAccount debtAccount) {
         return String.format(CONTROLLER_URL + "/read/%s/forwardpayment", debtAccount.getExternalId());
     }
-    
+
     protected String getPrintSettlementNote() {
         return PRINT_SETTLEMENT_NOTE_URL;
     }
@@ -79,14 +79,14 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public String readCustomer(Model model, RedirectAttributes redirectAttributes) {
         model.addAttribute("readCustomerUrl", getReadCustomerUrl());
         model.addAttribute("readAccountUrl", getReadAccountUrl());
-        
+
         Customer customer = Authenticate.getUser().getPerson().getPersonCustomer();
         model.addAttribute("customer", customer);
 
         if (customer == null) {
             return redirect(getCustomerNotCreatedUrl(), model, redirectAttributes);
         }
-        
+
         if (customer.getDebtAccountsSet().size() == 1) {
             DebtAccount debtAccount = customer.getDebtAccountsSet().iterator().next();
             return redirect(getReadAccountUrl() + debtAccount.getExternalId(), model, redirectAttributes);
@@ -106,7 +106,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount));
         model.addAttribute("printSettlementNoteUrl", getPrintSettlementNote());
-        
+
         List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
         List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
         List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
@@ -231,14 +231,14 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         return redirect(CustomerAccountingForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId(),
                 model, redirectAttributes);
     }
-    
+
     private static final String CUSTOMER_NOT_CREATED_URI = "/customernotcreated";
     public static final String CUSTOMER_NOT_CREATED_URL = CONTROLLER_URL + CUSTOMER_NOT_CREATED_URI;
-    
+
     protected String getCustomerNotCreatedUrl() {
         return CUSTOMER_NOT_CREATED_URL;
     }
-    
+
     @RequestMapping(value = CUSTOMER_NOT_CREATED_URI)
     public String customernotcreated(final Model model) {
         return jspPage("customernotcreated");
@@ -252,21 +252,43 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public Object printsettlementnote(@PathVariable("settlementNoteId") final SettlementNote settlementNote, final Model model,
             final RedirectAttributes redirectAttributes) {
         try {
-            byte[] report = DocumentPrinter.printFinantialDocument(settlementNote, DocumentPrinter.PDF);
+            byte[] report = org.fenixedu.treasury.services.reports.DocumentPrinter.printFinantialDocument(settlementNote,
+                    DocumentPrinter.PDF);
             return new ResponseEntity<byte[]>(report, HttpStatus.OK);
         } catch (ReportGenerationException rex) {
             addErrorMessage(rex.getLocalizedMessage(), model);
             addErrorMessage(rex.getCause().getLocalizedMessage(), model);
 
-            return redirect(getReadAccountUrl() + settlementNote.getExternalId(), model, redirectAttributes);
+            return redirect(getReadAccountUrl() + settlementNote.getDebtAccount().getExternalId(), model, redirectAttributes);
         } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
 
-            return redirect(getReadAccountUrl() + settlementNote.getExternalId(), model, redirectAttributes);
+            return redirect(getReadAccountUrl() + settlementNote.getDebtAccount().getExternalId(), model, redirectAttributes);
         }
     }
 
-    
+    private static final String PRINT_PAYMENT_REFERENCES_URI = "/printpaymentreferences";
+    public static final String PRINT_PAYMENT_REFERENCES_URL = CONTROLLER_URL + PRINT_PAYMENT_REFERENCES_URI;
+
+    @RequestMapping(value = PRINT_PAYMENT_REFERENCES_URI + "/{oid}", produces = "application/pdf")
+    @ResponseBody
+    public Object printpaymentreferences(@PathVariable("oid") DebtAccount debtAccount, final Model model,
+            final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
+
+        try {
+            response.addHeader("Content-Disposition",
+                    "attachment; filename=referencias_" + new DateTime().toString("yyyyMMddHHmmss") + ".pdf");
+
+            final byte[] tuitionPlanbytes =
+                    DocumentPrinter.printRegistrationTuititionPaymentPlan(debtAccount, DocumentPrinter.PDF);
+            return new ResponseEntity<byte[]>(tuitionPlanbytes, HttpStatus.OK);
+        } catch (Exception ex) {
+            addErrorMessage(ex.getLocalizedMessage(), model);
+
+            return redirect(getReadAccountUrl() + debtAccount.getExternalId(), model, redirectAttributes);
+        }
+    }
+
     public String jspPage(final String page) {
         return JSP_PATH + page;
     }

@@ -47,12 +47,16 @@ public class DocumentPrinter {
 
     //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
     public static byte[] printRegistrationTuititionPaymentPlan(Registration registration, String outputMimeType) {
-
         Person p = registration.getStudent().getPerson();
         PersonCustomer customer = PersonCustomer.findUnique(p).orElse(null);
         FinantialInstitution finst =
                 registration.getDegree().getAdministrativeOffice().getFinantialEntity().getFinantialInstitution();
         DebtAccount account = DebtAccount.findUnique(finst, customer).orElse(null);
+
+        return printRegistrationTuititionPaymentPlan(account, outputMimeType);
+    }
+
+    public static byte[] printRegistrationTuititionPaymentPlan(final DebtAccount debtAccount, String outputMimeType) {
 
         DocumentGenerator generator = null;
 
@@ -66,9 +70,9 @@ public class DocumentPrinter {
 //      }
 
         registerHelpers(generator);
-        generator.registerDataProvider(new DebtAccountDataProvider(account, null));
-        generator.registerDataProvider(new CustomerDataProvider(customer));
-        generator.registerDataProvider(new FinantialInstitutionDataProvider(finst));
+        generator.registerDataProvider(new DebtAccountDataProvider(debtAccount, null));
+        generator.registerDataProvider(new CustomerDataProvider(debtAccount.getCustomer()));
+        generator.registerDataProvider(new FinantialInstitutionDataProvider(debtAccount.getFinantialInstitution()));
 
         //... add more providers...
 
@@ -77,19 +81,4 @@ public class DocumentPrinter {
         return outputReport;
     }
 
-    //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
-    public static byte[] printRegistrationTuititionPaymentPlanToPDF(Registration registration) {
-
-        Person p = registration.getStudent().getPerson();
-        PersonCustomer customer = PersonCustomer.findUnique(p).orElse(null);
-        FinantialInstitution finst =
-                registration.getDegree().getAdministrativeOffice().getFinantialEntity().getFinantialInstitution();
-        DebtAccount account = DebtAccount.findUnique(finst, customer).orElse(null);
-
-        //Is this correct?!?!? Pleas check
-        byte[] outputReport = org.fenixedu.treasury.services.reports.DocumentPrinter.printDebtAccountPaymentPlan(account,
-                DocumentGenerator.PDF);
-
-        return outputReport;
-    }
 }

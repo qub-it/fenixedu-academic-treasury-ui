@@ -168,8 +168,7 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
                 final String reasonValue = trim(row.get(REASON_IDX));
 
                 if (Strings.isNullOrEmpty(studentNumberValue)) {
-                    throw new AcademicTreasuryDomainException("error.ExemptionsGenerationRequestFile.student.number.required",
-                            String.valueOf(rowNum));
+                    continue;
                 }
 
                 if (Strings.isNullOrEmpty(studentNameValue)) {
