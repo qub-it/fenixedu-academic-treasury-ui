@@ -93,10 +93,6 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         for (final DegreeCurricularPlan degreeCurricularPlan : rule.getDegreeCurricularPlansSet()) {
             for (final Registration registration : degreeCurricularPlan.getRegistrations()) {
 
-                if(rule.getDebtGenerationRuleRestriction() != null && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
-                    continue;
-                }
-                
                 if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
                     continue;
                 }
@@ -141,6 +137,10 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
 
     @Atomic(mode = TxMode.WRITE)
     private void processDebtsForRegistration(final AcademicDebtGenerationRule rule, final Registration registration) {
+
+        if(rule.getDebtGenerationRuleRestriction() != null && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+            return;
+        }
 
         // For each product try to grab or create if requested
         final Set<DebitEntry> debitEntries = grabDebitEntries(rule, registration);
