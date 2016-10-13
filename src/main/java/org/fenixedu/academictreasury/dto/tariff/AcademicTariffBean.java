@@ -195,6 +195,7 @@ public class AcademicTariffBean implements IBean, Serializable {
         this.setFixedAmount(tuitionInstallmentTariff.getFixedAmount());
         this.setEctsCalculationType(tuitionInstallmentTariff.getEctsCalculationType());
         this.setAcademicalActBlockingOn(!tuitionInstallmentTariff.getAcademicalActBlockingOff());
+        this.setBlockAcademicActsOnDebt(tuitionInstallmentTariff.isBlockAcademicActsOnDebt());
         this.setFactor(tuitionInstallmentTariff.getFactor());
         this.setTotalEctsOrUnits(tuitionInstallmentTariff.getTotalEctsOrUnits());
         this.setApplyMaximumAmount(tuitionInstallmentTariff.isApplyMaximumAmount());

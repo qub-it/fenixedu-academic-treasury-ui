@@ -365,7 +365,16 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						ng-model="object.academicalActBlockingOn">
 					</select>
 				</div>
-			</div>			
+			</div>
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.blockAcademicActsOnDebt"/></div> 
+				
+				<div class="col-sm-2">
+					<select id="tuitionInstallmentTariff_blockAcademicActsOnDebt" name="blockacademicactsondebt" class="form-control" ng-model="object.blockAcademicActsOnDebt"
+                    ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">			
+					</select>
+				</div>
+			</div>					
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.applyInterests" />
