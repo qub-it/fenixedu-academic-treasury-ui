@@ -810,8 +810,9 @@ class reports.DebtReportRequest {
 	DebtReportRequestType type;
 	LocalDate beginDate;
 	LocalDate endDate;
+	String decimalSeparator;
 }
- 
+
 class reports.DebtReportRequestResultFile extends .org.fenixedu.bennu.io.domain.GenericFile {
 }
 

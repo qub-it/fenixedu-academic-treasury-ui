@@ -157,6 +157,16 @@ ${portal.angularToolkit()}
 						type="text" name="enddate" bennu-date="object.endDate" />
 				</div>
 			</div>
+			
+			<div class="form-group row">
+				<div class="col-sm-2 control-label">
+					<spring:message code="label.DebtReportRequest.decimalSeparator" />
+				</div>
+
+				<div class="col-sm-4">
+					<input id="debtReportRequest_decimalSeparator" class="form-control" type="text" name="decimalseparator" ng-model="object.decimalSeparator" />
+				</div>
+			</div>
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button"

@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.domain.reports;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.fenixedu.academictreasury.domain.academicalAct.AcademicActBlockingSuspension;
+import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
@@ -112,6 +113,15 @@ public class ErrorsLog implements IErrorsLog {
         }
     }
 
+    public void addError(Product product, Exception e) {
+        synchronized(this) {
+            final String oid = product.getExternalId();
+
+            sb.append(String.format("[%s]\n", oid));
+            sb.append(ExceptionUtils.getFullStackTrace(e)).append("\n\n");
+        }
+    }
+    
     public String getLog() {
         return sb.toString();
     }

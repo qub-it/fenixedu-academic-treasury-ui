@@ -999,15 +999,19 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
             result.add("error.TuitionPaymentPlan.specify.at.least.one.condition");
         }
 
-        if (isCustomized() && hasStudentConditionSelected()) {
+        if (isCustomized() && (isDefaultPaymentPlan() || hasStudentConditionSelected())) {
             result.add("error.TuitionPaymentPlan.customized.plan.cannot.have.other.options");
+        }
+        
+        if(isDefaultPaymentPlan() && hasStudentConditionSelected()) {
+            result.add("error.TuitionPaymentPlan.default.payment.plan.cannot.have.other.options");
         }
 
         return result;
     }
 
     private boolean hasStudentConditionSelected() {
-        return getRegistrationRegimeType() != null || isDefaultPaymentPlan() || getRegistrationProtocol() != null
+        return getRegistrationRegimeType() != null || getRegistrationProtocol() != null
                 || getIngression() != null || getCurricularYear() != null || getExecutionSemester() != null
                 || isFirstTimeStudent() || getStatuteType() != null;
     }

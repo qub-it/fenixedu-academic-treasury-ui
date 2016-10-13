@@ -3,6 +3,7 @@ package org.fenixedu.academictreasury.dto.reports;
 import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
@@ -35,7 +36,7 @@ public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
     private DateTime creationDate;
     private DateTime whenProcessed;
     private DateTime whenRegistered;
-    private BigDecimal amountPayed;
+    private String amountPayed;
     private String sibsEntityReferenceCode;
     private String sibsPaymentReferenceCode;
     private String sibsTransactionId;
@@ -51,7 +52,7 @@ public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
     
     boolean completed = false;
 
-    public SibsTransactionDetailEntryBean(final SibsTransactionDetail detail, final ErrorsLog errorsLog) {
+    public SibsTransactionDetailEntryBean(final SibsTransactionDetail detail, final String decimalSeparator, final ErrorsLog errorsLog) {
         
         try {
             this.sibsTransactionDetail = detail;
@@ -61,7 +62,7 @@ public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
             this.creationDate = detail.getVersioningCreationDate();
             this.whenProcessed = detail.getWhenProcessed();
             this.whenRegistered = detail.getWhenRegistered();
-            this.amountPayed = detail.getAmountPayed();
+            this.amountPayed = detail.getAmountPayed() != null ? detail.getAmountPayed().toString() : "";
             this.sibsEntityReferenceCode = detail.getSibsEntityReferenceCode();
             this.sibsPaymentReferenceCode = detail.getSibsPaymentReferenceCode();
             this.sibsTransactionId = detail.getSibsTransactionId();
@@ -72,6 +73,10 @@ public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
             this.customerName = detail.getCustomerName();
             this.settlementDocumentNumber = detail.getSettlementDocumentNumber();
             this.comments = detail.getComments();
+            
+            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                this.amountPayed = this.amountPayed.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
             
             this.completed = true;
         } catch(final Exception e) {
@@ -99,7 +104,7 @@ public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
             row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
             row.createCell(i++).setCellValue(valueOrEmpty(whenProcessed));
             row.createCell(i++).setCellValue(valueOrEmpty(whenRegistered));
-            row.createCell(i++).setCellValue(valueOrEmpty(amountPayed.toPlainString()));
+            row.createCell(i++).setCellValue(valueOrEmpty(amountPayed));
             row.createCell(i++).setCellValue(valueOrEmpty(sibsEntityReferenceCode));
             row.createCell(i++).setCellValue(valueOrEmpty(sibsPaymentReferenceCode));
             row.createCell(i++).setCellValue(valueOrEmpty(sibsTransactionId));

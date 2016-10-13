@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -54,9 +55,9 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
     private String countryCode;
     private Integer studentNumber;
     private boolean vatNumberValid;
-    private BigDecimal totalInDebt;
+    private String totalInDebt;
 
-    public DebtAccountReportEntryBean(final DebtAccount debtAccount, final ErrorsLog errorsLog) {
+    public DebtAccountReportEntryBean(final DebtAccount debtAccount, final String decimalSeparator, final ErrorsLog errorsLog) {
         this.debtAccount = debtAccount;
 
         try {
@@ -107,8 +108,12 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
                     (!Strings.isNullOrEmpty(this.countryCode) && !Constants.isDefaultCountry(this.countryCode))
                             || FiscalCodeValidation.isValidcontrib(this.vatNumber);
 
-            this.totalInDebt = debtAccount.getTotalInDebt();
+            this.totalInDebt = debtAccount.getFinantialInstitution().getCurrency().getValueWithScale(debtAccount.getTotalInDebt()).toString();
 
+            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                this.totalInDebt = this.totalInDebt.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
+            
             this.completed = true;
         } catch (final Exception e) {
             e.printStackTrace();

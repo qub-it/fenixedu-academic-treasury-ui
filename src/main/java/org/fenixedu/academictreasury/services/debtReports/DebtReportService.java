@@ -9,11 +9,13 @@ import org.fenixedu.academictreasury.dto.reports.DebtAccountReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReferenceCodeEntryBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.ProductReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.ReimbursementReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SibsTransactionDetailEntryBean;
 import org.fenixedu.academictreasury.dto.reports.TreasuryExemptionReportEntryBean;
 import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -27,60 +29,64 @@ import org.joda.time.LocalDate;
 
 public class DebtReportService {
 
-    public static Stream<DebtReportEntryBean> debitEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+    public static Stream<DebtReportEntryBean> debitEntriesReport(final LocalDate begin, final LocalDate end, final String decimalSeparator, final ErrorsLog log) {
         return DebitEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getEntryDateTime()))
-                .map(i -> new DebtReportEntryBean(i, log));
+                .map(i -> new DebtReportEntryBean(i, decimalSeparator, log));
     }
 
-    public static Stream<DebtReportEntryBean> creditEntriesReport(final LocalDate begin, final LocalDate end, final ErrorsLog log) {
+    public static Stream<DebtReportEntryBean> creditEntriesReport(final LocalDate begin, final LocalDate end, final String decimalSeparator, final ErrorsLog log) {
         return CreditEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getEntryDateTime()))
-                .map(i -> new DebtReportEntryBean(i, log));
+                .map(i -> new DebtReportEntryBean(i, decimalSeparator, log));
     }
 
     public static Stream<SettlementReportEntryBean> settlementEntriesReport(final LocalDate begin, final LocalDate end,
-            final ErrorsLog log) {
+            final String decimalSeparator, final ErrorsLog log) {
         return SettlementEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getEntryDateTime()))
-                .map(i -> new SettlementReportEntryBean(i, log));
+                .map(i -> new SettlementReportEntryBean(i, decimalSeparator, log));
     }
 
     public static Stream<PaymentReportEntryBean> paymentEntriesReport(final LocalDate begin, final LocalDate end,
-            final ErrorsLog log) {
+            final String decimalSeparator, final ErrorsLog log) {
         return PaymentEntry.findAll().filter(i -> Constants.isDateBetween(begin, end, i.getSettlementNote().getPaymentDate()))
-                .map(i -> new PaymentReportEntryBean(i, log));
+                .map(i -> new PaymentReportEntryBean(i, decimalSeparator, log));
     }
 
     public static Stream<ReimbursementReportEntryBean> reimbursementEntriesReport(final LocalDate begin, final LocalDate end,
-            final ErrorsLog log) {
+            final String decimalSeparator, final ErrorsLog log) {
         return ReimbursementEntry.findAll()
                 .filter(i -> Constants.isDateBetween(begin, end, i.getSettlementNote().getPaymentDate()))
-                .map(i -> new ReimbursementReportEntryBean(i, log));
+                .map(i -> new ReimbursementReportEntryBean(i, decimalSeparator, log));
     }
 
     public static Stream<DebtAccountReportEntryBean> debtAccountEntriesReport(final LocalDate begin, final LocalDate end,
-            final ErrorsLog log) {
-        return DebtAccount.findAll().map(i -> new DebtAccountReportEntryBean(i, log));
+            final String decimalSeparator, final ErrorsLog log) {
+        return DebtAccount.findAll().map(i -> new DebtAccountReportEntryBean(i, decimalSeparator, log));
     }
 
     public static Stream<AcademicActBlockingSuspensionReportEntryBean> academicActBlockingSuspensionReport(final LocalDate begin,
-            final LocalDate end, final ErrorsLog log) {
+            final LocalDate end, final String decimalSeparator, final ErrorsLog log) {
         return AcademicActBlockingSuspension.findAll().map(i -> new AcademicActBlockingSuspensionReportEntryBean(i, log));
     }
 
     public static Stream<PaymentReferenceCodeEntryBean> paymentReferenceCodeReport(final LocalDate begin, final LocalDate end,
-            final ErrorsLog log) {
-        return PaymentReferenceCode.findAll().map(i -> new PaymentReferenceCodeEntryBean(i, log));
+            final String decimalSeparator, final ErrorsLog log) {
+        return PaymentReferenceCode.findAll().map(i -> new PaymentReferenceCodeEntryBean(i, decimalSeparator, log));
     }
 
     public static Stream<SibsTransactionDetailEntryBean> sibsTransactionDetailReport(final LocalDate begin, final LocalDate end,
-            final ErrorsLog log) {
-        return SibsTransactionDetail.findAll().map(i -> new SibsTransactionDetailEntryBean(i, log));
+            final String decimalSeparator, final ErrorsLog log) {
+        return SibsTransactionDetail.findAll().map(i -> new SibsTransactionDetailEntryBean(i, decimalSeparator, log));
     }
 
     public static Stream<TreasuryExemptionReportEntryBean> treasuryExemptionReport(final LocalDate begin, LocalDate end,
-            final ErrorsLog log) {
+            final String decimalSeparator, final ErrorsLog log) {
         return TreasuryExemption.findAll().filter(i -> i.getDebitEntry() != null && 
                 Constants.isDateBetween(begin, end, i.getDebitEntry().getEntryDateTime()))
-                .map(i -> new TreasuryExemptionReportEntryBean(i, log));
+                .map(i -> new TreasuryExemptionReportEntryBean(i, decimalSeparator, log));
+    }
+    
+    public static Stream<ProductReportEntryBean> productReport(final LocalDate begin, final LocalDate end, final String decimalSeparator, final ErrorsLog log) {
+        return Product.findAll().map(i -> new ProductReportEntryBean(i, decimalSeparator, log));
     }
     
 }

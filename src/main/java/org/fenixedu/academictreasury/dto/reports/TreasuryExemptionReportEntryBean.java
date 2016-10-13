@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
 import org.apache.poi.ss.usermodel.Row;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
@@ -36,7 +37,7 @@ public class TreasuryExemptionReportEntryBean extends AbstractReportEntryBean {
 
     boolean completed = false;
 
-    public TreasuryExemptionReportEntryBean(final TreasuryExemption treasuryExemption, final ErrorsLog errorsLog) {
+    public TreasuryExemptionReportEntryBean(final TreasuryExemption treasuryExemption, final String decimalSeparator, final ErrorsLog errorsLog) {
         try {
             this.treasuryExemption = treasuryExemption;
 
@@ -50,6 +51,11 @@ public class TreasuryExemptionReportEntryBean extends AbstractReportEntryBean {
             this.debitEntryDescription = treasuryExemption.getDebitEntry().getDescription();
             this.exemptedAmount =
                     treasuryExemption.getDebitEntry().getCurrency().getValueFor(treasuryExemption.getValueToExempt());
+            
+            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                this.exemptedAmount = this.exemptedAmount.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
+            
             this.reason = treasuryExemption.getReason();
 
             this.completed = true;

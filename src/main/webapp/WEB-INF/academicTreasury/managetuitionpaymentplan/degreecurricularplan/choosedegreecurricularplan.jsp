@@ -58,9 +58,8 @@ ${portal.angularToolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message
-            code="label.manageTuitionPaymentPlan.chooseDegreeCurricularPlan" />
-        <small></small>
+        <spring:message code="label.manageTuitionPaymentPlan.chooseDegreeCurricularPlan" />
+        <small><spring:message code="label.manageTuitionPaymentPlan.degreeCurricularPlans.select" /></small>
     </h1>
 </div>
 
@@ -165,7 +164,7 @@ angular.module('changeExample', ['bennuToolkit']).controller('ExampleController'
     <datatables:column>
         <datatables:columnHead>
             <spring:message
-                code="label.DegreeCurricularPlan.degreeTypeName" />
+                code="label.DegreeCurricularPlan.name" />
         </datatables:columnHead>
         <c:set var="dcp" scope="request" value="${dcp}" />
 

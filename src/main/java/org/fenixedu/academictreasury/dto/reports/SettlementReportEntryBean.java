@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -62,7 +63,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
     private boolean settlementNoteAnnuled;
     private boolean documentExportationPending;
     private Integer settlementEntryOrder;
-    private BigDecimal amount;
+    private String amount;
     private String productCode;
     private String settlementEntryDescription;
     private String customerId;
@@ -75,7 +76,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
     private String address;
     private Integer studentNumber;
 
-    public SettlementReportEntryBean(final SettlementEntry entry, final ErrorsLog errorsLog) {
+    public SettlementReportEntryBean(final SettlementEntry entry, final String decimalSeparator, final ErrorsLog errorsLog) {
         this.settlementEntry = entry;
 
         try {
@@ -97,7 +98,12 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
             this.settlementEntryOrder = entry.getEntryOrder();
             this.amount =
                     settlementNote.getDebtAccount().getFinantialInstitution().getCurrency()
-                            .getValueWithScale(entry.getTotalAmount());
+                            .getValueWithScale(entry.getTotalAmount()).toString();
+            
+            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                this.invoiceEntryAmountToPay = this.invoiceEntryAmountToPay.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                this.amount = this.amount.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
             
             this.productCode = entry.getInvoiceEntry().getProduct().getCode();
             this.settlementEntryDescription = entry.getDescription();

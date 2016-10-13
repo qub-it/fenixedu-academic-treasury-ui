@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -51,7 +52,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private boolean settlementNoteAnnuled;
     private boolean documentExportationPending;
     private String paymentMethod;
-    private BigDecimal amount;
+    private String amount;
     private String customerId;
     private String debtAccountId;
     private String name;
@@ -62,7 +63,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private String address;
     private Integer studentNumber;
 
-    public PaymentReportEntryBean(final PaymentEntry entry, final ErrorsLog errorsLog) {
+    public PaymentReportEntryBean(final PaymentEntry entry, final String decimalSeparator, final ErrorsLog errorsLog) {
         paymentEntry = entry;
         
         try {
@@ -77,7 +78,11 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             this.settlementNoteAnnuled = settlementNote.isAnnulled();
             this.documentExportationPending = settlementNote.isDocumentToExport();
             this.paymentMethod = entry.getPaymentMethod().getName().getContent();
-            this.amount = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(entry.getPayedAmount());
+            this.amount = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(entry.getPayedAmount()).toString();
+            
+            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                this.amount = this.amount.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
             
             fillStudentInformation(entry);
             

@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -49,7 +50,7 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
     private boolean settlementNoteAnnuled;
     private boolean documentExportationPending;
     private String paymentMethod;
-    private BigDecimal amount;
+    private String amount;
     private String customerId;
     private String debtAccountId;
     private String name;
@@ -60,7 +61,7 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
     private String address;
     private Integer studentNumber;
 
-    public ReimbursementReportEntryBean(final ReimbursementEntry entry, final ErrorsLog errorsLog) {
+    public ReimbursementReportEntryBean(final ReimbursementEntry entry, final String decimalSeparator, final ErrorsLog errorsLog) {
         paymentEntry = entry;
 
         try {
@@ -76,8 +77,12 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
             this.documentExportationPending = settlementNote.isDocumentToExport();
             this.paymentMethod = entry.getPaymentMethod().getName().getContent();
             this.amount = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency()
-                    .getValueWithScale(entry.getReimbursedAmount());
+                    .getValueWithScale(entry.getReimbursedAmount()).toString();
 
+            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                this.amount = this.amount.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
+            
             fillStudentInformation(entry);
 
             this.completed = true;

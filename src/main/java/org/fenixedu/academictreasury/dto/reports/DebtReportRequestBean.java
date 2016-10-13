@@ -37,11 +37,13 @@ public class DebtReportRequestBean implements IBean {
 	private DebtReportRequestType type;
 	private org.joda.time.LocalDate beginDate;
 	private org.joda.time.LocalDate endDate;
+	private String decimalSeparator;
 
 	public DebtReportRequestBean(){
 	    this.type = DebtReportRequestType.INVOICE_ENTRIES;
 	    this.beginDate = new LocalDate();
 	    this.endDate = new LocalDate();
+	    this.decimalSeparator = ",";
 	}
 
     /* GETTERS & SETTERS */
@@ -68,6 +70,14 @@ public class DebtReportRequestBean implements IBean {
 
     public void setEndDate(org.joda.time.LocalDate endDate) {
         this.endDate = endDate;
+    }
+    
+    public String getDecimalSeparator() {
+        return decimalSeparator;
+    }
+    
+    public void setDecimalSeparator(String decimalSeparator) {
+        this.decimalSeparator = decimalSeparator;
     }
 	
 }

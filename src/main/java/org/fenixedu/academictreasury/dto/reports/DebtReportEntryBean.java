@@ -6,6 +6,7 @@ import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.AcademicTreasuryEventKeys;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.services.TuitionServices;
@@ -30,7 +31,8 @@ import com.google.common.base.Strings;
 public class DebtReportEntryBean implements SpreadsheetRow {
 
     // @formatter:off
-    public static String[] SPREADSHEET_DEBIT_HEADERS = { Constants.bundle("label.DebtReportEntryBean.header.identification"),
+    public static String[] SPREADSHEET_DEBIT_HEADERS = { 
+            Constants.bundle("label.DebtReportEntryBean.header.identification"),
             Constants.bundle("label.DebtReportEntryBean.header.entryType"),
             Constants.bundle("label.DebtReportEntryBean.header.versioningCreator"),
             Constants.bundle("label.DebtReportEntryBean.header.creationDate"),
@@ -67,7 +69,10 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.numberOfStandaloneEnrolments"),
             Constants.bundle("label.DebtReportEntryBean.header.numberOfExtracurricularEnrolments"),
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
-            Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions") };
+            Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions"),
+            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuled"),
+            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuledReason")
+    };
 
     public static String[] SPREADSHEET_CREDIT_HEADERS = { 
             Constants.bundle("label.DebtReportEntryBean.header.identification"),
@@ -107,7 +112,10 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.numberOfStandaloneEnrolments"),
             Constants.bundle("label.DebtReportEntryBean.header.numberOfExtracurricularEnrolments"),
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
-            Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions") };
+            Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions"),
+            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuled"),
+            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuledReason")
+    };
     // @formatter:on
 
     private InvoiceEntry invoiceEntry;
@@ -138,6 +146,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String documentNumber;
     private boolean documentExportationPending;
     private boolean annuled;
+    private String annuledReason;
     private String debitEntryIdentification;
     private String baseAmount;
     private String creditedAmount;
@@ -154,7 +163,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String tuitionPaymentPlan;
     private String tuitionPaymentPlanConditions;
 
-    public DebtReportEntryBean(final InvoiceEntry entry, final ErrorsLog errorsLog) {
+    public DebtReportEntryBean(final InvoiceEntry entry, final String decimalSeparator, final ErrorsLog errorsLog) {
         this.invoiceEntry = entry;
 
         try {
@@ -176,6 +185,10 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             }
 
             this.annuled = entry.isAnnulled();
+            
+            if(this.annuled && entry.getFinantialDocument() != null) {
+                this.annuledReason = entry.getFinantialDocument().getAnnulledReason();
+            }
 
             if (entry.isCreditNoteEntry() && ((CreditEntry) entry).getDebitEntry() != null) {
                 this.debitEntryIdentification = ((CreditEntry) entry).getDebitEntry().getExternalId();
@@ -195,6 +208,11 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
             this.amountToPay = currency.getValueWithScale(entry.getAmountWithVat()).toString();
             this.openAmountToPay = currency.getValueWithScale(entry.getOpenAmount()).toString();
+            
+            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                this.amountToPay = this.amountToPay.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                this.openAmountToPay = this.openAmountToPay.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
 
             this.completed = true;
         } catch (final Exception e) {
@@ -410,7 +428,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(documentNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
                 row.createCell(i++).setCellValue(valueOrEmpty(amountToPay));
-                row.createCell(i++).setCellValue(openAmountToPay);
+                row.createCell(i++).setCellValue(valueOrEmpty(openAmountToPay));
                 row.createCell(i++).setCellValue(valueOrEmpty(agreement));
                 row.createCell(i++).setCellValue(valueOrEmpty(ingression));
                 row.createCell(i++).setCellValue(valueOrEmpty(firstTimeStudent));
@@ -421,6 +439,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(numberOfExtracurricularEnrolments));
                 row.createCell(i++).setCellValue(valueOrEmpty(tuitionPaymentPlan));
                 row.createCell(i++).setCellValue(valueOrEmpty(tuitionPaymentPlanConditions));
+                row.createCell(i++).setCellValue(valueOrEmpty(annuled));
+                row.createCell(i++).setCellValue(valueOrEmpty(annuledReason));
 
             } else if (invoiceEntry.isCreditNoteEntry()) {
                 int i = 1;
@@ -449,7 +469,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
                 row.createCell(i++).setCellValue(valueOrEmpty(debitEntryIdentification));
                 row.createCell(i++).setCellValue(valueOrEmpty(amountToPay));
-                row.createCell(i++).setCellValue(openAmountToPay);
+                row.createCell(i++).setCellValue(valueOrEmpty(openAmountToPay));
                 row.createCell(i++).setCellValue(valueOrEmpty(agreement));
                 row.createCell(i++).setCellValue(valueOrEmpty(ingression));
                 row.createCell(i++).setCellValue(valueOrEmpty(firstTimeStudent));
@@ -460,6 +480,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(numberOfExtracurricularEnrolments));
                 row.createCell(i++).setCellValue(valueOrEmpty(tuitionPaymentPlan));
                 row.createCell(i++).setCellValue(valueOrEmpty(tuitionPaymentPlanConditions));
+                row.createCell(i++).setCellValue(valueOrEmpty(annuled));
+                row.createCell(i++).setCellValue(valueOrEmpty(annuledReason));
+                
             }
 
         } catch (final Exception e) {

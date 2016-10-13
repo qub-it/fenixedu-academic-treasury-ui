@@ -33,7 +33,7 @@ ${portal.toolkit()}
 <div class="page-header">
     <h1>
         <spring:message code="label.manageTuitionPaymentPlan.searchTuitionPaymentPlan" />
-        <small></small>
+        <small>(${executionYear.qualifiedName})</small>
     </h1>
 </div>
 

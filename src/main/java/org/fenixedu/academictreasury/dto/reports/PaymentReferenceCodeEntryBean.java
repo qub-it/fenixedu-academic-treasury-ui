@@ -5,9 +5,11 @@ import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
@@ -58,7 +60,7 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
     private String entityCode;
     private String referenceCode;
     private String finantialDocumentNumber;
-    private BigDecimal payableAmount;
+    private String payableAmount;
     private String description;
     private String targetType;
     private String state;
@@ -67,7 +69,7 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
 
     boolean completed = false;
 
-    public PaymentReferenceCodeEntryBean(final PaymentReferenceCode paymentReferenceCode, final ErrorsLog errorsLog) {
+    public PaymentReferenceCodeEntryBean(final PaymentReferenceCode paymentReferenceCode, final String decimalSeparator, final ErrorsLog errorsLog) {
         try {
             this.paymentReferenceCode = paymentReferenceCode;
 
@@ -143,7 +145,15 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
                                         .map(i -> i.getFinantialDocument().getUiDocumentNumber()).collect(Collectors.toList()));
             }
 
-            this.payableAmount = paymentReferenceCode.getPayableAmount();
+            if(paymentReferenceCode.getPayableAmount() != null) {
+                final Currency currency = paymentReferenceCode.getPaymentCodePool().getFinantialInstitution().getCurrency();
+                
+                this.payableAmount = currency.getValueWithScale(paymentReferenceCode.getPayableAmount()).toString();
+                
+                if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                    this.payableAmount = this.payableAmount.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                }
+            }
 
             if (paymentReferenceCode.getTargetPayment() != null) {
                 this.description = paymentReferenceCode.getTargetPayment().getDescription();
@@ -199,7 +209,7 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
             row.createCell(i++).setCellValue(valueOrEmpty(entityCode));
             row.createCell(i++).setCellValue(valueOrEmpty(referenceCode));
             row.createCell(i++).setCellValue(valueOrEmpty(finantialDocumentNumber));
-            row.createCell(i++).setCellValue(valueOrEmpty(payableAmount.toString()));
+            row.createCell(i++).setCellValue(valueOrEmpty(payableAmount));
             row.createCell(i++).setCellValue(valueOrEmpty(description));
             row.createCell(i++).setCellValue(valueOrEmpty(targetType));
             row.createCell(i++).setCellValue(valueOrEmpty(state));

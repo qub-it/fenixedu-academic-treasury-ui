@@ -10,6 +10,7 @@ import org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.DebtReportRequestBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReferenceCodeEntryBean;
 import org.fenixedu.academictreasury.dto.reports.PaymentReportEntryBean;
+import org.fenixedu.academictreasury.dto.reports.ProductReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SibsTransactionDetailEntryBean;
 import org.fenixedu.academictreasury.dto.reports.TreasuryExemptionReportEntryBean;
@@ -21,10 +22,15 @@ import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
 import org.fenixedu.treasury.util.streaming.spreadsheet.Spreadsheet;
 
+import com.google.common.base.Strings;
+
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
 public class DebtReportRequest extends DebtReportRequest_Base {
+
+    public static final String DOT = ".";
+    public static final String COMMA = ",";
 
     protected DebtReportRequest() {
         super();
@@ -38,6 +44,7 @@ public class DebtReportRequest extends DebtReportRequest_Base {
         this.setBeginDate(bean.getBeginDate());
         this.setEndDate(bean.getEndDate());
         this.setType(bean.getType());
+        this.setDecimalSeparator(bean.getDecimalSeparator());
 
         checkRules();
     }
@@ -56,6 +63,11 @@ public class DebtReportRequest extends DebtReportRequest_Base {
             throw new AcademicTreasuryDomainException("error.DebtReportRequest.type.required");
         }
 
+        if (Strings.isNullOrEmpty(getDecimalSeparator())
+                || (!getDecimalSeparator().equals(COMMA) && !getDecimalSeparator().equals(DOT))) {
+            throw new AcademicTreasuryDomainException("error.DebtReportRequest.decimalSeparator.invalid");
+        }
+
     }
 
     public boolean isPending() {
@@ -66,7 +78,7 @@ public class DebtReportRequest extends DebtReportRequest_Base {
     public void processRequest() {
 
         final ErrorsLog errorsLog = new ErrorsLog();
-        
+
         if (getType().isRequestForInvoiceEntries()) {
 
             final byte[] content = Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
@@ -74,28 +86,61 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                 @Override
                 public ExcelSheet[] getSheets() {
                     return new ExcelSheet[] {
+
                             ExcelSheet.create(debitEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_DEBIT_HEADERS,
-                                    DebtReportService.debitEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                                    DebtReportService.debitEntriesReport(getBeginDate(), getEndDate(), decimalSeparator(),
+                                            errorsLog)),
+
                             ExcelSheet.create(creditEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_CREDIT_HEADERS,
-                                    DebtReportService.creditEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                                    DebtReportService.creditEntriesReport(getBeginDate(), getEndDate(), decimalSeparator(),
+                                            errorsLog)),
+
                             ExcelSheet.create(settlementEntriesSheetName(), SettlementReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.settlementEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                                    DebtReportService.settlementEntriesReport(getBeginDate(), getEndDate(), decimalSeparator(),
+                                            errorsLog)),
+
                             ExcelSheet.create(paymentEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.paymentEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                                    DebtReportService.paymentEntriesReport(getBeginDate(), getEndDate(), decimalSeparator(),
+                                            errorsLog)),
+
                             ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.reimbursementEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
+                                    DebtReportService.reimbursementEntriesReport(getBeginDate(), getEndDate(),
+                                            decimalSeparator(), errorsLog)),
+
                             ExcelSheet.create(debtAccountEntriesSheetName(), DebtAccountReportEntryBean.SPREADSHEET_HEADERS,
-                                            DebtReportService.debtAccountEntriesReport(getBeginDate(), getEndDate(), errorsLog)),
-                            ExcelSheet.create(academicActBlockingSuspensionSheetName(), AcademicActBlockingSuspensionReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.academicActBlockingSuspensionReport(getBeginDate(), getEndDate(), errorsLog)),
+                                    DebtReportService.debtAccountEntriesReport(getBeginDate(), getEndDate(),
+                                            getDecimalSeparator(), errorsLog)),
+
+                            ExcelSheet.create(academicActBlockingSuspensionSheetName(),
+                                    AcademicActBlockingSuspensionReportEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.academicActBlockingSuspensionReport(getBeginDate(), getEndDate(),
+                                            decimalSeparator(), errorsLog)),
+
                             ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.paymentReferenceCodeReport(getBeginDate(), getEndDate(), errorsLog)),
-                            ExcelSheet.create(sibsTransactionDetailSheetName(), SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.sibsTransactionDetailReport(getBeginDate(), getEndDate(), errorsLog)),
+                                    DebtReportService.paymentReferenceCodeReport(getBeginDate(), getEndDate(),
+                                            decimalSeparator(), errorsLog)),
+
+                            ExcelSheet.create(sibsTransactionDetailSheetName(),
+                                    SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.sibsTransactionDetailReport(getBeginDate(), getEndDate(),
+                                            decimalSeparator(), errorsLog)),
+
                             ExcelSheet.create(treasuryExemptionSheetName(), TreasuryExemptionReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.treasuryExemptionReport(getBeginDate(), getEndDate(), errorsLog))
-                    };
+                                    DebtReportService.treasuryExemptionReport(getBeginDate(), getEndDate(), decimalSeparator(),
+                                            errorsLog)),
+
+                            ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS, DebtReportService
+                                    .productReport(getBeginDate(), getEndDate(), decimalSeparator(), errorsLog)) };
                 }
+
+                private String decimalSeparator() {
+                    if(Strings.isNullOrEmpty(getDecimalSeparator())) {
+                        return DOT;
+                    }
+                    
+                    return getDecimalSeparator();
+                }
+                
             }, errorsLog);
 
             DebtReportRequestResultFile.create(this, content);
@@ -109,15 +154,15 @@ public class DebtReportRequest extends DebtReportRequest_Base {
     public void cancelRequest() {
         setBennuForPendingReportRequests(null);
     }
-    
+
     protected String treasuryExemptionSheetName() {
         return Constants.bundle("label.DebtReportRequest.treasuryExemptionSheetName");
     }
-    
+
     protected String sibsTransactionDetailSheetName() {
         return Constants.bundle("label.DebtReportRequest.sibsTransactionDetailSheetName");
     }
-    
+
     protected String paymentReferenceCodeSheetName() {
         return Constants.bundle("label.DebtReportRequest.paymentReferenceCodeSheetName");
     }
@@ -145,9 +190,13 @@ public class DebtReportRequest extends DebtReportRequest_Base {
     private String reimbursementEntriesSheetName() {
         return Constants.bundle("label.DebtReportRequest.reimbursementEntriesSheetName");
     }
-    
+
     private String debtAccountEntriesSheetName() {
         return Constants.bundle("label.DebtReportRequest.debtAccountEntriesSheetName");
+    }
+
+    private String productSheetName() {
+        return Constants.bundle("label.DebtReportRequest.productsSheetName");
     }
 
     public static Stream<DebtReportRequest> findAll() {
