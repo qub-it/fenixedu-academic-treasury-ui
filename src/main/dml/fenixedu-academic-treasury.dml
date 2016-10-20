@@ -811,6 +811,7 @@ class reports.DebtReportRequest {
 	LocalDate beginDate;
 	LocalDate endDate;
 	String decimalSeparator;
+	boolean includeAnnuledEntries;
 }
 
 class reports.DebtReportRequestResultFile extends .org.fenixedu.bennu.io.domain.GenericFile {

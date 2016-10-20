@@ -38,12 +38,14 @@ public class DebtReportRequestBean implements IBean {
 	private org.joda.time.LocalDate beginDate;
 	private org.joda.time.LocalDate endDate;
 	private String decimalSeparator;
-
+	private boolean includeAnnuledEntries;
+	
 	public DebtReportRequestBean(){
 	    this.type = DebtReportRequestType.INVOICE_ENTRIES;
 	    this.beginDate = new LocalDate();
 	    this.endDate = new LocalDate();
 	    this.decimalSeparator = ",";
+	    this.includeAnnuledEntries = true;
 	}
 
     /* GETTERS & SETTERS */
@@ -80,4 +82,11 @@ public class DebtReportRequestBean implements IBean {
         this.decimalSeparator = decimalSeparator;
     }
 	
+    public boolean isIncludeAnnuledEntries() {
+        return includeAnnuledEntries;
+    }
+    
+    public void setIncludeAnnuledEntries(boolean includeAnnuledEntries) {
+        this.includeAnnuledEntries = includeAnnuledEntries;
+    }
 }

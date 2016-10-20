@@ -76,7 +76,9 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
     private String address;
     private Integer studentNumber;
 
-    public SettlementReportEntryBean(final SettlementEntry entry, final String decimalSeparator, final ErrorsLog errorsLog) {
+    public SettlementReportEntryBean(final SettlementEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
+        final String decimalSeparator = request.getDecimalSeparator();
+        
         this.settlementEntry = entry;
 
         try {

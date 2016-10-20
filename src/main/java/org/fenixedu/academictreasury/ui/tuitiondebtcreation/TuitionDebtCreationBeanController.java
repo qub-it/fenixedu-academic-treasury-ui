@@ -75,15 +75,15 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
     public static final String BACKTOCREATE_URL = CONTROLLER_URL + _BACKTOCREATE_URI;
 
     @RequestMapping(value = _BACKTOCREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
-            required = false) final TuitionDebtCreationBean bean, final Model model) {
+    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model) {
         return _createFirstPage(debtAccount, bean, model);
     }
 
     public String _createFirstPage(final DebtAccount debtAccount, final TuitionDebtCreationBean bean, final Model model) {
         model.addAttribute("TuitionDebtCreationBean_executionYear_options", ExecutionYear.readNotClosedExecutionYears());
-        model.addAttribute("TuitionDebtCreationBean_registration_options", ((PersonCustomer) debtAccount.getCustomer())
-                .getPerson().getStudent().getRegistrationsSet());
+        model.addAttribute("TuitionDebtCreationBean_registration_options",
+                ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet());
 
         model.addAttribute("bean", bean);
         model.addAttribute("debtAccount", debtAccount);
@@ -106,33 +106,20 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
     }
 
     @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
-            required = false) final TuitionDebtCreationBean bean, final Model model, final RedirectAttributes redirectAttributes) {
+    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         try {
             model.addAttribute("debtAccount", debtAccount);
             model.addAttribute("bean", bean);
             model.addAttribute("tuitionDebtCreationBeanJson", getBeanJson(bean));
 
-            if (bean.isInfered()) {
-                model.addAttribute("tuitionPaymentPlan",
-                        TuitionServices.usedPaymentPlan(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate()));
+            model.addAttribute("tuitionPaymentPlan", TuitionServices.usedPaymentPlan(bean.getRegistration(),
+                    bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
 
-                model.addAttribute(
-                        "installments",
-                        TuitionServices.calculateInstallmentDebitEntryBeans(bean.getRegistration(), bean.getExecutionYear(),
-                                bean.getDebtDate()));
-            } else {
-                model.addAttribute(
-                        "tuitionPaymentPlan",
-                        TuitionServices.usedPaymentPlan(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate(),
-                                bean.getTuitionPaymentPlan()));
-
-                model.addAttribute(
-                        "installments",
-                        TuitionServices.calculateInstallmentDebitEntryBeans(bean.getRegistration(), bean.getExecutionYear(),
-                                bean.getDebtDate(), bean.getTuitionPaymentPlan()));
-            }
+            model.addAttribute("installments", TuitionServices.calculateInstallmentDebitEntryBeans(bean.getRegistration(),
+                    bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
 
             return jspPage("confirmtuitiondebtcreation");
         } catch (final DomainException e) {
@@ -146,19 +133,14 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
     public static final String CONFIRMTUITIONDEBTCREATION_URL = CONTROLLER_URL + _CONFIRMTUITIONDEBTCREATION_URI;
 
     @RequestMapping(value = _CONFIRMTUITIONDEBTCREATION_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String confirmtuitiondebtcreation(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(
-            value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model,
+    public String confirmtuitiondebtcreation(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
 
-            if (bean.isInfered()) {
-                TuitionServices.createInferedTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(),
-                        bean.getDebtDate(), false);
-            } else {
-                TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate(), false,
-                        bean.getTuitionPaymentPlan());
-            }
+            TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate(),
+                    false, bean.getTuitionPaymentPlan());
 
             //Success Validation
             //Add the bean to be used in the View

@@ -69,7 +69,9 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
 
     boolean completed = false;
 
-    public PaymentReferenceCodeEntryBean(final PaymentReferenceCode paymentReferenceCode, final String decimalSeparator, final ErrorsLog errorsLog) {
+    public PaymentReferenceCodeEntryBean(final PaymentReferenceCode paymentReferenceCode, final DebtReportRequest request, final ErrorsLog errorsLog) {
+        final String decimalSeparator = request.getDecimalSeparator();
+        
         try {
             this.paymentReferenceCode = paymentReferenceCode;
 

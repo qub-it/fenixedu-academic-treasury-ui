@@ -163,7 +163,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String tuitionPaymentPlan;
     private String tuitionPaymentPlanConditions;
 
-    public DebtReportEntryBean(final InvoiceEntry entry, final String decimalSeparator, final ErrorsLog errorsLog) {
+    public DebtReportEntryBean(final InvoiceEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
+        final String decimalSeparator = request.getDecimalSeparator();
+        
         this.invoiceEntry = entry;
 
         try {

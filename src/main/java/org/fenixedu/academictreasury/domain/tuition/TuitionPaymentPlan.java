@@ -13,6 +13,7 @@ import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.StudentCurricularPlan;
 import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationProtocol;
@@ -189,11 +190,16 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             final String paymentPlanLabel =
                     isCustomized() ? "label.TuitionPaymentPlan.paymentPlanName.customized" : "label.TuitionPaymentPlan.paymentPlanName";
 
-            result = result.with(locale, BundleUtil.getString(Constants.BUNDLE, paymentPlanLabel,
-                    "[" + getDegreeCurricularPlan().getDegree().getCode() + "] " + 
-                    getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale)
-                    + " - " + getDegreeCurricularPlan().getName(),
-                    getExecutionYear().getQualifiedName(), isCustomized() ? getCustomizedName().getContent(locale) : null));
+            result = result
+                    .with(locale,
+                            BundleUtil
+                                    .getString(Constants.BUNDLE, paymentPlanLabel,
+                                            "[" + getDegreeCurricularPlan().getDegree().getCode() + "] "
+                                                    + getDegreeCurricularPlan().getDegree().getPresentationNameI18N()
+                                                            .getContent(locale)
+                                                    + " - " + getDegreeCurricularPlan().getName(),
+                                            getExecutionYear().getQualifiedName(),
+                                            isCustomized() ? getCustomizedName().getContent(locale) : null));
         }
 
         return result;
@@ -614,8 +620,13 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final Registration registration,
             final ExecutionYear executionYear) {
-        final DegreeCurricularPlan degreeCurricularPlan =
-                registration.getStudentCurricularPlan(executionYear).getDegreeCurricularPlan();
+        final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
+        
+        if(studentCurricularPlan == null) {
+            return null;
+        }
+        
+        final DegreeCurricularPlan degreeCurricularPlan = studentCurricularPlan.getDegreeCurricularPlan();
 
         final RegistrationRegimeType regimeType = registration.getRegimeType(executionYear);
         final RegistrationProtocol registrationProtocol = registration.getRegistrationProtocol();
@@ -647,13 +658,13 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (t.getSemester() != null) {
-                if(semestersWithEnrolments.size() != 1) {
+                if (semestersWithEnrolments.size() != 1) {
                     continue;
                 }
-                
+
                 final Integer semester = semestersWithEnrolments.iterator().next();
-                
-                if(!t.getSemester().equals(semester)) {
+
+                if (!t.getSemester().equals(semester)) {
                     continue;
                 }
             }

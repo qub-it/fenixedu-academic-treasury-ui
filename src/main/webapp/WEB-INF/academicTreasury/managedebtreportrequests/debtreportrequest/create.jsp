@@ -115,8 +115,15 @@ ${portal.angularToolkit()}
 							'$scope',
 							function($scope) {
 
-								$scope.object = angular
-										.fromJson('${debtReportRequestBeanJson}');
+								 $scope.booleanvalues = [ {
+							         name : '<spring:message code="label.no"/>',
+							         value : false
+							     }, {
+							         name : '<spring:message code="label.yes"/>',
+							         value : true
+							     } ];
+								
+								$scope.object = angular.fromJson('${debtReportRequestBeanJson}');
 								$scope.postBack = createAngularPostbackFunction($scope);
 
 								//Begin here of Custom Screen business JS - code
@@ -167,6 +174,22 @@ ${portal.angularToolkit()}
 					<input id="debtReportRequest_decimalSeparator" class="form-control" type="text" name="decimalseparator" ng-model="object.decimalSeparator" />
 				</div>
 			</div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.DebtReportRequest.includeAnnuledEntries" />
+                </div>
+
+                <div class="col-sm-4">
+
+                    <select id="debtReportRequest_includeAnnuledEntries"
+                        name="includeannuledentries" class="form-control"
+                        ng-model="object.includeAnnuledEntries"
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                    </select>
+                </div>
+            </div>
+			
 		</div>
 		<div class="panel-footer">
 			<input type="submit" class="btn btn-default" role="button"

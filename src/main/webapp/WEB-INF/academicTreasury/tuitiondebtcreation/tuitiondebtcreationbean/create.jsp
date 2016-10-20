@@ -136,7 +136,7 @@ ${portal.angularToolkit()}
 <form name='form' method="post" class="form-horizontal"
     ng-app="angularAppTuitionDebtCreationBean"
     ng-controller="TuitionDebtCreationBeanController"
-    action='${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATE_URL %>/${debtAccount.externalId}'>
+    action='${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATE_REGISTRATION_URL %>/${debtAccount.externalId}'>
 
     <input type="hidden" name="postback"
         value='${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATEPOSTBACK_URL  %>/${debtAccount.externalId}' />
@@ -144,22 +144,6 @@ ${portal.angularToolkit()}
     <input name="bean" type="hidden" value="{{ object }}" />
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.TuitionDebtCreationBean.forceCreation" />
-                </div>
-
-                <div class="col-sm-2">
-
-                    <select id="tuitionDebtCreationBean_forceCreation"
-                        name="forceCreation" class="form-control"
-                        ng-model="object.forceCreation"
-                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues"
-                        on-select="onRegistrationChange($model)">
-                    </select>
-                </div>
-            </div>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
@@ -268,29 +252,6 @@ ${portal.angularToolkit()}
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.TuitionDebtCreationBean.infered" />
-                </div>
-
-                <div class="col-sm-2">
-
-                    <select id="tuitionDebtCreationBean_infered"
-                        name="infered" class="form-control"
-                        ng-model="object.infered"
-                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
-                    </select>
-                </div>
-            </div>
-            <div class="form-group row" ng-show="object.infered">
-                <div class="col-sm-2 control-label"></div>
-                <div class="col-sm-6">
-                    <p>
-                        <em>{{object.inferedPaymentPlanName}}</em>
-                    </p>
-                </div>
-            </div>
-            <div class="form-group row" ng-show="!object.infered">
-                <div class="col-sm-2 control-label">
-                    <spring:message
                         code="label.TuitionDebtCreationBean.tuitionPaymentPlan" />
                 </div>
 
@@ -307,6 +268,14 @@ ${portal.angularToolkit()}
                     <span
                         ng-bind-html="tuitionPaymentPlans.text | highlight: $select.search"></span>
                     </ui-select-choices> </ui-select>
+                </div>
+            </div>
+            <div class="form-group row">
+                <div class="col-sm-2 control-label"></div>
+                <div class="col-sm-6">
+                    <p>
+                        <em class="label label-warning">{{object.errorMessage}}</em>
+                    </p>
                 </div>
             </div>
         </div>

@@ -95,6 +95,17 @@ public class AcademicTaxServices {
         return new AcademicTaxDebitEntryBean(debitEntryName, dueDate, vat.getTaxRate(), amount);
     }
 
+    public static boolean isAcademicTaxCharged(final Registration registration, final ExecutionYear executionYear,
+            final AcademicTax academicTax) {
+        
+        if(findAcademicTreasuryEvent(registration, executionYear, academicTax) == null) {
+            return false;
+        }
+        
+        final AcademicTreasuryEvent academicTreasuryEvent = findAcademicTreasuryEvent(registration, executionYear, academicTax);
+        return academicTreasuryEvent.isCharged();
+    }
+
     @Atomic
     public static boolean createAcademicTax(final Registration registration, final ExecutionYear executionYear,
             final AcademicTax academicTax, final boolean forceCreation) {
@@ -185,6 +196,16 @@ public class AcademicTaxServices {
 
         return AcademicTariff.findMatch(AcademicTreasurySettings.getInstance().getImprovementAcademicTax().getProduct(),
                 registration.getDegree(), debtDate.toDateTimeAtStartOfDay());
+    }
+    
+    public static boolean isImprovementAcademicTaxCharged(final Registration registration, final ExecutionYear executionYear, final EnrolmentEvaluation enrolmentEvaluation) {
+        if(findAcademicTreasuryEventForImprovementTax(registration, executionYear) == null) {
+            return false;
+        }
+        
+        final AcademicTreasuryEvent academicTreasuryEvent = findAcademicTreasuryEventForImprovementTax(registration, executionYear);
+        
+        return academicTreasuryEvent.isChargedWithDebitEntry(enrolmentEvaluation);
     }
 
     @Atomic

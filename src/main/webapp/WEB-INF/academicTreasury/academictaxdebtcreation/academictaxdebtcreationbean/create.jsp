@@ -172,23 +172,6 @@ ${portal.angularToolkit()}
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
-                        code="label.TuitionDebtCreationBean.forceCreation" />
-                </div>
-
-                <div class="col-sm-10">
-
-                    <select id="tuitionDebtCreationBean_forceCreation"
-                        name="forceCreation" class="form-control"
-                        ng-model="object.forceCreation"
-                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues"
-                        on-select="onBeanChange($model)">
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message
                         code="label.AcademicTaxDebtCreationBean.registration" />
                 </div>
 
@@ -259,12 +242,19 @@ ${portal.angularToolkit()}
                 </div>
 
                 <div class="col-sm-10">
-                    <input id="academicTaxDebtCreationBean_debtDate"
-                        class="form-control" type="text" name="debtDate"
-                        bennu-date="object.debtDate" />
+                    <input id="academicTaxDebtCreationBean_debtDate" class="form-control" type="text" name="debtDate" 
+                    	bennu-date="object.debtDate" />
                 </div>
             </div>
 
+            <div class="form-group row">
+                <div class="col-sm-2 control-label"></div>
+                <div class="col-sm-6">
+                    <p>
+                        <em class="label label-warning">{{object.errorMessage}}</em>
+                    </p>
+                </div>
+            </div>
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button"

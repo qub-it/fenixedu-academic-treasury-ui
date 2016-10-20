@@ -35,6 +35,7 @@ import org.joda.time.LocalDate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.FenixFramework;
 
@@ -47,6 +48,17 @@ public class TuitionServices {
     public static AcademicTreasuryEvent findAcademicTreasuryEventTuitionForRegistration(final Registration registration,
             final ExecutionYear executionYear) {
         return AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).orElse(null);
+    }
+
+    public static boolean isTuitionForRegistrationCharged(final Registration registration, final ExecutionYear executionYear) {
+        if (!AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).isPresent()) {
+            return false;
+        }
+
+        final AcademicTreasuryEvent academicTreasuryEvent =
+                AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).get();
+
+        return academicTreasuryEvent.isCharged();
     }
 
     @Atomic
@@ -189,6 +201,18 @@ public class TuitionServices {
     public static AcademicTreasuryEvent findAcademicTreasuryEventTuitionForStandalone(final Registration registration,
             final ExecutionYear executionYear) {
         return AcademicTreasuryEvent.findUniqueForStandaloneTuition(registration, executionYear).orElse(null);
+    }
+
+    public static boolean isTuitionForStandaloneCharged(final Registration registration, final ExecutionYear executionYear,
+            final Enrolment enrolment) {
+        if (findAcademicTreasuryEventTuitionForStandalone(registration, executionYear) == null) {
+            return false;
+        }
+
+        final AcademicTreasuryEvent academicTreasuryEvent =
+                findAcademicTreasuryEventTuitionForStandalone(registration, executionYear);
+
+        return academicTreasuryEvent.isChargedWithDebitEntry(enrolment);
     }
 
     @Atomic
@@ -402,7 +426,7 @@ public class TuitionServices {
                     Constants.bundle("label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"), false);
 
         }
-        
+
         return true;
     }
 
@@ -416,6 +440,18 @@ public class TuitionServices {
         return AcademicTreasuryEvent.findUniqueForExtracurricularTuition(registration, executionYear).orElse(null);
     }
 
+    public static boolean isTuitionForExtracurricularCharged(final Registration registration, final ExecutionYear executionYear,
+            final Enrolment enrolment) {
+        if (findAcademicTreasuryEventTuitionForExtracurricular(registration, executionYear) == null) {
+            return false;
+        }
+
+        final AcademicTreasuryEvent academicTreasuryEvent =
+                findAcademicTreasuryEventTuitionForExtracurricular(registration, executionYear);
+
+        return academicTreasuryEvent.isChargedWithDebitEntry(enrolment);
+    }
+    
     @Atomic
     public static boolean createInferedTuitionForExtracurricular(final Enrolment extracurricularEnrolment, final LocalDate when,
             final boolean forceCreation) {
@@ -618,13 +654,15 @@ public class TuitionServices {
 
         final DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
         if (!debitEntry.isProcessedInDebitNote()) {
-            debitEntry.annulDebitEntry(Constants.bundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"));
+            debitEntry.annulDebitEntry(
+                    Constants.bundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"));
 
 //            debitEntry.setCurricularCourse(null);
 //            debitEntry.setExecutionSemester(null);
 
         } else {
-            debitNote.anullDebitNoteWithCreditNote(Constants.bundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"), false);
+            debitNote.anullDebitNoteWithCreditNote(
+                    Constants.bundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"), false);
         }
 
         return true;
@@ -708,28 +746,46 @@ public class TuitionServices {
     }
 
     public static Set<Enrolment> normalEnrolments(final Registration registration, final ExecutionYear executionYear) {
+        final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
+
+        if (studentCurricularPlan == null) {
+            return Collections.emptySet();
+        }
+
         final Set<Enrolment> result = Sets.newHashSet(registration.getEnrolments(executionYear));
 
-        result.removeAll(registration.getStudentCurricularPlan(executionYear).getStandaloneCurriculumLines().stream()
+        result.removeAll(studentCurricularPlan.getStandaloneCurriculumLines().stream()
                 .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
 
-        result.removeAll(registration.getStudentCurricularPlan(executionYear).getExtraCurricularCurriculumLines().stream()
+        result.removeAll(studentCurricularPlan.getExtraCurricularCurriculumLines().stream()
                 .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
 
-        result.removeAll(registration.getStudentCurricularPlan(executionYear).getPropaedeuticCurriculumLines().stream()
+        result.removeAll(studentCurricularPlan.getPropaedeuticCurriculumLines().stream()
                 .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).collect(Collectors.toList()));
 
         return result;
     }
 
     public static Set<Enrolment> standaloneEnrolments(final Registration registration, final ExecutionYear executionYear) {
-        return registration.getStudentCurricularPlan(executionYear).getStandaloneCurriculumLines().stream()
+        final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
+        
+        if(studentCurricularPlan == null) {
+            return Sets.newHashSet();
+        }
+        
+        return studentCurricularPlan.getStandaloneCurriculumLines().stream()
                 .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).map(l -> (Enrolment) l)
                 .collect(Collectors.<Enrolment> toSet());
     }
 
     public static Set<Enrolment> extracurricularEnrolments(final Registration registration, final ExecutionYear executionYear) {
-        return registration.getStudentCurricularPlan(executionYear).getExtraCurricularCurriculumLines().stream()
+        final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
+        
+        if(studentCurricularPlan == null) {
+            return Sets.newHashSet();
+        }
+        
+        return studentCurricularPlan.getExtraCurricularCurriculumLines().stream()
                 .filter(l -> l.getExecutionYear() == executionYear && l.isEnrolment()).map(l -> (Enrolment) l)
                 .collect(Collectors.<Enrolment> toSet());
     }
@@ -741,6 +797,10 @@ public class TuitionServices {
 
         final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
 
+        if(studentCurricularPlan == null) {
+            return result;
+        }
+        
         for (final ExecutionSemester executionSemester : executionYear.getExecutionPeriodsSet()) {
             result.addAll(studentCurricularPlan.getEnroledImprovements(executionSemester));
         }

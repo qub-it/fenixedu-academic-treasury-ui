@@ -45,6 +45,7 @@ public class DebtReportRequest extends DebtReportRequest_Base {
         this.setEndDate(bean.getEndDate());
         this.setType(bean.getType());
         this.setDecimalSeparator(bean.getDecimalSeparator());
+        this.setIncludeAnnuledEntries(bean.isIncludeAnnuledEntries());
 
         checkRules();
     }
@@ -74,6 +75,10 @@ public class DebtReportRequest extends DebtReportRequest_Base {
         return getBennuForPendingReportRequests() != null;
     }
 
+    public boolean isIncludeAnnuledEntries() {
+        return super.getIncludeAnnuledEntries();
+    }
+
     @Atomic(mode = TxMode.WRITE)
     public void processRequest() {
 
@@ -88,59 +93,49 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                     return new ExcelSheet[] {
 
                             ExcelSheet.create(debitEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_DEBIT_HEADERS,
-                                    DebtReportService.debitEntriesReport(getBeginDate(), getEndDate(), decimalSeparator(),
-                                            errorsLog)),
+                                    DebtReportService.debitEntriesReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(creditEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_CREDIT_HEADERS,
-                                    DebtReportService.creditEntriesReport(getBeginDate(), getEndDate(), decimalSeparator(),
-                                            errorsLog)),
+                                    DebtReportService.creditEntriesReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(settlementEntriesSheetName(), SettlementReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.settlementEntriesReport(getBeginDate(), getEndDate(), decimalSeparator(),
-                                            errorsLog)),
+                                    DebtReportService.settlementEntriesReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(paymentEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.paymentEntriesReport(getBeginDate(), getEndDate(), decimalSeparator(),
-                                            errorsLog)),
+                                    DebtReportService.paymentEntriesReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.reimbursementEntriesReport(getBeginDate(), getEndDate(),
-                                            decimalSeparator(), errorsLog)),
+                                    DebtReportService.reimbursementEntriesReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(debtAccountEntriesSheetName(), DebtAccountReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.debtAccountEntriesReport(getBeginDate(), getEndDate(),
-                                            getDecimalSeparator(), errorsLog)),
+                                    DebtReportService.debtAccountEntriesReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(academicActBlockingSuspensionSheetName(),
                                     AcademicActBlockingSuspensionReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.academicActBlockingSuspensionReport(getBeginDate(), getEndDate(),
-                                            decimalSeparator(), errorsLog)),
+                                    DebtReportService.academicActBlockingSuspensionReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.paymentReferenceCodeReport(getBeginDate(), getEndDate(),
-                                            decimalSeparator(), errorsLog)),
+                                    DebtReportService.paymentReferenceCodeReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(sibsTransactionDetailSheetName(),
                                     SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.sibsTransactionDetailReport(getBeginDate(), getEndDate(),
-                                            decimalSeparator(), errorsLog)),
+                                    DebtReportService.sibsTransactionDetailReport(DebtReportRequest.this, errorsLog)),
 
                             ExcelSheet.create(treasuryExemptionSheetName(), TreasuryExemptionReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.treasuryExemptionReport(getBeginDate(), getEndDate(), decimalSeparator(),
-                                            errorsLog)),
+                                    DebtReportService.treasuryExemptionReport(DebtReportRequest.this, errorsLog)),
 
-                            ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS, DebtReportService
-                                    .productReport(getBeginDate(), getEndDate(), decimalSeparator(), errorsLog)) };
+                            ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS,
+                                    DebtReportService.productReport(DebtReportRequest.this, errorsLog)) };
                 }
 
                 private String decimalSeparator() {
-                    if(Strings.isNullOrEmpty(getDecimalSeparator())) {
+                    if (Strings.isNullOrEmpty(getDecimalSeparator())) {
                         return DOT;
                     }
-                    
+
                     return getDecimalSeparator();
                 }
-                
+
             }, errorsLog);
 
             DebtReportRequestResultFile.create(this, content);

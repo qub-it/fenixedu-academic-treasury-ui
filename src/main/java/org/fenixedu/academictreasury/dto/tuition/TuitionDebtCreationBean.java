@@ -7,9 +7,11 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.StudentCurricularPlan;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
+import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
@@ -33,7 +35,6 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
     private LocalDate debtDate;
     private ExecutionYear executionYear;
     private Registration registration;
-    private boolean infered = true;
     private TuitionPaymentPlan tuitionPaymentPlan;
     private Enrolment enrolment;
 
@@ -47,12 +48,10 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
     private List<TupleDataSourceBean> extracurricularEnrolmentsDataSource;
     private List<TupleDataSourceBean> improvementEnrolmentEvaluationsDataSource;
 
-    private String inferedPaymentPlanName;
+    private String errorMessage;
 
     private TuitionPaymentPlanGroup tuitionPaymentPlanGroup;
     private AcademicTax academicTax;
-    
-    private boolean forceCreation = false;
 
     public TuitionDebtCreationBean(final DebtAccount debtAccount, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup) {
         this.debtAccount = debtAccount;
@@ -78,7 +77,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         getRegistrationDataSource();
         getExecutionYearDataSource();
         getTuitionPaymentPlansDataSource();
-        getInferedPaymentPlanName();
+        getErrorMessage();
 
         getStandaloneEnrolmentsDataSource();
         getExtracurricularEnrolmentsDataSource();
@@ -93,46 +92,33 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
     }
 
     public List<TupleDataSourceBean> getExecutionYearDataSource() {
-        if (!isStudent()) {
-            executionYearDataSource = Lists.newArrayList();
-            return executionYearDataSource;
-        }
+        executionYearDataSource = Lists.newArrayList();
 
-        if (registration == null) {
-            executionYearDataSource = Lists.newArrayList();
-            return executionYearDataSource;
-        }
+        for (final ExecutionYear executionYear : possibleExecutionYears()) {
+            final String id = executionYear.getExternalId();
+            String text = executionYear.getQualifiedName();
 
-        executionYearDataSource =
-                possibleExecutionYears().stream().map(e -> new TupleDataSourceBean(e.getExternalId(), e.getQualifiedName()))
-                        .collect(Collectors.toList());
+            if(isRegistrationTuition() && registration != null) {
+                final Set<Enrolment> normalEnrolments = TuitionServices.normalEnrolments(registration, executionYear);
+                
+                if(normalEnrolments.size() == 1) {
+                    text += " " + Constants.bundle("label.TuitionDebtCreationBean.enrolments.one");
+                } else if (normalEnrolments.size() > 1) {
+                    text += " " + Constants.bundle("label.TuitionDebtCreationBean.enrolments", String.valueOf(normalEnrolments.size()));
+                }
+            }
+            
+            executionYearDataSource.add(new TupleDataSourceBean(id, text));
+        }
 
         return executionYearDataSource;
     }
 
     private List<ExecutionYear> possibleExecutionYears() {
-        Set<ExecutionYear> possibleExecutionYears = Sets.newHashSet(ExecutionYear.readNotClosedExecutionYears());
-        
-        if(!isForceCreation()) {
-            possibleExecutionYears = Sets.newHashSet(registration.getEnrolmentsExecutionYears());
-        }
-        
-        final List<ExecutionYear> executionYears =
-                possibleExecutionYears.stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
-                        .collect(Collectors.toList());
+        final List<ExecutionYear> executionYears = ExecutionYear.readNotClosedExecutionYears().stream()
+                .sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR).collect(Collectors.toList());
 
-        if(!isRegistrationTuition()) {
-            return executionYears;
-        }
-        
-        final List<ExecutionYear> result = Lists.newArrayList();
-        for (final ExecutionYear executionYear : executionYears) {
-            if (isForceCreation() || !TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
-                result.add(executionYear);
-            }
-        }
-
-        return result;
+        return executionYears;
     }
 
     public List<TupleDataSourceBean> getRegistrationDataSource() {
@@ -142,41 +128,42 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         }
 
         registrationDataSource =
-                ((PersonCustomer) debtAccount.getCustomer())
-                        .getPerson()
-                        .getStudent()
-                        .getRegistrationsSet()
-                        .stream()
-                        .map(r -> new TupleDataSourceBean(r.getExternalId(), r.getDegree()
-                                .getPresentationNameI18N(getExecutionYear()).getContent())).collect(Collectors.toList());
+                ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet().stream()
+                        .map(r -> new TupleDataSourceBean(r.getExternalId(),
+                                r.getDegree().getPresentationNameI18N(getExecutionYear()).getContent()))
+                .collect(Collectors.toList());
 
         return registrationDataSource;
     }
 
     public List<TupleDataSourceBean> getTuitionPaymentPlansDataSource() {
+        tuitionPaymentPlansDataSource = Lists.newArrayList();
+
         if (!isStudent()) {
-            tuitionPaymentPlansDataSource = Lists.newArrayList();
             return tuitionPaymentPlansDataSource;
         }
 
         if (getRegistration() == null || getExecutionYear() == null) {
-            tuitionPaymentPlansDataSource = Lists.newArrayList();
             return tuitionPaymentPlansDataSource;
         }
 
         if ((isStandaloneTuition() || isExtracurricularTuition()) && enrolment == null) {
-            tuitionPaymentPlansDataSource = Lists.newArrayList();
             return tuitionPaymentPlansDataSource;
         }
 
-        if (isRegistrationTuition() && ( isForceCreation() || !TuitionServices.normalEnrolments(registration, executionYear).isEmpty())) {
-            tuitionPaymentPlansDataSource =
-                    TuitionPaymentPlan
-                            .find(tuitionPaymentPlanGroup,
-                                    registration.getStudentCurricularPlan(getExecutionYear()).getDegreeCurricularPlan(),
-                                    getExecutionYear())
-                            .map(t -> new TupleDataSourceBean(t.getExternalId(), t.getConditionsDescription().getContent()))
-                            .collect(Collectors.toList());
+        if (isRegistrationTuition()) {
+            final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(getExecutionYear());
+            
+            if(studentCurricularPlan == null) {
+                return tuitionPaymentPlansDataSource;
+            }
+            
+            tuitionPaymentPlansDataSource = TuitionPaymentPlan
+                    .find(tuitionPaymentPlanGroup,
+                            studentCurricularPlan.getDegreeCurricularPlan(),
+                            getExecutionYear())
+                    .map(t -> new TupleDataSourceBean(t.getExternalId(), t.getConditionsDescription().getContent()))
+                    .collect(Collectors.toList());
         } else if (isStandaloneTuition() || isExtracurricularTuition()) {
             tuitionPaymentPlansDataSource =
                     TuitionPaymentPlan
@@ -200,11 +187,9 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
             return standaloneEnrolmentsDataSource;
         }
 
-        standaloneEnrolmentsDataSource =
-                TuitionServices.standaloneEnrolments(getRegistration(), getExecutionYear()).stream()
-                        .sorted(Enrolment.COMPARATOR_BY_NAME_AND_ID).collect(Collectors.toList()).stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
-                        .collect(Collectors.toList());
+        standaloneEnrolmentsDataSource = TuitionServices.standaloneEnrolments(getRegistration(), getExecutionYear()).stream()
+                .sorted(Enrolment.COMPARATOR_BY_NAME_AND_ID).collect(Collectors.toList()).stream()
+                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
 
         return standaloneEnrolmentsDataSource;
     }
@@ -220,11 +205,9 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
             return extracurricularEnrolmentsDataSource;
         }
 
-        extracurricularEnrolmentsDataSource =
-                TuitionServices.extracurricularEnrolments(getRegistration(), getExecutionYear()).stream()
-                        .sorted(Enrolment.COMPARATOR_BY_NAME_AND_ID).collect(Collectors.toList()).stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
-                        .collect(Collectors.toList());
+        extracurricularEnrolmentsDataSource = TuitionServices.extracurricularEnrolments(getRegistration(), getExecutionYear())
+                .stream().sorted(Enrolment.COMPARATOR_BY_NAME_AND_ID).collect(Collectors.toList()).stream()
+                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
 
         return extracurricularEnrolmentsDataSource;
     }
@@ -241,60 +224,88 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         }
 
         improvementEnrolmentEvaluationsDataSource =
-                TuitionServices
-                        .improvementEnrolments(getRegistration(), getExecutionYear())
-                        .stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getEnrolment().getName().getContent() + " - "
-                                + l.getExecutionPeriod().getQualifiedName())).collect(Collectors.toList()).stream()
-                        .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+                TuitionServices.improvementEnrolments(getRegistration(), getExecutionYear()).stream()
+                        .map(l -> new TupleDataSourceBean(l.getExternalId(),
+                                l.getEnrolment().getName().getContent() + " - " + l.getExecutionPeriod().getQualifiedName()))
+                .collect(Collectors.toList()).stream().sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         return improvementEnrolmentEvaluationsDataSource;
     }
-
-    public String getInferedPaymentPlanName() {
+    
+    public boolean isTuitionCharged() {
         if (registration == null || executionYear == null) {
-            inferedPaymentPlanName =
-                    BundleUtil.getString(Constants.BUNDLE,
-                            "label.TuitionDebtCreationBean.infer.select.registration.and.executionYear");
-            return inferedPaymentPlanName;
+            return false;
+        }
+        
+        if ((isStandaloneTuition() || isExtracurricularTuition()) && enrolment == null) {
+            return false;
+        }
+        
+        if (isRegistrationTuition()) {
+            return TuitionServices.isTuitionForRegistrationCharged(registration, executionYear);
+        } else if (isStandaloneTuition()) {
+            return TuitionServices.isTuitionForStandaloneCharged(registration, executionYear, enrolment);
+        } else if (isExtracurricularTuition()) {
+            return TuitionServices.isTuitionForExtracurricularCharged(registration, executionYear, enrolment);
+        }
+
+        return false;
+    }
+
+    public String getErrorMessage() {
+        this.errorMessage = "";
+        this.tuitionPaymentPlan = null;
+
+        if (registration == null || executionYear == null) {
+            errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.select.registration.and.executionYear");
+            return errorMessage;
         }
 
         if ((isStandaloneTuition() || isExtracurricularTuition()) && enrolment == null) {
-            inferedPaymentPlanName =
-                    BundleUtil.getString(Constants.BUNDLE, "label.TuitionDebtCreationBean.infer.select.enrolment");
-            return inferedPaymentPlanName;
+            errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.select.enrolment");
+            return errorMessage;
         }
 
-        if (isRegistrationTuition() && !TuitionServices.normalEnrolments(registration, executionYear).isEmpty()) {
-            if (TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear) == null) {
-                inferedPaymentPlanName = BundleUtil.getString(Constants.BUNDLE, "label.TuitionDebtCreationBean.infer.impossible");
-                return inferedPaymentPlanName;
+        if (isRegistrationTuition()) {
+            if (TuitionServices.isTuitionForRegistrationCharged(registration, executionYear)) {
+                errorMessage = Constants.bundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
+                return errorMessage;
+            }
+            
+            this.tuitionPaymentPlan = TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear);
+            
+            if (tuitionPaymentPlan == null) {
+                errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.impossible");
             }
 
-            inferedPaymentPlanName =
-                    TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear)
-                            .getConditionsDescription().getContent();
         } else if (isStandaloneTuition()) {
-            if (TuitionPaymentPlan.inferTuitionPaymentPlanForStandaloneEnrolment(registration, executionYear, enrolment) == null) {
-                inferedPaymentPlanName = BundleUtil.getString(Constants.BUNDLE, "label.TuitionDebtCreationBean.infer.impossible");
-                return inferedPaymentPlanName;
+            if (TuitionServices.isTuitionForStandaloneCharged(registration, executionYear, enrolment)) {
+                errorMessage = Constants.bundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
+                return errorMessage;
+            }
+            
+            this.tuitionPaymentPlan =
+                    TuitionPaymentPlan.inferTuitionPaymentPlanForStandaloneEnrolment(registration, executionYear, enrolment);
+            
+            if (this.tuitionPaymentPlan == null) {
+                errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.impossible");
             }
 
-            inferedPaymentPlanName =
-                    TuitionPaymentPlan.inferTuitionPaymentPlanForStandaloneEnrolment(registration, executionYear, enrolment)
-                            .getConditionsDescription().getContent();
         } else if (isExtracurricularTuition()) {
-            if (TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear, enrolment) == null) {
-                inferedPaymentPlanName = BundleUtil.getString(Constants.BUNDLE, "label.TuitionDebtCreationBean.infer.impossible");
-                return inferedPaymentPlanName;
+            if (TuitionServices.isTuitionForExtracurricularCharged(registration, executionYear, enrolment)) {
+                errorMessage = Constants.bundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
+                return errorMessage;
             }
-
-            inferedPaymentPlanName =
-                    TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear, enrolment)
-                            .getConditionsDescription().getContent();
+            
+            this.tuitionPaymentPlan =
+                    TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear, enrolment);
+            
+            if (this.tuitionPaymentPlan == null) {
+                errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.impossible");
+            }
         }
 
-        return inferedPaymentPlanName;
+        return errorMessage;
     }
 
     public boolean isImprovementTax() {
@@ -347,14 +358,6 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         this.registration = registration;
     }
 
-    public boolean isInfered() {
-        return infered;
-    }
-
-    public void setInfered(boolean infered) {
-        this.infered = infered;
-    }
-
     public TuitionPaymentPlan getTuitionPaymentPlan() {
         return tuitionPaymentPlan;
     }
@@ -369,14 +372,6 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
 
     public void setEnrolment(Enrolment enrolment) {
         this.enrolment = enrolment;
-    }
-    
-    public boolean isForceCreation() {
-        return forceCreation;
-    }
-    
-    public void setForceCreation(boolean forceCreation) {
-        this.forceCreation = forceCreation;
     }
 
 }

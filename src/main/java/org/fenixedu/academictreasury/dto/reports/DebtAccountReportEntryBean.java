@@ -57,7 +57,9 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
     private boolean vatNumberValid;
     private String totalInDebt;
 
-    public DebtAccountReportEntryBean(final DebtAccount debtAccount, final String decimalSeparator, final ErrorsLog errorsLog) {
+    public DebtAccountReportEntryBean(final DebtAccount debtAccount, final DebtReportRequest request, final ErrorsLog errorsLog) {
+        final String decimalSeparator = request.getDecimalSeparator();
+        
         this.debtAccount = debtAccount;
 
         try {

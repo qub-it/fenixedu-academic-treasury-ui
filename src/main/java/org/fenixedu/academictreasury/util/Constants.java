@@ -45,6 +45,8 @@ public class Constants {
     public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
     public static final String DEFAULT_COUNTRY = "PT";
 
+    public static final Locale ENGLISH_LANGUAGE = new Locale("EN");
+    
     public static boolean isForeignLanguage(final Locale language) {
         return !language.getLanguage().equals(DEFAULT_LANGUAGE.getLanguage());
     }

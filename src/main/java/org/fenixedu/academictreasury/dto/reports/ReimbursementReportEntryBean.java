@@ -61,7 +61,9 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
     private String address;
     private Integer studentNumber;
 
-    public ReimbursementReportEntryBean(final ReimbursementEntry entry, final String decimalSeparator, final ErrorsLog errorsLog) {
+    public ReimbursementReportEntryBean(final ReimbursementEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
+        final String decimalSeparator = request.getDecimalSeparator();
+        
         paymentEntry = entry;
 
         try {

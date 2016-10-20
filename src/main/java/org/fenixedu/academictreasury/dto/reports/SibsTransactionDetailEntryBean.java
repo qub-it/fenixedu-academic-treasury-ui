@@ -52,7 +52,8 @@ public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
     
     boolean completed = false;
 
-    public SibsTransactionDetailEntryBean(final SibsTransactionDetail detail, final String decimalSeparator, final ErrorsLog errorsLog) {
+    public SibsTransactionDetailEntryBean(final SibsTransactionDetail detail, final DebtReportRequest request, final ErrorsLog errorsLog) {
+        final String decimalSeparator = request.getDecimalSeparator();
         
         try {
             this.sibsTransactionDetail = detail;

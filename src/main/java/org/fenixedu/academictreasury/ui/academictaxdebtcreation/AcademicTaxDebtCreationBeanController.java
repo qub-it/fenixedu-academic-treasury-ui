@@ -74,15 +74,15 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
     public static final String BACKTOCREATE_URL = CONTROLLER_URL + _BACKTOCREATE_URI;
 
     @RequestMapping(value = _BACKTOCREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
-            required = false) final AcademicTaxDebtCreationBean bean, final Model model) {
+    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final AcademicTaxDebtCreationBean bean, final Model model) {
         return _createFirstPage(debtAccount, bean, model);
     }
 
     public String _createFirstPage(final DebtAccount debtAccount, final AcademicTaxDebtCreationBean bean, final Model model) {
         model.addAttribute("AcademicTaxDebtCreationBean_executionYear_options", ExecutionYear.readNotClosedExecutionYears());
-        model.addAttribute("AcademicTaxDebtCreationBean_registration_options", ((PersonCustomer) debtAccount.getCustomer())
-                .getPerson().getStudent().getRegistrationsSet());
+        model.addAttribute("AcademicTaxDebtCreationBean_registration_options",
+                ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet());
 
         model.addAttribute("bean", bean);
         model.addAttribute("debtAccount", debtAccount);
@@ -105,40 +105,35 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
     }
 
     @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
-            required = false) final AcademicTaxDebtCreationBean bean, final Model model,
+    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final AcademicTaxDebtCreationBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
 
             boolean dataMissing = false;
             if (bean.getRegistration() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.registration.required"),
-                        model);
+                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.registration.required"), model);
                 dataMissing = true;
             }
 
             if (bean.getExecutionYear() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.executionYear.required"),
-                        model);
+                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.executionYear.required"), model);
                 dataMissing = true;
             }
 
             if (bean.getDebtDate() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.debtDate.required"), model);
+                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.debtDate.required"), model);
                 dataMissing = true;
             }
 
             if (bean.getAcademicTax() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.academicTax.required"),
-                        model);
+                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.academicTax.required"), model);
                 dataMissing = true;
             }
 
             if (bean.isImprovementTax() && bean.getImprovementEvaluation() == null) {
-                addErrorMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.improvementEvaluation.required"),
-                        model);
+                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.improvementEvaluation.required"), model);
                 dataMissing = true;
             }
 
@@ -148,46 +143,47 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
 
             if (bean.isImprovementTax()
                     && AcademicTaxServices.findAcademicTariff(bean.getImprovementEvaluation(), bean.getDebtDate()) == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.tariff.not.found"), model);
+                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.tariff.not.found"), model);
                 return _createFirstPage(debtAccount, bean, model);
-            } else if (AcademicTaxServices.findAcademicTariff(bean.getAcademicTax(), bean.getRegistration(), bean.getDebtDate()) == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.tariff.not.found"), model);
+            } else if (AcademicTaxServices.findAcademicTariff(bean.getAcademicTax(), bean.getRegistration(),
+                    bean.getDebtDate()) == null) {
+                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.tariff.not.found"), model);
                 dataMissing = true;
                 return _createFirstPage(debtAccount, bean, model);
             }
 
             if (bean.isImprovementTax()) {
-                final AcademicTreasuryEvent event =
-                        AcademicTaxServices.findAcademicTreasuryEventForImprovementTax(bean.getRegistration(),
-                                bean.getExecutionYear());
+                final AcademicTreasuryEvent event = AcademicTaxServices
+                        .findAcademicTreasuryEventForImprovementTax(bean.getRegistration(), bean.getExecutionYear());
 
                 if (event != null && event.isChargedWithDebitEntry(bean.getImprovementEvaluation())) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.event.is.charged"),
-                            model);
+                    addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.event.is.charged"), model);
                     return _createFirstPage(debtAccount, bean, model);
                 }
             } else {
-                final AcademicTreasuryEvent event =
-                        AcademicTaxServices.findAcademicTreasuryEvent(bean.getRegistration(), bean.getExecutionYear(),
-                                bean.getAcademicTax());
+                final AcademicTreasuryEvent event = AcademicTaxServices.findAcademicTreasuryEvent(bean.getRegistration(),
+                        bean.getExecutionYear(), bean.getAcademicTax());
 
                 if (event != null && event.isChargedWithDebitEntry()) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.event.is.charged"),
-                            model);
+                    addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.event.is.charged"), model);
                     return _createFirstPage(debtAccount, bean, model);
                 }
             }
 
-            if (!bean.getAcademicTax().isImprovementTax()
-                    && !AcademicTaxServices.isAppliableOnRegistration(bean.getAcademicTax(), bean.getRegistration(),
-                            bean.getExecutionYear())) {
-                if(AcademicTaxServices.isRegistrationFirstYear(bean.getRegistration(), bean.getExecutionYear())) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.academicTax.not.for.first.year"),
-                            model);
+            if (!bean.getAcademicTax().isImprovementTax() && !AcademicTaxServices.isAppliableOnRegistration(bean.getAcademicTax(),
+                    bean.getRegistration(), bean.getExecutionYear())) {
+                if (AcademicTaxServices.isRegistrationFirstYear(bean.getRegistration(), bean.getExecutionYear())) {
+                    addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.academicTax.not.for.first.year"), model);
                 } else {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTaxDebtCreation.academicTax.not.for.subsequent.years"),
+                    addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.academicTax.not.for.subsequent.years"),
                             model);
                 }
+
+                return _createFirstPage(debtAccount, bean, model);
+            }
+
+            if (bean.isCharged()) {
+                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.academic.tax.already.charged"), model);
 
                 return _createFirstPage(debtAccount, bean, model);
             }
@@ -200,10 +196,8 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                 model.addAttribute("debt",
                         AcademicTaxServices.calculateImprovementTax(bean.getImprovementEvaluation(), bean.getDebtDate()));
             } else {
-                model.addAttribute(
-                        "debt",
-                        AcademicTaxServices.calculateAcademicTax(bean.getRegistration(), bean.getExecutionYear(),
-                                bean.getAcademicTax(), bean.getDebtDate(), bean.isForceCreation()));
+                model.addAttribute("debt", AcademicTaxServices.calculateAcademicTax(bean.getRegistration(),
+                        bean.getExecutionYear(), bean.getAcademicTax(), bean.getDebtDate(), true));
             }
 
             return jspPage("confirmacademictaxdebtcreation");
@@ -218,8 +212,8 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
     public static final String CONFIRMACADEMICTAXDEBTCREATION_URL = CONTROLLER_URL + _CONFIRMACADEMICTAXDEBTCREATION_URI;
 
     @RequestMapping(value = _CONFIRMACADEMICTAXDEBTCREATION_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String confirmacademictaxdebtcreation(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(
-            value = "bean", required = false) final AcademicTaxDebtCreationBean bean, final Model model,
+    public String confirmacademictaxdebtcreation(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final AcademicTaxDebtCreationBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
@@ -228,7 +222,7 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                 AcademicTaxServices.createImprovementTax(bean.getImprovementEvaluation(), bean.getDebtDate());
             } else {
                 AcademicTaxServices.createAcademicTax(bean.getRegistration(), bean.getExecutionYear(), bean.getAcademicTax(),
-                        bean.getDebtDate(), bean.isForceCreation());
+                        bean.getDebtDate(), true);
             }
 
             addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicTax.debit.entries.created.success"), model);

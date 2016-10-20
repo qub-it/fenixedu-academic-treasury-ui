@@ -37,7 +37,9 @@ public class TreasuryExemptionReportEntryBean extends AbstractReportEntryBean {
 
     boolean completed = false;
 
-    public TreasuryExemptionReportEntryBean(final TreasuryExemption treasuryExemption, final String decimalSeparator, final ErrorsLog errorsLog) {
+    public TreasuryExemptionReportEntryBean(final TreasuryExemption treasuryExemption, final DebtReportRequest request, final ErrorsLog errorsLog) {
+        final String decimalSeparator = request.getDecimalSeparator();
+        
         try {
             this.treasuryExemption = treasuryExemption;
 

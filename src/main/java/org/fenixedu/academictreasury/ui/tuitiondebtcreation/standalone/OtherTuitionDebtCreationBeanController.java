@@ -72,11 +72,18 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
         return "forward:" + CONTROLLER_URL + "/create/";
     }
 
+    @RequestMapping(value = _CREATE_REGISTRATION_URI + "/{debtAccountId}", method = RequestMethod.GET)
+    public String createregistraton(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
+        final TuitionDebtCreationBean bean =
+                new TuitionDebtCreationBean(debtAccount, TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get());
+        return _createFirstPage(debtAccount, bean, model);
+    }
+
     private static final String _CREATESTANDALONE_URI = "/createstandalone";
     public static final String CREATESTANDALONE_URL = CONTROLLER_URL + _CREATESTANDALONE_URI;
 
     @RequestMapping(value = _CREATESTANDALONE_URI + "/{debtAccountId}", method = RequestMethod.GET)
-    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
+    public String createstandalone(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
         final TuitionDebtCreationBean bean = new TuitionDebtCreationBean(debtAccount, standaloneTuitionPaymentPlanGroup());
         return _createFirstPage(debtAccount, bean, model);
     }
@@ -85,7 +92,7 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
     public static final String CREATEEXTRACURRICULAR_URL = CONTROLLER_URL + _CREATEEXTRACURRICULAR_URI;
 
     @RequestMapping(value = _CREATEEXTRACURRICULAR_URI + "/{debtAccountId}", method = RequestMethod.GET)
-    public String createStandalone(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
+    public String createextracurricular(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model) {
         final TuitionDebtCreationBean bean = new TuitionDebtCreationBean(debtAccount, extracurricularTuitionPaymentPlanGroup());
         return _createFirstPage(debtAccount, bean, model);
     }
@@ -94,15 +101,15 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
     public static final String BACKTOCREATE_URL = CONTROLLER_URL + _BACKTOCREATE_URI;
 
     @RequestMapping(value = _BACKTOCREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
-            required = false) final TuitionDebtCreationBean bean, final Model model) {
+    public String backTocreate(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model) {
         return _createFirstPage(debtAccount, bean, model);
     }
 
     public String _createFirstPage(final DebtAccount debtAccount, final TuitionDebtCreationBean bean, final Model model) {
         model.addAttribute("TuitionDebtCreationBean_executionYear_options", ExecutionYear.readNotClosedExecutionYears());
-        model.addAttribute("TuitionDebtCreationBean_registration_options", ((PersonCustomer) debtAccount.getCustomer())
-                .getPerson().getStudent().getRegistrationsSet());
+        model.addAttribute("TuitionDebtCreationBean_registration_options",
+                ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet());
 
         model.addAttribute("bean", bean);
         model.addAttribute("debtAccount", debtAccount);
@@ -124,12 +131,13 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
         return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);
     }
 
-    private static final String _CREATE_URI = "/create";
-    public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
+    private static final String _CREATE_REGISTRATION_URI = "/createregistration";
+    public static final String CREATE_REGISTRATION_URL = CONTROLLER_URL + _CREATE_REGISTRATION_URI;
 
-    @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(value = "bean",
-            required = false) final TuitionDebtCreationBean bean, final Model model, final RedirectAttributes redirectAttributes) {
+    @RequestMapping(value = _CREATE_REGISTRATION_URI + "/{debtAccountId}", method = RequestMethod.POST)
+    public String createregistration(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model,
+            final RedirectAttributes redirectAttributes) {
 
         try {
             model.addAttribute("debtAccount", debtAccount);
@@ -153,91 +161,71 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
                 addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.debtDate.required"), model);
                 dataMissing = true;
             }
-            
-            if(!bean.isRegistrationTuition() && bean.getEnrolment() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.enrolment.required"), model);
+
+            if (!bean.isRegistrationTuition() && bean.getEnrolment() == null) {
+                addErrorMessage(Constants.bundle("error.TuitionDebtCreationBean.enrolment.required"),
+                        model);
                 dataMissing = true;
             }
 
+            if (bean.getTuitionPaymentPlan() == null) {
+                addErrorMessage(Constants.bundle("error.TuitionDebtCreationBean.tuitionPaymentPlan.required"),
+                        model);
+                dataMissing = true;
+            }
+            
             if (dataMissing) {
                 return _createFirstPage(debtAccount, bean, model);
             }
             
+            if(bean.isTuitionCharged()) {
+                addErrorMessage(Constants.bundle("error.TuitionDebtCreationBean.tuition.registration.already.charged"), model);
+                return _createFirstPage(debtAccount, bean, model);
+            }
+
             if (bean.isRegistrationTuition()) {
-                
-                if (bean.isInfered()) {
-                    model.addAttribute("tuitionPaymentPlan",
-                            TuitionServices.usedPaymentPlan(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate()));
 
-                    model.addAttribute("installments", TuitionServices.calculateInstallmentDebitEntryBeans(
-                            bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate()));
-                } else {
-                    model.addAttribute("tuitionPaymentPlan", TuitionServices.usedPaymentPlan(bean.getRegistration(),
-                            bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
+                model.addAttribute("tuitionPaymentPlan", TuitionServices.usedPaymentPlan(bean.getRegistration(),
+                        bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
 
-                    model.addAttribute("installments", TuitionServices.calculateInstallmentDebitEntryBeans(
-                            bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
-                }
+                model.addAttribute("installments", TuitionServices.calculateInstallmentDebitEntryBeans(bean.getRegistration(),
+                        bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
             } else if (bean.isStandaloneTuition()) {
 
-                final AcademicTreasuryEvent event =
-                        TuitionServices.findAcademicTreasuryEventTuitionForStandalone(bean.getRegistration(), bean.getExecutionYear());
-                
+                final AcademicTreasuryEvent event = TuitionServices
+                        .findAcademicTreasuryEventTuitionForStandalone(bean.getRegistration(), bean.getExecutionYear());
+
                 if (event != null && event.isChargedWithDebitEntry(bean.getEnrolment())) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.event.is.charged"), model);
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.event.is.charged"),
+                            model);
                     return _createFirstPage(debtAccount, bean, model);
                 }
-                
-                if (bean.isInfered()) {
-                    model.addAttribute(
-                            "tuitionPaymentPlan",
-                            TuitionServices.usedPaymentPlanForStandalone(bean.getRegistration(), bean.getExecutionYear(),
-                                    bean.getEnrolment(), bean.getDebtDate()));
 
-                    model.addAttribute(
-                            "installments",
-                            TuitionServices.calculateInstallmentDebitEntryBeansForStandalone(bean.getRegistration(),
-                                    bean.getExecutionYear(), bean.getDebtDate(), Sets.newHashSet(bean.getEnrolment())));
-                } else {
-                    model.addAttribute(
-                            "tuitionPaymentPlan",
-                            TuitionServices.usedPaymentPlanForStandalone(bean.getRegistration(), bean.getExecutionYear(),
-                                    bean.getEnrolment(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
+                model.addAttribute("tuitionPaymentPlan", TuitionServices.usedPaymentPlanForStandalone(bean.getRegistration(),
+                        bean.getExecutionYear(), bean.getEnrolment(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
 
-                    model.addAttribute(
-                            "installments",
-                            TuitionServices.calculateInstallmentDebitEntryBeansForStandalone(bean.getRegistration(),
-                                    bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan(),
-                                    Sets.newHashSet(bean.getEnrolment())));
-                }
+                model.addAttribute("installments",
+                        TuitionServices.calculateInstallmentDebitEntryBeansForStandalone(bean.getRegistration(),
+                                bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan(),
+                                Sets.newHashSet(bean.getEnrolment())));
             } else if (bean.isExtracurricularTuition()) {
-                final AcademicTreasuryEvent event =
-                        TuitionServices.findAcademicTreasuryEventTuitionForExtracurricular(bean.getRegistration(), bean.getExecutionYear());
-                
+                final AcademicTreasuryEvent event = TuitionServices
+                        .findAcademicTreasuryEventTuitionForExtracurricular(bean.getRegistration(), bean.getExecutionYear());
+
                 if (event != null && event.isChargedWithDebitEntry(bean.getEnrolment())) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.event.is.charged"), model);
+                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.event.is.charged"),
+                            model);
                     return _createFirstPage(debtAccount, bean, model);
                 }
-                
-                if (bean.isInfered()) {
-                    model.addAttribute("tuitionPaymentPlan", TuitionServices.usedPaymentPlanForExtracurricular(
-                            bean.getRegistration(), bean.getExecutionYear(), bean.getEnrolment(), bean.getDebtDate()));
 
-                    model.addAttribute(
-                            "installments",
-                            TuitionServices.calculateInstallmentDebitEntryBeansForExtracurricular(bean.getRegistration(),
-                                    bean.getExecutionYear(), bean.getDebtDate(), Sets.newHashSet(bean.getEnrolment())));
-                } else {
-                    model.addAttribute("tuitionPaymentPlan", TuitionServices.usedPaymentPlanForExtracurricular(
-                            bean.getRegistration(), bean.getExecutionYear(), bean.getEnrolment(), bean.getDebtDate(),
-                            bean.getTuitionPaymentPlan()));
+                model.addAttribute("tuitionPaymentPlan",
+                        TuitionServices.usedPaymentPlanForExtracurricular(bean.getRegistration(), bean.getExecutionYear(),
+                                bean.getEnrolment(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
 
-                    model.addAttribute(
-                            "installments",
-                            TuitionServices.calculateInstallmentDebitEntryBeansForExtracurricular(bean.getRegistration(),
-                                    bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan(),
-                                    Sets.newHashSet(bean.getEnrolment())));
-                }
+                model.addAttribute("installments",
+                        TuitionServices.calculateInstallmentDebitEntryBeansForExtracurricular(bean.getRegistration(),
+                                bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan(),
+                                Sets.newHashSet(bean.getEnrolment())));
             }
 
             return jspPage("confirmtuitiondebtcreation");
@@ -252,46 +240,37 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
     public static final String CONFIRMTUITIONDEBTCREATION_URL = CONTROLLER_URL + _CONFIRMTUITIONDEBTCREATION_URI;
 
     @RequestMapping(value = _CONFIRMTUITIONDEBTCREATION_URI + "/{debtAccountId}", method = RequestMethod.POST)
-    public String confirmtuitiondebtcreation(@PathVariable("debtAccountId") final DebtAccount debtAccount, @RequestParam(
-            value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model,
+    public String confirmtuitiondebtcreation(@PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam(value = "bean", required = false) final TuitionDebtCreationBean bean, final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
-
+            boolean createdWithSuccess = false;
             if (bean.isRegistrationTuition()) {
-                if (bean.isInfered()) {
-                    TuitionServices.createInferedTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(),
-                            bean.getDebtDate(), false);
-                } else {
-                    TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(),
-                            bean.getDebtDate(), bean.isForceCreation(), bean.getTuitionPaymentPlan());
-                }
+                createdWithSuccess = TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(),
+                        bean.getDebtDate(), true, bean.getTuitionPaymentPlan());
             } else if (bean.isStandaloneTuition()) {
-                if (bean.isInfered()) {
-                    TuitionServices.createInferedTuitionForStandalone(bean.getEnrolment(), bean.getDebtDate(), bean.isForceCreation());
-                } else {
-                    TuitionServices.createTuitionForStandalone(bean.getEnrolment(), bean.getTuitionPaymentPlan(),
-                            bean.getDebtDate(), bean.isForceCreation());
-                }
+                createdWithSuccess = TuitionServices.createTuitionForStandalone(bean.getEnrolment(), bean.getTuitionPaymentPlan(),
+                        bean.getDebtDate(), true);
             } else if (bean.isExtracurricularTuition()) {
-                if (bean.isInfered()) {
-                    TuitionServices.createInferedTuitionForExtracurricular(bean.getEnrolment(), bean.getDebtDate(), bean.isForceCreation());
-                } else {
-                    TuitionServices.createTuitionForExtracurricular(bean.getEnrolment(), bean.getTuitionPaymentPlan(),
-                            bean.getDebtDate(), bean.isForceCreation());
-                }
+                createdWithSuccess = TuitionServices.createTuitionForExtracurricular(bean.getEnrolment(),
+                        bean.getTuitionPaymentPlan(), bean.getDebtDate(), true);
             }
 
-            //Success Validation
             //Add the bean to be used in the View
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
-                    "label.TuitionPaymentPlan.tuition.installments.debit.entries.created.success"), model);
+            if (createdWithSuccess) {
+                addInfoMessage(Constants.bundle("label.TuitionPaymentPlan.tuition.installments.debit.entries.created.success"),
+                        model);
+                return redirect(DebtAccountController.READ_URL + "/" + debtAccount.getExternalId(), model, redirectAttributes);
+            }
 
-            return redirect(DebtAccountController.READ_URL + "/" + debtAccount.getExternalId(), model, redirectAttributes);
+            addErrorMessage(Constants.bundle("label.TuitionPaymentPlan.tuition.installments.debit.entries.created.insuccess"),
+                    model);
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);
-            return create(debtAccount, bean, model, redirectAttributes);
         }
+
+        return _createFirstPage(debtAccount, bean, model);
     }
 
     private String jspPage(final String page) {
