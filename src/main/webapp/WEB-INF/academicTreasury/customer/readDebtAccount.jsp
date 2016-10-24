@@ -365,6 +365,12 @@ ${portal.angularToolkit()}
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>
+                                <spring:message code="label.SettlementNote.paymentDate" />
+                            </datatables:columnHead>
+                            <c:out value='${payment.paymentDate.toString("YYYY-MM-dd")}' />
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
                                 <spring:message code="label.SettlementEntry.finantialDocument" />
                             </datatables:columnHead>
                             <c:out value="${payment.uiDocumentNumber}" />

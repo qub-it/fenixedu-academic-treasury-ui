@@ -54,7 +54,7 @@ public class DebtReportService {
     public static Stream<PaymentReportEntryBean> paymentEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return PaymentEntry.findAll()
                 .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(),
-                        i.getSettlementNote().getPaymentDate()))
+                        i.getSettlementNote().getDocumentDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.getSettlementNote().isAnnulled())
                 .map(i -> new PaymentReportEntryBean(i, request, log));
     }

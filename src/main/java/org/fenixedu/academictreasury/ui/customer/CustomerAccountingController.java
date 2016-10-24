@@ -220,6 +220,29 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             }
         }
 
+        for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
+                .getInactivePersonCustomersSet()) {
+            if (inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()) == null) {
+                continue;
+            }
+
+            for (InvoiceEntry invoiceEntry : inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution())
+                    .getPendingInvoiceEntriesSet()) {
+                if (!invoiceEntry.isDebitNoteEntry()) {
+                    continue;
+                }
+
+                usedPaymentCodeTargets.addAll(
+                        MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
+
+                if (invoiceEntry.getFinantialDocument() != null) {
+                    usedPaymentCodeTargets
+                            .addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument())
+                                    .collect(Collectors.<PaymentCodeTarget> toSet()));
+                }
+            }
+        }
+        
         model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
 
         return jspPage("readDebtAccount");
