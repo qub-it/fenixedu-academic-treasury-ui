@@ -158,19 +158,15 @@ ${portal.toolkit()}
 </div>
 <!-- /.modal -->
 
-
 <c:choose>
 	<c:when test="${not empty searchacademicdebtgenerationruleResultsDataSet}">
 		<table id="searchacademicdebtgenerationruleTable" class="table responsive table-bordered table-hover">
 			<thead>
 				<tr>
 					<%--!!!  Field names here --%>
-					<th>
-						#
-					</th>
-					<th>
-						<spring:message code="label.AcademicDebtGenerationRule.academicDebtGenerationRuleEntries" />
-					</th>
+					<th>#</th>
+					<th></th>
+					<th><spring:message code="label.AcademicDebtGenerationRule.academicDebtGenerationRuleEntries" /></th>
 					<th>
 						<spring:message code="label.AcademicDebtGenerationRule.executionYear" />
 					</th>
@@ -181,20 +177,18 @@ ${portal.toolkit()}
 			<tbody>
 				<c:forEach var="rule" items="${searchacademicdebtgenerationruleResultsDataSet}">
 					<tr>
+						<td><c:out value="${rule.orderNumber}" /></td>
 						<td>
-							<c:out value="${rule.orderNumber}" />
-							
-							<p>&nbsp;</p>							
 							<p>
 								<c:if test="${not rule.first}">
 									<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.ORDER_UP_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-											<span class="glyphicon glyphicon-arrow-up"></span>
+										<span class="glyphicon glyphicon-arrow-up"></span>
 									</a>
 								</c:if>
 								
 								<c:if test="${not rule.last}">
 									<a class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.ORDER_DOWN_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}/${rule.externalId}">
-											<span class="glyphicon glyphicon-arrow-down"></span>
+										<span class="glyphicon glyphicon-arrow-down"></span>
 									</a>
 								</c:if>
 							</p>
@@ -453,6 +447,37 @@ ${portal.toolkit()}
 				</c:forEach>
 			</tbody>
 		</table>
+		<script>
+			$(document).ready(function() {
+				var table = $('#searchacademicdebtgenerationruleTable').DataTable({
+					language : {
+						url : "${datatablesI18NUrl}",
+					},
+					"paging": false,
+					//CHANGE_ME adjust the actions column width if needed
+					"columnDefs" : [
+		                { "visible" : false, "targets" : 0 },
+		                { "width" : "222px", "targets" : 3 }
+					],
+					"order": [[ 0, "asc" ]],
+					//Documentation: https://datatables.net/reference/option/dom
+					//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
+					//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
+					"dom" : '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
+					//"dom" : '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
+					"tableTools" : {
+						"sSwfPath" : "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
+					}
+				});
+				
+				table.columns.adjust().draw();
+
+				$('#searchacademicdebtgenerationruleTable tbody').on('click', 'tr', function() {
+					$(this).toggleClass('selected');
+				});
+				
+			});
+		</script>
 	</c:when>
 	<c:otherwise>
 		<div class="alert alert-warning" role="alert">
@@ -466,42 +491,3 @@ ${portal.toolkit()}
 
 	</c:otherwise>
 </c:choose>
-
-<script>
-	$(document)
-			.ready(
-					function() {
-
-						var table = $('#searchacademicdebtgenerationruleTable')
-								.DataTable(
-										{
-											language : {
-												url : "${datatablesI18NUrl}",
-											},
-											
-											"order": [[ 0, "asc" ]],
-											
-											//CHANGE_ME adjust the actions column width if needed
-											"columnDefs" : [{
-												"width" : "222px",
-												"targets" : 3
-											}],
-											//Documentation: https://datatables.net/reference/option/dom
-											//"dom": '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
-											//"dom": 'T<"clear">lrtip', //FilterBox = NO && ExportOptions = YES
-											"dom" : '<"col-sm-6"l><"col-sm-6"f>rtip', //FilterBox = YES && ExportOptions = NO
-											//"dom" : '<"col-sm-6"l>rtip', // FilterBox = NO && ExportOptions = NO
-											"tableTools" : {
-												"sSwfPath" : "${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/swf/copy_csv_xls_pdf.swf"
-											}
-										});
-						table.columns.adjust().draw();
-
-						$('#searchacademicdebtgenerationruleTable tbody').on(
-								'click', 'tr', function() {
-									$(this).toggleClass('selected');
-								});
-
-					});
-</script>
-
