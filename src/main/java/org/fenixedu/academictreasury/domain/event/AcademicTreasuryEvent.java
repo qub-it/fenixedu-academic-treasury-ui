@@ -79,10 +79,14 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     protected AcademicTreasuryEvent(final AcademicTax academicTax, final Registration registration,
             final ExecutionYear executionYear) {
         init(academicTax, registration, executionYear);
+
+        checkRules();
     }
 
-    protected AcademicTreasuryEvent(final DebtAccount debtAccount, final Product product, final IAcademicTreasuryTarget target) {
-        init(debtAccount, product, target);
+    protected AcademicTreasuryEvent(final Product product, final IAcademicTreasuryTarget target) {
+        init(product, target);
+
+        checkRules();
     }
 
     @Override
@@ -182,12 +186,14 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return result;
     }
 
-    protected void init(final DebtAccount debtAccount, final Product product, final IAcademicTreasuryTarget target) {
+    protected void init(final Product product, final IAcademicTreasuryTarget target) {
         if (target == null) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.target.required");
         }
 
-        super.init(debtAccount, product, target.getAcademicTreasuryTargetDescription());
+        super.init(product, target.getAcademicTreasuryTargetDescription());
+
+        setPerson(target.getAcademicTreasuryTargetPerson());
         setTreasuryEventTarget((AbstractDomainObject) target);
     }
 
@@ -676,6 +682,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return findForAcademicTax(registration, executionYear, academicTax).findFirst();
     }
 
+    public static Optional<? extends AcademicTreasuryEvent> findUniqueForTarget(final Person person,
+            final IAcademicTreasuryTarget target) {
+        return find(person).filter(a -> a.getTreasuryEventTarget() == target).findFirst();
+    }
+
     public static Stream<? extends AcademicTreasuryEvent> findByDescription(final Person person, final String description,
             final boolean trimmed) {
         return find(person).filter(t -> (!trimmed && t.getDescription().getContent().equals(description))
@@ -687,10 +698,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return new AcademicTreasuryEvent(academicTax, registration, executionYear);
     }
 
-    public static AcademicTreasuryEvent createForAcademicTreasuryEventTarget(final DebtAccount debtAccount, final Product product,
+    public static AcademicTreasuryEvent createForAcademicTreasuryEventTarget(final Product product,
             final IAcademicTreasuryTarget target) {
 
-        return new AcademicTreasuryEvent(debtAccount, product, target);
+        return new AcademicTreasuryEvent(product, target);
     }
 
     /* -----
