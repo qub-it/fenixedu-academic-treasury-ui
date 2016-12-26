@@ -381,10 +381,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             }
 
             return getExecutionYear().getBeginLocalDate();
-        } else if(isForTreasuryEventTarget()) {
+        } else if (isForTreasuryEventTarget()) {
             return ((IAcademicTreasuryTarget) getTreasuryEventTarget()).getAcademicTreasuryTargetEventDate();
         }
-        
+
         throw new RuntimeException("dont know how to handle this!");
     }
 
@@ -691,15 +691,15 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     // @formatter:off
     public static enum AcademicTreasuryEventKeys {
 
-        ACADEMIC_SERVICE_REQUEST_NAME("1"), ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR("2"), EXECUTION_YEAR("3"), EXECUTION_SEMESTER(
-                "4"), EVALUATION_SEASON("5"), DETAILED("6"), URGENT("7"), LANGUAGE("8"), BASE_AMOUNT("9"), UNITS_FOR_BASE("10"),
-        UNIT_AMOUNT("11"), ADDITIONAL_UNITS("12"), CALCULATED_UNITS_AMOUNT("13"), PAGE_AMOUNT("14"), NUMBER_OF_PAGES("15"),
-        CALCULATED_PAGES_AMOUNT("16"), MAXIMUM_AMOUNT("17"), AMOUNT_WITHOUT_RATES("18"), FOREIGN_LANGUAGE_RATE("19"),
-        CALCULATED_FOREIGN_LANGUAGE_RATE("20"), URGENT_PERCENTAGE("21"), CALCULATED_URGENT_AMOUNT("22"), FINAL_AMOUNT("23"),
-        TUITION_PAYMENT_PLAN("24"), TUITION_PAYMENT_PLAN_CONDITIONS("25"), TUITION_CALCULATION_TYPE("26"), FIXED_AMOUNT("27"),
-        ECTS_CREDITS("28"), AMOUNT_PER_ECTS("29"), ENROLLED_COURSES("30"), AMOUNT_PER_COURSE("31"), DUE_DATE("32"), DEGREE("33"),
-        DEGREE_CODE("34"), DEGREE_CURRICULAR_PLAN("35"), ENROLMENT("36"), FACTOR("37"), TOTAL_ECTS_OR_UNITS("38"),
-        COURSE_FUNCTION_COST("39"), DEFAULT_TUITION_TOTAL_AMOUNT("40"), USED_DATE("41");
+        ACADEMIC_SERVICE_REQUEST_NAME("1"), ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR("2"), EXECUTION_YEAR("3"),
+        EXECUTION_SEMESTER("4"), EVALUATION_SEASON("5"), DETAILED("6"), URGENT("7"), LANGUAGE("8"), BASE_AMOUNT("9"),
+        UNITS_FOR_BASE("10"), UNIT_AMOUNT("11"), ADDITIONAL_UNITS("12"), CALCULATED_UNITS_AMOUNT("13"), PAGE_AMOUNT("14"),
+        NUMBER_OF_PAGES("15"), CALCULATED_PAGES_AMOUNT("16"), MAXIMUM_AMOUNT("17"), AMOUNT_WITHOUT_RATES("18"),
+        FOREIGN_LANGUAGE_RATE("19"), CALCULATED_FOREIGN_LANGUAGE_RATE("20"), URGENT_PERCENTAGE("21"),
+        CALCULATED_URGENT_AMOUNT("22"), FINAL_AMOUNT("23"), TUITION_PAYMENT_PLAN("24"), TUITION_PAYMENT_PLAN_CONDITIONS("25"),
+        TUITION_CALCULATION_TYPE("26"), FIXED_AMOUNT("27"), ECTS_CREDITS("28"), AMOUNT_PER_ECTS("29"), ENROLLED_COURSES("30"),
+        AMOUNT_PER_COURSE("31"), DUE_DATE("32"), DEGREE("33"), DEGREE_CODE("34"), DEGREE_CURRICULAR_PLAN("35"), ENROLMENT("36"),
+        FACTOR("37"), TOTAL_ECTS_OR_UNITS("38"), COURSE_FUNCTION_COST("39"), DEFAULT_TUITION_TOTAL_AMOUNT("40"), USED_DATE("41");
 
         private String code;
 
@@ -708,8 +708,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
         public LocalizedString getDescriptionI18N() {
-            return BundleUtil.getLocalizedString(Constants.BUNDLE, "label." + AcademicTreasuryEventKeys.class.getSimpleName()
-                    + "." + name());
+            return BundleUtil.getLocalizedString(Constants.BUNDLE,
+                    "label." + AcademicTreasuryEventKeys.class.getSimpleName() + "." + name());
         }
 
         public static String valueFor(final DebitEntry debitEntry, final AcademicTreasuryEventKeys key) {
@@ -1223,6 +1223,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         @Override
         public boolean isProcessed() {
             return paymentReferenceCode.getState().isProcessed();
+        }
+
+        @Override
+        public BigDecimal getPayableAmount() {
+            return paymentReferenceCode.getPayableAmount();
         }
 
     }

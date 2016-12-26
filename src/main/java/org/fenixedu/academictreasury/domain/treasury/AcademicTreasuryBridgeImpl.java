@@ -345,6 +345,7 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     }
 
     @Override
+    //TODO: Anil passar número de unidades e utilizar o academictariff para calcular o valor final em conjunto com o ciclo e o curso
     public IAcademicTreasuryEvent createDebt(final ITreasuryEntity treasuryEntity, final ITreasuryProduct treasuryProduct,
             final IAcademicTreasuryTarget target, final LocalDate when, final boolean createPaymentCode,
             final IPaymentCodePool paymentCodePool) {
@@ -382,8 +383,14 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         final LocalDate dueDate = academicTariff.dueDate(when);
 
         final DebitNote debitNote = DebitNote.create(debtAccount, documentNumberSeries, now);
-        final DebitEntry debitEntry = DebitEntry.create(Optional.of(debitNote), debtAccount, treasuryEvent, vat,
-                academicTariff.getBaseAmount(), dueDate, target.getAcademicTreasuryTargetPropertiesMap(), product,
+        
+        BigDecimal amount = academicTariff.getBaseAmount();
+        if (amount == null || amount.compareTo(BigDecimal.ZERO) == 0) {
+            amount = academicTariff.getUnitAmount();
+        }
+
+        final DebitEntry debitEntry = DebitEntry.create(Optional.of(debitNote), debtAccount, treasuryEvent, vat, amount, dueDate,
+                target.getAcademicTreasuryTargetPropertiesMap(), product,
                 target.getAcademicTreasuryTargetDescription().getContent(), BigDecimal.ONE, academicTariff.getInterestRate(),
                 when.toDateTimeAtStartOfDay());
 
