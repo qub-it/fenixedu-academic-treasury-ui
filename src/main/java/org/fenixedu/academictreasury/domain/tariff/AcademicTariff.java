@@ -268,6 +268,27 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         return isPositive(result) ? result : BigDecimal.ZERO;
     }
+    
+    public BigDecimal amountToPay(final int numberOfUnits, final int numberOfPages) {
+        BigDecimal amount = getBaseAmount();
+        
+        if (isApplyUnitsAmount()) {
+            int remainingUnits = (numberOfUnits - getUnitsForBase()) >= 0 ? numberOfUnits - getUnitsForBase() : 0;
+            if (remainingUnits > 0) {
+                amount = amount.add(getUnitAmount().multiply(new BigDecimal(remainingUnits)));
+            }
+        }
+        
+        if (isApplyPagesAmount()) {
+            amount = amount.add(getPageAmount().multiply(new BigDecimal(numberOfPages)));
+        }
+
+        if (isApplyMaximumAmount() && isGreaterThan(amount, getMaximumAmount())) {
+            amount = getMaximumAmount();
+        }
+        
+        return amount;
+    }
 
     public BigDecimal amountToPayWithoutRates(final AcademicTreasuryEvent academicTreasuryEvent) {
         BigDecimal amount = getBaseAmount();

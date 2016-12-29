@@ -348,7 +348,7 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     //TODO: Anil passar número de unidades e utilizar o academictariff para calcular o valor final em conjunto com o ciclo e o curso
     public IAcademicTreasuryEvent createDebt(final ITreasuryEntity treasuryEntity, final ITreasuryProduct treasuryProduct,
             final IAcademicTreasuryTarget target, final LocalDate when, final boolean createPaymentCode,
-            final IPaymentCodePool paymentCodePool) {
+            final IPaymentCodePool paymentCodePool, final int numberOfUnits, final int numberOfPages) {
 
         final FinantialInstitution finantialInstitution =
                 ((TreasuryEntity) treasuryEntity).finantialEntity.getFinantialInstitution();
@@ -378,17 +378,18 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
             treasuryEvent = AcademicTreasuryEvent.createForAcademicTreasuryEventTarget(debtAccount, product, target);
         }
 
-        final AcademicTariff academicTariff =
-                AcademicTariff.findMatch(product, administrativeOffice, when.toDateTimeAtStartOfDay());
-        final LocalDate dueDate = academicTariff.dueDate(when);
-
-        final DebitNote debitNote = DebitNote.create(debtAccount, documentNumberSeries, now);
-        
-        BigDecimal amount = academicTariff.getBaseAmount();
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) == 0) {
-            amount = academicTariff.getUnitAmount();
+        AcademicTariff academicTariff = null;
+        if (target.getAcademicTreasuryTargetDegree() != null) {
+            academicTariff =
+                    AcademicTariff.findMatch(product, target.getAcademicTreasuryTargetDegree(), when.toDateTimeAtStartOfDay());
+        } else {
+            academicTariff = AcademicTariff.findMatch(product, administrativeOffice, when.toDateTimeAtStartOfDay());
         }
 
+        final LocalDate dueDate = academicTariff.dueDate(when);
+        final DebitNote debitNote = DebitNote.create(debtAccount, documentNumberSeries, now);
+
+        final BigDecimal amount = academicTariff.amountToPay(numberOfUnits, numberOfPages);
         final DebitEntry debitEntry = DebitEntry.create(Optional.of(debitNote), debtAccount, treasuryEvent, vat, amount, dueDate,
                 target.getAcademicTreasuryTargetPropertiesMap(), product,
                 target.getAcademicTreasuryTargetDescription().getContent(), BigDecimal.ONE, academicTariff.getInterestRate(),

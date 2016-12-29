@@ -40,11 +40,13 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.joda.time.LocalDate;
@@ -874,11 +876,6 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
      */
 
     @Override
-    public boolean isWithDebitEntry() {
-        return isChargedWithDebitEntry();
-    }
-
-    @Override
     public boolean isExempted() {
         return !getTreasuryExemptionsSet().isEmpty();
     }
@@ -916,6 +913,13 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                 .map(l -> new AcademicTreasuryEventPayment(l)).collect(Collectors.toList());
     }
 
+    @Override
+    public void invokeSettlementCallbacks() {
+        if(isForTreasuryEventTarget()) {
+            ((IAcademicTreasuryTarget) getTreasuryEventTarget()).handleSettlement(this);
+        }
+    }
+    
     /* ---------------------------------------------
      * ACADEMIC SERVICE REQUEST EVENT & ACADEMIC TAX
      * ---------------------------------------------
@@ -1085,7 +1089,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
      */
 
     @Override
-    public boolean isWithDebitEntry(final EnrolmentEvaluation enrolmentEvaluation) {
+    public boolean isCharged(final EnrolmentEvaluation enrolmentEvaluation) {
         return isChargedWithDebitEntry(enrolmentEvaluation);
     }
 
@@ -1152,7 +1156,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public LocalDate getDueDate(final EnrolmentEvaluation enrolmentEvaluation) {
-        if (!isWithDebitEntry(enrolmentEvaluation)) {
+        if (!isChargedWithDebitEntry(enrolmentEvaluation)) {
             return null;
         }
 
@@ -1167,7 +1171,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public List<IAcademicTreasuryEventPayment> getPaymentsList(final EnrolmentEvaluation enrolmentEvaluation) {
-        if (!isWithDebitEntry(enrolmentEvaluation)) {
+        if (!isChargedWithDebitEntry(enrolmentEvaluation)) {
             return Collections.emptyList();
         }
 
@@ -1179,6 +1183,18 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     @Override
     public String formatMoney(BigDecimal moneyValue) {
         return getDebtAccount().getFinantialInstitution().getCurrency().getValueFor(moneyValue);
+    }
+
+    @Override
+    public boolean isOnlinePaymentsActive() {
+        if (!isCharged()) {
+            return false;
+        }
+
+        final FinantialInstitution finantialInstitution =
+                DebitEntry.findActive(this).iterator().next().getDebtAccount().getFinantialInstitution();
+        
+        return ForwardPaymentConfiguration.isActive(finantialInstitution);
     }
 
     private static class PaymentReferenceCodeImpl implements IPaymentReferenceCode {
