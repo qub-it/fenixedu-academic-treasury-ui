@@ -1197,6 +1197,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return ForwardPaymentConfiguration.isActive(finantialInstitution);
     }
 
+    @Override
+    public void annulDebts(final String reason) {
+        annulAllDebitEntries(reason);
+    }
+    
     private static class PaymentReferenceCodeImpl implements IPaymentReferenceCode {
 
         private PaymentReferenceCode paymentReferenceCode;

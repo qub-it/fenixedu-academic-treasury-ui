@@ -345,6 +345,15 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     }
 
     @Override
+    public void anullDebtsForTarget(final IAcademicTreasuryTarget target, final String reason) {
+        final IAcademicTreasuryEvent event = getAcademicTreasuryEventForTarget(target);
+        
+        if(event != null) {
+            event.annulDebts(reason);
+        }
+    }
+    
+    @Override
     //TODO: Anil passar número de unidades e utilizar o academictariff para calcular o valor final em conjunto com o ciclo e o curso
     public IAcademicTreasuryEvent createDebt(final ITreasuryEntity treasuryEntity, final ITreasuryProduct treasuryProduct,
             final IAcademicTreasuryTarget target, final LocalDate when, final boolean createPaymentCode,
@@ -376,6 +385,10 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
 
         if (treasuryEvent == null) {
             treasuryEvent = AcademicTreasuryEvent.createForAcademicTreasuryEventTarget(debtAccount, product, target);
+        }
+        
+        if(treasuryEvent.isCharged()) {
+            return treasuryEvent;
         }
 
         AcademicTariff academicTariff = null;
