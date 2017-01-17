@@ -206,7 +206,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.person.required");
         }
 
-        if (!isForAcademicServiceRequest() && !isTuitionEvent() && !isForAcademicTax() && !isForImprovementTax()) {
+        if (!isForAcademicServiceRequest() && !isTuitionEvent() && !isForAcademicTax() && !isForImprovementTax() && !isForTreasuryEventTarget()) {
             throw new AcademicTreasuryDomainException(
                     "error.AcademicTreasuryEvent.not.for.service.request.nor.tuition.nor.academic.tax");
         }
