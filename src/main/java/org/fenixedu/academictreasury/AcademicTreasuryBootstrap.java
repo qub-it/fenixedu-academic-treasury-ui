@@ -16,14 +16,15 @@ public class AcademicTreasuryBootstrap {
 
     public static void process() {
 
-        final CustomersPersonThread customersPersonThread = new CustomersPersonThread();
-        customersPersonThread.start();
-
-        System.out.println("TreasuryAcademicBoot - Validating Students and Customers DebtAccount");
-        try {
-            customersPersonThread.join();
-        } catch (InterruptedException e) {
-        }
+        /* TODO: Disable for ERP transition */
+//        final CustomersPersonThread customersPersonThread = new CustomersPersonThread();
+//        customersPersonThread.start();
+//
+//        System.out.println("TreasuryAcademicBoot - Validating Students and Customers DebtAccount");
+//        try {
+//            customersPersonThread.join();
+//        } catch (InterruptedException e) {
+//        }
 
     }
 
