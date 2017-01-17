@@ -345,7 +345,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             response.getOutputStream().write(contents);
 
             return null;
-        } catch (final TreasuryDomainException | IOException e) {
+        } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return readAccount(finantialDocument.getDebtAccount(), model);
         }
