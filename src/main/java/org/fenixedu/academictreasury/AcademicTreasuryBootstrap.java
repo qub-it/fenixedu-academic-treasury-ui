@@ -3,7 +3,10 @@ package org.fenixedu.academictreasury;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.organizationalStructure.Party;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.bennu.core.domain.Bennu;
+
+import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -13,14 +16,15 @@ public class AcademicTreasuryBootstrap {
 
     public static void process() {
 
-        final CustomersPersonThread customersPersonThread = new CustomersPersonThread();
-        customersPersonThread.start();
-
-        System.out.println("TreasuryAcademicBoot - Validating Students and Customers DebtAccount");
-        try {
-            customersPersonThread.join();
-        } catch (InterruptedException e) {
-        }
+        /* TODO: Disable for ERP transition */
+//        final CustomersPersonThread customersPersonThread = new CustomersPersonThread();
+//        customersPersonThread.start();
+//
+//        System.out.println("TreasuryAcademicBoot - Validating Students and Customers DebtAccount");
+//        try {
+//            customersPersonThread.join();
+//        } catch (InterruptedException e) {
+//        }
 
     }
 
@@ -56,6 +60,12 @@ public class AcademicTreasuryBootstrap {
                     continue;
                 }
 
+                final String fiscalCountryCode = PersonCustomer.countryCode(person);
+                final String fiscalNumber = PersonCustomer.fiscalNumber(person);
+                if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+                    return;
+                }
+                
                 try {
                     createMissingPersonCustomer(person);
                 } catch (final Exception e) {
@@ -68,7 +78,10 @@ public class AcademicTreasuryBootstrap {
 
         @Atomic(mode = TxMode.WRITE)
         private void createMissingPersonCustomer(final Person person) {
-            PersonCustomer.create(person);
+            final String fiscalCountryCode = PersonCustomer.countryCode(person);
+            final String fiscalNumber = PersonCustomer.fiscalNumber(person);
+
+            PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
         }
 
     }

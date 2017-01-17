@@ -33,6 +33,8 @@ import com.google.common.collect.Sets;
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
 
+import static org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy.findActiveDebitEntries;
+
 public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationRuleStrategy {
 
     private static Logger logger = LoggerFactory.getLogger(CreatePaymentReferencesStrategy.class);
@@ -81,7 +83,7 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
     public boolean isToAlignAcademicTaxesDueDate() {
         return true;
     }
-    
+
     @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule) {
@@ -119,10 +121,11 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
 
-        if(rule.getDebtGenerationRuleRestriction() != null && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+        if (rule.getDebtGenerationRuleRestriction() != null
+                && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
             return;
         }
-        
+
         if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
             return;
         }
@@ -138,7 +141,8 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
     @Atomic(mode = TxMode.WRITE)
     private void processDebtsForRegistration(final AcademicDebtGenerationRule rule, final Registration registration) {
 
-        if(rule.getDebtGenerationRuleRestriction() != null && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+        if (rule.getDebtGenerationRuleRestriction() != null
+                && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
             return;
         }
 
@@ -177,16 +181,16 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         final PaymentReferenceCode paymentCode = rule.getPaymentCodePool().getReferenceCodeGenerator().generateNewCodeFor(
                 currency.getValueWithScale(amount), new LocalDate(), maxDebitEntryDueDate(debitEntries), false);
         paymentCode.createPaymentTargetTo(debitEntries, amount);
-        
-        if(rule.getAcademicTaxDueDateAlignmentType() != null) {
+
+        if (rule.getAcademicTaxDueDateAlignmentType() != null) {
             rule.getAcademicTaxDueDateAlignmentType().applyDueDate(rule, debitEntries);
         }
-        
+
     }
 
     public static Set<DebitEntry> grabDebitEntries(final AcademicDebtGenerationRule rule, final Registration registration) {
         final Set<DebitEntry> debitEntries = Sets.newHashSet();
-        
+
         for (final AcademicDebtGenerationRuleEntry entry : rule.getAcademicDebtGenerationRuleEntriesSet()) {
             final Product product = entry.getProduct();
 
@@ -205,21 +209,26 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
                 debitEntries.add(grabbedDebitEntry);
             }
         }
-        
+
         return debitEntries;
     }
 
     private static DebitEntry grabDebitEntryForAcademicTax(final AcademicDebtGenerationRule rule, final Registration registration,
             final AcademicDebtGenerationRuleEntry entry) {
+        final PersonCustomer customer = registration.getPerson().getPersonCustomer();
+
+        if (customer == null) {
+            return null;
+        }
+
         final Product product = entry.getProduct();
         final ExecutionYear executionYear = rule.getExecutionYear();
         final AcademicTax academicTax = AcademicTax.findUnique(product).get();
 
-        final AcademicTreasuryEvent academicTreasuryEvent =
-                AcademicTaxServices.findAcademicTreasuryEvent(registration, executionYear, academicTax);
+        final AcademicTreasuryEvent t = AcademicTaxServices.findAcademicTreasuryEvent(registration, executionYear, academicTax);
 
-        if (academicTreasuryEvent != null && academicTreasuryEvent.isChargedWithDebitEntry()) {
-            return DebitEntry.findActive(academicTreasuryEvent).filter(d -> d.isInDebt()).findFirst().orElse(null);
+        if (t != null && t.isChargedWithDebitEntry()) {
+            return findActiveDebitEntries(customer, t).filter(d -> d.isInDebt()).findFirst().orElse(null);
         }
 
         return null;
@@ -227,6 +236,12 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
 
     private static DebitEntry grabDebitEntryForTuition(final AcademicDebtGenerationRule rule, final Registration registration,
             final AcademicDebtGenerationRuleEntry entry) {
+        final PersonCustomer customer = registration.getPerson().getPersonCustomer();
+
+        if (customer == null) {
+            return null;
+        }
+
         final Product product = entry.getProduct();
         final ExecutionYear executionYear = rule.getExecutionYear();
 
@@ -235,14 +250,14 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
             return null;
         }
 
-        final AcademicTreasuryEvent academicTreasuryEvent =
+        final AcademicTreasuryEvent t =
                 TuitionServices.findAcademicTreasuryEventTuitionForRegistration(registration, executionYear);
 
-        if (!academicTreasuryEvent.isChargedWithDebitEntry(product)) {
+        if (!t.isChargedWithDebitEntry(product)) {
             return null;
         }
 
-        return DebitEntry.findActive(academicTreasuryEvent, product).filter(d -> d.isInDebt()).findFirst().orElse(null);
+        return findActiveDebitEntries(customer, t, product).filter(d -> d.isInDebt()).findFirst().orElse(null);
     }
 
     private static DebitEntry grabDebitEntry(final AcademicDebtGenerationRule rule, final Registration registration,
@@ -261,19 +276,17 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
             return null;
         }
 
-        if (!PersonCustomer.findUnique(registration.getPerson()).isPresent()) {
+        if (registration.getPerson().getPersonCustomer() == null) {
             return null;
         }
 
-        if (!DebtAccount
-                .findUnique(finantialEntity.getFinantialInstitution(), PersonCustomer.findUnique(registration.getPerson()).get())
-                .isPresent()) {
+        final PersonCustomer personCustomer = registration.getPerson().getPersonCustomer();
+
+        if (!DebtAccount.findUnique(finantialEntity.getFinantialInstitution(), personCustomer).isPresent()) {
             return null;
         }
 
-        final DebtAccount debtAccount = DebtAccount
-                .findUnique(finantialEntity.getFinantialInstitution(), PersonCustomer.findUnique(registration.getPerson()).get())
-                .get();
+        final DebtAccount debtAccount = DebtAccount.findUnique(finantialEntity.getFinantialInstitution(), personCustomer).get();
 
         for (final DebitEntry debitEntry : DebitEntry.findActive(debtAccount, entry.getProduct())
                 .collect(Collectors.<DebitEntry> toSet())) {

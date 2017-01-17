@@ -111,7 +111,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
         }
 
         this.identificationNumber = customer.getIdentificationNumber();
-        this.vatNumber = customer.getFiscalNumber();
+        this.vatNumber = customer.getUiFiscalNumber();
 
         if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null) {
             this.email = ((PersonCustomer) customer).getPerson().getInstitutionalOrDefaultEmailAddressValue();

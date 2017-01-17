@@ -11,15 +11,18 @@ import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.document.AdvancedPaymentCreditNote;
 import org.fenixedu.treasury.domain.document.CreditEntry;
+import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
+import org.fenixedu.treasury.services.integration.erp.sap.SAPExporterUtils;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
@@ -53,11 +56,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.executionYear"),
             Constants.bundle("label.DebtReportEntryBean.header.executionSemester"),
             Constants.bundle("label.DebtReportEntryBean.header.productCode"),
-            /* TODO Consider first: Constants.bundle("label.DebtReportEntryBean.header.productAmount"), */
             Constants.bundle("label.DebtReportEntryBean.header.invoiceEntryDescription"),
             Constants.bundle("label.DebtReportEntryBean.header.documentNumber"),
             Constants.bundle("label.DebtReportEntryBean.header.documentExportationPending"),
-            /* TODO Consider first: Constants.bundle("label.DebtReportEntryBean.header.annuled"), */
             Constants.bundle("label.DebtReportEntryBean.header.amountToPay"),
             Constants.bundle("label.DebtReportEntryBean.header.openAmountToPay"),
             Constants.bundle("label.DebtReportEntryBean.header.agreement"),
@@ -71,7 +72,13 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions"),
             Constants.bundle("label.DebtReportEntryBean.header.documentAnnuled"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuledReason")
+            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuledReason"),
+            Constants.bundle("label.DebtReportEntryBean.header.closeDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.openAmountAtERPStartDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
+            Constants.bundle("label.DebtReportEntryBean.header.erpCertificationDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
+            
     };
 
     public static String[] SPREADSHEET_CREDIT_HEADERS = { 
@@ -99,7 +106,6 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.invoiceEntryDescription"),
             Constants.bundle("label.DebtReportEntryBean.header.documentNumber"),
             Constants.bundle("label.DebtReportEntryBean.header.documentExportationPending"),
-            /* TODO Consider first: Constants.bundle("label.DebtReportEntryBean.header.annuled"), */
             Constants.bundle("label.DebtReportEntryBean.header.debitEntry.identification"),
             Constants.bundle("label.DebtReportEntryBean.header.amountToCredit"),
             Constants.bundle("label.DebtReportEntryBean.header.openAmountToCredit"),
@@ -114,7 +120,12 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
             Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions"),
             Constants.bundle("label.DebtReportEntryBean.header.documentAnnuled"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuledReason")
+            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuledReason"),
+            Constants.bundle("label.DebtReportEntryBean.header.closeDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.openAmountAtERPStartDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
+            Constants.bundle("label.DebtReportEntryBean.header.erpCertificationDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
     };
     // @formatter:on
 
@@ -163,9 +174,16 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String tuitionPaymentPlan;
     private String tuitionPaymentPlanConditions;
 
+    private DateTime closeDate;
+    private String openAmountAtERPStartDate;
+    private boolean exportedInLegacyERP;
+    private LocalDate erpCertificationDate;
+
+    private String originSettlementNoteForAdvancedCredit;
+
     public DebtReportEntryBean(final InvoiceEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
         final String decimalSeparator = request.getDecimalSeparator();
-        
+
         this.invoiceEntry = entry;
 
         try {
@@ -187,8 +205,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             }
 
             this.annuled = entry.isAnnulled();
-            
-            if(this.annuled && entry.getFinantialDocument() != null) {
+
+            if (this.annuled && entry.getFinantialDocument() != null) {
                 this.annuledReason = entry.getFinantialDocument().getAnnulledReason();
             }
 
@@ -210,10 +228,33 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
             this.amountToPay = currency.getValueWithScale(entry.getAmountWithVat()).toString();
             this.openAmountToPay = currency.getValueWithScale(entry.getOpenAmount()).toString();
-            
-            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+
+            if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
                 this.amountToPay = this.amountToPay.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
                 this.openAmountToPay = this.openAmountToPay.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
+
+            this.closeDate = entry.getFinantialDocument() != null ? entry.getFinantialDocument().getCloseDate() : null;
+            this.openAmountAtERPStartDate = currency
+                    .getValueWithScale(
+                            SAPExporterUtils.openAmountAtDate((InvoiceEntry) entry, SAPExporter.ERP_INTEGRATION_START_DATE))
+                    .toString();
+            this.exportedInLegacyERP =
+                    entry.getFinantialDocument() != null ? entry.getFinantialDocument().isExportedInLegacyERP() : false;
+            this.erpCertificationDate =
+                    entry.getFinantialDocument() != null ? entry.getFinantialDocument().getErpCertificationDate() : null;
+
+            if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                this.openAmountAtERPStartDate =
+                        this.openAmountAtERPStartDate.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+            }
+
+            if (entry.getFinantialDocument() != null && entry.getFinantialDocument().isCreditNote()
+                    && ((CreditNote) entry.getFinantialDocument()).isAdvancePayment()) {
+                final AdvancedPaymentCreditNote advancedCreditNote = (AdvancedPaymentCreditNote) entry.getFinantialDocument();
+                this.originSettlementNoteForAdvancedCredit =
+                        advancedCreditNote.getAdvancedPaymentSettlementNote() != null ? advancedCreditNote
+                                .getAdvancedPaymentSettlementNote().getUiDocumentNumber() : "";
             }
 
             this.completed = true;
@@ -241,7 +282,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
         }
 
         this.identificationNumber = customer.getIdentificationNumber();
-        this.vatNumber = customer.getFiscalNumber();
+        this.vatNumber = customer.getUiFiscalNumber();
 
         if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null) {
             this.email = ((PersonCustomer) customer).getPerson().getInstitutionalOrDefaultEmailAddressValue();
@@ -346,18 +387,18 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                                 iTreasuryServiceRequest.getExecutionYear());
                     }
                 }
-            } else if(debitEntry.getTreasuryEvent() != null) {
+            } else if (debitEntry.getTreasuryEvent() != null) {
                 final TreasuryEvent treasuryEvent = debitEntry.getTreasuryEvent();
-                
-                if(!Strings.isNullOrEmpty(treasuryEvent.getDegreeCode())) {
+
+                if (!Strings.isNullOrEmpty(treasuryEvent.getDegreeCode())) {
                     this.degreeCode = treasuryEvent.getDegreeCode();
                 }
-                
-                if(!Strings.isNullOrEmpty(treasuryEvent.getDegreeName())) {
-                    this.degreeName = new LocalizedString(I18N.getLocale(), treasuryEvent.getDegreeName()) ;
+
+                if (!Strings.isNullOrEmpty(treasuryEvent.getDegreeName())) {
+                    this.degreeName = new LocalizedString(I18N.getLocale(), treasuryEvent.getDegreeName());
                 }
-                
-                if(!Strings.isNullOrEmpty(treasuryEvent.getExecutionYearName())) {
+
+                if (!Strings.isNullOrEmpty(treasuryEvent.getExecutionYearName())) {
                     this.executionYear = treasuryEvent.getExecutionYearName();
                 }
             }
@@ -443,6 +484,11 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(tuitionPaymentPlanConditions));
                 row.createCell(i++).setCellValue(valueOrEmpty(annuled));
                 row.createCell(i++).setCellValue(valueOrEmpty(annuledReason));
+                row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
+                row.createCell(i++).setCellValue(valueOrEmpty(openAmountAtERPStartDate));
+                row.createCell(i++).setCellValue(valueOrEmpty(exportedInLegacyERP));
+                row.createCell(i++).setCellValue(valueOrEmpty(erpCertificationDate));
+                row.createCell(i++).setCellValue(valueOrEmpty(originSettlementNoteForAdvancedCredit));
 
             } else if (invoiceEntry.isCreditNoteEntry()) {
                 int i = 1;
@@ -484,13 +530,26 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(tuitionPaymentPlanConditions));
                 row.createCell(i++).setCellValue(valueOrEmpty(annuled));
                 row.createCell(i++).setCellValue(valueOrEmpty(annuledReason));
-                
+                row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
+                row.createCell(i++).setCellValue(valueOrEmpty(openAmountAtERPStartDate));
+                row.createCell(i++).setCellValue(valueOrEmpty(exportedInLegacyERP));
+                row.createCell(i++).setCellValue(valueOrEmpty(erpCertificationDate));
+                row.createCell(i++).setCellValue(valueOrEmpty(originSettlementNoteForAdvancedCredit));
+
             }
 
         } catch (final Exception e) {
             e.printStackTrace();
             errorsLog.addError(invoiceEntry, e);
         }
+    }
+
+    private String valueOrEmpty(final LocalDate value) {
+        if (value == null) {
+            return "";
+        }
+
+        return value.toString(Constants.DATE_FORMAT_YYYY_MM_DD);
     }
 
     private String valueOrEmpty(final DateTime value) {
