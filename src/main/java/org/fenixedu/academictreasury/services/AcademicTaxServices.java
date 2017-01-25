@@ -339,11 +339,8 @@ public class AcademicTaxServices {
                     registration.getDegree(), when.toDateTimeAtStartOfDay());
 
             if (academicTariff == null) {
-                return false;
+                throw new AcademicTreasuryDomainException("error.AcademicTaxDebtCreation.tariff.not.found");
             }
-
-            final DebtAccount debtAccount =
-                    DebtAccount.findUnique(academicTariff.getFinantialEntity().getFinantialInstitution(), personCustomer).get();
 
             AcademicTreasuryEvent.createForImprovementTuition(registration, executionYear);
         }
@@ -359,7 +356,7 @@ public class AcademicTaxServices {
                 registration.getDegree(), when.toDateTimeAtStartOfDay());
 
         if (academicTariff == null) {
-            return false;
+            throw new AcademicTreasuryDomainException("error.AcademicTaxDebtCreation.tariff.not.found");
         }
 
         final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
