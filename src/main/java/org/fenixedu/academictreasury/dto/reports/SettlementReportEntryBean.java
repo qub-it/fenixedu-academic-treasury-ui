@@ -45,7 +45,9 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
         Constants.bundle("label.SettlementReportEntryBean.header.vatNumber"),
         Constants.bundle("label.SettlementReportEntryBean.header.email"),
         Constants.bundle("label.SettlementReportEntryBean.header.address"),
-        Constants.bundle("label.SettlementReportEntryBean.header.studentNumber") };
+        Constants.bundle("label.SettlementReportEntryBean.header.studentNumber"),
+        Constants.bundle("label.SettlementReportEntryBean.header.closeDate"),
+        };
  
     private SettlementEntry settlementEntry;
     private boolean completed;
@@ -76,6 +78,8 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
     private String address;
     private Integer studentNumber;
 
+    private DateTime closeDate;
+    
     public SettlementReportEntryBean(final SettlementEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
         final String decimalSeparator = request.getDecimalSeparator();
         
@@ -111,6 +115,8 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
             this.settlementEntryDescription = entry.getDescription();
             
             fillStudentInformation(entry);
+            
+            this.closeDate = entry.getFinantialDocument() != null ? entry.getFinantialDocument().getCloseDate() : null;
             
             this.completed = true;
         } catch (final Exception e) {
@@ -200,6 +206,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(email));
             row.createCell(i++).setCellValue(valueOrEmpty(address));
             row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
+            row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
             
         } catch(final Exception e) {
             e.printStackTrace();

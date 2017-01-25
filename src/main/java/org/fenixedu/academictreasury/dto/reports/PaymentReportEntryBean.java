@@ -37,7 +37,9 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
         Constants.bundle("label.PaymentReportEntryBean.header.vatNumber"),
         Constants.bundle("label.PaymentReportEntryBean.header.email"),
         Constants.bundle("label.PaymentReportEntryBean.header.address"),
-        Constants.bundle("label.PaymentReportEntryBean.header.studentNumber") };
+        Constants.bundle("label.PaymentReportEntryBean.header.studentNumber"),
+        Constants.bundle("label.PaymentReportEntryBean.header.closeDate"),
+    };
  
     
     private PaymentEntry paymentEntry;
@@ -63,6 +65,8 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private String address;
     private Integer studentNumber;
 
+    private DateTime closeDate;
+    
     public PaymentReportEntryBean(final PaymentEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
         final String decimalSeparator = request.getDecimalSeparator();
         
@@ -87,6 +91,8 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             }
             
             fillStudentInformation(entry);
+            
+            this.closeDate = settlementNote.getCloseDate();
             
             this.completed = true;
             
@@ -160,7 +166,8 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(email));
             row.createCell(i++).setCellValue(valueOrEmpty(address));
             row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
-            
+            row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
+   
         } catch(final Exception e) {
             e.printStackTrace();
             errorsLog.addError(paymentEntry, e);
