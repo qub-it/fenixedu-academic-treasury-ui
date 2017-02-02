@@ -43,6 +43,12 @@ ${portal.toolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+    &nbsp;
+   	<a href='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CHOOSE_EXECUTION_YEAR_URL %>/${academicDebtGenerationRuleType.externalId}'>
+   		<spring:message code="label.event.back" />
+    </a>
+    &nbsp;|&nbsp;
 	<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>
 	&nbsp;
 	<a class="" href="${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CREATE_URL %>/${academicDebtGenerationRuleType.externalId}/${executionYear.externalId}">

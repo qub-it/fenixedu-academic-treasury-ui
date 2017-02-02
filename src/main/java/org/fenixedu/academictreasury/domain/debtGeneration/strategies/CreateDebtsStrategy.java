@@ -133,46 +133,38 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
     @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule, final Registration registration) {
-        try {
-            if (!rule.isActive()) {
-                throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
-            }
-
-            if (rule.getDebtGenerationRuleRestriction() != null
-                    && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
-                return;
-            }
-
-            if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
-                return;
-            }
-
-            if (!rule.getDegreeCurricularPlansSet()
-                    .contains(registration.getStudentCurricularPlan(rule.getExecutionYear()).getDegreeCurricularPlan())) {
-                return;
-            }
-
-            logger.debug("AcademicDebtGenerationRule: Start");
-
-            // Discard registrations not active and with no enrolments
-            if (!registration.hasAnyActiveState(rule.getExecutionYear())) {
-                return;
-            }
-
-            if (!registration.hasAnyEnrolmentsIn(rule.getExecutionYear())) {
-
-                // only return is this rule has not entry that forces creation
-                if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
-                    return;
-                }
-            }
-
-            processDebtsForRegistration(rule, registration);
-        } catch (final AcademicTreasuryDomainException e) {
-            logger.info(e.getMessage());
-        } catch (final Exception e) {
-            e.printStackTrace();
+        if (!rule.isActive()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
+
+        if (rule.getDebtGenerationRuleRestriction() != null
+                && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+            return;
+        }
+
+        if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
+            return;
+        }
+
+        if (!rule.getDegreeCurricularPlansSet()
+                .contains(registration.getStudentCurricularPlan(rule.getExecutionYear()).getDegreeCurricularPlan())) {
+            return;
+        }
+
+        // Discard registrations not active and with no enrolments
+        if (!registration.hasAnyActiveState(rule.getExecutionYear())) {
+            return;
+        }
+
+        if (!registration.hasAnyEnrolmentsIn(rule.getExecutionYear())) {
+
+            // only return is this rule has not entry that forces creation
+            if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
+                return;
+            }
+        }
+
+        processDebtsForRegistration(rule, registration);
     }
 
     private boolean isRuleWithOnlyOneAcademicTaxEntryForcingCreation(final AcademicDebtGenerationRule rule) {

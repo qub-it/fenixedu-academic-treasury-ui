@@ -88,7 +88,7 @@ public class AcademicDebtGenerationRegistrationController extends AcademicTreasu
 
         try {
 
-            AcademicDebtGenerationRule.runAllActiveForRegistrationAtomically(registration, executionYear, false);
+            AcademicDebtGenerationRule.runAllActiveForRegistrationAndExecutionYear(registration, executionYear, false);
 
             return redirect(DebtAccountController.READ_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (final DomainException e) {

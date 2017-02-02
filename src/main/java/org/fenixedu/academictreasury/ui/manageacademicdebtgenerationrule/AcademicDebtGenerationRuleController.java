@@ -196,9 +196,8 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
         model.addAttribute("academicDebtGenerationRuleType", type);
         model.addAttribute("executionYear", executionYear);
 
-        academicDebtGenerationRule.getAcademicDebtGenerationRuleType().strategyImplementation()
-                .process(academicDebtGenerationRule);
-
+        AcademicDebtGenerationRule.runAcademicDebtGenerationRule(academicDebtGenerationRule);
+        
         // CHANGE_ME Insert code here for processing rowAction inactivate
         // If you selected multiple exists you must choose which one to use below
         return redirect(String.format("%s/%s/%s", SEARCH_URL, type.getExternalId(), executionYear.getExternalId()), model,

@@ -40,6 +40,14 @@ ${portal.toolkit()}
 </div>
 
 <%-- NAVIGATION --%>
+<div class="well well-sm" style="display: inline-block">
+    <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+    &nbsp;
+   	<a href='${pageContext.request.contextPath}<%= AcademicDebtGenerationRuleController.CHOOSE_TYPE_URL %>'>
+   		<spring:message code="label.event.back" />
+    </a>
+</div>
+
 <c:if test="${not empty infoMessages}">
 			<div class="alert alert-info" role="alert">
 				

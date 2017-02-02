@@ -12,11 +12,14 @@ import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academictreasury.domain.debtGeneration.strategies.AggregateDebtsStrategy;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean.ProductEntry;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
 
@@ -378,24 +381,44 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
     }
 
-    @Atomic(mode = TxMode.WRITE)
-    public static void runAllActiveForRegistrationAtomically(final Registration registration, final ExecutionYear executionYear,
+    public static void runAllActiveForRegistrationAndExecutionYear(final Registration registration, final ExecutionYear executionYear,
             final boolean runOnlyWithBackgroundExecution) {
         for (final AcademicDebtGenerationRuleType type : AcademicDebtGenerationRuleType.findAll()
                 .sorted(AcademicDebtGenerationRuleType.COMPARE_BY_ORDER_NUMBER).collect(Collectors.toList())) {
-            for (final AcademicDebtGenerationRule rule : AcademicDebtGenerationRule.findActiveByType(type)
+            for (final AcademicDebtGenerationRule academicDebtGenerationRule : AcademicDebtGenerationRule.findActiveByType(type)
                     .sorted(COMPARE_BY_ORDER_NUMBER).collect(Collectors.toList())) {
 
-                if (rule.getExecutionYear() != executionYear) {
+                if (runOnlyWithBackgroundExecution && !academicDebtGenerationRule.isBackgroundExecution()) {
+                    continue;
+                }
+                
+                if (academicDebtGenerationRule.getExecutionYear() != executionYear) {
                     continue;
                 }
 
-                if (runOnlyWithBackgroundExecution && !rule.isBackgroundExecution()) {
-                    continue;
-                }
+                final RuleExecutor exec = new RuleExecutor(academicDebtGenerationRule, registration);
 
-                rule.getAcademicDebtGenerationRuleType().strategyImplementation().process(rule, registration);
+                try {
+                    exec.start();
+                    exec.join();
+                } catch (InterruptedException e) {
+                }
             }
+        }
+    }
+    
+    public static void runAcademicDebtGenerationRule(final AcademicDebtGenerationRule rule) {
+        
+        if(!rule.isActive()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active");
+        }
+        
+        final RuleExecutor exec = new RuleExecutor(rule);
+
+        try {
+            exec.start();
+            exec.join();
+        } catch (InterruptedException e) {
         }
     }
 
@@ -405,6 +428,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
      **********
      */
     // @formatter: on
+
+    private static Logger logger = LoggerFactory.getLogger(AcademicDebtGenerationRule.class);
 
     public static final class RuleExecutor extends Thread {
 
@@ -428,12 +453,17 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         @Atomic(mode = TxMode.READ)
         private void executeRule() {
             final AcademicDebtGenerationRule rule = FenixFramework.getDomainObject(academicDebtGenerationRuleId);
-
-            if (!Strings.isNullOrEmpty(registrationId)) {
-                final Registration registration = FenixFramework.getDomainObject(registrationId);
-                rule.getAcademicDebtGenerationRuleType().strategyImplementation().process(rule, registration);
-            } else {
-                rule.getAcademicDebtGenerationRuleType().strategyImplementation().process(rule);
+            try {
+                if (!Strings.isNullOrEmpty(registrationId)) {
+                    final Registration registration = FenixFramework.getDomainObject(registrationId);
+                    rule.getAcademicDebtGenerationRuleType().strategyImplementation().process(rule, registration);
+                } else {
+                    rule.getAcademicDebtGenerationRuleType().strategyImplementation().process(rule);
+                }
+            } catch (final AcademicTreasuryDomainException e) {
+                logger.info(e.getMessage());
+            } catch (final Exception e) {
+                e.printStackTrace();
             }
         }
     }

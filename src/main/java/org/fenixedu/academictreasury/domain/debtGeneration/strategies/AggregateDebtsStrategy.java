@@ -121,33 +121,25 @@ public class AggregateDebtsStrategy implements IAcademicDebtGenerationRuleStrate
     @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule, final Registration registration) {
-        try {
-            if (!rule.isActive()) {
-                throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
-            }
-
-            if (rule.getDebtGenerationRuleRestriction() != null
-                    && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
-                return;
-            }
-
-            if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
-                return;
-            }
-
-            if (!rule.getDegreeCurricularPlansSet()
-                    .contains(registration.getStudentCurricularPlan(rule.getExecutionYear()).getDegreeCurricularPlan())) {
-                return;
-            }
-
-            logger.debug("AcademicDebtGenerationRule: Start");
-
-            processDebtsForRegistration(rule, registration);
-        } catch (final AcademicTreasuryDomainException e) {
-            logger.info(e.getMessage());
-        } catch (final Exception e) {
-            e.printStackTrace();
+        if (!rule.isActive()) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
+
+        if (rule.getDebtGenerationRuleRestriction() != null
+                && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+            return;
+        }
+
+        if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
+            return;
+        }
+
+        if (!rule.getDegreeCurricularPlansSet()
+                .contains(registration.getStudentCurricularPlan(rule.getExecutionYear()).getDegreeCurricularPlan())) {
+            return;
+        }
+
+        processDebtsForRegistration(rule, registration);
     }
 
     @Atomic(mode = TxMode.WRITE)
