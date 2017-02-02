@@ -3,6 +3,7 @@ package org.fenixedu.academictreasury.domain.event;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.treasury.domain.Product;
 import org.joda.time.LocalDate;
 
@@ -14,13 +15,26 @@ public class LegacyAcademicTreasuryEvent extends LegacyAcademicTreasuryEvent_Bas
         this.setProduct(product);
         this.setExecutionYear(executionYear);
         this.setDegree(degree);
+        
+        checkRules();
     }
 
     public static LegacyAcademicTreasuryEvent create(final Person person, final Product product, final Degree degree,
             final ExecutionYear executionYear) {
         return new LegacyAcademicTreasuryEvent(person, product, degree, executionYear);
     }
-
+    
+    @Override
+    protected void checkRules() {
+        if(getPerson() == null) {
+            throw new AcademicTreasuryDomainException("error.LegacyAcademicTreasuryEvent.person.required");
+        }
+        
+        if(getProduct() == null) {
+            throw new AcademicTreasuryDomainException("error.LegacyAcademicTreasuryEvent.product.required");
+        }
+    }
+    
     @Override
     public boolean isAcademicServiceRequestEvent() {
         return false;
