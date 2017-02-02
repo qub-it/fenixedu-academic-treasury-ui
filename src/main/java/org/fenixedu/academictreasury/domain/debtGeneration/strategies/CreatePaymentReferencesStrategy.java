@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.domain.debtGeneration.strategies;
 
+import static org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy.findActiveDebitEntries;
+
 import java.math.BigDecimal;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.joda.time.LocalDate;
@@ -32,8 +35,6 @@ import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
-
-import static org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy.findActiveDebitEntries;
 
 public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationRuleStrategy {
 
@@ -107,6 +108,8 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
                 try {
                     processDebtsForRegistration(rule, registration);
                 } catch (final AcademicTreasuryDomainException e) {
+                    logger.info(e.getMessage());
+                } catch(final TreasuryDomainException e) {
                     logger.info(e.getMessage());
                 } catch (final Exception e) {
                     e.printStackTrace();
