@@ -332,8 +332,10 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         final Map<String, String> fillPriceProperties = fillPricePropertiesForRegistration(academicTreasuryEvent, dueDate, when);
 
         final DebitEntry debitEntry = DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent,
-                vat(when), amount, dueDate, fillPriceProperties, getProduct(), installmentName().getContent(),
-                Constants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
+                vat(when), amount, dueDate, fillPriceProperties, getProduct(), 
+                installmentName().getContent(Constants.DEFAULT_LANGUAGE),
+                Constants.DEFAULT_QUANTITY, 
+                this.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         if (isAcademicalActBlockingOff()) {
             debitEntry.markAcademicalActBlockingSuspension();

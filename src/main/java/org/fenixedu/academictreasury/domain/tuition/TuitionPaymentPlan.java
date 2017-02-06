@@ -317,7 +317,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             final String installmentName =
-                    BundleUtil.getString(Constants.BUNDLE, label, String.valueOf(installmentTariff.getInstallmentOrder()),
+                    BundleUtil.getString(Constants.BUNDLE, locale, label, String.valueOf(installmentTariff.getInstallmentOrder()),
                             getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale),
                             getExecutionYear().getQualifiedName());
 

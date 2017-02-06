@@ -402,6 +402,14 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     this.executionYear = treasuryEvent.getExecutionYearName();
                 }
             }
+            
+            if(Strings.isNullOrEmpty(this.degreeCode)) {
+                this.degreeCode = debitEntry.getDegreeCode();
+            }
+            
+            if(Strings.isNullOrEmpty(this.executionYear)) {
+                this.executionYear = debitEntry.getExecutionYearName();
+            }
         }
     }
 
