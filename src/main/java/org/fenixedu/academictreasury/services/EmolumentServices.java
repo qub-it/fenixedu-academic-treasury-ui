@@ -47,7 +47,7 @@ public class EmolumentServices {
 
     @Atomic
     public static Product createEmolument(final String code, final LocalizedString name, final VatType vatType,
-            FinantialInstitution finantialInstitution) {
+            final FinantialInstitution finantialInstitution) {
         if (AcademicTreasurySettings.getInstance().getEmolumentsProductGroup() == null) {
             throw new AcademicTreasuryDomainException("error.EmolumentServices.emoluments.product.group.not.defined");
         }
@@ -74,7 +74,7 @@ public class EmolumentServices {
         // ITreasuryServiceRequest have always a registration which has a degree
         if (!(academicServiceRequest instanceof ITreasuryServiceRequest)) {
             return false;
-        };
+        } ;
 
         ITreasuryServiceRequest iTreasuryServiceRequest = (ITreasuryServiceRequest) academicServiceRequest;
 
@@ -213,10 +213,10 @@ public class EmolumentServices {
         }
 
         final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
-        if(!personCustomer.isActive()) {
+        if (!personCustomer.isActive()) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active");
         }
-        
+
         // Find tariff
 
         final AcademicTariff academicTariff = findTariffForAcademicServiceRequest(iTreasuryServiceRequest, when);
@@ -232,7 +232,6 @@ public class EmolumentServices {
             DebtAccount.create(finantialInstitution, personCustomer);
         }
 
-
         // Find or create event if does not exists
         if (findAcademicTreasuryEvent(iTreasuryServiceRequest) == null) {
             AcademicTreasuryEvent.createForAcademicServiceRequest(iTreasuryServiceRequest);
@@ -241,11 +240,21 @@ public class EmolumentServices {
         final AcademicTreasuryEvent academicTresuryEvent = findAcademicTreasuryEvent(iTreasuryServiceRequest);
 
         if (academicTresuryEvent.isChargedWithDebitEntry()) {
-            return false;
+            BigDecimal oldtotalAmount = academicTresuryEvent.getAmountToPay().add(academicTresuryEvent.getCreditAmount());
+            BigDecimal newTotalAmount = academicTariff.amountToPay(academicTresuryEvent);
+            //Do nothing, since the value is the same
+            if (Constants.isEqual(oldtotalAmount, newTotalAmount)) {
+                return false;
+            }
+            //Annul debit entries, since new ones will be created to reflect the service request's changes
+            String reason = org.fenixedu.academictreasury.util.Constants
+                    .bundle("info.EmolumentServices.serviceRequest.change.value.anull.debit.entries");
+            academicTresuryEvent.annulAllDebitEntries(reason);
         }
 
         final DebtAccount personDebtAccount = DebtAccount.findUnique(finantialInstitution, personCustomer).orElse(null);
-        final DebitEntry debitEntry = academicTariff.createDebitEntryForAcademicServiceRequest(personDebtAccount, academicTresuryEvent);
+        final DebitEntry debitEntry =
+                academicTariff.createDebitEntryForAcademicServiceRequest(personDebtAccount, academicTresuryEvent);
 
         if (debitEntry == null) {
             return false;
@@ -255,10 +264,8 @@ public class EmolumentServices {
             throw new AcademicTreasuryDomainException("error.EmolumentServices.academicServiceRequest.amount.equals.to.zero");
         }
 
-        final DebitNote debitNote = DebitNote.create(personDebtAccount,
-                DocumentNumberSeries
-                        .findUniqueDefault(FinantialDocumentType.findForDebitNote(), personDebtAccount.getFinantialInstitution())
-                        .get(),
+        final DebitNote debitNote = DebitNote.create(personDebtAccount, DocumentNumberSeries
+                .findUniqueDefault(FinantialDocumentType.findForDebitNote(), personDebtAccount.getFinantialInstitution()).get(),
                 new DateTime());
 
         debitNote.addDebitNoteEntries(Collections.singletonList(debitEntry));
