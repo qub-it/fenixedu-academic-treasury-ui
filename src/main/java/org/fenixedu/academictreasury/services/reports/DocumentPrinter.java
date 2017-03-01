@@ -79,7 +79,7 @@ public class DocumentPrinter {
 
         registerHelpers(generator);
         generator.registerDataProvider(new DebtAccountDataProvider(debtAccount, null));
-        generator.registerDataProvider(new CustomerDataProvider(debtAccount.getCustomer()));
+        generator.registerDataProvider(new CustomerDataProvider(debtAccount.getCustomer(), "customer"));
         generator.registerDataProvider(new FinantialInstitutionDataProvider(debtAccount.getFinantialInstitution()));
 
         //... add more providers...
