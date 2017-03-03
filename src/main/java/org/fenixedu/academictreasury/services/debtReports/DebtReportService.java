@@ -43,18 +43,16 @@ public class DebtReportService {
                 .map(i -> new DebtReportEntryBean(i, request, log));
     }
 
-    public static Stream<SettlementReportEntryBean> settlementEntriesReport(final DebtReportRequest request,
-            final ErrorsLog log) {
+    public static Stream<SettlementReportEntryBean> settlementEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return SettlementEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getEntryDateTime()))
+                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getFinantialDocument().getDocumentDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.isAnnulled())
                 .map(i -> new SettlementReportEntryBean(i, request, log));
     }
 
     public static Stream<PaymentReportEntryBean> paymentEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return PaymentEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(),
-                        i.getSettlementNote().getDocumentDate()))
+                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getSettlementNote().getDocumentDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.getSettlementNote().isAnnulled())
                 .map(i -> new PaymentReportEntryBean(i, request, log));
     }
@@ -62,8 +60,7 @@ public class DebtReportService {
     public static Stream<ReimbursementReportEntryBean> reimbursementEntriesReport(final DebtReportRequest request,
             final ErrorsLog log) {
         return ReimbursementEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(),
-                        i.getSettlementNote().getPaymentDate()))
+                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getSettlementNote().getDocumentDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.getSettlementNote().isAnnulled())
                 .map(i -> new ReimbursementReportEntryBean(i, request, log));
     }
