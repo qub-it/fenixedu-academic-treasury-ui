@@ -938,26 +938,33 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public BigDecimal getEnrolledEctsUnits() {
         if (getTuitionPaymentPlanGroup().isForRegistration()) {
-            final Set<Enrolment> normalEnrolments = Sets.newHashSet(
+            Set<Enrolment> normalEnrolments = Sets.newHashSet(
                     getRegistration().getStudentCurricularPlan(getExecutionYear()).getRoot().getEnrolmentsBy(getExecutionYear()));
 
             normalEnrolments.removeAll(getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .collect(Collectors.toSet()));
 
             normalEnrolments.removeAll(getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .collect(Collectors.toSet()));
 
+            normalEnrolments = normalEnrolments.stream().filter(e -> !e.isAnnulled()).collect(Collectors.<Enrolment> toSet());
+            
             return normalEnrolments.stream().map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, b) -> a.add(b))
                     .orElse(BigDecimal.ZERO);
 
         } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
             return getRegistration().getStandaloneCurriculumLines().stream()
                     .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .map(Enrolment.class::cast).filter(e -> !e.isAnnulled())
                     .map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
         } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
             return getRegistration().getExtraCurricularCurriculumLines().stream()
                     .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+                    .map(Enrolment.class::cast).filter(e -> !e.isAnnulled())
+                    .map(e -> new BigDecimal(e.getEctsCredits()))
+                    .reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
@@ -965,13 +972,28 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public BigDecimal getEnrolledCoursesCount() {
         if (getTuitionPaymentPlanGroup().isForRegistration()) {
-            return new BigDecimal(getRegistration().getEnrolments(getExecutionYear()).size());
+            Set<Enrolment> normalEnrolments = Sets.newHashSet(
+                    getRegistration().getStudentCurricularPlan(getExecutionYear()).getRoot().getEnrolmentsBy(getExecutionYear()));
+
+            normalEnrolments.removeAll(getRegistration().getStandaloneCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .collect(Collectors.toSet()));
+
+            normalEnrolments.removeAll(getRegistration().getExtraCurricularCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .collect(Collectors.toSet()));
+
+            normalEnrolments = normalEnrolments.stream().filter(e -> !e.isAnnulled()).collect(Collectors.<Enrolment> toSet());
+
+            return new BigDecimal(normalEnrolments.size());
         } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
             return new BigDecimal(getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).count());
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .map(Enrolment.class::cast).filter(e -> !e.isAnnulled()).count());
         } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
             return new BigDecimal(getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).count());
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
+                    .map(Enrolment.class::cast).filter(e -> !e.isAnnulled()).count());
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
