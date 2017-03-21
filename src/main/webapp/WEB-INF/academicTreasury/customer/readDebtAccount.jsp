@@ -439,7 +439,7 @@ ${portal.angularToolkit()}
                                     </c:forEach>
                                 </c:if>
                             </ul>
-							<c:if test="${pendingEntry.finantialDocument.certifiedPrintedDocumentAvailable}">
+							<c:if test="${payment.certifiedPrintedDocumentAvailable}">
 								<a href='${pageContext.request.contextPath}<%= CustomerAccountingController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${payment.externalId}'>
                                		<span class="glyphicon glyphicon-print"></span>
 									<spring:message code="label.accounting.manageCustomer.download.certified.document.${payment.finantialDocumentType.type.name()}" />
