@@ -536,6 +536,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         this.setFinantialEntity(null);
         this.setIngression(null);
         this.setStatuteType(null);
+        this.setPayorDebtAccount(null);
 
         super.deleteDomainObject();
     }
