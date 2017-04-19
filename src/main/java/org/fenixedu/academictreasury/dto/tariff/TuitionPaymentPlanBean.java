@@ -1002,7 +1002,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
                 DebtAccount.findAdhocDebtAccountsSortedByCustomerName(finantialEntity.getFinantialInstitution());
 
         final List<TupleDataSourceBean> result = payorDebtAccountsSet.stream().map(l -> new TupleDataSourceBean(l.getExternalId(),
-                String.format("%s - %s", l.getCustomer().getFiscalNumber(), l.getCustomer()))).collect(Collectors.toList());
+                String.format("%s - %s", l.getCustomer().getUiFiscalNumber(), l.getCustomer().getName()))).collect(Collectors.toList());
         
         result.add(Constants.SELECT_OPTION);
         
