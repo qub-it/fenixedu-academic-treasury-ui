@@ -783,7 +783,7 @@ public class TuitionServices {
         final LocalDate dateOnBeginExecutionYearCivilDate =
                 new LocalDate(executionYear.getBeginCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
         final LocalDate dateOnEndExecutionYearCivilDate =
-                new LocalDate(executionYear.getBeginCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
+                new LocalDate(executionYear.getEndCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
 
         if (executionYear.containsDate(dateOnBeginExecutionYearCivilDate)) {
             return dateOnBeginExecutionYearCivilDate;
