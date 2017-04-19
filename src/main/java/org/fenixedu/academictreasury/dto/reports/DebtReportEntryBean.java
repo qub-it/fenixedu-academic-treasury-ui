@@ -76,6 +76,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.closeDate"),
             Constants.bundle("label.DebtReportEntryBean.header.openAmountAtERPStartDate"),
             Constants.bundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
+            Constants.bundle("label.DebtReportEntryBean.header.legacyERPCertificateDocumentReference"),
             Constants.bundle("label.DebtReportEntryBean.header.erpCertificationDate"),
             Constants.bundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
             
@@ -124,6 +125,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.closeDate"),
             Constants.bundle("label.DebtReportEntryBean.header.openAmountAtERPStartDate"),
             Constants.bundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
+            Constants.bundle("label.DebtReportEntryBean.header.legacyERPCertificateDocumentReference"),
             Constants.bundle("label.DebtReportEntryBean.header.erpCertificationDate"),
             Constants.bundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
     };
@@ -177,6 +179,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private DateTime closeDate;
     private String openAmountAtERPStartDate;
     private boolean exportedInLegacyERP;
+    private String legacyERPCertificateDocumentReference;
     private LocalDate erpCertificationDate;
 
     private String originSettlementNoteForAdvancedCredit;
@@ -244,6 +247,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             this.erpCertificationDate =
                     entry.getFinantialDocument() != null ? entry.getFinantialDocument().getErpCertificationDate() : null;
 
+            this.legacyERPCertificateDocumentReference = entry.getFinantialDocument() != null ? 
+                    entry.getFinantialDocument().getLegacyERPCertificateDocumentReference() : null;
+                    
             if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
                 this.openAmountAtERPStartDate =
                         this.openAmountAtERPStartDate.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
@@ -495,6 +501,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
                 row.createCell(i++).setCellValue(valueOrEmpty(openAmountAtERPStartDate));
                 row.createCell(i++).setCellValue(valueOrEmpty(exportedInLegacyERP));
+                row.createCell(i++).setCellValue(valueOrEmpty(legacyERPCertificateDocumentReference));
                 row.createCell(i++).setCellValue(valueOrEmpty(erpCertificationDate));
                 row.createCell(i++).setCellValue(valueOrEmpty(originSettlementNoteForAdvancedCredit));
 
@@ -541,6 +548,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
                 row.createCell(i++).setCellValue(valueOrEmpty(openAmountAtERPStartDate));
                 row.createCell(i++).setCellValue(valueOrEmpty(exportedInLegacyERP));
+                row.createCell(i++).setCellValue(valueOrEmpty(legacyERPCertificateDocumentReference));
                 row.createCell(i++).setCellValue(valueOrEmpty(erpCertificationDate));
                 row.createCell(i++).setCellValue(valueOrEmpty(originSettlementNoteForAdvancedCredit));
 

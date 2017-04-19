@@ -120,8 +120,8 @@ ${portal.toolkit()}
 							</p>
 		
 							<p>
-								<strong><spring:message code="label.ExemptionsGenerationRequestFile.discountPercentage" />:</strong>
-								<c:out value='${r.discountPercentage}%' />
+								<strong><spring:message code="label.ExemptionsGenerationRequestFile.amountToExempt" />:</strong>
+								<c:out value='${r.amountToExempt}' />&nbsp; &euro;	
 							</p>
 		
 							<p>

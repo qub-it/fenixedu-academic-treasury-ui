@@ -19,14 +19,14 @@ public class ExemptionsGenerationRowResult {
     private ExecutionYear executionYear;
     private TreasuryEvent treasuryEvent;
     private DebitEntry debitEntry;
-    private BigDecimal discountPercentage;
+    private BigDecimal amountToExempt;
 
     private String reason;
 
     private SortedSet<Integer> tuitionInstallmentsOrderSet;
 
     public ExemptionsGenerationRowResult(final int rowNum, final Registration registration, final ExecutionYear executionYear,
-            final TreasuryEvent treasuryEvent, final DebitEntry debitEntry, final BigDecimal discountPercentage,
+            final TreasuryEvent treasuryEvent, final DebitEntry debitEntry, final BigDecimal amountToExempt,
             final String reason, final SortedSet<Integer> tuitionInstallmentsOrderSet) {
 
         this.rowNum = rowNum;
@@ -34,7 +34,7 @@ public class ExemptionsGenerationRowResult {
         this.executionYear = executionYear;
         this.treasuryEvent = treasuryEvent;
         this.debitEntry = debitEntry;
-        this.discountPercentage = discountPercentage;
+        this.amountToExempt = amountToExempt;
         this.reason = reason;
         this.tuitionInstallmentsOrderSet = tuitionInstallmentsOrderSet;
     }
@@ -81,7 +81,7 @@ public class ExemptionsGenerationRowResult {
     }
     
     private BigDecimal calculateDebitEntryDiscount(final DebitEntry debitEntry) {
-        return debitEntry.getAmountWithVat().multiply(discountPercentage.divide(BigDecimal.valueOf(100)));
+        return amountToExempt;
     }
 
     // @formatter:off
@@ -117,8 +117,8 @@ public class ExemptionsGenerationRowResult {
         return debitEntry;
     }
 
-    public BigDecimal getDiscountPercentage() {
-        return discountPercentage;
+    public BigDecimal getAmountToExempt() {
+        return amountToExempt;
     }
 
     public String getReason() {
