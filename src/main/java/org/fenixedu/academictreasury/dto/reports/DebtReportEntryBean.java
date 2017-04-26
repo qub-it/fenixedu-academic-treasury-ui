@@ -50,6 +50,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.email"),
             Constants.bundle("label.DebtReportEntryBean.header.address"),
             Constants.bundle("label.DebtReportEntryBean.header.studentNumber"),
+            Constants.bundle("label.DebtReportEntryBean.header.registrationNumber"),
             Constants.bundle("label.DebtReportEntryBean.header.degreeType"),
             Constants.bundle("label.DebtReportEntryBean.header.degreeCode"),
             Constants.bundle("label.DebtReportEntryBean.header.degreeName"),
@@ -78,6 +79,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
             Constants.bundle("label.DebtReportEntryBean.header.legacyERPCertificateDocumentReference"),
             Constants.bundle("label.DebtReportEntryBean.header.erpCertificationDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.erpCertificateDocumentReference"),
             Constants.bundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
             
     };
@@ -98,6 +100,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.email"),
             Constants.bundle("label.DebtReportEntryBean.header.address"),
             Constants.bundle("label.DebtReportEntryBean.header.studentNumber"),
+            Constants.bundle("label.DebtReportEntryBean.header.registrationNumber"),
             Constants.bundle("label.DebtReportEntryBean.header.degreeType"),            
             Constants.bundle("label.DebtReportEntryBean.header.degreeCode"),
             Constants.bundle("label.DebtReportEntryBean.header.degreeName"),
@@ -127,6 +130,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
             Constants.bundle("label.DebtReportEntryBean.header.legacyERPCertificateDocumentReference"),
             Constants.bundle("label.DebtReportEntryBean.header.erpCertificationDate"),
+            Constants.bundle("label.DebtReportEntryBean.header.erpCertificateDocumentReference"),
             Constants.bundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
     };
     // @formatter:on
@@ -149,6 +153,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String email;
     private String address;
     private Integer studentNumber;
+    private Integer registrationNumber;
     private String degreeType;
     private String degreeCode;
     private LocalizedString degreeName;
@@ -180,7 +185,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String openAmountAtERPStartDate;
     private boolean exportedInLegacyERP;
     private String legacyERPCertificateDocumentReference;
+
     private LocalDate erpCertificationDate;
+    private String erpCertificateDocumentReference;
 
     private String originSettlementNoteForAdvancedCredit;
 
@@ -244,12 +251,16 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     .toString();
             this.exportedInLegacyERP =
                     entry.getFinantialDocument() != null ? entry.getFinantialDocument().isExportedInLegacyERP() : false;
+
+            this.legacyERPCertificateDocumentReference = entry.getFinantialDocument() != null ? entry.getFinantialDocument()
+                    .getLegacyERPCertificateDocumentReference() : null;
+
             this.erpCertificationDate =
                     entry.getFinantialDocument() != null ? entry.getFinantialDocument().getErpCertificationDate() : null;
 
-            this.legacyERPCertificateDocumentReference = entry.getFinantialDocument() != null ? 
-                    entry.getFinantialDocument().getLegacyERPCertificateDocumentReference() : null;
-                    
+            this.erpCertificateDocumentReference = entry.getFinantialDocument() != null ? entry.getFinantialDocument()
+                    .getErpCertificateDocumentReference() : null;
+
             if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
                 this.openAmountAtERPStartDate =
                         this.openAmountAtERPStartDate.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
@@ -316,6 +327,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 final AcademicTreasuryEvent academicTreasuryEvent = (AcademicTreasuryEvent) debitEntry.getTreasuryEvent();
 
                 if (academicTreasuryEvent.isForRegistrationTuition()) {
+                    this.registrationNumber = academicTreasuryEvent.getRegistration().getNumber();
                     this.degreeType = academicTreasuryEvent.getRegistration().getDegree().getDegreeType().getName().getContent();
                     this.degreeCode = academicTreasuryEvent.getRegistration().getDegree().getCode();
                     this.degreeName = academicTreasuryEvent.getRegistration().getDegree().getPresentationNameI18N();
@@ -340,7 +352,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                         this.executionYear = debitEntry.getExecutionSemester().getExecutionYear().getQualifiedName();
                         this.executionSemester = debitEntry.getExecutionSemester().getQualifiedName();
                     }
-
+                    
                     this.tuitionPaymentPlan =
                             AcademicTreasuryEventKeys.valueFor(debitEntry, AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN);
                     this.tuitionPaymentPlanConditions = AcademicTreasuryEventKeys.valueFor(debitEntry,
@@ -370,6 +382,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     }
                 } else if (academicTreasuryEvent.isForAcademicTax()) {
 
+                    this.registrationNumber = academicTreasuryEvent.getRegistration().getNumber();
                     this.degreeType = academicTreasuryEvent.getRegistration().getDegree().getDegreeType().getName().getContent();
                     this.degreeCode = academicTreasuryEvent.getRegistration().getDegree().getCode();
                     this.degreeName = academicTreasuryEvent.getRegistration().getDegree().getPresentationNameI18N();
@@ -382,6 +395,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
                     final ITreasuryServiceRequest iTreasuryServiceRequest = academicTreasuryEvent.getITreasuryServiceRequest();
 
+                    this.registrationNumber = iTreasuryServiceRequest.getRegistration().getNumber();
                     this.degreeType =
                             iTreasuryServiceRequest.getRegistration().getDegree().getDegreeType().getName().getContent();
                     this.degreeCode = iTreasuryServiceRequest.getRegistration().getDegree().getCode();
@@ -408,12 +422,12 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     this.executionYear = treasuryEvent.getExecutionYearName();
                 }
             }
-            
-            if(Strings.isNullOrEmpty(this.degreeCode)) {
+
+            if (Strings.isNullOrEmpty(this.degreeCode)) {
                 this.degreeCode = debitEntry.getDegreeCode();
             }
-            
-            if(Strings.isNullOrEmpty(this.executionYear)) {
+
+            if (Strings.isNullOrEmpty(this.executionYear)) {
                 this.executionYear = debitEntry.getExecutionYearName();
             }
         }
@@ -475,6 +489,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(email));
                 row.createCell(i++).setCellValue(valueOrEmpty(address));
                 row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
+                row.createCell(i++).setCellValue(valueOrEmpty(registrationNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeType));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeCode));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeName));
@@ -503,6 +518,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(exportedInLegacyERP));
                 row.createCell(i++).setCellValue(valueOrEmpty(legacyERPCertificateDocumentReference));
                 row.createCell(i++).setCellValue(valueOrEmpty(erpCertificationDate));
+                row.createCell(i++).setCellValue(valueOrEmpty(erpCertificateDocumentReference));
                 row.createCell(i++).setCellValue(valueOrEmpty(originSettlementNoteForAdvancedCredit));
 
             } else if (invoiceEntry.isCreditNoteEntry()) {
@@ -521,6 +537,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(email));
                 row.createCell(i++).setCellValue(valueOrEmpty(address));
                 row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
+                row.createCell(i++).setCellValue(valueOrEmpty(registrationNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeType));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeCode));
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeName));
@@ -550,6 +567,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(exportedInLegacyERP));
                 row.createCell(i++).setCellValue(valueOrEmpty(legacyERPCertificateDocumentReference));
                 row.createCell(i++).setCellValue(valueOrEmpty(erpCertificationDate));
+                row.createCell(i++).setCellValue(valueOrEmpty(erpCertificateDocumentReference));
                 row.createCell(i++).setCellValue(valueOrEmpty(originSettlementNoteForAdvancedCredit));
 
             }
