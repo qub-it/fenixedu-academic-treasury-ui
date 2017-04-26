@@ -3,6 +3,7 @@ package org.fenixedu.academictreasury.domain.debtGeneration.strategies;
 import static org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy.findActiveDebitEntries;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,7 @@ import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
@@ -85,6 +87,9 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
         return true;
     }
 
+    private static final List<String> MESSAGES_TO_IGNORE = Lists.newArrayList(
+            "error.AcademicDebtGenerationRule.debitEntry.with.none.or.annuled.finantial.document");
+    
     @Override
     @Atomic(mode = TxMode.READ)
     public void process(final AcademicDebtGenerationRule rule) {
@@ -108,7 +113,9 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
                 try {
                     processDebtsForRegistration(rule, registration);
                 } catch (final AcademicTreasuryDomainException e) {
-                    logger.info(e.getMessage());
+                    if(!MESSAGES_TO_IGNORE.contains(e.getMessage())) {
+                        logger.info(e.getMessage());
+                    }
                 } catch(final TreasuryDomainException e) {
                     logger.info(e.getMessage());
                 } catch (final Exception e) {

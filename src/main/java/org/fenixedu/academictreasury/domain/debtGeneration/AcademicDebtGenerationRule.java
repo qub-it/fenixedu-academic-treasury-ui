@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
@@ -431,6 +432,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     private static Logger logger = LoggerFactory.getLogger(AcademicDebtGenerationRule.class);
 
+    private static final List<String> MESSAGES_TO_IGNORE = Lists.newArrayList(
+            "error.AcademicDebtGenerationRule.debit.note.without.debit.entries",
+            "error.AcademicDebtGenerationRule.debitEntry.with.none.or.annuled.finantial.document");
+    
     public static final class RuleExecutor extends Thread {
 
         private String academicDebtGenerationRuleId;
@@ -461,7 +466,9 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     rule.getAcademicDebtGenerationRuleType().strategyImplementation().process(rule);
                 }
             } catch (final AcademicTreasuryDomainException e) {
-                logger.info(e.getMessage());
+                if(!MESSAGES_TO_IGNORE.contains(e.getMessage())) {
+                    logger.info(e.getMessage());
+                }
             } catch (final Exception e) {
                 e.printStackTrace();
             }
