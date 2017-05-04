@@ -51,6 +51,10 @@ public class PersonCustomer extends PersonCustomer_Base {
         super.setCountryCode(fiscalCountry);
         super.setFiscalNumber(fiscalNumber);
 
+        if(!FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
+            throw new AcademicTreasuryDomainException("error.Customer.fiscal.information.invalid");
+        }
+        
         checkRules();
 
         // create debt accounts for all active finantial instituions
