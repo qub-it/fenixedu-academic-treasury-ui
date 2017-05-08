@@ -36,7 +36,7 @@ ${portal.angularToolkit()}
 angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select','bennuToolkit'])
 	.controller('TuitionInstallmentTariffController', ['$scope', function($scope) {
 
- 	$scope.object=angular.fromJson('${academicTariffBeanJson}');
+ 	$scope.object=${academicTariffBeanJson};
 
 	$scope.booleanvalues = [
 			{
