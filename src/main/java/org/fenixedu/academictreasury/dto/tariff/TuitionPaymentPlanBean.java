@@ -999,7 +999,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     private List<TupleDataSourceBean> payorDebtAccountDataSource() {
         final SortedSet<DebtAccount> payorDebtAccountsSet =
-                DebtAccount.findAdhocDebtAccountsSortedByCustomerName(finantialEntity.getFinantialInstitution());
+                DebtAccount.findActiveAdhocDebtAccountsSortedByCustomerName(finantialEntity.getFinantialInstitution());
 
         final List<TupleDataSourceBean> result = payorDebtAccountsSet.stream().map(l -> new TupleDataSourceBean(l.getExternalId(),
                 String.format("%s - %s", l.getCustomer().getUiFiscalNumber(), l.getCustomer().getName()))).collect(Collectors.toList());
