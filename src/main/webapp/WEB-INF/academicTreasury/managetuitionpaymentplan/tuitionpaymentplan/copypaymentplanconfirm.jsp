@@ -36,7 +36,7 @@ ${portal.angularToolkit()}
 
 angular.module('angularAppCopyTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennuToolkit']).controller('CopyTuitionPaymentPlanController', ['$scope', function($scope) {
 
- 	$scope.object=angular.fromJson('${tuitionPaymentPlanBeanJson}');
+ 	$scope.object=${tuitionPaymentPlanBeanJson};
 	$scope.postBack = createAngularPostbackFunction($scope); 
 
 	//Begin here of Custom Screen business JS - code
