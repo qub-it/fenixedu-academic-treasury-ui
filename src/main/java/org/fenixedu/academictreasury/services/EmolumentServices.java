@@ -152,7 +152,7 @@ public class EmolumentServices {
         final AcademicTariff academicTariff = findTariffForAcademicServiceRequest(iTreasuryServiceRequest, debtDate);
 
         if (academicTariff == null) {
-            return null;
+            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", debtDate.toString(Constants.DATE_FORMAT));
         }
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
@@ -222,7 +222,7 @@ public class EmolumentServices {
         final AcademicTariff academicTariff = findTariffForAcademicServiceRequest(iTreasuryServiceRequest, when);
 
         if (academicTariff == null) {
-            return false;
+            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", when.toString(Constants.DATE_FORMAT));
         }
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
