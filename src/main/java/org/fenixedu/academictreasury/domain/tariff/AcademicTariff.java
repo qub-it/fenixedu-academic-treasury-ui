@@ -775,11 +775,6 @@ public class AcademicTariff extends AcademicTariff_Base {
         return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
     }
 
-    public static AcademicTariff findMatch(final Product product, final AdministrativeOffice administrativeOffice,
-            final DegreeType degreeType) {
-        return null;
-    }
-
     public static AcademicTariff findMatch(final Product product, final Degree degree, final DateTime when) {
         if (degree == null) {
             throw new RuntimeException("degree is null. wrong findMatch call");
@@ -788,30 +783,49 @@ public class AcademicTariff extends AcademicTariff_Base {
         final AdministrativeOffice administrativeOffice = degree.getAdministrativeOffice();
         final DegreeType degreeType = degree.getDegreeType();
 
-        // With the most specific conditions tariff was not found. Fallback to degree
-        Set<? extends AcademicTariff> activeTariffs =
-                findActive(product, administrativeOffice, degreeType, degree, when).collect(Collectors.<AcademicTariff> toSet());
-        if (activeTariffs.size() > 1) {
-            throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (activeTariffs.size() == 1) {
-            return activeTariffs.iterator().next();
+        {
+            // With the most specific conditions tariff was not found. Fallback to degree
+            Set<? extends AcademicTariff> activeTariffs =
+                    findActive(product, administrativeOffice, degreeType, degree, when).collect(Collectors.<AcademicTariff> toSet());
+            if (activeTariffs.size() > 1) {
+                throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+            } else if (activeTariffs.size() == 1) {
+                return activeTariffs.iterator().next();
+            }
         }
-
-        // Fallback to degreeType
-        activeTariffs = findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
-        if (activeTariffs.size() > 1) {
-            throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (activeTariffs.size() == 1) {
-            return activeTariffs.iterator().next();
+        
+        {
+            // Fallback to degreeType
+            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
+            if (activeTariffs.size() > 1) {
+                activeTariffs = activeTariffs.stream().filter(t -> t.getDegree() == null).collect(Collectors.<AcademicTariff> toSet());
+                
+                if(activeTariffs.size() > 1) {
+                    throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+                } else if(activeTariffs.size() == 1) {
+                    return activeTariffs.iterator().next();
+                }
+                
+            } else if (activeTariffs.size() == 1) {
+                return activeTariffs.iterator().next();
+            }
         }
-
-        // Fallback to administrativeOffice and return
-        activeTariffs = findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
-        if (activeTariffs.size() > 1) {
-            throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+        
+        {
+            // Fallback to administrativeOffice and return
+            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
+            if (activeTariffs.size() > 1) {
+                activeTariffs = activeTariffs.stream().filter(t -> t.getDegreeType() == null).collect(Collectors.<AcademicTariff> toSet());
+                
+                if(activeTariffs.size() > 1) {
+                    throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+                } else if(activeTariffs.size() == 1) {
+                    return activeTariffs.iterator().next();
+                }
+            }
+            
+            return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
         }
-
-        return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
     }
 
     public static AcademicTariff findMatch(final Product product, final Degree degree, final CycleType cycleType,
@@ -823,39 +837,70 @@ public class AcademicTariff extends AcademicTariff_Base {
         final AdministrativeOffice administrativeOffice = degree.getAdministrativeOffice();
         final DegreeType degreeType = degree.getDegreeType();
 
-        Set<? extends AcademicTariff> activeTariffs =
-                findActive(product, administrativeOffice, degreeType, degree, cycleType, when)
-                        .collect(Collectors.<AcademicTariff> toSet());
-        if (activeTariffs.size() > 1) {
-            throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (activeTariffs.size() == 1) {
-            return activeTariffs.iterator().next();
+        {
+            Set<? extends AcademicTariff> activeTariffs =
+                    findActive(product, administrativeOffice, degreeType, degree, cycleType, when)
+                            .collect(Collectors.<AcademicTariff> toSet());
+            if (activeTariffs.size() > 1) {
+                throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+            } else if (activeTariffs.size() == 1) {
+                return activeTariffs.iterator().next();
+            }
         }
 
-        // With the most specific conditions tariff was not found. Fallback to degree
-        activeTariffs =
-                findActive(product, administrativeOffice, degreeType, degree, when).collect(Collectors.<AcademicTariff> toSet());
-        if (activeTariffs.size() > 1) {
-            throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (activeTariffs.size() == 1) {
-            return activeTariffs.iterator().next();
+        {
+            // With the most specific conditions tariff was not found. Fallback to degree
+            Set<? extends AcademicTariff> activeTariffs =
+                    findActive(product, administrativeOffice, degreeType, degree, when).collect(Collectors.<AcademicTariff> toSet());
+            if (activeTariffs.size() > 1) {
+                // Filter those applied to cycle type
+                activeTariffs = activeTariffs.stream().filter(t -> t.getCycleType() == null).collect(Collectors.<AcademicTariff> toSet());
+                
+                if(activeTariffs.size() > 1) {
+                    throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+                } else if(activeTariffs.size() == 1) {
+                    return activeTariffs.iterator().next();
+                }
+                
+            } else if (activeTariffs.size() == 1) {
+                return activeTariffs.iterator().next();
+            }
         }
 
-        // Fallback to degreeType
-        activeTariffs = findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
-        if (activeTariffs.size() > 1) {
-            throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-        } else if (activeTariffs.size() == 1) {
-            return activeTariffs.iterator().next();
+        {
+            // Fallback to degreeType
+            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
+            if (activeTariffs.size() > 1) {
+                // Filter those applied to degree
+                activeTariffs = activeTariffs.stream().filter(t -> t.getDegree() == null).collect(Collectors.<AcademicTariff> toSet());
+    
+                if(activeTariffs.size() > 1) {
+                    throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+                } else if(activeTariffs.size() == 1) {
+                    return activeTariffs.iterator().next();
+                }
+                
+            } else if (activeTariffs.size() == 1) {
+                return activeTariffs.iterator().next();
+            }
         }
 
-        // Fallback to administrativeOffice and return
-        activeTariffs = findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
-        if (activeTariffs.size() > 1) {
-            throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+        {
+            // Fallback to administrativeOffice and return
+            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
+            if (activeTariffs.size() > 1) {
+                // Filter those applied to degree type
+                activeTariffs = activeTariffs.stream().filter(t -> t.getDegreeType() == null).collect(Collectors.<AcademicTariff> toSet());
+    
+                if(activeTariffs.size() > 1) {
+                    throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
+                } else if(activeTariffs.size() == 1) {
+                    return activeTariffs.iterator().next();
+                }
+            }
+    
+            return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
         }
-
-        return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
     }
 
     /* ----
