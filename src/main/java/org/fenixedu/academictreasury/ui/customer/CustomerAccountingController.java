@@ -76,6 +76,10 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     protected String getPrintSettlementNote() {
         return PRINT_SETTLEMENT_NOTE_URL;
     }
+    
+    protected String getDownloadCertifiedDocumentPrintUrl() {
+        return DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL;
+    }
 
     @RequestMapping
     public String home(Model model) {
@@ -113,6 +117,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount));
         model.addAttribute("printSettlementNoteUrl", getPrintSettlementNote());
+        model.addAttribute("downloadCertifiedDocumentPrintUrl", getDownloadCertifiedDocumentPrintUrl());
 
         List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
         List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();

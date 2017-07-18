@@ -200,7 +200,7 @@ ${portal.angularToolkit()}
                             <c:if test="${not empty pendingEntry.finantialDocument }">
                                 <p><c:out value="${pendingEntry.finantialDocument.uiDocumentNumber}" /></p>
 								<c:if test="${pendingEntry.finantialDocument.certifiedPrintedDocumentAvailable}">
-									<a style="align: center" href='${pageContext.request.contextPath}<%= CustomerAccountingController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${pendingEntry.finantialDocument.externalId}'>
+									<a style="align: center" href='${pageContext.request.contextPath}${downloadCertifiedDocumentPrintUrl}/${pendingEntry.finantialDocument.externalId}'>
 										<span class="glyphicon glyphicon-print"></span>
 										<spring:message code="label.accounting.manageCustomer.download.certified.document.${pendingEntry.finantialDocument.finantialDocumentType.type.name()}" />
 									</a>
@@ -329,7 +329,7 @@ ${portal.angularToolkit()}
                             <c:if test="${not empty entry.finantialDocument }">
                                 <p><c:out value="${entry.finantialDocument.uiDocumentNumber}" /></p>
 								<c:if test="${entry.finantialDocument.certifiedPrintedDocumentAvailable}">
-									<a href='${pageContext.request.contextPath}<%= CustomerAccountingController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${entry.finantialDocument.externalId}'>
+									<a href='${pageContext.request.contextPath}${downloadCertifiedDocumentPrintUrl}/${entry.finantialDocument.externalId}'>
 										<span class="glyphicon glyphicon-print"></span>
 										<spring:message code="label.accounting.manageCustomer.download.certified.document.${entry.finantialDocument.finantialDocumentType.type.name()}" />
 									</a>
@@ -440,7 +440,7 @@ ${portal.angularToolkit()}
                                 </c:if>
                             </ul>
 							<c:if test="${payment.certifiedPrintedDocumentAvailable}">
-								<a href='${pageContext.request.contextPath}<%= CustomerAccountingController.DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL %>/${payment.externalId}'>
+								<a href='${pageContext.request.contextPath}${downloadCertifiedDocumentPrintUrl}/${payment.externalId}'>
                                		<span class="glyphicon glyphicon-print"></span>
 									<spring:message code="label.accounting.manageCustomer.download.certified.document.${payment.finantialDocumentType.type.name()}" />
 								</a>
