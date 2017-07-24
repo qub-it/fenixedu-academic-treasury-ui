@@ -19,6 +19,7 @@ import org.fenixedu.treasury.domain.document.AdvancedPaymentCreditNote;
 import org.fenixedu.treasury.domain.document.CreditEntry;
 import org.fenixedu.treasury.domain.document.CreditNote;
 import org.fenixedu.treasury.domain.document.DebitEntry;
+import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
@@ -62,6 +63,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.documentExportationPending"),
             Constants.bundle("label.DebtReportEntryBean.header.amountToPay"),
             Constants.bundle("label.DebtReportEntryBean.header.openAmountToPay"),
+            Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
+            Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.name"),
             Constants.bundle("label.DebtReportEntryBean.header.agreement"),
             Constants.bundle("label.DebtReportEntryBean.header.ingression"),
             Constants.bundle("label.DebtReportEntryBean.header.firstTimeStudent"),
@@ -113,6 +116,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.debitEntry.identification"),
             Constants.bundle("label.DebtReportEntryBean.header.amountToCredit"),
             Constants.bundle("label.DebtReportEntryBean.header.openAmountToCredit"),
+            Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
+            Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.name"),
             Constants.bundle("label.DebtReportEntryBean.header.agreement"),
             Constants.bundle("label.DebtReportEntryBean.header.ingression"),
             Constants.bundle("label.DebtReportEntryBean.header.firstTimeStudent"),
@@ -170,6 +175,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String creditedAmount;
     private String amountToPay;
     private String openAmountToPay;
+    private String payorDebtAccountVatNumber;
+    private String payorDebtAccountName;
     private LocalizedString agreement;
     private LocalizedString ingression;
     private Boolean firstTimeStudent;
@@ -204,6 +211,14 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             this.entryDate = entry.getEntryDateTime();
             this.dueDate = entry.getDueDate();
 
+            this.payorDebtAccountVatNumber = "";
+            this.payorDebtAccountName = "";
+            
+            if(entry.getFinantialDocument() != null && ((Invoice) entry.getFinantialDocument()).getPayorDebtAccount() != null) {
+                this.payorDebtAccountVatNumber = ((Invoice) entry.getFinantialDocument()).getPayorDebtAccount().getCustomer().getUiFiscalNumber();
+                this.payorDebtAccountName = ((Invoice) entry.getFinantialDocument()).getPayorDebtAccount().getCustomer().getName();
+            }
+            
             fillStudentInformation(entry);
 
             this.productCode = entry.getProduct().getCode();
@@ -501,6 +516,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
                 row.createCell(i++).setCellValue(valueOrEmpty(amountToPay));
                 row.createCell(i++).setCellValue(valueOrEmpty(openAmountToPay));
+                row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountVatNumber));
+                row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountName));
                 row.createCell(i++).setCellValue(valueOrEmpty(agreement));
                 row.createCell(i++).setCellValue(valueOrEmpty(ingression));
                 row.createCell(i++).setCellValue(valueOrEmpty(firstTimeStudent));
@@ -550,6 +567,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(debitEntryIdentification));
                 row.createCell(i++).setCellValue(valueOrEmpty(amountToPay));
                 row.createCell(i++).setCellValue(valueOrEmpty(openAmountToPay));
+                row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountVatNumber));
+                row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountName));
                 row.createCell(i++).setCellValue(valueOrEmpty(agreement));
                 row.createCell(i++).setCellValue(valueOrEmpty(ingression));
                 row.createCell(i++).setCellValue(valueOrEmpty(firstTimeStudent));
