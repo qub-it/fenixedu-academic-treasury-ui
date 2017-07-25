@@ -14,7 +14,6 @@ import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGeneratio
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicTaxDueDateAlignmentType;
 import org.fenixedu.academictreasury.domain.debtGeneration.DebtGenerationRuleRestriction;
 import org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy;
-import org.fenixedu.academictreasury.domain.debtGeneration.IDebtGenerationRuleRestrictionStrategy;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.util.Constants;
@@ -76,6 +75,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
     private ExecutionYear executionYear;
     private boolean aggregateOnDebitNote;
     private boolean aggregateAllOrNothing;
+    private boolean eventDebitEntriesMustEqualRuleProducts;
     private AcademicTaxDueDateAlignmentType academicTaxDueDateAlignmentType;
     private DebtGenerationRuleRestriction debtGenerationRuleRestriction;
 
@@ -149,8 +149,9 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
         academicTaxDueDateAlignmentTypeDataSource.add(0, Constants.SELECT_OPTION);
 
-        this.aggregateOnDebitNote = false;
-        this.aggregateAllOrNothing = false;
+        this.aggregateOnDebitNote = true;
+        this.aggregateAllOrNothing = true;
+        this.eventDebitEntriesMustEqualRuleProducts = false;
 
         toAggregateDebitEntries = type.strategyImplementation().isToAggregateDebitEntries();
         toCloseDebitNote = type.strategyImplementation().isToCloseDebitNote();
@@ -176,8 +177,9 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         degreeTypeDataSource = DegreeType.all().map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
                 .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
-        this.aggregateOnDebitNote = false;
-        this.aggregateAllOrNothing = false;
+        this.aggregateOnDebitNote = rule.isAggregateOnDebitNote();
+        this.aggregateAllOrNothing = rule.isAggregateAllOrNothing();
+        this.eventDebitEntriesMustEqualRuleProducts = rule.isEventDebitEntriesMustEqualRuleProducts();
 
         this.degreeCurricularPlans.addAll(rule.getDegreeCurricularPlansSet());
 
@@ -334,6 +336,14 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     public void setAggregateAllOrNothing(boolean aggregateAllOrNothing) {
         this.aggregateAllOrNothing = aggregateAllOrNothing;
+    }
+    
+    public boolean isEventDebitEntriesMustEqualRuleProducts() {
+        return eventDebitEntriesMustEqualRuleProducts;
+    }
+    
+    public void setEventDebitEntriesMustEqualRuleProducts(boolean eventDebitEntriesMustEqualRuleProducts) {
+        this.eventDebitEntriesMustEqualRuleProducts = eventDebitEntriesMustEqualRuleProducts;
     }
 
     public PaymentCodePool getPaymentCodePool() {

@@ -576,6 +576,7 @@ class debtGeneration.AcademicDebtGenerationRule {
 	boolean backgroundExecution;
 	boolean aggregateOnDebitNote;
 	boolean aggregateAllOrNothing;
+	boolean eventDebitEntriesMustEqualRuleProducts;
 	boolean closeDebitNote;
 	boolean alignAllAcademicTaxesDebitToMaxDueDate;
 	boolean createPaymentReferenceCode;

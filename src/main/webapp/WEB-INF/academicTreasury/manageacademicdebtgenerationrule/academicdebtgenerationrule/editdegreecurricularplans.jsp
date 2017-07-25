@@ -115,7 +115,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
          value : true
      } ];
 	 
- 	$scope.object=angular.fromJson('${academicDebtGenerationRuleBeanJson}');
+ 	$scope.object=${academicDebtGenerationRuleBeanJson};
 	$scope.postBack = createAngularPostbackFunction($scope); 
  	
 	 

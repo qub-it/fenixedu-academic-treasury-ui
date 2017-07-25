@@ -306,12 +306,18 @@ ${portal.toolkit()}
 										</strong>
 									</span>
 									<span>
-										<c:if test="${rule.aggregateAllOrNothing}">
-											<spring:message code="label.true" />
-										</c:if>
-										<c:if test="${not rule.aggregateAllOrNothing}">
-											<spring:message code="label.false" />
-										</c:if>
+										<spring:message code='label.${rule.isAggregateAllOrNothing()}' />
+									</span>
+								</p>
+								
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.eventDebitEntriesMustEqualRuleProducts" />:
+										</strong>
+									</span>
+									<span>
+										<spring:message code='label.${rule.isEventDebitEntriesMustEqualRuleProducts()}' />
 									</span>
 								</p>
 							</c:if>
@@ -324,12 +330,7 @@ ${portal.toolkit()}
 										</strong>
 									</span>
 									<span>
-										<c:if test="${rule.closeDebitNote}">
-											<spring:message code="label.true" />
-										</c:if>
-										<c:if test="${not rule.closeDebitNote}">
-											<spring:message code="label.false" />
-										</c:if>
+											<spring:message code='label.${rule.isCloseDebitNote()}' />
 									</span>
 								</p>
 							</c:if>

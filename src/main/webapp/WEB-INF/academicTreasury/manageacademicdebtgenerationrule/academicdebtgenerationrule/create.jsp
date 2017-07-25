@@ -115,7 +115,7 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
          value : true
      } ];
 	 
- 	$scope.object=angular.fromJson('${academicDebtGenerationRuleBeanJson}');
+ 	$scope.object=${academicDebtGenerationRuleBeanJson};
 	$scope.postBack = createAngularPostbackFunction($scope); 
  	
 	 
@@ -198,6 +198,23 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                             name="aggregateallornothing"
                             class="form-control"
                             ng-model="object.aggregateAllOrNothing" 
+                            ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group row"
+                    ng-show="object.toAggregateDebitEntries === true && object.aggregateOnDebitNote === true">
+                    <div class="col-sm-2 control-label">
+                        <spring:message
+                            code="label.AcademicDebtGenerationRule.eventDebitEntriesMustEqualRuleProducts" />
+                    </div>
+
+                    <div class="col-sm-2">
+                        <select
+                            id="academicDebtGenerationRule_eventDebitEntriesMustEqualRuleProducts"
+                            name="eventdebitentriesmustequalruleproducts"
+                            class="form-control"
+                            ng-model="object.eventDebitEntriesMustEqualRuleProducts" 
                             ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
                         </select>
                     </div>
@@ -549,6 +566,14 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 	        					<span><label for="{{dcp.id}}">{{dcp.text}}</label></span>
 	                        </div>
 	                    </div>
+						
+						<%--
+						<div>
+							<button class="btn btn-xs btn-default" ng-click="doSomething();">
+								<bean:message key="label.event.selectAll" />
+							</button>
+						</div>
+						--%>
 					</div>
 				</div>		
 				<div class="form-group row">

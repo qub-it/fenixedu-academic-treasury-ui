@@ -38,10 +38,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     int v = Integer.compare(o1.getAcademicDebtGenerationRuleType().getOrderNumber(),
                             o2.getAcademicDebtGenerationRuleType().getOrderNumber());
 
-                    if(v != 0) {
+                    if (v != 0) {
                         return v;
                     }
-                    
+
                     int c = Integer.compare(o1.getOrderNumber(), o2.getOrderNumber());
                     return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
                 }
@@ -73,6 +73,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         setExecutionYear(bean.getExecutionYear());
         setAggregateOnDebitNote(bean.isAggregateOnDebitNote());
         setAggregateAllOrNothing(bean.isAggregateAllOrNothing());
+        setEventDebitEntriesMustEqualRuleProducts(bean.isEventDebitEntriesMustEqualRuleProducts());
         setCloseDebitNote(false);
         setAlignAllAcademicTaxesDebitToMaxDueDate(false);
         setCreatePaymentReferenceCode(bean.isToCreatePaymentReferenceCodes());
@@ -91,12 +92,13 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         getDegreeCurricularPlansSet().addAll((bean.getDegreeCurricularPlans()));
 
         setOrderNumber(-1);
-        final Optional<AcademicDebtGenerationRule> max = find(getAcademicDebtGenerationRuleType(), getExecutionYear()).max(COMPARE_BY_ORDER_NUMBER);
+        final Optional<AcademicDebtGenerationRule> max =
+                find(getAcademicDebtGenerationRuleType(), getExecutionYear()).max(COMPARE_BY_ORDER_NUMBER);
 
         setOrderNumber(max.isPresent() ? max.get().getOrderNumber() + 1 : 1);
 
         setDays(bean.getNumberOfDaysToDueDate());
-        
+
         setDebtGenerationRuleRestriction(bean.getDebtGenerationRuleRestriction());
 
         checkRules();
@@ -142,6 +144,12 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
     }
 
+    public List<AcademicDebtGenerationRuleEntry> getOrderedAcademicDebtGenerationRuleEntries() {
+        return getAcademicDebtGenerationRuleEntriesSet().stream().sorted((e1, e2) -> Integer
+                .compare(e1.getProduct().getTuitionInstallmentOrder(), e2.getProduct().getTuitionInstallmentOrder()))
+                .collect(Collectors.toList());
+    }
+
     public boolean isActive() {
         return getActive();
     }
@@ -156,6 +164,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     public boolean isAggregateAllOrNothing() {
         return super.getAggregateAllOrNothing();
+    }
+
+    public boolean isEventDebitEntriesMustEqualRuleProducts() {
+        return super.getEventDebitEntriesMustEqualRuleProducts();
     }
 
     public boolean isCloseDebitNote() {
@@ -309,7 +321,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         getDegreeCurricularPlansSet().clear();
         getDegreeCurricularPlansSet().addAll(degreeCurricularPlans);
     }
-    
+
     // @formatter: off
     /************
      * SERVICES *
@@ -382,8 +394,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         }
     }
 
-    public static void runAllActiveForRegistrationAndExecutionYear(final Registration registration, final ExecutionYear executionYear,
-            final boolean runOnlyWithBackgroundExecution) {
+    public static void runAllActiveForRegistrationAndExecutionYear(final Registration registration,
+            final ExecutionYear executionYear, final boolean runOnlyWithBackgroundExecution) {
         for (final AcademicDebtGenerationRuleType type : AcademicDebtGenerationRuleType.findAll()
                 .sorted(AcademicDebtGenerationRuleType.COMPARE_BY_ORDER_NUMBER).collect(Collectors.toList())) {
             for (final AcademicDebtGenerationRule academicDebtGenerationRule : AcademicDebtGenerationRule.findActiveByType(type)
@@ -392,7 +404,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                 if (runOnlyWithBackgroundExecution && !academicDebtGenerationRule.isBackgroundExecution()) {
                     continue;
                 }
-                
+
                 if (academicDebtGenerationRule.getExecutionYear() != executionYear) {
                     continue;
                 }
@@ -407,13 +419,13 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             }
         }
     }
-    
+
     public static void runAcademicDebtGenerationRule(final AcademicDebtGenerationRule rule) {
-        
-        if(!rule.isActive()) {
+
+        if (!rule.isActive()) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active");
         }
-        
+
         final RuleExecutor exec = new RuleExecutor(rule);
 
         try {
@@ -432,10 +444,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     private static Logger logger = LoggerFactory.getLogger(AcademicDebtGenerationRule.class);
 
-    private static final List<String> MESSAGES_TO_IGNORE = Lists.newArrayList(
-            "error.AcademicDebtGenerationRule.debit.note.without.debit.entries",
-            "error.AcademicDebtGenerationRule.debitEntry.with.none.or.annuled.finantial.document");
-    
+    private static final List<String> MESSAGES_TO_IGNORE =
+            Lists.newArrayList("error.AcademicDebtGenerationRule.debit.note.without.debit.entries",
+                    "error.AcademicDebtGenerationRule.debitEntry.with.none.or.annuled.finantial.document");
+
     public static final class RuleExecutor extends Thread {
 
         private String academicDebtGenerationRuleId;
@@ -466,7 +478,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                     rule.getAcademicDebtGenerationRuleType().strategyImplementation().process(rule);
                 }
             } catch (final AcademicTreasuryDomainException e) {
-                if(!MESSAGES_TO_IGNORE.contains(e.getMessage())) {
+                if (!MESSAGES_TO_IGNORE.contains(e.getMessage())) {
                     logger.info(e.getMessage());
                 }
             } catch (final Exception e) {

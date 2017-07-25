@@ -21,6 +21,8 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
+import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -186,7 +188,7 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
         final Set<DebitEntry> debitEntries = Sets.newHashSet();
 
         DebitEntry grabbedDebitEntry = null;
-        for (final AcademicDebtGenerationRuleEntry entry : rule.getAcademicDebtGenerationRuleEntriesSet()) {
+        for (final AcademicDebtGenerationRuleEntry entry : rule.getOrderedAcademicDebtGenerationRuleEntries() /* rule.getAcademicDebtGenerationRuleEntriesSet() */) {
             final Product product = entry.getProduct();
 
             if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == product.getProductGroup()) {
@@ -219,9 +221,10 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
             if (debitNote.getPayorDebtAccount() == null && debitEntry.getPayorDebtAccount() != null) {
                 debitNote.updatePayorDebtAccount(debitEntry.getPayorDebtAccount());
             }
-            
-            if(debitEntry.getDebtAccount() != debitNote.getDebtAccount()) {
-                throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.debitEntry.debtAccount.not.equal.to.debitNote.debtAccount");
+
+            if (debitEntry.getDebtAccount() != debitNote.getDebtAccount()) {
+                throw new AcademicTreasuryDomainException(
+                        "error.AcademicDebtGenerationRule.debitEntry.debtAccount.not.equal.to.debitNote.debtAccount");
             }
         }
 
@@ -243,6 +246,27 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
                 if (debitNote.getDebitEntries().filter(l -> l.getProduct() == product).count() == 0) {
                     throw new AcademicTreasuryDomainException(
                             "error.AcademicDebtGenerationRule.debit.entries.not.aggregated.on.same.debit.note");
+                }
+            }
+        }
+
+        if (rule.isEventDebitEntriesMustEqualRuleProducts()) {
+            final TreasuryEvent treasuryEvent = debitEntries.iterator().next().getTreasuryEvent();
+
+            // First ensure all academic debitEntries all from same academic event
+            for (final DebitEntry db : debitEntries) {
+                if (db.getTreasuryEvent() != treasuryEvent) {
+                    throw new AcademicTreasuryDomainException(
+                            "error.AcademicDebtGenerationRule.debitEntry.not.from.same.academic.event");
+                }
+                
+                final Product interestProduct = TreasurySettings.getInstance().getInterestProduct();
+                final Set<DebitEntry> treasuryEventDebitEntries = DebitEntry.findActive(treasuryEvent)
+                    .filter(d -> d.getProduct() != interestProduct).collect(Collectors.toSet());
+                
+                if (!treasuryEventDebitEntries.equals(debitEntries)) {
+                    throw new AcademicTreasuryDomainException(
+                            "error.AcademicDebtGenerationRule.not.all.debitEntries.aggregated");
                 }
             }
         }
@@ -349,7 +373,7 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
                         .create(debitEntries.iterator().next().getDebtAccount(),
                                 DocumentNumberSeries.findUniqueDefault(FinantialDocumentType.findForDebitNote(),
                                         debitEntries.iterator().next().getDebtAccount().getFinantialInstitution()).get(),
-                new DateTime());
+                                new DateTime());
 
         return debitNote;
     }
