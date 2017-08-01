@@ -215,19 +215,6 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
      */
 
     @Override
-    public void registerNewAcademicServiceRequestSituationHandler() {
-        Signal.register(ACADEMIC_SERVICE_REQUEST_NEW_SITUATION_EVENT, new EmolumentServices());
-        //The PERSON CREATE SIGNAL Was replaced for the REGISTRATION CREATE SIGNAL, 
-//        Signal.register(Person.PERSON_CREATE_SIGNAL, new PersonServices());
-        Signal.register(Registration.REGISTRATION_CREATE_SIGNAL, new RegistrationServices());
-    }
-
-    @Override
-    public void registerAcademicServiceRequestCancelOrRejectHandler() {
-        Signal.register(ACADEMIC_SERVICE_REQUEST_REJECT_OR_CANCEL_EVENT, new AcademicServiceRequestCancelOrRejectHandler());
-    }
-
-    @Override
     public IAcademicServiceRequestAndAcademicTaxTreasuryEvent academicTreasuryEventForAcademicServiceRequest(
             final AcademicServiceRequest academicServiceRequest) {
         return academicServiceRequest.getAcademicTreasuryEvent();
@@ -237,25 +224,6 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
      * ENROLMENTS
      * ----------
      */
-
-    @Override
-    public void registerStandaloneEnrolmentHandler() {
-        Signal.register(STANDALONE_ENROLMENT, new StandaloneEnrolmentHandler());
-    }
-
-    @Override
-    public void registerExtracurricularEnrolmentHandler() {
-        Signal.register(EXTRACURRICULAR_ENROLMENT, new ExtracurricularEnrolmentHandler());
-    }
-
-    @Override
-    public void registerImprovementEnrolmentHandler() {
-        Signal.register(IMPROVEMENT_ENROLMENT, new ImprovementEnrolmentHandler());
-    }
-
-    public void registerNormalEnrolmentHandler() {
-        Signal.register(NORMAL_ENROLMENT, new NormalEnrolmentHandler());
-    }
 
     @Override
     public void standaloneUnenrolment(final Enrolment standaloneEnrolment) {

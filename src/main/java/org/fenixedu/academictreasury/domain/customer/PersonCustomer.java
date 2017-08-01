@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.domain.customer;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -9,6 +10,8 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.contacts.PhysicalAddress;
+import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
+import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
 import org.fenixedu.academic.dto.person.PersonBean;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -421,7 +424,13 @@ public class PersonCustomer extends PersonCustomer_Base {
     @Override
     public Set<? extends TreasuryEvent> getTreasuryEventsSet() {
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        return Sets.newHashSet(person.getAcademicTreasuryEventSet());
+        
+        final Set<TreasuryEvent> result = Sets.newHashSet();
+        for (IAcademicTreasuryEvent event : TreasuryBridgeAPIFactory.implementation().getAllAcademicTreasuryEventsList(person)) {
+            result.add((TreasuryEvent) event);
+        }
+        
+        return result;
     }
 
     @Override

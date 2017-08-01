@@ -364,8 +364,9 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return DebitEntry.findActive(this).filter(d -> d.getProduct().equals(tariff.getProduct())).count() > 0;
     }
 
+    @Override
     public boolean isCharged() {
-        return DebitEntry.findActive(this).count() > 0;
+        return TreasuryEventDefaultMethods.isCharged(this);
     }
 
     public boolean isChargedWithDebitEntry(final Enrolment enrolment) {
@@ -1018,12 +1019,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public String getDebtAccountURL() {
-        if (DebitEntry.findActive(this).findFirst().isPresent()) {
-            return DebtAccountController.READ_URL
-                    + DebitEntry.findActive(this).findFirst().get().getDebtAccount().getExternalId();
-        }
-
-        return null;
+        return TreasuryEventDefaultMethods.getDebtAccountURL(this);
     }
 
     /* -------------------------
@@ -1058,22 +1054,17 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public boolean isExempted() {
-        return !getTreasuryExemptionsSet().isEmpty();
+        return TreasuryEventDefaultMethods.isExempted(this);
     }
 
     @Override
     public boolean isDueDateExpired(final LocalDate when) {
-        return DebitEntry.findActive(this).map(l -> l.isDueDateExpired(when)).reduce((a, b) -> a || b).orElse(false);
+        return TreasuryEventDefaultMethods.isDueDateExpired(this, when);
     }
 
     @Override
     public boolean isBlockingAcademicalActs(final LocalDate when) {
-        /* Iterate over active debit entries which 
-         * are not marked with academicActBlockingSuspension
-         * and ask if it is in debt
-         */
-
-        return DebitEntry.find(this).filter(l -> PersonCustomer.isDebitEntryBlockingAcademicalActs(l, when)).count() > 0;
+        return TreasuryEventDefaultMethods.isBlockingAcademicalActs(this, when);
     }
 
     @Override
@@ -1084,14 +1075,12 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public String getExemptionReason() {
-        return String.join(", ", TreasuryExemption.find(this).map(l -> l.getReason()).collect(Collectors.toSet()));
+        return TreasuryEventDefaultMethods.getExemptionReason(this);
     }
 
     @Override
     public List<IAcademicTreasuryEventPayment> getPaymentsList() {
-        return DebitEntry.findActive(this).map(l -> l.getSettlementEntriesSet()).reduce((a, b) -> Sets.union(a, b))
-                .orElse(Sets.newHashSet()).stream().filter(l -> l.getFinantialDocument().isClosed())
-                .map(l -> new AcademicTreasuryEventPayment(l)).collect(Collectors.toList());
+        return TreasuryEventDefaultMethods.getPaymentsList(this);
     }
 
     @Override
@@ -1363,86 +1352,22 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public String formatMoney(BigDecimal moneyValue) {
-        if (DebitEntry.findActive(this).findFirst().isPresent()) {
-            return DebitEntry.findActive(this).findFirst().get().getDebtAccount().getFinantialInstitution().getCurrency()
-                    .getValueFor(moneyValue);
-        }
-
-        return FinantialInstitution.findAll().iterator().next().getCurrency().getValueFor(moneyValue);
+        return TreasuryEventDefaultMethods.formatMoney(this, moneyValue);
     }
 
     @Override
     public boolean isOnlinePaymentsActive() {
-        if (!isCharged()) {
-            return false;
-        }
-
-        final FinantialInstitution finantialInstitution =
-                DebitEntry.findActive(this).iterator().next().getDebtAccount().getFinantialInstitution();
-        
-        return ForwardPaymentConfiguration.isActive(finantialInstitution);
+        return TreasuryEventDefaultMethods.isOnlinePaymentsActive(this);
     }
 
     @Override
     public void annulDebts(final String reason) {
-        annulAllDebitEntries(reason);
+        TreasuryEventDefaultMethods.annulDebts(this, reason);
     }
     
-    private static class PaymentReferenceCodeImpl implements IPaymentReferenceCode {
-
-        private PaymentReferenceCode paymentReferenceCode;
-
-        private PaymentReferenceCodeImpl(final PaymentReferenceCode referenceCode) {
-            this.paymentReferenceCode = referenceCode;
-
-        }
-
-        @Override
-        public LocalDate getEndDate() {
-            return paymentReferenceCode.getEndDate();
-        }
-
-        @Override
-        public String getEntityCode() {
-            return paymentReferenceCode.getPaymentCodePool().getEntityReferenceCode();
-        }
-
-        @Override
-        public String getFormattedCode() {
-            return paymentReferenceCode.getFormattedCode();
-        }
-
-        @Override
-        public String getReferenceCode() {
-            return paymentReferenceCode.getReferenceCode();
-        }
-
-        @Override
-        public boolean isAnnuled() {
-            return paymentReferenceCode.getState().isAnnuled();
-        }
-
-        @Override
-        public boolean isUsed() {
-            return paymentReferenceCode.getState().isUsed();
-        }
-
-        @Override
-        public boolean isProcessed() {
-            return paymentReferenceCode.getState().isProcessed();
-        }
-
-        @Override
-        public BigDecimal getPayableAmount() {
-            return paymentReferenceCode.getPayableAmount();
-        }
-
-    }
-
     @Override
     public List<IPaymentReferenceCode> getPaymentReferenceCodesList() {
-        return DebitEntry.findActive(this).flatMap(d -> d.getPaymentCodesSet().stream()).map(t -> t.getPaymentReferenceCode())
-                .map(p -> new PaymentReferenceCodeImpl(p)).collect(Collectors.toList());
+        return TreasuryEventDefaultMethods.getPaymentReferenceCodesList(this);
     }
 
     /*
