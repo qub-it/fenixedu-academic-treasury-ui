@@ -188,7 +188,12 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
 
             redirect(SEARCH_URL, model, redirectAttributes);
 
-            return new RedirectView(SEARCH_URL);
+            if("/".equals(request.getContextPath())) {
+                return new RedirectView(SEARCH_URL);
+            } else {
+                return new RedirectView(request.getContextPath() + "/" + SEARCH_URL);
+            }
+            
         } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return confirmdebtcreation(massiveDebtGenerationRequestFile, model, redirectAttributes);

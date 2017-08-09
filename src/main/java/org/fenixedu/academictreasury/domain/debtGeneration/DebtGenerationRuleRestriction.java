@@ -52,6 +52,10 @@ public class DebtGenerationRuleRestriction extends DebtGenerationRuleRestriction
         return Bennu.getInstance().getDebtGenerationRuleRestrictionsSet().stream();
     }
     
+    public static Stream<DebtGenerationRuleRestriction> findByStrategyImplementation(final String strategyImplementation) {
+        return findAll().filter(r -> strategyImplementation.equals(r.getStrategyImplementation()));
+    }
+    
     public static DebtGenerationRuleRestriction create(final String name, final String strategyImplementation) {
         return new DebtGenerationRuleRestriction(name, strategyImplementation);
     }
