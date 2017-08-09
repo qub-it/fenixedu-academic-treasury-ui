@@ -86,6 +86,10 @@ public class MassiveDebtGenerationType extends MassiveDebtGenerationType_Base {
         return Bennu.getInstance().getMassiveDebtGenerationTypesSet().stream();
     }
     
+    public static Stream<MassiveDebtGenerationType> findByClassName(final String className) {
+        return findAll().filter(t -> t.getImplementationClass().equals(className));
+    }
+    
     public static Stream<MassiveDebtGenerationType> findAllActive() {
         return findAll().filter(m -> m.isActive());
     }

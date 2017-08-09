@@ -105,7 +105,7 @@ ${portal.toolkit()}
 
 			<datatables:column cssStyle="width:10%">
 				<datatables:columnHead>
-					<spring:message code="label.TuitionPaymentPlanImportFile.whenProcessed" />
+					<spring:message code="label.TreasuryImportFile.whenProcessed" />
 				</datatables:columnHead>
 				<c:out value='${requestFile.whenProcessed.toString("yyyy-MM-dd HH:mm:ss")}' />
 			</datatables:column>

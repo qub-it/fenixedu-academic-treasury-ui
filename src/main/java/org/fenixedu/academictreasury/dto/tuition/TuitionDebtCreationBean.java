@@ -130,7 +130,8 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         registrationDataSource =
                 ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet().stream()
                         .map(r -> new TupleDataSourceBean(r.getExternalId(),
-                                r.getDegree().getPresentationNameI18N(getExecutionYear()).getContent()))
+                                String.format("[%s] %s", r.getDegree().getCode(), 
+                                        r.getDegree().getPresentationNameI18N(getExecutionYear()).getContent())))
                 .collect(Collectors.toList());
 
         return registrationDataSource;

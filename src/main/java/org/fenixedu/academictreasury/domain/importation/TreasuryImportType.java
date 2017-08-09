@@ -81,6 +81,10 @@ public class TreasuryImportType extends TreasuryImportType_Base {
     public static Stream<TreasuryImportType> findAll() {
         return Bennu.getInstance().getTreasuryImportTypesSet().stream();
     }
+    
+    public static Stream<TreasuryImportType> findByClassName(final String clazz) {
+       return findAll().filter(t -> t.getClazz().equals(clazz));
+    }
 
     @Atomic
     public static TreasuryImportType create(final String name, final String clazz) {

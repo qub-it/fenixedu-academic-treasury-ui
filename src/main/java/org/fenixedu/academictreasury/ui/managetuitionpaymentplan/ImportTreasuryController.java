@@ -115,7 +115,11 @@ public class ImportTreasuryController extends AcademicTreasuryBaseController {
             treasuryImportFile.getTreasuryImportType().implementation().process(treasuryImportFile);
             addInfoMessage(Constants.bundle("label.ImportTreasury.process.success"), model);
 
-            return new RedirectView(VIEW_URL + "/" + treasuryImportFile.getExternalId());
+            if("/".equals(request.getContextPath())) {
+                return new RedirectView(VIEW_URL + "/" + treasuryImportFile.getExternalId());
+            } else {
+                return new RedirectView(request.getContextPath() + VIEW_URL + "/" + treasuryImportFile.getExternalId());
+            }
         } catch (final Exception e) {
             e.printStackTrace();
             addErrorMessage(e.getLocalizedMessage(), model);

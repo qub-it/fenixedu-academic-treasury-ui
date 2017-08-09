@@ -49,7 +49,7 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-circle-arrow-down" aria-hidden="true"></span>
 	&nbsp;
 	<a class="" href="${pageContext.request.contextPath}<%= ImportTreasuryController.DOWNLOAD_URL %>/${treasuryImportFile.externalId}">
-		<spring:message code="label.ImportTuitionPaymentPlans.download" />
+		<spring:message code="label.ImportTreasury.download" />
 	</a>
 </div>
 
@@ -95,7 +95,7 @@ ${portal.toolkit()}
 <c:if test="${not tuitionPaymentPlanImportFile.processed}">
 	<form id="processForm" method="post" action="${pageContext.request.contextPath}<%= ImportTuitionPaymentPlansController.PROCESS_URL %>/${tuitionPaymentPlanImportFile.externalId}">
 		<button class="btn btn-primary">
-			<spring:message code="label.ImportTuitionPaymentPlans.process" />
+			<spring:message code="label.ImportTreasury.process" />
 		</button>
 	</form>
 </c:if>

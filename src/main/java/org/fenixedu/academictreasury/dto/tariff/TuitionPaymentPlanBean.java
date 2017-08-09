@@ -55,6 +55,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private DegreeType degreeType;
     private Set<DegreeCurricularPlan> degreeCurricularPlans = Sets.newHashSet();
 
+    private boolean showAllDcps;
     private boolean defaultPaymentPlan;
     private RegistrationRegimeType registrationRegimeType;
     private RegistrationProtocol registrationProtocol;
@@ -141,6 +142,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
 
     public TuitionPaymentPlanBean(final Product product, final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final FinantialEntity finantialEntity, final ExecutionYear executionYear) {
+        this.showAllDcps = false;
         this.product = product;
         this.tuitionPaymentPlanGroup = tuitionPaymentPlanGroup;
         this.finantialEntity = finantialEntity;
@@ -843,6 +845,14 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.maximumAmount = maximumAmount;
     }
 
+    public boolean isShowAllDcps() {
+        return showAllDcps;
+    }
+
+    public void setShowAllDcps(final boolean degreeCurricularPlansShownFilteredByExecutions) {
+        this.showAllDcps = degreeCurricularPlansShownFilteredByExecutions;
+    }
+    
     /*
      * -------------
      * Other Methods
@@ -882,13 +892,22 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
             return Collections.<TupleDataSourceBean> emptyList();
         }
 
-        final List<TupleDataSourceBean> result =
-                ExecutionDegree.getAllByExecutionYearAndDegreeType(getExecutionYear(), getDegreeType()).stream()
-                        .map(e -> e.getDegreeCurricularPlan())
-                        .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(),
-                                "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
-                .collect(Collectors.toList());
-
+        final List<TupleDataSourceBean> result = Lists.newArrayList();
+        
+        if(isShowAllDcps())  {
+            result.addAll(Bennu.getInstance().getDegreeCurricularPlansSet().stream()
+                    .filter(dcp -> dcp.getDegreeType() == getDegreeType())
+                    .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(),
+                            "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
+                    .collect(Collectors.toList()));
+        } else {
+            result.addAll(ExecutionDegree.getAllByExecutionYearAndDegreeType(getExecutionYear(), getDegreeType()).stream()
+                    .map(e -> e.getDegreeCurricularPlan())
+                    .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(),
+                            "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
+                    .collect(Collectors.toList()));
+        }
+        
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 

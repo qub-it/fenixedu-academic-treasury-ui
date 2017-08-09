@@ -82,6 +82,16 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 
  	$scope.object=${tuitionPaymentPlanBeanJson};
 	
+	$scope.booleanvalues = [
+		{
+			name : '<spring:message code="label.no"/>',
+			value : false
+		},
+		{
+			name : '<spring:message code="label.yes"/>',
+			value : true
+		} ];
+ 	
  	$scope.object.degreeCurricularPlans=[];
  	
  	$scope.postBack = createAngularPostbackFunction($scope); 
@@ -132,7 +142,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 	<div class="panel panel-default">
 		<div class="panel-body">
 			<div class="form-group row">
-				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.executionYear"/></div>
+				<div class="col-sm-3 control-label"><spring:message code="label.TuitionPaymentPlan.executionYear"/></div>
 				<div class="col-sm-4">
 					<ui-select id="tuitionPaymentPlan_executionYear" name="executionYear" ng-model="$parent.object.executionYear" theme="bootstrap" ng-disabled="disabled" 
 						on-select="onDegreeTypeChange($product, $model)" >
@@ -144,7 +154,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				</div>
 			</div>	
 			<div class="form-group row">
-				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.degreeType"/></div> 
+				<div class="col-sm-3 control-label"><spring:message code="label.TuitionPaymentPlan.degreeType"/></div> 
 				
 				<div class="col-sm-8">
 					<ui-select id="tuitionPaymentPlan_degreeType" name="degreeType" ng-model="$parent.object.degreeType" theme="bootstrap" ng-disabled="disabled" 
@@ -155,9 +165,21 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 						</ui-select-choices>
 					</ui-select>				
 				</div>
-			</div>		
+			</div>
 			<div class="form-group row">
-				<div class="col-sm-2 control-label"><spring:message code="label.TuitionPaymentPlan.degreeCurricularPlans"/></div> 
+				<div class="col-sm-3 control-label"><spring:message code="label.TuitionPaymentPlan.showAllDcps"/></div>
+				<div class="col-sm-2">
+					<select id="tuitionPaymentPlan_showAllDcps" name="showalldcps" class="form-control" ng-model="object.showAllDcps"
+						ng-change="onDegreeTypeChange($product, $model)" 
+                        ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+					</select>
+					<script>
+					</script>
+				</div>
+			</div>
+			
+			<div class="form-group row">
+				<div class="col-sm-3 control-label"><spring:message code="label.TuitionPaymentPlan.degreeCurricularPlans"/></div> 
 				<div class="col-sm-8">
                     <div ng-hide="object.degreeCurricularPlanDataSource" class="alert alert-warning">
                         <spring:message code="label.TuitionPaymentPlan.degreeCurricularPlanDataSource.is.empty"/>

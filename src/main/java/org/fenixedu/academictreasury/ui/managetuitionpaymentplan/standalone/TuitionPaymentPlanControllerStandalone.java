@@ -29,6 +29,7 @@ package org.fenixedu.academictreasury.ui.managetuitionpaymentplan.standalone;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
@@ -57,6 +58,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
@@ -95,10 +97,16 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
     public String chooseDegreeCurricularPlan(@PathVariable("finantialEntityId") FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
-        List<DegreeCurricularPlan> degreeCurricularPlanList =
-                Lists.newArrayList(ExecutionDegree.getAllByExecutionYear(executionYear).stream()
-                        .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toList()));
+        final TuitionPaymentPlanGroup tuitionPaymentPlanGroup = TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().get();
 
+        final Set<DegreeCurricularPlan> firstSet = ExecutionDegree.getAllByExecutionYear(executionYear).stream()
+                .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.<DegreeCurricularPlan> toSet());
+        
+        final Set<DegreeCurricularPlan> secondSet = TuitionPaymentPlan.find(tuitionPaymentPlanGroup, finantialEntity, executionYear)
+                .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.<DegreeCurricularPlan> toSet());
+
+        List<DegreeCurricularPlan> degreeCurricularPlanList = Lists.newArrayList(Sets.union(firstSet, secondSet));
+        
         Collections.sort(degreeCurricularPlanList,
                 DegreeCurricularPlan.DEGREE_CURRICULAR_PLAN_COMPARATOR_BY_DEGREE_TYPE_AND_EXECUTION_DEGREE_AND_DEGREE_CODE);
 

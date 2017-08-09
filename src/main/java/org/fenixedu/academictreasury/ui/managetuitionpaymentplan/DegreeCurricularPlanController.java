@@ -29,11 +29,14 @@ package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
+import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialEntity;
@@ -44,6 +47,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
@@ -66,9 +70,15 @@ public class DegreeCurricularPlanController extends AcademicTreasuryBaseControll
     @RequestMapping(value = _CHOOSEDEGREECURRICULARPLAN_URI + "/{finantialEntityId}/{executionYearId}")
     public String chooseDegreeCurricularPlan(@PathVariable("finantialEntityId") FinantialEntity finantialEntity,
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
+        final TuitionPaymentPlanGroup tuitionPaymentPlanGroup = TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get();
 
-        List<DegreeCurricularPlan> degreeCurricularPlanList = Lists.newArrayList(ExecutionDegree.getAllByExecutionYear(executionYear)
-                .stream().map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toList()));
+        final Set<DegreeCurricularPlan> firstSet = ExecutionDegree.getAllByExecutionYear(executionYear).stream()
+                .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.<DegreeCurricularPlan> toSet());
+        
+        final Set<DegreeCurricularPlan> secondSet = TuitionPaymentPlan.find(tuitionPaymentPlanGroup, finantialEntity, executionYear)
+                .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.<DegreeCurricularPlan> toSet());
+
+        List<DegreeCurricularPlan> degreeCurricularPlanList = Lists.newArrayList(Sets.union(firstSet, secondSet));
         
         Collections.sort(degreeCurricularPlanList, DegreeCurricularPlan.DEGREE_CURRICULAR_PLAN_COMPARATOR_BY_DEGREE_TYPE_AND_EXECUTION_DEGREE_AND_DEGREE_CODE);
         
