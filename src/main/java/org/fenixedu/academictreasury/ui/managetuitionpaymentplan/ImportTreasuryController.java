@@ -24,6 +24,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.google.common.base.Strings;
+
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.importTreasury",
         accessGroup = "treasuryManagers")
 @RequestMapping(ImportTreasuryController.CONTROLLER_URL)
@@ -115,7 +117,7 @@ public class ImportTreasuryController extends AcademicTreasuryBaseController {
             treasuryImportFile.getTreasuryImportType().implementation().process(treasuryImportFile);
             addInfoMessage(Constants.bundle("label.ImportTreasury.process.success"), model);
 
-            if("/".equals(request.getContextPath())) {
+            if(Strings.isNullOrEmpty(request.getContextPath())) {
                 return new RedirectView(VIEW_URL + "/" + treasuryImportFile.getExternalId());
             } else {
                 return new RedirectView(request.getContextPath() + VIEW_URL + "/" + treasuryImportFile.getExternalId());
