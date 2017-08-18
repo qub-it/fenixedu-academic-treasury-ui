@@ -56,6 +56,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.JstlView;
 import org.springframework.web.servlet.view.RedirectView;
 
+import com.google.common.base.Strings;
+
 @BennuSpringController(value = CustomerController.class)
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.massivetuitiondebtcreation",
         accessGroup = "treasuryManagers")
@@ -188,10 +190,10 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
 
             redirect(SEARCH_URL, model, redirectAttributes);
 
-            if("/".equals(request.getContextPath())) {
+            if(Strings.isNullOrEmpty(request.getContextPath())) {
                 return new RedirectView(SEARCH_URL);
             } else {
-                return new RedirectView(request.getContextPath() + "/" + SEARCH_URL);
+                return new RedirectView(request.getContextPath() + SEARCH_URL);
             }
             
         } catch (final Exception e) {
