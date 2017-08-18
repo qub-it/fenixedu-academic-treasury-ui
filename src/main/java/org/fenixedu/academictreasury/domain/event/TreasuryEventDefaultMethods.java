@@ -2,6 +2,7 @@ package org.fenixedu.academictreasury.domain.event;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.treasury.AcademicTreasuryEventPayment;
@@ -21,10 +22,10 @@ import org.joda.time.LocalDate;
 import com.google.common.collect.Sets;
 
 public class TreasuryEventDefaultMethods {
-    
+
     private static class PaymentReferenceCodeImpl implements IPaymentReferenceCode {
 
-        private PaymentReferenceCode paymentReferenceCode;
+        private final PaymentReferenceCode paymentReferenceCode;
 
         private PaymentReferenceCodeImpl(final PaymentReferenceCode referenceCode) {
             this.paymentReferenceCode = referenceCode;
@@ -72,11 +73,11 @@ public class TreasuryEventDefaultMethods {
         }
 
     }
-    
+
     public static void annulDebts(final TreasuryEvent event, final String reason) {
         event.annulAllDebitEntries(reason);
     }
-    
+
     public static String formatMoney(final TreasuryEvent event, final BigDecimal moneyValue) {
         if (DebitEntry.findActive(event).findFirst().isPresent()) {
             return DebitEntry.findActive(event).findFirst().get().getDebtAccount().getFinantialInstitution().getCurrency()
@@ -85,7 +86,7 @@ public class TreasuryEventDefaultMethods {
 
         return FinantialInstitution.findAll().iterator().next().getCurrency().getValueFor(moneyValue);
     }
-    
+
     public static String getDebtAccountURL(final TreasuryEvent treasuryEvent) {
         if (DebitEntry.findActive(treasuryEvent).findFirst().isPresent()) {
             return DebtAccountController.READ_URL
@@ -94,16 +95,21 @@ public class TreasuryEventDefaultMethods {
 
         return null;
     }
-    
+
     public static String getExemptionReason(final TreasuryEvent treasuryEvent) {
         return String.join(", ", TreasuryExemption.find(treasuryEvent).map(l -> l.getReason()).collect(Collectors.toSet()));
     }
-    
-    public static List<IPaymentReferenceCode> getPaymentReferenceCodesList(final TreasuryEvent treasuryEvent) {
-        return DebitEntry.findActive(treasuryEvent).flatMap(d -> d.getPaymentCodesSet().stream()).map(t -> t.getPaymentReferenceCode())
-                .map(p -> new PaymentReferenceCodeImpl(p)).collect(Collectors.toList());
+
+    public static String getExemptionTypeName(final TreasuryEvent treasuryEvent, final Locale locale) {
+        return String.join(", ", TreasuryExemption.find(treasuryEvent)
+                .map(l -> l.getTreasuryExemptionType().getName().getContent(locale)).collect(Collectors.toSet()));
     }
-    
+
+    public static List<IPaymentReferenceCode> getPaymentReferenceCodesList(final TreasuryEvent treasuryEvent) {
+        return DebitEntry.findActive(treasuryEvent).flatMap(d -> d.getPaymentCodesSet().stream())
+                .map(t -> t.getPaymentReferenceCode()).map(p -> new PaymentReferenceCodeImpl(p)).collect(Collectors.toList());
+    }
+
     public static List<IAcademicTreasuryEventPayment> getPaymentsList(final TreasuryEvent event) {
         return DebitEntry.findActive(event).map(l -> l.getSettlementEntriesSet()).reduce((a, b) -> Sets.union(a, b))
                 .orElse(Sets.newHashSet()).stream().filter(l -> l.getFinantialDocument().isClosed())
@@ -111,14 +117,14 @@ public class TreasuryEventDefaultMethods {
     }
 
     public static boolean isBlockingAcademicalActs(final TreasuryEvent treasuryEvent, final LocalDate when) {
-        /* Iterate over active debit entries which 
+        /* Iterate over active debit entries which
          * are not marked with academicActBlockingSuspension
          * and ask if it is in debt
          */
 
         return DebitEntry.find(treasuryEvent).filter(l -> PersonCustomer.isDebitEntryBlockingAcademicalActs(l, when)).count() > 0;
     }
-    
+
     public static boolean isCharged(final TreasuryEvent event) {
         return DebitEntry.findActive(event).count() > 0;
     }
@@ -126,7 +132,7 @@ public class TreasuryEventDefaultMethods {
     public static boolean isDueDateExpired(final TreasuryEvent treasuryEvent, final LocalDate when) {
         return DebitEntry.findActive(treasuryEvent).map(l -> l.isDueDateExpired(when)).reduce((a, b) -> a || b).orElse(false);
     }
-    
+
     public static boolean isExempted(final TreasuryEvent treasuryEvent) {
         return !treasuryEvent.getTreasuryExemptionsSet().isEmpty();
     }
@@ -138,9 +144,8 @@ public class TreasuryEventDefaultMethods {
 
         final FinantialInstitution finantialInstitution =
                 DebitEntry.findActive(treasuryEvent).iterator().next().getDebtAccount().getFinantialInstitution();
-        
+
         return ForwardPaymentConfiguration.isActive(finantialInstitution);
     }
-    
-    
+
 }

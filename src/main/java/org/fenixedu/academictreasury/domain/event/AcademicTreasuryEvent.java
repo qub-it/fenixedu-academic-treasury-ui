@@ -27,7 +27,6 @@ import org.fenixedu.academic.domain.treasury.IAcademicTreasuryTarget;
 import org.fenixedu.academic.domain.treasury.IImprovementTreasuryEvent;
 import org.fenixedu.academic.domain.treasury.IPaymentReferenceCode;
 import org.fenixedu.academic.domain.treasury.ITuitionTreasuryEvent;
-import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -40,16 +39,11 @@ import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
-import org.fenixedu.treasury.domain.Customer;
-import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration;
-import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
-import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.joda.time.LocalDate;
 
 import com.google.common.base.Strings;
@@ -206,7 +200,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.person.required");
         }
 
-        if (!isForAcademicServiceRequest() && !isTuitionEvent() && !isForAcademicTax() && !isForImprovementTax() && !isForTreasuryEventTarget()) {
+        if (!isForAcademicServiceRequest() && !isTuitionEvent() && !isForAcademicTax() && !isForImprovementTax()
+                && !isForTreasuryEventTarget()) {
             throw new AcademicTreasuryDomainException(
                     "error.AcademicTreasuryEvent.not.for.service.request.nor.tuition.nor.academic.tax");
         }
@@ -281,7 +276,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public boolean isLegacy() {
         return false;
     }
-    
+
     public boolean isForLegacy() {
         return isLegacy();
     }
@@ -532,7 +527,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         if (isForRegistrationTuition() && getRegistration() != null) {
             degree = getRegistration().getDegree();
-        } else if ((isForStandaloneTuition() || isForExtracurricularTuition())) {
+        } else if (isForStandaloneTuition() || isForExtracurricularTuition()) {
         } else if (isForImprovementTax()) {
         } else if (isForAcademicTax() && getRegistration() != null) {
             degree = getRegistration().getDegree();
@@ -559,7 +554,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             return 5;
         } else if (isForTreasuryEventTarget()) {
             return 6;
-        } else if(isLegacy()) {
+        } else if (isLegacy()) {
             return 7;
         }
 
@@ -570,66 +565,66 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         if (this.treasuryEventTypeCode() != event.treasuryEventTypeCode()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.for.different.types");
         }
-        
+
         if (isForAcademicServiceRequest()) {
             // Does not make sense
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.not.supported");
         } else if (isForAcademicTax()) {
-            if(getExecutionYear() != event.getExecutionYear()) {
+            if (getExecutionYear() != event.getExecutionYear()) {
                 throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.different.execution.year");
             }
-            
-            if(getAcademicTax() != event.getAcademicTax()) {
+
+            if (getAcademicTax() != event.getAcademicTax()) {
                 throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.different.academic.tax");
             }
         } else if (isForExtracurricularTuition()) {
-            if(getExecutionYear() != event.getExecutionYear()) {
+            if (getExecutionYear() != event.getExecutionYear()) {
                 throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.different.execution.year");
             }
-            
+
         } else if (isForImprovementTax()) {
-            if(getExecutionYear() != event.getExecutionYear()) {
+            if (getExecutionYear() != event.getExecutionYear()) {
                 throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.different.execution.year");
             }
         } else if (isForRegistrationTuition()) {
-            if(getExecutionYear() != event.getExecutionYear()) {
+            if (getExecutionYear() != event.getExecutionYear()) {
                 throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.different.execution.year");
             }
         } else if (isForStandaloneTuition()) {
-            if(getExecutionYear() != event.getExecutionYear()) {
+            if (getExecutionYear() != event.getExecutionYear()) {
                 throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.different.execution.year");
             }
         } else if (isForTreasuryEventTarget()) {
             // Does not make sense
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.not.supported");
-        } else if(isForLegacy()) {
+        } else if (isForLegacy()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.cannot.merge.not.supported");
         } else {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unkwnown.type");
         }
-        
-        for(final DebitEntry debitEntry : Sets.newHashSet(event.getDebitEntriesSet())) {
+
+        for (final DebitEntry debitEntry : Sets.newHashSet(event.getDebitEntriesSet())) {
             debitEntry.setTreasuryEvent(this);
         }
-        
-        for(final TreasuryExemption exemption : Sets.newHashSet(event.getTreasuryExemptionsSet())) {
+
+        for (final TreasuryExemption exemption : Sets.newHashSet(event.getTreasuryExemptionsSet())) {
             exemption.setTreasuryEvent(this);
         }
-        
+
     }
 
     @Override
     public boolean isDeletable() {
         return getDebitEntriesSet().isEmpty() && getTreasuryExemptionsSet().isEmpty();
     }
-    
+
     @Atomic
     @Override
     public void delete() {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.AcademicTreasuryEvent.cannot.delete");
         }
-        
+
         setPerson(null);
         setITreasuryServiceRequest(null);
         setTuitionPaymentPlanGroup(null);
@@ -642,7 +637,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         super.delete();
     }
-    
+
     // @formatter: off
     /************
      * SERVICES *
@@ -943,29 +938,26 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                     getRegistration().getStudentCurricularPlan(getExecutionYear()).getRoot().getEnrolmentsBy(getExecutionYear()));
 
             normalEnrolments.removeAll(getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .collect(Collectors.toSet()));
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
 
             normalEnrolments.removeAll(getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .collect(Collectors.toSet()));
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
 
             normalEnrolments = normalEnrolments.stream().filter(e -> !e.isAnnulled()).collect(Collectors.<Enrolment> toSet());
-            
+
             return normalEnrolments.stream().map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, b) -> a.add(b))
                     .orElse(BigDecimal.ZERO);
 
         } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
             return getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .map(Enrolment.class::cast).filter(e -> !e.isAnnulled())
-                    .map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).map(Enrolment.class::cast)
+                    .filter(e -> !e.isAnnulled()).map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c))
+                    .orElse(BigDecimal.ZERO);
         } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
             return getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .map(Enrolment.class::cast).filter(e -> !e.isAnnulled())
-                    .map(e -> new BigDecimal(e.getEctsCredits()))
-                    .reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).map(Enrolment.class::cast)
+                    .filter(e -> !e.isAnnulled()).map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c))
+                    .orElse(BigDecimal.ZERO);
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
@@ -977,24 +969,22 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                     getRegistration().getStudentCurricularPlan(getExecutionYear()).getRoot().getEnrolmentsBy(getExecutionYear()));
 
             normalEnrolments.removeAll(getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .collect(Collectors.toSet()));
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
 
             normalEnrolments.removeAll(getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .collect(Collectors.toSet()));
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
 
             normalEnrolments = normalEnrolments.stream().filter(e -> !e.isAnnulled()).collect(Collectors.<Enrolment> toSet());
 
             return new BigDecimal(normalEnrolments.size());
         } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
             return new BigDecimal(getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .map(Enrolment.class::cast).filter(e -> !e.isAnnulled()).count());
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).map(Enrolment.class::cast)
+                    .filter(e -> !e.isAnnulled()).count());
         } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
             return new BigDecimal(getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear())
-                    .map(Enrolment.class::cast).filter(e -> !e.isAnnulled()).count());
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).map(Enrolment.class::cast)
+                    .filter(e -> !e.isAnnulled()).count());
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
@@ -1079,17 +1069,27 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
+    public String getExemptionTypeName() {
+        return TreasuryEventDefaultMethods.getExemptionTypeName(this, Constants.DEFAULT_LANGUAGE);
+    }
+
+    @Override
+    public String getExemptionTypeName(final Locale locale) {
+        return TreasuryEventDefaultMethods.getExemptionTypeName(this, locale);
+    }
+
+    @Override
     public List<IAcademicTreasuryEventPayment> getPaymentsList() {
         return TreasuryEventDefaultMethods.getPaymentsList(this);
     }
 
     @Override
     public void invokeSettlementCallbacks() {
-        if(isForTreasuryEventTarget()) {
+        if (isForTreasuryEventTarget()) {
             ((IAcademicTreasuryTarget) getTreasuryEventTarget()).handleSettlement(this);
         }
     }
-    
+
     /* ---------------------------------------------
      * ACADEMIC SERVICE REQUEST EVENT & ACADEMIC TAX
      * ---------------------------------------------
@@ -1164,7 +1164,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public BigDecimal getTuitionInstallmentAmountToPay(int installmentOrder) {
+    public BigDecimal getTuitionInstallmentAmountToPay(final int installmentOrder) {
         if (!isForRegistrationTuition()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
@@ -1173,7 +1173,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public BigDecimal getTuitionInstallmentRemainingAmountToPay(int installmentOrder) {
+    public BigDecimal getTuitionInstallmentRemainingAmountToPay(final int installmentOrder) {
         if (!isForRegistrationTuition()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
@@ -1182,7 +1182,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public BigDecimal getTuitionInstallmentExemptedAmount(int installmentOrder) {
+    public BigDecimal getTuitionInstallmentExemptedAmount(final int installmentOrder) {
         if (!isForRegistrationTuition()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
@@ -1197,7 +1197,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public LocalDate getTuitionInstallmentDueDate(int installmentOrder) {
+    public LocalDate getTuitionInstallmentDueDate(final int installmentOrder) {
         if (!isForRegistrationTuition()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
@@ -1207,7 +1207,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public String getTuitionInstallmentDescription(int installmentOrder) {
+    public String getTuitionInstallmentDescription(final int installmentOrder) {
         if (!isForRegistrationTuition()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
@@ -1217,7 +1217,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public boolean isTuitionInstallmentExempted(int installmentOrder) {
+    public boolean isTuitionInstallmentExempted(final int installmentOrder) {
         if (!isForRegistrationTuition()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
@@ -1227,7 +1227,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public String getTuitionInstallmentExemptionReason(int installmentOrder) {
+    public String getTuitionInstallmentExemptionReason(final int installmentOrder) {
         if (!isForRegistrationTuition()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
@@ -1241,7 +1241,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public List<IAcademicTreasuryEventPayment> getTuitionInstallmentPaymentsList(int installmentOrder) {
+    public List<IAcademicTreasuryEventPayment> getTuitionInstallmentPaymentsList(final int installmentOrder) {
         if (!isForRegistrationTuition()) {
             throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.only.tuition.for.registration.supported");
         }
@@ -1351,7 +1351,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     @Override
-    public String formatMoney(BigDecimal moneyValue) {
+    public String formatMoney(final BigDecimal moneyValue) {
         return TreasuryEventDefaultMethods.formatMoney(this, moneyValue);
     }
 
@@ -1364,7 +1364,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public void annulDebts(final String reason) {
         TreasuryEventDefaultMethods.annulDebts(this, reason);
     }
-    
+
     @Override
     public List<IPaymentReferenceCode> getPaymentReferenceCodesList() {
         return TreasuryEventDefaultMethods.getPaymentReferenceCodesList(this);
@@ -1410,11 +1410,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
      */
     @Deprecated
     @Override
-    public void setAcademicServiceRequest(AcademicServiceRequest academicServiceRequest) {
+    public void setAcademicServiceRequest(final AcademicServiceRequest academicServiceRequest) {
         super.setAcademicServiceRequest(academicServiceRequest);
     }
 
-    public void setITreasuryServiceRequest(ITreasuryServiceRequest iTreasuryServiceRequest) {
+    public void setITreasuryServiceRequest(final ITreasuryServiceRequest iTreasuryServiceRequest) {
         super.setAcademicServiceRequest((AcademicServiceRequest) iTreasuryServiceRequest);
     }
 
