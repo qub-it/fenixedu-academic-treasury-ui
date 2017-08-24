@@ -173,7 +173,8 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.registrationRegimeType = tuitionPaymentPlan.getRegistrationRegimeType();
         this.statuteType = tuitionPaymentPlan.getStatuteType();
         this.withLaboratorialClasses = tuitionPaymentPlan.isWithLaboratorialClasses();
-
+        this.payorDebtAccount = tuitionPaymentPlan.getPayorDebtAccount();
+        
         fillWithInstallments(tuitionPaymentPlan);
     }
 
@@ -205,6 +206,7 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
             this.applyMaximumAmount = tuitionInstallmentTariff.isApplyMaximumAmount();
             this.maximumAmount = tuitionInstallmentTariff.getMaximumAmount();
             this.academicalActBlockingOn = !tuitionInstallmentTariff.getAcademicalActBlockingOff();
+            this.blockAcademicActsOnDebt = tuitionInstallmentTariff.getBlockAcademicActsOnDebt();
 
             addInstallment();
         }
