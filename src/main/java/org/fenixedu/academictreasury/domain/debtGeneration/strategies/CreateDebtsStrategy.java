@@ -1,10 +1,13 @@
 package org.fenixedu.academictreasury.domain.debtGeneration.strategies;
 
+import static org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy.findActiveDebitEntries;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.StudentCurricularPlan;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
@@ -32,8 +35,6 @@ import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
-
-import static org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy.findActiveDebitEntries;
 
 public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
 
@@ -95,30 +96,8 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
         for (final DegreeCurricularPlan degreeCurricularPlan : rule.getDegreeCurricularPlansSet()) {
             for (final Registration registration : degreeCurricularPlan.getRegistrations()) {
 
-                if (rule.getDebtGenerationRuleRestriction() != null
-                        && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+                if (isToDiscard(rule, registration)) {
                     continue;
-                }
-
-                if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
-                    continue;
-                }
-
-                if (!rule.getDegreeCurricularPlansSet()
-                        .contains(registration.getStudentCurricularPlan(rule.getExecutionYear()).getDegreeCurricularPlan())) {
-                    continue;
-                }
-
-                // Discard registrations not active and with no enrolments
-                if (!registration.hasAnyActiveState(rule.getExecutionYear())) {
-                    continue;
-                }
-
-                if (!registration.hasAnyEnrolmentsIn(rule.getExecutionYear())) {
-                    // only return is this rule has not entry that forces creation
-                    if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
-                        continue;
-                    }
                 }
 
                 try {
@@ -139,37 +118,48 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.active.to.process");
         }
 
-        if (rule.getDebtGenerationRuleRestriction() != null
-                && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+        if (isToDiscard(rule, registration)) {
             return;
         }
 
-        if (registration.getStudentCurricularPlan(rule.getExecutionYear()) == null) {
-            return;
-        }
-
-        if (!rule.getDegreeCurricularPlansSet()
-                .contains(registration.getStudentCurricularPlan(rule.getExecutionYear()).getDegreeCurricularPlan())) {
-            return;
-        }
-
-        // Discard registrations not active and with no enrolments
-        if (!registration.hasAnyActiveState(rule.getExecutionYear())) {
-            return;
-        }
-
-        if (!registration.hasAnyEnrolmentsIn(rule.getExecutionYear())) {
-
-            // only return is this rule has not entry that forces creation
-            if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
-                return;
-            }
-        }
-
+        // TODO legidio, should the same try/catch as above be applied?
         processDebtsForRegistration(rule, registration);
     }
 
-    private boolean isRuleWithOnlyOneAcademicTaxEntryForcingCreation(final AcademicDebtGenerationRule rule) {
+    static private boolean isToDiscard(final AcademicDebtGenerationRule rule, final Registration registration) {
+
+        if (rule.getDebtGenerationRuleRestriction() != null
+                && !rule.getDebtGenerationRuleRestriction().strategyImplementation().isToApply(rule, registration)) {
+            return true;
+        }
+
+        final ExecutionYear year = rule.getExecutionYear();
+        final StudentCurricularPlan scp = registration.getStudentCurricularPlan(year);
+        if (scp == null) {
+            return true;
+        }
+
+        if (!rule.getDegreeCurricularPlansSet().contains(scp.getDegreeCurricularPlan())) {
+            return true;
+        }
+
+        // Discard registrations not active and with no enrolments
+        if (!registration.hasAnyActiveState(year)) {
+            return true;
+        }
+
+        if (registration.getRegistrationDataByExecutionYearSet().stream().noneMatch(i -> i.getExecutionYear() == year)) {
+
+            // only return is this rule has not entry that forces creation
+            if (!isRuleWithOnlyOneAcademicTaxEntryForcingCreation(rule)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    static private boolean isRuleWithOnlyOneAcademicTaxEntryForcingCreation(final AcademicDebtGenerationRule rule) {
         if (rule.getAcademicDebtGenerationRuleEntriesSet().size() != 1) {
             return false;
         }
@@ -188,7 +178,8 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
         final Set<DebitEntry> debitEntries = Sets.newHashSet();
 
         DebitEntry grabbedDebitEntry = null;
-        for (final AcademicDebtGenerationRuleEntry entry : rule.getOrderedAcademicDebtGenerationRuleEntries() /* rule.getAcademicDebtGenerationRuleEntriesSet() */) {
+        for (final AcademicDebtGenerationRuleEntry entry : rule
+                .getOrderedAcademicDebtGenerationRuleEntries() /* rule.getAcademicDebtGenerationRuleEntriesSet() */) {
             final Product product = entry.getProduct();
 
             if (AcademicTreasurySettings.getInstance().getTuitionProductGroup() == product.getProductGroup()) {
@@ -259,14 +250,13 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
                     throw new AcademicTreasuryDomainException(
                             "error.AcademicDebtGenerationRule.debitEntry.not.from.same.academic.event");
                 }
-                
+
                 final Product interestProduct = TreasurySettings.getInstance().getInterestProduct();
                 final Set<DebitEntry> treasuryEventDebitEntries = DebitEntry.findActive(treasuryEvent)
-                    .filter(d -> d.getProduct() != interestProduct).collect(Collectors.toSet());
-                
+                        .filter(d -> d.getProduct() != interestProduct).collect(Collectors.toSet());
+
                 if (!treasuryEventDebitEntries.equals(debitEntries)) {
-                    throw new AcademicTreasuryDomainException(
-                            "error.AcademicDebtGenerationRule.not.all.debitEntries.aggregated");
+                    throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.all.debitEntries.aggregated");
                 }
             }
         }
