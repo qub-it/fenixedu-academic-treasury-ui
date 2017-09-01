@@ -882,33 +882,4 @@ public class TuitionServices {
                 .findFirst().orElse(null);
     }
 
-    public static void enqueueRegistrationForAcademicDebtRuleExecution(final String registrationId) {
-        synchronized (TuitionServices.class) {
-            FenixFramework.atomic(new Runnable() {
-
-                @Override
-                public void run() {
-                    final Registration registration = FenixFramework.getDomainObject(registrationId);
-                    registration.setBennuForPendingRegistrationsDebtCreation(Bennu.getInstance());
-                }
-            });
-        }
-    }
-
-    public static Set<String> dequeueAllRegistrationsForAcademicDebtRuleExecution() {
-        synchronized (TuitionServices.class) {
-            final Set<String> result = Sets.newHashSet();
-            FenixFramework.atomic(new Runnable() {
-
-                @Override
-                public void run() {
-                    result.addAll(Bennu.getInstance().getPendingRegistrationsForDebtCreationSet().stream()
-                            .map(l -> l.getExternalId()).collect(Collectors.toSet()));
-                    Bennu.getInstance().getPendingRegistrationsForDebtCreationSet().clear();
-                }
-            });
-
-            return result;
-        }
-    }
 }
