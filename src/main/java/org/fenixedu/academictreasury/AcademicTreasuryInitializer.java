@@ -16,7 +16,6 @@ import org.fenixedu.academictreasury.services.accesscontrol.spi.AcademicTreasury
 import org.fenixedu.academictreasury.services.signals.AcademicServiceRequestCancelOrRejectHandler;
 import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.ImprovementEnrolmentHandler;
-import org.fenixedu.academictreasury.services.signals.NormalEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.StandaloneEnrolmentHandler;
 import org.fenixedu.bennu.signals.Signal;
 import org.fenixedu.treasury.domain.bennu.signals.BennuSignalsServices;
@@ -37,7 +36,6 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         registerStandaloneEnrolmentHandler();
         registerExtracurricularEnrolmentHandler();
         registerImprovementEnrolmentHandler();
-        registerNormalEnrolmentHandler();
         
         TreasuryAccessControlAPI.registerExtension(new AcademicTreasuryAccessControlExtension());
         
@@ -74,8 +72,4 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         Signal.register(ITreasuryBridgeAPI.IMPROVEMENT_ENROLMENT, new ImprovementEnrolmentHandler());
     }
 
-    private static void registerNormalEnrolmentHandler() {
-        Signal.register(ITreasuryBridgeAPI.NORMAL_ENROLMENT, new NormalEnrolmentHandler());
-    }
-    
 }
