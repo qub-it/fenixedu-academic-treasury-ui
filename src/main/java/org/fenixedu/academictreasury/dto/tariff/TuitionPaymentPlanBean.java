@@ -342,6 +342,10 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
             errorMessages.add(
                     "error.TuitionInstallmentTariff.defaultPaymentPlanCourseFunctionCostIndexed.not.supported.for.registrationTuition");
         }
+        
+        if(!isAcademicalActBlockingOn() && isBlockAcademicActsOnDebt()) {
+            errorMessages.add("error.TuitionPaymentPlanBean.cannot.suspend.and.also.block.academical.acts.on.debt");
+        }
 
         if (!errorMessages.isEmpty()) {
             return errorMessages;

@@ -137,6 +137,7 @@ public class ExemptionsGenerationRequestFileController extends AcademicTreasuryB
     public void download(@PathVariable("fileId") final ExemptionsGenerationRequestFile exemptionsGenerationRequestFile,
             final HttpServletRequest request, final HttpServletResponse response, final Model model) {
 
+        response.setContentLength(exemptionsGenerationRequestFile.getContent().length);
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-disposition", "attachment; filename=" + exemptionsGenerationRequestFile.getFilename());
 

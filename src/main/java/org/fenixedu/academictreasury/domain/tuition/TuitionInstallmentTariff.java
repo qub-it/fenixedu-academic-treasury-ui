@@ -179,6 +179,11 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
 */
 
         }
+        
+        if(isAcademicalActBlockingOff() && isBlockAcademicActsOnDebt()) {
+            throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.cannot.suspend.and.also.block.academical.acts.on.debt.detailed", 
+                    getProduct().getName().getContent());
+        }
     }
 
     private boolean isFixedAmountRequired() {
@@ -577,6 +582,11 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN_CONDITIONS.getDescriptionI18N().getContent(),
                 getTuitionPaymentPlan().getConditionsDescription().getContent());
 
+        if(getTuitionPaymentPlan().getPayorDebtAccount() != null) {
+            propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_PAYOR_DEBT_ACCOUNT.getDescriptionI18N().getContent(), 
+                    getTuitionPaymentPlan().getPayorDebtAccount().getCustomer().getUiFiscalNumber());
+        }
+        
         if (getTuitionCalculationType().isFixedAmount()) {
             propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.FIXED_AMOUNT.getDescriptionI18N().getContent(),
                     getFinantialEntity().getFinantialInstitution().getCurrency().getValueFor(getFixedAmount()));

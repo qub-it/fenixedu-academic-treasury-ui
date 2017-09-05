@@ -363,16 +363,6 @@ class tuition.TuitionPaymentPlan {
 		}
 	}
 	
-	relation debitEntryTuitionPayorDebtAccount {
-		.org.fenixedu.treasury.domain.debt.DebtAccount playsRole payorDebtAccount {
-			multiplicity 0..1;
-		}
-		
-		.org.fenixedu.treasury.domain.document.DebitEntry playsRole debitEntries {
-			multiplicity *;
-		}
-	}
-	
 	relation DebitEntryCurricularCourse {
 		
 		.org.fenixedu.academic.domain.CurricularCourse playsRole curricularCourse {

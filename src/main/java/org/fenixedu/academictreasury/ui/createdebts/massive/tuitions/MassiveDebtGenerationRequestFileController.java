@@ -211,6 +211,7 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
     public byte[] download(@PathVariable("fileId") final MassiveDebtGenerationRequestFile massiveDebtGenerationRequestFile,
             final HttpServletRequest request, final HttpServletResponse response, final Model model) {
 
+        response.setContentLength(massiveDebtGenerationRequestFile.getContent().length);
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-disposition", "attachment; filename=" + massiveDebtGenerationRequestFile.getFilename());
 
