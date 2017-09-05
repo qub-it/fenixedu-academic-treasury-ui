@@ -79,70 +79,77 @@ public class DebtReportRequest extends DebtReportRequest_Base {
         return super.getIncludeAnnuledEntries();
     }
 
-    @Atomic(mode = TxMode.WRITE)
+    @Atomic(mode = TxMode.READ)
     public void processRequest() {
-
-        final ErrorsLog errorsLog = new ErrorsLog();
 
         if (getType().isRequestForInvoiceEntries()) {
 
-            final byte[] content = Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
+            final ErrorsLog errorsLog = new ErrorsLog();
+            final byte[] content = extractInformation(errorsLog);
 
-                @Override
-                public ExcelSheet[] getSheets() {
-                    return new ExcelSheet[] {
-
-                            ExcelSheet.create(debitEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_DEBIT_HEADERS,
-                                    DebtReportService.debitEntriesReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(creditEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_CREDIT_HEADERS,
-                                    DebtReportService.creditEntriesReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(settlementEntriesSheetName(), SettlementReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.settlementEntriesReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(paymentEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.paymentEntriesReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.reimbursementEntriesReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(debtAccountEntriesSheetName(), DebtAccountReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.debtAccountEntriesReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(academicActBlockingSuspensionSheetName(),
-                                    AcademicActBlockingSuspensionReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.academicActBlockingSuspensionReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.paymentReferenceCodeReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(sibsTransactionDetailSheetName(),
-                                    SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.sibsTransactionDetailReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(treasuryExemptionSheetName(), TreasuryExemptionReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.treasuryExemptionReport(DebtReportRequest.this, errorsLog)),
-
-                            ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS,
-                                    DebtReportService.productReport(DebtReportRequest.this, errorsLog)) };
-                }
-
-                private String decimalSeparator() {
-                    if (Strings.isNullOrEmpty(getDecimalSeparator())) {
-                        return DOT;
-                    }
-
-                    return getDecimalSeparator();
-                }
-
-            }, errorsLog);
-
-            DebtReportRequestResultFile.create(this, content);
-            DebtReportRequestResultErrorsFile.create(this, errorsLog.getLog().getBytes());
+            writeReportResultFile(errorsLog, content);
         }
+    }
 
+    @Atomic(mode = TxMode.WRITE)
+    private void writeReportResultFile(final ErrorsLog errorsLog, final byte[] content) {
+        DebtReportRequestResultFile.create(this, content);
+        DebtReportRequestResultErrorsFile.create(this, errorsLog.getLog().getBytes());
         setBennuForPendingReportRequests(null);
+    }
+
+    private byte[] extractInformation(final ErrorsLog errorsLog) {
+        return Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
+
+            @Override
+            public ExcelSheet[] getSheets() {
+                return new ExcelSheet[] {
+
+                        ExcelSheet.create(debitEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_DEBIT_HEADERS,
+                                DebtReportService.debitEntriesReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(creditEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_CREDIT_HEADERS,
+                                DebtReportService.creditEntriesReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(settlementEntriesSheetName(), SettlementReportEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.settlementEntriesReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(paymentEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.paymentEntriesReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.reimbursementEntriesReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(debtAccountEntriesSheetName(), DebtAccountReportEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.debtAccountEntriesReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(academicActBlockingSuspensionSheetName(),
+                                AcademicActBlockingSuspensionReportEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.academicActBlockingSuspensionReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.paymentReferenceCodeReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(sibsTransactionDetailSheetName(),
+                                SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.sibsTransactionDetailReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(treasuryExemptionSheetName(), TreasuryExemptionReportEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.treasuryExemptionReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.productReport(DebtReportRequest.this, errorsLog)) };
+            }
+
+            private String decimalSeparator() {
+                if (Strings.isNullOrEmpty(getDecimalSeparator())) {
+                    return DOT;
+                }
+
+                return getDecimalSeparator();
+            }
+
+        }, errorsLog);
     }
 
     @Atomic
