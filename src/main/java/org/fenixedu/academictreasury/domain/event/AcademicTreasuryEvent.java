@@ -769,7 +769,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public static Stream<? extends AcademicTreasuryEvent> findForAcademicTax(final Registration registration,
             final ExecutionYear executionYear, final AcademicTax academicTax) {
-        return academicTax.getAcademicTreasuryEventSet().stream()
+        return registration.getPerson().getAcademicTreasuryEventSet().stream()
                 .filter(e -> e.isForAcademicTax() && e.getAcademicTax() == academicTax && e.getExecutionYear() == executionYear
                         && (!e.getAcademicTax().isAppliedOnRegistration() && e.getPerson() == registration.getPerson()
                                 || e.getRegistration() == registration));
@@ -851,7 +851,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         TOTAL_ECTS_OR_UNITS("38"),
         COURSE_FUNCTION_COST("39"), 
         DEFAULT_TUITION_TOTAL_AMOUNT("40"), 
-        USED_DATE("41");
+        USED_DATE("41"),
+        TUITION_PAYOR_DEBT_ACCOUNT("42");
 
         private String code;
 
