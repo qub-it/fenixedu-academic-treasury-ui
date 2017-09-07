@@ -256,8 +256,8 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
                             payment.setDebtAccount(debtAccount);
                         }
 
-                        for (final DebitEntry entry : ipcDebtAccount.getDebitEntriesSet()) {
-                            entry.setDebtAccount(debtAccount);
+                        for (final DebitEntry entry : ipcDebtAccount.getPayorDebitEntriesSet()) {
+                            entry.setPayorDebtAccount(debtAccount);
                         }
 
                         for (final TreasuryEvent treasuryEvent : ipcDebtAccount.getTreasuryEventsSet()) {
