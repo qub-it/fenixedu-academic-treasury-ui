@@ -764,7 +764,13 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public static Stream<? extends AcademicTreasuryEvent> findAllForAcademicTax(final Registration registration,
             final ExecutionYear executionYear) {
-        return findAll().filter(e -> e.isForAcademicTax() && e.getExecutionYear() == executionYear);
+        final Set<AcademicTreasuryEvent> result = Sets.newHashSet();
+        
+        for (final AcademicTax academicTax : AcademicTax.findAll().collect(Collectors.toSet())) {
+            result.addAll(findForAcademicTax(registration, executionYear, academicTax).collect(Collectors.toSet()));
+        }
+        
+        return result.stream();
     }
 
     public static Stream<? extends AcademicTreasuryEvent> findForAcademicTax(final Registration registration,
