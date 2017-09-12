@@ -26,6 +26,7 @@
  */
 package org.fenixedu.academictreasury.ui.createdebts.massive.tuitions;
 
+import java.io.IOException;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -207,15 +208,18 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
     public static final String DOWNLOAD_URL = CONTROLLER_URL + _DOWNLOAD_URI;
 
     @RequestMapping(value = _DOWNLOAD_URI + "/{fileId}", method = RequestMethod.GET)
-    @ResponseBody
-    public byte[] download(@PathVariable("fileId") final MassiveDebtGenerationRequestFile massiveDebtGenerationRequestFile,
+    public void download(@PathVariable("fileId") final MassiveDebtGenerationRequestFile massiveDebtGenerationRequestFile,
             final HttpServletRequest request, final HttpServletResponse response, final Model model) {
 
         response.setContentLength(massiveDebtGenerationRequestFile.getContent().length);
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-disposition", "attachment; filename=" + massiveDebtGenerationRequestFile.getFilename());
 
-        return massiveDebtGenerationRequestFile.getContent();
+        try {
+            response.getOutputStream().write(massiveDebtGenerationRequestFile.getContent());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private String jspPage(final String page) {
