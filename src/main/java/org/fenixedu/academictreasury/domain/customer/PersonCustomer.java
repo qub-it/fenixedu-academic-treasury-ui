@@ -152,6 +152,11 @@ public class PersonCustomer extends PersonCustomer_Base {
 
         return person.getDefaultMobilePhoneNumber();
     }
+    
+    public String getMobileNumber() {
+        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+        return person.getDefaultMobilePhoneNumber();
+    }
 
     @Override
     public String getIdentificationNumber() {
