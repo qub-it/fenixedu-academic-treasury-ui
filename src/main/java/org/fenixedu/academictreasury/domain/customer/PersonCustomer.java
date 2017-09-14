@@ -2,7 +2,6 @@ package org.fenixedu.academictreasury.domain.customer;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -54,10 +53,10 @@ public class PersonCustomer extends PersonCustomer_Base {
         super.setCountryCode(fiscalCountry);
         super.setFiscalNumber(fiscalNumber);
 
-        if(!FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
+        if (!FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
             throw new AcademicTreasuryDomainException("error.Customer.fiscal.information.invalid");
         }
-        
+
         checkRules();
 
         // create debt accounts for all active finantial instituions
@@ -93,7 +92,7 @@ public class PersonCustomer extends PersonCustomer_Base {
             throw new AcademicTreasuryDomainException(
                     "error.PersonCustomer.default.fiscal.number.applied.only.to.default.country");
         }
-        
+
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
 
         if (!DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())
@@ -106,7 +105,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     public String getCode() {
         return this.getExternalId();
     }
-    
+
     public Person getAssociatedPerson() {
         return isActive() ? getPerson() : getPersonForInactivePersonCustomer();
     }
@@ -152,7 +151,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
         return person.getDefaultMobilePhoneNumber();
     }
-    
+
     public String getMobileNumber() {
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
         return person.getDefaultMobilePhoneNumber();
@@ -395,7 +394,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     public void mergeWithPerson(final Person person) {
-        
+
         if (getPerson() == person) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.merging.not.happening");
         }
@@ -417,9 +416,9 @@ public class PersonCustomer extends PersonCustomer_Base {
             personCustomer.setFromPersonMerge(true);
             personCustomer.checkRules();
         }
-        
+
         final Person thisPerson = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        for(final AcademicTreasuryEvent e : Sets.newHashSet(person.getAcademicTreasuryEventSet())) {
+        for (final AcademicTreasuryEvent e : Sets.newHashSet(person.getAcademicTreasuryEventSet())) {
             e.setPerson(thisPerson);
         }
 
@@ -429,12 +428,12 @@ public class PersonCustomer extends PersonCustomer_Base {
     @Override
     public Set<? extends TreasuryEvent> getTreasuryEventsSet() {
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        
+
         final Set<TreasuryEvent> result = Sets.newHashSet();
         for (IAcademicTreasuryEvent event : TreasuryBridgeAPIFactory.implementation().getAllAcademicTreasuryEventsList(person)) {
             result.add((TreasuryEvent) event);
         }
-        
+
         return result;
     }
 
@@ -469,7 +468,18 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     public static Stream<? extends PersonCustomer> find(final Person person) {
-        return findAll().filter(pc -> pc.getPerson() == person || pc.getPersonForInactivePersonCustomer() == person);
+        final Set<PersonCustomer> result = Sets.newHashSet();
+
+        if (person != null) {
+
+            if (person.getPersonCustomer() != null) {
+                result.add(person.getPersonCustomer());
+            }
+
+            result.addAll(person.getInactivePersonCustomersSet());
+        }
+
+        return result.stream();
     }
 
     public static Stream<? extends PersonCustomer> find(final Person person, final String fiscalCountryCode,
