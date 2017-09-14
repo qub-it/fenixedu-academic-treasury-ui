@@ -12,7 +12,6 @@ import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
-import org.fenixedu.academictreasury.domain.debtGeneration.strategies.AggregateDebtsStrategy;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean.ProductEntry;
@@ -279,13 +278,11 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     }
 
     public boolean isFirst() {
-        return findAll().filter(l -> l.getAcademicDebtGenerationRuleType() == this.getAcademicDebtGenerationRuleType())
-                .filter(l -> l.getExecutionYear() == this.getExecutionYear()).min(COMPARE_BY_ORDER_NUMBER).get() == this;
+        return find(this.getAcademicDebtGenerationRuleType(), this.getExecutionYear()).min(COMPARE_BY_ORDER_NUMBER).get() == this;
     }
 
     public boolean isLast() {
-        return findAll().filter(l -> l.getAcademicDebtGenerationRuleType() == this.getAcademicDebtGenerationRuleType())
-                .filter(l -> l.getExecutionYear() == this.getExecutionYear()).max(COMPARE_BY_ORDER_NUMBER).get() == this;
+        return find(this.getAcademicDebtGenerationRuleType(), this.getExecutionYear()).max(COMPARE_BY_ORDER_NUMBER).get() == this;
     }
 
     @Atomic
@@ -334,8 +331,8 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     public static Stream<AcademicDebtGenerationRule> find(final AcademicDebtGenerationRuleType type,
             final ExecutionYear executionYear) {
-        return findAll().filter(r -> r.getAcademicDebtGenerationRuleType() == type)
-                .filter(r -> r.getExecutionYear() == executionYear);
+        return executionYear.getAcademicDebtGenerationRulesSet().stream()
+                .filter(r -> r.getAcademicDebtGenerationRuleType() == type);
     }
 
     public static Stream<AcademicDebtGenerationRule> findActive() {
