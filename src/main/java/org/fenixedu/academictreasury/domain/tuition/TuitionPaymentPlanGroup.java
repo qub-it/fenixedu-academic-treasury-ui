@@ -142,25 +142,24 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
     }
 
     protected static Stream<TuitionPaymentPlanGroup> findByCode(final String code) {
-        return findAll()
-                .filter(l -> StringNormalizer.normalize(l.getCode().toLowerCase()).equals(
-                        StringNormalizer.normalize(code).toLowerCase()));
+        return findAll().filter(l -> StringNormalizer.normalize(l.getCode().toLowerCase())
+                .equals(StringNormalizer.normalize(code).toLowerCase()));
     }
 
     public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForRegistration() {
-        return findAll().filter(t -> t.isForRegistration()).findFirst();
+        return findDefaultGroupForRegistration().findFirst();
     }
 
     public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForStandalone() {
-        return findAll().filter(t -> t.isForStandalone()).findFirst();
+        return findDefaultGroupForStandalone().findFirst();
     }
 
     public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForExtracurricular() {
-        return findAll().filter(t -> t.isForExtracurricular()).findFirst();
+        return findDefaultGroupForExtracurricular().findFirst();
     }
 
     public static Optional<TuitionPaymentPlanGroup> findUniqueDefaultGroupForImprovement() {
-        return findAll().filter(t -> t.isForImprovement()).findFirst();
+        return findDefaultGroupForImprovement().findFirst();
     }
 
     @Atomic
