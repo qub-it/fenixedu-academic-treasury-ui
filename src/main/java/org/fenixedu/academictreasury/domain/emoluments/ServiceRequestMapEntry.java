@@ -84,7 +84,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
     }
 
     public static Stream<ServiceRequestMapEntry> find(final ServiceRequestType requestType) {
-        return findAll().filter(e -> e.getServiceRequestType() == requestType);
+        return requestType.getServiceRequestMapEntriesSet().stream();
     }
 
     public static Stream<ServiceRequestMapEntry> find(final Product product, final ServiceRequestType requestType) {
