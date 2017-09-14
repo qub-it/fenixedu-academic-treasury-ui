@@ -657,6 +657,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
                 || executionYear.containsDate(l.getRequestDate()));
     }
 
+    public static Stream<? extends AcademicTreasuryEvent> find(final Registration registration,
+            final ExecutionYear executionYear) {
+        return registration.getAcademicTreasuryEventSet().stream().filter(l -> l.getExecutionYear() == executionYear);
+    }
+
     /* --- Academic Service Requests --- */
 
     public static Stream<? extends AcademicTreasuryEvent> find(final ITreasuryServiceRequest iTreasuryServiceRequest) {
@@ -704,8 +709,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     protected static Stream<? extends AcademicTreasuryEvent> findForStandaloneTuition(final Registration registration,
             final ExecutionYear executionYear) {
-        return findAll().filter(
-                e -> e.isForStandaloneTuition() && e.getRegistration() == registration && e.getExecutionYear() == executionYear);
+        return find(registration, executionYear).filter(e -> e.isForStandaloneTuition());
     }
 
     public static Optional<? extends AcademicTreasuryEvent> findUniqueForStandaloneTuition(final Registration registration,
@@ -723,8 +727,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     protected static Stream<? extends AcademicTreasuryEvent> findForExtracurricularTuition(final Registration registration,
             final ExecutionYear executionYear) {
-        return findAll().filter(e -> e.isForExtracurricularTuition() && e.getRegistration() == registration
-                && e.getExecutionYear() == executionYear);
+        return find(registration, executionYear).filter(e -> e.isForExtracurricularTuition());
     }
 
     public static Optional<? extends AcademicTreasuryEvent> findUniqueForExtracurricularTuition(final Registration registration,
@@ -742,8 +745,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     protected static Stream<? extends AcademicTreasuryEvent> findForImprovementTuition(final Registration registration,
             final ExecutionYear executionYear) {
-        return findAll().filter(
-                e -> e.isForImprovementTax() && e.getRegistration() == registration && e.getExecutionYear() == executionYear);
+        return find(registration, executionYear).filter(e -> e.isForImprovementTax());
     }
 
     public static Optional<? extends AcademicTreasuryEvent> findUniqueForImprovementTuition(final Registration registration,
