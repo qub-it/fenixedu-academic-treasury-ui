@@ -39,10 +39,10 @@ import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
-import pt.ist.fenixframework.Atomic;
-
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+
+import pt.ist.fenixframework.Atomic;
 
 public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
@@ -191,16 +191,13 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             final String paymentPlanLabel =
                     isCustomized() ? "label.TuitionPaymentPlan.paymentPlanName.customized" : "label.TuitionPaymentPlan.paymentPlanName";
 
-            result = result
-                    .with(locale,
-                            BundleUtil
-                                    .getString(Constants.BUNDLE, paymentPlanLabel,
-                                            "[" + getDegreeCurricularPlan().getDegree().getCode() + "] "
-                                                    + getDegreeCurricularPlan().getDegree().getPresentationNameI18N()
-                                                            .getContent(locale)
-                                                    + " - " + getDegreeCurricularPlan().getName(),
-                                            getExecutionYear().getQualifiedName(),
-                                            isCustomized() ? getCustomizedName().getContent(locale) : null));
+            result = result.with(locale,
+                    BundleUtil.getString(Constants.BUNDLE, paymentPlanLabel,
+                            "[" + getDegreeCurricularPlan().getDegree().getCode() + "] "
+                                    + getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale) + " - "
+                                    + getDegreeCurricularPlan().getName(),
+                            getExecutionYear().getQualifiedName(),
+                            isCustomized() ? getCustomizedName().getContent(locale) : null));
         }
 
         return result;
@@ -426,10 +423,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         }
 
         if (createdDebitEntries) {
-            final DebitNote debitNote = DebitNote.create(debtAccount,
-                    DocumentNumberSeries
-                            .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution())
-                            .get(),
+            final DebitNote debitNote = DebitNote.create(debtAccount, DocumentNumberSeries
+                    .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution()).get(),
                     new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(createdDebitEntriesSet));
@@ -464,10 +459,8 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         }
 
         if (createdDebitEntries) {
-            final DebitNote debitNote = DebitNote.create(debtAccount,
-                    DocumentNumberSeries
-                            .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution())
-                            .get(),
+            final DebitNote debitNote = DebitNote.create(debtAccount, DocumentNumberSeries
+                    .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution()).get(),
                     new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(createdDebitEntriesSet));
@@ -574,7 +567,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     }
 
     public static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup) {
-        return findAll().filter(t -> t.getTuitionPaymentPlanGroup() == tuitionPaymentPlanGroup);
+        return tuitionPaymentPlanGroup.getTuitionPaymentPlansSet().stream();
     }
 
     public static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
