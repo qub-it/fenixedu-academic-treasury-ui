@@ -130,10 +130,19 @@ public class AcademicTax extends AcademicTax_Base {
         return Bennu.getInstance().getAcademicTaxesSet().stream();
     }
 
+    /**
+     * @deprecated Please use direct relation Product <-> AcademicTax
+     */
+    @Deprecated
     public static Stream<AcademicTax> find(final Product product) {
-        return findAll().filter(a -> a.getProduct() == product);
+        final AcademicTax academicTax = product.getAcademicTax();
+        return academicTax == null ? Stream.empty() : Stream.of(academicTax);
     }
 
+    /**
+     * @deprecated Please use direct relation Product <-> AcademicTax
+     */
+    @Deprecated
     public static Optional<AcademicTax> findUnique(final Product product) {
         return find(product).findFirst();
     }
