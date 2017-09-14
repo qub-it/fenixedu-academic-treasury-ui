@@ -340,7 +340,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     }
 
     public static Stream<AcademicDebtGenerationRule> findActiveByType(final AcademicDebtGenerationRuleType type) {
-        return findActive().filter(r -> r.getAcademicDebtGenerationRuleType() == type);
+        return type.getAcademicDebtGenerationRulesSet().stream().filter(AcademicDebtGenerationRule::isActive);
     }
 
     @Atomic
