@@ -80,7 +80,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
     }
 
     public static Stream<ServiceRequestMapEntry> find(final Product product) {
-        return findAll().filter(e -> e.getProduct() == product);
+        return product.getServiceRequestMapEntriesSet().stream();
     }
 
     public static Stream<ServiceRequestMapEntry> find(final ServiceRequestType requestType) {
