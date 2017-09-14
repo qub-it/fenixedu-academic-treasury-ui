@@ -54,7 +54,8 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
         }
 
         if (getAcademicDebtGenerationRule() == null) {
-            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.academicDebtGenerationRule.required");
+            throw new AcademicTreasuryDomainException(
+                    "error.AcademicDebtGenerationRuleEntry.academicDebtGenerationRule.required");
         }
 
         if (getProduct() == null) {
@@ -64,9 +65,10 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
         if (find(getAcademicDebtGenerationRule(), getProduct()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.product.duplicated.in.rule");
         }
-        
-        if(!isProductTuition() && !isProductAcademicTax() && isCreateDebt()) {
-            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.createDebt.only.supported.for.tuition.or.academicTax");
+
+        if (!isProductTuition() && !isProductAcademicTax() && isCreateDebt()) {
+            throw new AcademicTreasuryDomainException(
+                    "error.AcademicDebtGenerationRuleEntry.createDebt.only.supported.for.tuition.or.academicTax");
         }
     }
 
@@ -107,7 +109,7 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
     }
 
     public static Stream<AcademicDebtGenerationRuleEntry> find(final AcademicDebtGenerationRule academicDebtGenerationRule) {
-        return findAll().filter(l -> l.getAcademicDebtGenerationRule() == academicDebtGenerationRule);
+        return academicDebtGenerationRule.getAcademicDebtGenerationRuleEntriesSet().stream();
     }
 
     public static Stream<AcademicDebtGenerationRuleEntry> find(final AcademicDebtGenerationRule academicDebtGenerationRule,
