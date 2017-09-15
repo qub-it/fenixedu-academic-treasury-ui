@@ -55,10 +55,6 @@ public class AcademicTax extends AcademicTax_Base {
             throw new AcademicTreasuryDomainException("error.AcademicTax.product.required");
         }
 
-        if (find(getProduct()).count() > 1) {
-            throw new AcademicTreasuryDomainException("error.AcademicTax.for.product.already.exists");
-        }
-
         if (!isAppliedOnRegistrationFirstYear() && !isAppliedOnRegistrationSubsequentYears()) {
             throw new AcademicTreasuryDomainException("error.AcademicTax.must.be.applied.on.some.registration.enrolment.year");
         }
@@ -130,27 +126,18 @@ public class AcademicTax extends AcademicTax_Base {
         return Bennu.getInstance().getAcademicTaxesSet().stream();
     }
 
-    /**
-     * @deprecated Please use direct relation Product <-> AcademicTax
-     */
-    @Deprecated
-    public static Stream<AcademicTax> find(final Product product) {
-        final AcademicTax academicTax = product.getAcademicTax();
-        return academicTax == null ? Stream.empty() : Stream.of(academicTax);
-    }
-
-    /**
-     * @deprecated Please use direct relation Product <-> AcademicTax
-     */
-    @Deprecated
     public static Optional<AcademicTax> findUnique(final Product product) {
-        return find(product).findFirst();
+        return Optional.ofNullable(product.getAcademicTax());
     }
 
     @Atomic
     public static AcademicTax create(final Product product, final boolean appliedOnRegistration,
             final boolean appliedOnRegistrationFirstYear, final boolean appliedOnRegistrationSubsequentYears,
             final boolean appliedAutomatically) {
+        if(product.getAcademicTax() != null) {
+            throw new AcademicTreasuryDomainException("error.AcademicTax.create.academicTax.already.defined.for.product");
+        }
+        
         return new AcademicTax(product, appliedOnRegistration, appliedOnRegistrationFirstYear,
                 appliedOnRegistrationSubsequentYears, appliedAutomatically);
     }

@@ -444,11 +444,6 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
      */
 
     @Override
-    public List<IAcademicTreasuryEvent> getAllAcademicTreasuryEventsList(final Person person, final ExecutionYear executionYear) {
-        return AcademicTreasuryEvent.find(person, executionYear).collect(Collectors.<IAcademicTreasuryEvent> toList());
-    }
-
-    @Override
     public List<IAcademicTreasuryEvent> getAllAcademicTreasuryEventsList(final Person person) {
         return AcademicTreasuryEvent.find(person).collect(Collectors.<IAcademicTreasuryEvent> toList());
     }

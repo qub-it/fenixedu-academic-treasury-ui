@@ -652,12 +652,6 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return person.getAcademicTreasuryEventSet().stream();
     }
 
-    // TODO legidio, AcademicServiceRequestEvent is ExecutionYear independent?
-    public static Stream<? extends AcademicTreasuryEvent> find(final Person person, final ExecutionYear executionYear) {
-        return find(person).filter(l -> l.getExecutionYear() == executionYear || l.isAcademicServiceRequestEvent()
-                || executionYear.containsDate(l.getRequestDate()));
-    }
-
     public static Stream<? extends AcademicTreasuryEvent> find(final Registration registration,
             final ExecutionYear executionYear) {
         return registration.getAcademicTreasuryEventSet().stream().filter(l -> l.getExecutionYear() == executionYear);
@@ -691,8 +685,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     protected static Stream<? extends AcademicTreasuryEvent> findForRegistrationTuition(final Registration registration,
             final ExecutionYear executionYear) {
-        return registration.getAcademicTreasuryEventSet().stream().filter(e -> e.isForRegistrationTuition()
-                && e.getRegistration() == registration && e.getExecutionYear() == executionYear);
+        return find(registration, executionYear).filter(e -> e.isForRegistrationTuition());
     }
 
     public static Optional<? extends AcademicTreasuryEvent> findUniqueForRegistrationTuition(final Registration registration,
