@@ -192,7 +192,7 @@ public class AcademicTariff extends AcademicTariff_Base {
                     getInterval()).count() > 1) {
                 throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other",
                         getProduct().getName().getContent());
-            };
+            } ;
         } else if (getDegree() != null) {
             if (findInInterval(getProduct(), getAdministrativeOffice(), getDegreeType(), getDegree(), getInterval())
                     .count() > 1) {
@@ -203,12 +203,12 @@ public class AcademicTariff extends AcademicTariff_Base {
             if (findInInterval(getProduct(), getAdministrativeOffice(), getDegreeType(), getInterval()).count() > 1) {
                 throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other",
                         getProduct().getName().getContent());
-            };
+            } ;
         } else {
             if (findInInterval(getProduct(), getAdministrativeOffice(), getInterval()).count() > 1) {
                 throw new AcademicTreasuryDomainException("error.AcademicTariff.overlaps.with.other",
                         getProduct().getName().getContent());
-            };
+            } ;
         }
     }
 
@@ -272,17 +272,17 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         return isPositive(result) ? result : BigDecimal.ZERO;
     }
-    
+
     public BigDecimal amountToPay(final int numberOfUnits, final int numberOfPages) {
         BigDecimal amount = getBaseAmount();
-        
+
         if (isApplyUnitsAmount()) {
             int remainingUnits = (numberOfUnits - getUnitsForBase()) >= 0 ? numberOfUnits - getUnitsForBase() : 0;
             if (remainingUnits > 0) {
                 amount = amount.add(getUnitAmount().multiply(new BigDecimal(remainingUnits)));
             }
         }
-        
+
         if (isApplyPagesAmount()) {
             amount = amount.add(getPageAmount().multiply(new BigDecimal(numberOfPages)));
         }
@@ -290,7 +290,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         if (isApplyMaximumAmount() && isGreaterThan(amount, getMaximumAmount())) {
             amount = getMaximumAmount();
         }
-        
+
         return amount;
     }
 
@@ -464,10 +464,8 @@ public class AcademicTariff extends AcademicTariff_Base {
         academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);
 
         if (debitEntry != null) {
-            final DebitNote debitNote = DebitNote.create(debtAccount,
-                    DocumentNumberSeries
-                            .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution())
-                            .get(),
+            final DebitNote debitNote = DebitNote.create(debtAccount, DocumentNumberSeries
+                    .findUniqueDefault(FinantialDocumentType.findForDebitNote(), debtAccount.getFinantialInstitution()).get(),
                     new DateTime());
 
             debitNote.addDebitNoteEntries(Lists.newArrayList(debitEntry));
@@ -648,19 +646,19 @@ public class AcademicTariff extends AcademicTariff_Base {
     }
 
     public static Stream<? extends AcademicTariff> find(final Product product) {
-        return AcademicTariff.findAll().filter(t -> t.getProduct() == product);
+        return product.getTariffSet().stream().filter(t -> t instanceof AcademicTariff).map(AcademicTariff.class::cast);
     }
 
     public static Stream<? extends AcademicTariff> find(final FinantialEntity finantialEntity) {
-        return AcademicTariff.findAll().filter(t -> t.getFinantialEntity() == finantialEntity);
+        return finantialEntity.getTariffSet().stream().filter(t -> t instanceof AcademicTariff).map(AcademicTariff.class::cast);
     }
 
     public static Stream<? extends AcademicTariff> find(final FinantialEntity finantialEntity, final Product product) {
-        return AcademicTariff.find(product).filter(t -> t.getFinantialEntity() == finantialEntity);
+        return find(product).filter(t -> t.getFinantialEntity() == finantialEntity);
     }
 
     private static Stream<? extends AcademicTariff> find(final Product product, final AdministrativeOffice administrativeOffice) {
-        return AcademicTariff.find(product).filter(i -> administrativeOffice == i.getAdministrativeOffice());
+        return find(product).filter(i -> administrativeOffice == i.getAdministrativeOffice());
     }
 
     private static Stream<? extends AcademicTariff> find(final Product product, final AdministrativeOffice administrativeOffice,
@@ -669,7 +667,7 @@ public class AcademicTariff extends AcademicTariff_Base {
             throw new RuntimeException("degree type is null. wrong find call");
         }
 
-        return AcademicTariff.find(product, administrativeOffice).filter(i -> degreeType == i.getDegreeType());
+        return find(product, administrativeOffice).filter(i -> degreeType == i.getDegreeType());
     }
 
     private static Stream<? extends AcademicTariff> find(final Product product, final AdministrativeOffice administrativeOffice,
@@ -678,7 +676,7 @@ public class AcademicTariff extends AcademicTariff_Base {
             throw new RuntimeException("degree is null. wrong find call");
         }
 
-        return AcademicTariff.find(product, administrativeOffice, degreeType).filter(t -> t.getDegree() == degree);
+        return find(product, administrativeOffice, degreeType).filter(t -> t.getDegree() == degree);
     }
 
     private static Stream<? extends AcademicTariff> find(final Product product, final AdministrativeOffice administrativeOffice,
@@ -687,79 +685,78 @@ public class AcademicTariff extends AcademicTariff_Base {
             throw new RuntimeException("cycle is null. wrong find call");
         }
 
-        return AcademicTariff.find(product, administrativeOffice, degreeType, degree).filter(t -> t.getCycleType() == cycleType);
+        return find(product, administrativeOffice, degreeType, degree).filter(t -> t.getCycleType() == cycleType);
     }
 
     public static Stream<? extends AcademicTariff> findActive(final DateTime when) {
-        return AcademicTariff.findAll().filter(t -> t.isActive(when));
+        return findAll().filter(t -> t.isActive(when));
     }
 
     public static Stream<? extends AcademicTariff> findActive(final FinantialEntity finantialEntity, final DateTime when) {
-        return AcademicTariff.find(finantialEntity).filter(t -> t.isActive(when));
+        return find(finantialEntity).filter(t -> t.isActive(when));
     }
 
     public static Stream<? extends AcademicTariff> findActive(final FinantialEntity finantialEntity, final Product product,
             final DateTime when) {
-        return AcademicTariff.find(finantialEntity, product).filter(t -> t.isActive(when));
+        return find(finantialEntity, product).filter(t -> t.isActive(when));
     }
 
     public static Stream<? extends AcademicTariff> findActive(final Product product,
             final AdministrativeOffice administrativeOffice, final DateTime when) {
-        return AcademicTariff.find(product, administrativeOffice).filter(t -> t.isActive(when));
+        return find(product, administrativeOffice).filter(t -> t.isActive(when));
     }
 
     public static Stream<? extends AcademicTariff> findActive(final Product product,
             final AdministrativeOffice administrativeOffice, final DegreeType degreeType, final DateTime when) {
-        return AcademicTariff.find(product, administrativeOffice, degreeType).filter(t -> t.isActive(when));
+        return find(product, administrativeOffice, degreeType).filter(t -> t.isActive(when));
     }
 
     public static Stream<? extends AcademicTariff> findActive(final Product product,
             final AdministrativeOffice administrativeOffice, final DegreeType degreeType, final Degree degree,
             final DateTime when) {
-        return AcademicTariff.find(product, administrativeOffice, degreeType, degree).filter(t -> t.isActive(when));
+        return find(product, administrativeOffice, degreeType, degree).filter(t -> t.isActive(when));
     }
 
     public static Stream<? extends AcademicTariff> findActive(final Product product,
             final AdministrativeOffice administrativeOffice, final DegreeType degreeType, final Degree degree,
             final CycleType cycleType, final DateTime when) {
-        return AcademicTariff.find(product, administrativeOffice, degreeType, degree, cycleType).filter(t -> t.isActive(when));
+        return find(product, administrativeOffice, degreeType, degree, cycleType).filter(t -> t.isActive(when));
     }
 
     public static Stream<? extends AcademicTariff> findInInterval(final Interval interval) {
-        return AcademicTariff.findAll().filter(t -> t.isActive(interval));
+        return findAll().filter(t -> t.isActive(interval));
     }
 
     public static Stream<? extends AcademicTariff> findInInterval(final FinantialEntity finantialEntity,
             final Interval interval) {
-        return AcademicTariff.find(finantialEntity).filter(t -> t.isActive(interval));
+        return find(finantialEntity).filter(t -> t.isActive(interval));
     }
 
     public static Stream<? extends AcademicTariff> findInInterval(final FinantialEntity finantialEntity, final Product product,
             final Interval interval) {
-        return AcademicTariff.find(finantialEntity, product).filter(t -> t.isActive(interval));
+        return find(finantialEntity, product).filter(t -> t.isActive(interval));
     }
 
     public static Stream<? extends AcademicTariff> findInInterval(final Product product,
             final AdministrativeOffice administrativeOffice, final Interval interval) {
-        return AcademicTariff.find(product, administrativeOffice).filter(t -> t.isActive(interval));
+        return find(product, administrativeOffice).filter(t -> t.isActive(interval));
     }
 
     public static Stream<? extends AcademicTariff> findInInterval(final Product product,
             final AdministrativeOffice administrativeOffice, final DegreeType degreeType, final Interval interval) {
-        return AcademicTariff.find(product, administrativeOffice, degreeType).filter(t -> t.isActive(interval));
+        return find(product, administrativeOffice, degreeType).filter(t -> t.isActive(interval));
     }
 
     public static Stream<? extends AcademicTariff> findInInterval(final Product product,
             final AdministrativeOffice administrativeOffice, final DegreeType degreeType, final Degree degree,
             final Interval interval) {
-        return AcademicTariff.find(product, administrativeOffice, degreeType, degree).filter(t -> t.isActive(interval));
+        return find(product, administrativeOffice, degreeType, degree).filter(t -> t.isActive(interval));
     }
 
     public static Stream<? extends AcademicTariff> findInInterval(final Product product,
             final AdministrativeOffice administrativeOffice, final DegreeType degreeType, final Degree degree,
             final CycleType cycleType, final Interval interval) {
-        return AcademicTariff.find(product, administrativeOffice, degreeType, degree, cycleType)
-                .filter(t -> t.isActive(interval));
+        return find(product, administrativeOffice, degreeType, degree, cycleType).filter(t -> t.isActive(interval));
     }
 
     public static AcademicTariff findMatch(final Product product, final AdministrativeOffice administrativeOffice,
@@ -785,45 +782,49 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         {
             // With the most specific conditions tariff was not found. Fallback to degree
-            Set<? extends AcademicTariff> activeTariffs =
-                    findActive(product, administrativeOffice, degreeType, degree, when).collect(Collectors.<AcademicTariff> toSet());
+            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, degreeType, degree, when)
+                    .collect(Collectors.<AcademicTariff> toSet());
             if (activeTariffs.size() > 1) {
                 throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
             } else if (activeTariffs.size() == 1) {
                 return activeTariffs.iterator().next();
             }
         }
-        
+
         {
             // Fallback to degreeType
-            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
+            Set<? extends AcademicTariff> activeTariffs =
+                    findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
             if (activeTariffs.size() > 1) {
-                activeTariffs = activeTariffs.stream().filter(t -> t.getDegree() == null).collect(Collectors.<AcademicTariff> toSet());
-                
-                if(activeTariffs.size() > 1) {
+                activeTariffs =
+                        activeTariffs.stream().filter(t -> t.getDegree() == null).collect(Collectors.<AcademicTariff> toSet());
+
+                if (activeTariffs.size() > 1) {
                     throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-                } else if(activeTariffs.size() == 1) {
+                } else if (activeTariffs.size() == 1) {
                     return activeTariffs.iterator().next();
                 }
-                
+
             } else if (activeTariffs.size() == 1) {
                 return activeTariffs.iterator().next();
             }
         }
-        
+
         {
             // Fallback to administrativeOffice and return
-            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
+            Set<? extends AcademicTariff> activeTariffs =
+                    findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
             if (activeTariffs.size() > 1) {
-                activeTariffs = activeTariffs.stream().filter(t -> t.getDegreeType() == null).collect(Collectors.<AcademicTariff> toSet());
-                
-                if(activeTariffs.size() > 1) {
+                activeTariffs = activeTariffs.stream().filter(t -> t.getDegreeType() == null)
+                        .collect(Collectors.<AcademicTariff> toSet());
+
+                if (activeTariffs.size() > 1) {
                     throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-                } else if(activeTariffs.size() == 1) {
+                } else if (activeTariffs.size() == 1) {
                     return activeTariffs.iterator().next();
                 }
             }
-            
+
             return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
         }
     }
@@ -850,18 +851,19 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         {
             // With the most specific conditions tariff was not found. Fallback to degree
-            Set<? extends AcademicTariff> activeTariffs =
-                    findActive(product, administrativeOffice, degreeType, degree, when).collect(Collectors.<AcademicTariff> toSet());
+            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, degreeType, degree, when)
+                    .collect(Collectors.<AcademicTariff> toSet());
             if (activeTariffs.size() > 1) {
                 // Filter those applied to cycle type
-                activeTariffs = activeTariffs.stream().filter(t -> t.getCycleType() == null).collect(Collectors.<AcademicTariff> toSet());
-                
-                if(activeTariffs.size() > 1) {
+                activeTariffs =
+                        activeTariffs.stream().filter(t -> t.getCycleType() == null).collect(Collectors.<AcademicTariff> toSet());
+
+                if (activeTariffs.size() > 1) {
                     throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-                } else if(activeTariffs.size() == 1) {
+                } else if (activeTariffs.size() == 1) {
                     return activeTariffs.iterator().next();
                 }
-                
+
             } else if (activeTariffs.size() == 1) {
                 return activeTariffs.iterator().next();
             }
@@ -869,17 +871,19 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         {
             // Fallback to degreeType
-            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
+            Set<? extends AcademicTariff> activeTariffs =
+                    findActive(product, administrativeOffice, degreeType, when).collect(Collectors.<AcademicTariff> toSet());
             if (activeTariffs.size() > 1) {
                 // Filter those applied to degree
-                activeTariffs = activeTariffs.stream().filter(t -> t.getDegree() == null).collect(Collectors.<AcademicTariff> toSet());
-    
-                if(activeTariffs.size() > 1) {
+                activeTariffs =
+                        activeTariffs.stream().filter(t -> t.getDegree() == null).collect(Collectors.<AcademicTariff> toSet());
+
+                if (activeTariffs.size() > 1) {
                     throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-                } else if(activeTariffs.size() == 1) {
+                } else if (activeTariffs.size() == 1) {
                     return activeTariffs.iterator().next();
                 }
-                
+
             } else if (activeTariffs.size() == 1) {
                 return activeTariffs.iterator().next();
             }
@@ -887,18 +891,20 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         {
             // Fallback to administrativeOffice and return
-            Set<? extends AcademicTariff> activeTariffs = findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
+            Set<? extends AcademicTariff> activeTariffs =
+                    findActive(product, administrativeOffice, when).collect(Collectors.<AcademicTariff> toSet());
             if (activeTariffs.size() > 1) {
                 // Filter those applied to degree type
-                activeTariffs = activeTariffs.stream().filter(t -> t.getDegreeType() == null).collect(Collectors.<AcademicTariff> toSet());
-    
-                if(activeTariffs.size() > 1) {
+                activeTariffs = activeTariffs.stream().filter(t -> t.getDegreeType() == null)
+                        .collect(Collectors.<AcademicTariff> toSet());
+
+                if (activeTariffs.size() > 1) {
                     throw new AcademicTreasuryDomainException("error.AcademicTariff.findActive.more.than.one");
-                } else if(activeTariffs.size() == 1) {
+                } else if (activeTariffs.size() == 1) {
                     return activeTariffs.iterator().next();
                 }
             }
-    
+
             return !activeTariffs.isEmpty() ? activeTariffs.iterator().next() : null;
         }
     }
