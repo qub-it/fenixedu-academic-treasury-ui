@@ -100,7 +100,7 @@ public class PersonCustomer extends PersonCustomer_Base {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.person.customer.duplicated");
         }
     }
-
+    
     @Override
     public String getCode() {
         return this.getExternalId();
@@ -116,34 +116,27 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public String getName() {
-        if (!isActive()) {
-            return getPersonForInactivePersonCustomer().getName();
-        }
-
-        return getPerson().getName();
+        return getAssociatedPerson().getName();
     }
 
     @Override
     public String getFirstNames() {
-        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        return person.getProfile().getGivenNames();
+        return getAssociatedPerson().getProfile().getGivenNames();
     }
 
     @Override
     public String getLastNames() {
-        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        return person.getProfile().getFamilyNames();
+        return getAssociatedPerson().getProfile().getFamilyNames();
     }
 
     @Override
     public String getEmail() {
-        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        return person.getDefaultEmailAddressValue();
+        return getAssociatedPerson().getDefaultEmailAddressValue();
     }
 
     @Override
     public String getPhoneNumber() {
-        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+        final Person person = getAssociatedPerson();
 
         if (!Strings.isNullOrEmpty(person.getDefaultPhoneNumber())) {
             return person.getDefaultPhoneNumber();
@@ -153,14 +146,12 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     public String getMobileNumber() {
-        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        return person.getDefaultMobilePhoneNumber();
+        return getAssociatedPerson().getDefaultMobilePhoneNumber();
     }
 
     @Override
     public String getIdentificationNumber() {
-        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
-        return identificationNumber(person);
+        return identificationNumber(getAssociatedPerson());
     }
 
     public static String identificationNumber(final Person person) {
@@ -168,7 +159,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     private PhysicalAddress getPhysicalAddress() {
-        return physicalAddress(isActive() ? getPerson() : getPersonForInactivePersonCustomer());
+        return physicalAddress(getAssociatedPerson());
     }
 
     public static PhysicalAddress physicalAddress(final Person person) {
@@ -266,7 +257,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public String getNationalityCountryCode() {
-        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+        final Person person = getAssociatedPerson();
 
         if (person.getCountry() != null) {
             return person.getCountry().getCode();
@@ -277,7 +268,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public String getBusinessIdentification() {
-        final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
+        final Person person = getAssociatedPerson();
 
         if (person.getStudent() != null) {
             return person.getStudent().getNumber().toString();

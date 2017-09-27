@@ -47,11 +47,6 @@ ${portal.toolkit()}
 	<span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
 	<a href="${pageContext.request.contextPath}<%= ERPTuitionInfoExportOperationController.DOWNLOAD_URL %>/${operation.externalId}">
 		<spring:message code="label.ERPTuitionInfoExportOperation.download" /></a>
-    &nbsp;|&nbsp; 
-    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
-    <a href="${pageContext.request.contextPath}<%= ERPTuitionInfoExportOperationController.RETRY_URL %>/${operation.externalId}">
-    	<spring:message code="label.ERPTuitionInfoExportOperation.retry" />
-    </a>
 </div>
 <c:if test="${not empty infoMessages}">
     <div class="alert alert-info" role="alert">

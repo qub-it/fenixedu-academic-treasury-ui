@@ -1,5 +1,9 @@
 package org.fenixedu.academictreasury.ui.integration.tuitioninfo;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoType;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -19,19 +23,28 @@ public class ERPTuitionInfoTypeController extends AcademicTreasuryBaseController
         return "redirect:" + SEARCH_URL;
     }
     
-    private static final String _SEARCH_URI = "";
+    private static final String _SEARCH_URI = "/search";
     public static final String SEARCH_URL  = CONTROLLER_URL + _SEARCH_URI;
     
     @RequestMapping(value=_SEARCH_URI, method=RequestMethod.GET)
     public String search(final Model model) {
+        final Set<ERPTuitionInfoType> erpTuitionInfoTypesSet = ERPTuitionInfoType.findAll().collect(Collectors.toSet());
+        
+        model.addAttribute("result", erpTuitionInfoTypesSet);
+        
         return jspPage(_SEARCH_URI);
     }
     
-    private static final String _CREATE_URI = "";
+    private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
+    @RequestMapping(value=_CREATE_URI, method=RequestMethod.GET)
     public String create(final Model model) {
-        return null;
+        
+        
+        
+        
+        return jspPage(_CREATE_URI);
     }
     
     private static final String _UPDATE_URI = "";

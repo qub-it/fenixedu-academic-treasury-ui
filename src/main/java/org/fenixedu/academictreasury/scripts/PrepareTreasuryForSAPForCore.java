@@ -91,48 +91,7 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
         // Check that all persons and customers have fiscal information
         checkAllPersonCustomersWithFiscalCountryAndNumber();
 
-        // Configure ERP tuition info exportation
-        prepareERPTuitionInfoSettings();
-        
         taskLog("End");
-    }
-
-    private void prepareERPTuitionInfoSettings() {
-        taskLog("prepareERPTuitionInfoSettings");
-
-        final FinantialInstitution finantialInstitution = FinantialInstitution.findAll().iterator().next();
-        if (Series.findByCode(finantialInstitution, "PRO") == null) {
-            final LocalizedString seriesName = new LocalizedString(org.fenixedu.academictreasury.util.Constants.DEFAULT_LANGUAGE,
-                    "Especialização de Propinas");
-            final Series series = Series.create(finantialInstitution, "PRO", seriesName, false, true, false, false, false);
-
-            DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), series).editReplacingPrefix(true, "NG");
-            DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), series).editReplacingPrefix(true, "NJ");
-        }
-
-        ERPTuitionInfoSettings.getInstance().edit(Series.findByCode(finantialInstitution, "PRO"));
-        ERPTuitionInfoSettings.getInstance().setExporterClassName(ERPTuitionInfoExporterForSAP.class.getName());
-
-        final List<String> DEGREE_TYPES =
-                Lists.newArrayList(
-                        "BOLONHA_DEGREE", 
-                        "BOLONHA_MASTER_DEGREE", 
-                        "BOLONHA_INTEGRATED_MASTER_DEGREE", 
-                        "BOLONHA_PHD",
-                        "BOLONHA_SPECIALIZATION_DEGREE", 
-                        "FREE_DEGREE", 
-                        "BOLONHA_POST_DOCTORAL_DEGREE");
-
-        for (final String code : DEGREE_TYPES) {
-            final DegreeType degreeType = DegreeType.matching(p -> code.equals(p.getCode())).get();
-            ERPTuitionInfoType.createForRegistrationTuition(degreeType, "ESP_PROP_" + code,
-                    "Especialização Propina: " + degreeType.getName().getContent(Constants.DEFAULT_LANGUAGE));
-        }
-
-        ERPTuitionInfoType.createForStandaloneTuition("ESP_PROP_STANDALONE",
-                "Especialização Propina: Unidades Curriculares Isoladas");
-        ERPTuitionInfoType.createForStandaloneTuition("ESP_PROP_EXTRACURRICULAR",
-                "Especialização Propina: Unidades Extracurriculares");
     }
 
     private void createTransferBalanceProduct() {

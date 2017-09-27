@@ -3,10 +3,12 @@ package org.fenixedu.academictreasury.util;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Locale;
+import java.util.Set;
 
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
+import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
@@ -101,6 +103,10 @@ public class Constants {
 
     public static LocalizedString bundleI18N(final String key, final String... args) {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, key, args);
+    }
+    
+    public static Set<Locale> supportedLocales() {
+        return CoreConfiguration.supportedLocales();
     }
 
     // @formatter: off

@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
 <%@page import="org.fenixedu.academictreasury.ui.integration.tuitioninfo.ERPTuitionInfoExportOperationController"%>
 <%@page import="org.fenixedu.academictreasury.ui.integration.tuitioninfo.ERPTuitionInfoController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -42,17 +43,12 @@ ${portal.toolkit()}
    		<spring:message code="label.event.back" />
     </a>
     &nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>&nbsp;
-   	<a href='${pageContext.request.contextPath}<%= ERPTuitionInfoController.CREATE_URL %>/${erpTuitionInfo.customer.externalId}'>
-   		<spring:message code="label.ERPTuitionInfo.create" />
-    </a>
-    &nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+    <span class="glyphicon glyphicon-zoom-in" aria-hidden="true"></span>&nbsp;
    	<a href='${pageContext.request.contextPath}<%= ERPTuitionInfoExportOperationController.SEARCH_URL %>?erpTuitionInfoDocumentNumber=<c:out value="${erpTuitionInfo.uiDocumentNumber}" />'>
    		<spring:message code="label.ERPTuitionInfo.logs" />
     </a>
     &nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
+    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;
    	<a href='${pageContext.request.contextPath}<%= ERPTuitionInfoController.TESTS_MARK_SUCCESS_URL %>/${erpTuitionInfo.externalId}'>
    		Marcar como exportado com sucesso
     </a>
@@ -115,11 +111,17 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.customer" /></th>
-                        <td><strong><c:out value='${erpTuitionInfo.customer.businessIdentification} - ${erpTuitionInfo.customer.name}' /></strong></td>
+                        <td>
+                        	<strong>
+	                        	<a href="${pageContext.request.contextPath}<%= CustomerController.READ_URL %>/${erpTuitionInfo.customer.externalId}">
+	                        		<c:out value='${erpTuitionInfo.customer.businessIdentification} - ${erpTuitionInfo.customer.name}' />
+	                        	</a>
+                        	</strong>
+                        </td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.executionYear" /></th>
-                        <td><c:out value="${erpTuitionInfo.executionYear.qualifiedName}" /></td>
+                        <td><c:out value="${erpTuitionInfo.erpTuitionInfoType.executionYear.qualifiedName}" /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.erpTuitionInfoType" /></th>

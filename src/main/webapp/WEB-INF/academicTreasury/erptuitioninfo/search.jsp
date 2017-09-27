@@ -41,14 +41,6 @@ ${portal.toolkit()}
    	<a href="${pageContext.request.contextPath}/academictreasury/erptuitioninfo/pendingdocuments">
    		<spring:message code="label.ERPTuitionInfo.search.pending.documents" />
     </a>
-    
-    <c:if test="${not empty customer}">
-	    &nbsp;|&nbsp;
-	    <span class="glyphicon glyphicon-upload" aria-hidden="true"></span>&nbsp;
-	    <a href="${pageContext.request.contextPath}<%= ERPTuitionInfoController.CREATE_URL %>/${customer.externalId}">
-	    	<spring:message code="label.ERPTuitionInfo.create" />
-	    </a>
-    </c:if>
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -137,7 +129,7 @@ ${portal.toolkit()}
                 </div>
                 <div class="col-sm-3">
                     <input id="erpTuitionInfo_studentNumber" class="form-control" type="text" name="studentNumber" 
-                        value='<c:out value='${param.studentNumber}'/>' />
+                        value='<c:out value='${param.studentNumber != null ? param.studentNumber : studentNumber}'/>' />
                 </div>
             </div>
 
@@ -148,7 +140,7 @@ ${portal.toolkit()}
                 </div>
                 <div class="col-sm-3">
                     <input id="erpTuitionInfo_customerName" class="form-control" type="text" name="customerName" 
-                        value='<c:out value='${param.customerName}'/>' />
+                        value='<c:out value='${param.customerName != null ? param.customerName : customerName}'/>' />
                 </div>
             </div>
 
@@ -226,8 +218,7 @@ ${portal.toolkit()}
 					<th><spring:message code="label.ERPTuitionInfo.data" /></th>
 					<th><spring:message code="label.ERPTuitionInfo.tuitionTotalAmount" /></th>
 					<th><spring:message code="label.ERPTuitionInfo.tuitionDeltaAmount" /></th>
-					<th><spring:message code="label.ERPTuitionInfo.pendingToExport" /></th>
-					<th><spring:message code="label.ERPTuitionInfo.exportationSuccess" /></th>
+					<th><spring:message code="label.ERPTuitionInfo.integrationState" /></th>
 					<%-- Operations Column --%>
 					<th></th>
 				</tr>
@@ -238,23 +229,47 @@ ${portal.toolkit()}
 						<td><c:out value='${row.creationDate.toString("YYYY-MM-dd HH:mm:ss")}' /></td>
 						<td><c:out value='${row.uiDocumentNumber}' /></td>
 						<td>
-							<p>
-								<strong><spring:message code="label.ERPTuitionInfo.customer" />:</strong>
-								<c:out value='${row.customer.businessIdentification} - ${row.customer.name}' />
-							</p>
-							<p>
-								<strong><spring:message code="label.ERPTuitionInfo.executionYear" />:&nbsp;</strong>
-								<c:out value='${row.executionYear.qualifiedName}' />
-							</p>
-							<p>
-								<strong><spring:message code="label.ERPTuitionInfo.product" />:&nbsp;</strong>
-								<c:out value='${row.product.name.content}' />
-							</p>
+							<table class="table table-bordered table-hover" style="background-color: transparent;">
+								<tr>
+									<td><spring:message code="label.ERPTuitionInfo.customer" /></td>
+									<td><c:out value='${row.customer.businessIdentification} - ${row.customer.name}' /></td>
+								</tr>
+								<tr>
+									<td><spring:message code="label.ERPTuitionInfo.vat.number" /></td>
+									<td><c:out value='${row.customer.uiFiscalNumber}' /></td>
+								</tr>
+								<tr>
+									<td><spring:message code="label.ERPTuitionInfo.erpTuitionInfoType" /></td>
+									<td><c:out value='${row.erpTuitionInfoType.name}' /></td>
+								</tr>
+								<tr>
+									<td><spring:message code="label.ERPTuitionInfo.executionYear" /></td>
+									<td><c:out value='${row.erpTuitionInfoType.executionYear.qualifiedName}' /></td>
+								</tr>
+							</table>
 						</td>
 						<td><c:out value='${row.tuitionTotalAmount}' /></td>
 						<td><c:out value='${row.tuitionDeltaAmount}' /></td>
-						<td><spring:message code='label.${row.pendingToExport}' /></td>
-						<td><spring:message code='label.${row.exportationSuccess}' /></td>
+						<td>
+	                        <c:if test="${row.isPendingToExport()}">
+	                            <span class="label label-warning">
+	                            	<spring:message code="label.ERPTuitionInfo.is.pending.to.export" />
+	                            </span>
+	                        </c:if>
+	                        <c:if test="${not row.isPendingToExport()}">
+		                        <c:if test="${row.isExportationSuccess()}">
+		                            <span class="label label-info">
+		                            	<spring:message code="label.ERPTuitionInfo.is.success.true" />
+		                            </span>
+								</c:if>
+		                        <c:if test="${not row.isExportationSuccess()}">
+		                            <span class="label label-danger">
+		                            	<spring:message code="label.ERPTuitionInfo.is.success.false" />
+		                            </span>
+								</c:if>
+	                            </span>
+	                        </c:if>
+	                    </td>
 						<td>
 							<a class="btn-default btn btn-xs" 
 								href="${pageContext.request.contextPath}<%= ERPTuitionInfoController.READ_URL %>/${row.externalId}">

@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.degree.DegreeType;
-import org.fenixedu.academic.domain.student.Student;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfo;
@@ -17,13 +16,19 @@ import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialEntity;
+import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.joda.time.LocalDate;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
@@ -58,7 +63,8 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
             @RequestParam(value = "erpTuitionDocumentNumber", required = false) final String erpTuitionDocumentNumber,
             @RequestParam(value = "pendingToExport", required = false) final Boolean pendingToExport,
             @RequestParam(value = "exportationSuccess", required = false) final Boolean exportationSuccess,
-            @RequestParam(value = "customerId", required = false) final Customer customer, final Model model) {
+            @RequestParam(value = "customerId", required = false) final Customer customer, 
+            final Model model) {
 
         List<ERPTuitionInfo> result = filter(fromDate, toDate, executionYear, studentNumber, customerName,
                 erpTuitionDocumentNumber, pendingToExport, exportationSuccess, customer);
@@ -78,6 +84,14 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
         model.addAttribute("result", result);
         model.addAttribute("customer", customer);
 
+        if(customer != null && customer.isPersonCustomer()) {
+            model.addAttribute("customerName", customer.getName());
+            
+            if(((PersonCustomer) customer).getAssociatedPerson().getStudent() != null) {
+                model.addAttribute("studentNumber", customer.getBusinessIdentification());
+            }
+        }
+        
         return jspPage(_SEARCH_URI);
     }
 
@@ -101,7 +115,7 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
         }
 
         if (executionYear != null) {
-            stream = stream.filter(e -> e.getExecutionYear() == executionYear);
+            stream = stream.filter(e -> e.getErpTuitionInfoType().getExecutionYear() == executionYear);
         }
 
         if (fromDate != null) {
@@ -135,43 +149,66 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
-    @RequestMapping(value = _CREATE_URI + "/{customerId}", method = RequestMethod.GET)
-    public String create(@PathVariable("customerId") final PersonCustomer customer, final Model model) {
-        model.addAttribute("customer", customer);
-
-        model.addAttribute("executionYearsList", ExecutionYear.readNotClosedExecutionYears().stream()
-                .sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR).collect(Collectors.toList()));
-
-        if (customer.getPerson().getStudent() == null) {
+    @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.GET)
+    public String create(@PathVariable("debtAccountId") final DebtAccount debtAccount, final Model model, final RedirectAttributes redirectAttributes) {
+        return _create(debtAccount, model, redirectAttributes, new ERPTuitionInfoBean(debtAccount));
+    }
+    
+    private String _create(final DebtAccount debtAccount, final Model model, final RedirectAttributes redirectAttributes, final ERPTuitionInfoBean bean) {
+        model.addAttribute("debtAccount", debtAccount);
+        model.addAttribute("customer", debtAccount.getCustomer());
+        
+        model.addAttribute("bean", bean);
+        model.addAttribute("beanJson", getBeanJson(bean));
+        
+        if (((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson().getStudent() == null) {
             addErrorMessage(Constants.bundle("error.ERPTuitionInfo.customer.not.student"), model);
-            return search(null, null, null, null, null, null, null, null, customer, model);
+            return redirect(String.format("%s/%s", DebtAccountController.READ_URL, debtAccount.getExternalId()), model, redirectAttributes);
         }
-
-        final Set<DegreeType> degreeTypesSet = customer.getPerson().getStudent().getRegistrationsSet().stream()
-                .map(r -> r.getDegree().getDegreeType()).collect(Collectors.toSet());
-
-        model.addAttribute("erpTuitionInfoTypesList",
-                ERPTuitionInfoType.findActive().filter(e -> degreeTypesSet.contains(e.getDegreeType()))
-                        .sorted(ERPTuitionInfoType.COMPARE_BY_NAME).collect(Collectors.toList()));
-
+        
         return jspPage(_CREATE_URI);
     }
 
-    @RequestMapping(value = _CREATE_URI + "/{customerId}", method = RequestMethod.POST)
-    public String createpost(@PathVariable("customerId") final PersonCustomer customer,
-            @RequestParam(value = "erpTuitionInfoTypeId", required = true) final ERPTuitionInfoType type,
-            @RequestParam(value = "executionYearId", required = true) final ExecutionYear executionYear, final Model model,
+    private static final String _CREATEPOSTBACK_URI = "/createpostback";
+    public static final String CREATEPOSTBACK_URL = CONTROLLER_URL + _CREATEPOSTBACK_URI;
+
+    @RequestMapping(value = _CREATEPOSTBACK_URI + "/{debtAccountId}",
+            method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public @ResponseBody ResponseEntity<String> createpostback(
+            @PathVariable("debtAccountId") final DebtAccount debtAccount,
+            @RequestParam("bean") final ERPTuitionInfoBean bean, final Model model) {
+
+        bean.updateData();
+
+        return new ResponseEntity<String>(getBeanJson(bean), HttpStatus.OK);
+    }
+    
+    @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
+    public String createpost(
+            @PathVariable("debtAccountId") final DebtAccount debtAccount, 
+            @RequestParam("bean") final ERPTuitionInfoBean bean,
+            final Model model,
             final RedirectAttributes redirectAttributes) {
 
         try {
-            final ERPTuitionInfo erpTuitionInfo = ERPTuitionInfo.exportTuitionInformation(customer, type, executionYear);
+            
+            if(bean.getExecutionYear() == null) {
+                throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.executionYear.required");
+            }
+            
+            if(bean.getErpTuitionInfoType() == null) {
+                throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.erpTuitionInfoType.required");
+            }
+            
+            final ERPTuitionInfo erpTuitionInfo = ERPTuitionInfo.exportTuitionInformation(
+                    (PersonCustomer) bean.getDebtAccount().getCustomer(), bean.getErpTuitionInfoType(), bean.getExecutionYear());
+
             erpTuitionInfo.export();
 
             return redirect(READ_URL + "/" + erpTuitionInfo.getExternalId(), model, redirectAttributes);
         } catch (final AcademicTreasuryDomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
-
-            return search(null, null, null, customer.getBusinessIdentification(), null, null, null, null, customer, model);
+            return _create(debtAccount, model, redirectAttributes, bean);
         }
     }
 
