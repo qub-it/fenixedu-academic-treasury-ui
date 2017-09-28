@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -120,6 +121,10 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
         return findAll().filter(e -> e.isActive());
     }
     
+    public static Stream<? extends ERPTuitionInfoType> findForExecutionYear(final ExecutionYear executionYear) {
+        return executionYear.getErpTuitionInfoTypesSet().stream();
+    }
+
     public static Stream<ERPTuitionInfoType> findActiveForExecutionYear(final ExecutionYear executionYear) {
         return executionYear.getErpTuitionInfoTypesSet().stream().filter(e -> e.isActive());
     }

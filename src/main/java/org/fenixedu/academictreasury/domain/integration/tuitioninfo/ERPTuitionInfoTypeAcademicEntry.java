@@ -285,6 +285,15 @@ public class ERPTuitionInfoTypeAcademicEntry extends ERPTuitionInfoTypeAcademicE
                 .filter(p -> p != TreasurySettings.getInstance().getInterestProduct()).collect(Collectors.toSet());
 
         if (!getErpTuitionInfoType().getTuitionProductsSet().containsAll(debtProducts)) {
+
+            if(!Sets.intersection(getErpTuitionInfoType().getTuitionProductsSet(), debtProducts).isEmpty()) {
+                // There are some products which match, throw an error to analyse
+                throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.event.define.some.of.the.products.of.type.but.not.all",
+                        event.getPerson().getStudent().getNumber().toString(),
+                        event.getPerson().getStudent().getName(),
+                        getErpTuitionInfoType().getName());
+            }
+            
             return false;
         }
 

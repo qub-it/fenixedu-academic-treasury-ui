@@ -1,22 +1,24 @@
 package org.fenixedu.academictreasury.ui.integration.tuitioninfo;
 
+import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import org.fenixedu.academictreasury.domain.integration.ERPTuitionInfoCreationReportFile;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfo;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoType;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.domain.Customer;
-import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.joda.time.LocalDate;
@@ -32,15 +34,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.base.Strings;
-
-import edu.emory.mathcs.backport.java.util.Collections;
-import pt.ist.fenixframework.Atomic;
+import com.google.common.collect.Lists;
 
 @RequestMapping(ERPTuitionInfoController.CONTROLLER_URL)
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.ERPTuitionInfo.title", accessGroup = "#managers")
 public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
 
-    private static final int MAX_SEARCH_RESULT_SIZE = 3000;
+    private static final int MAX_SEARCH_RESULT_SIZE = 500;
 
     public static final String CONTROLLER_URL = "/academictreasury/erptuitioninfo";
     private static final String JSP_PATH = "academicTreasury/erptuitioninfo";
@@ -58,16 +58,18 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
             @RequestParam(value = "fromDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate fromDate,
             @RequestParam(value = "toDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") final LocalDate toDate,
             @RequestParam(value = "executionYearId", required = false) final ExecutionYear executionYear,
+            @RequestParam(value = "erpTuitionInfoTypeId", required = false) final ERPTuitionInfoType erpTuitionInfoType,
             @RequestParam(value = "studentNumber", required = false) final String studentNumber,
             @RequestParam(value = "customerName", required = false) final String customerName,
+            @RequestParam(value = "uiFiscalNumber", required = false) final String uiFiscalNumber,
             @RequestParam(value = "erpTuitionDocumentNumber", required = false) final String erpTuitionDocumentNumber,
             @RequestParam(value = "pendingToExport", required = false) final Boolean pendingToExport,
             @RequestParam(value = "exportationSuccess", required = false) final Boolean exportationSuccess,
-            @RequestParam(value = "customerId", required = false) final Customer customer, 
             final Model model) {
 
-        List<ERPTuitionInfo> result = filter(fromDate, toDate, executionYear, studentNumber, customerName,
-                erpTuitionDocumentNumber, pendingToExport, exportationSuccess, customer);
+        List<ERPTuitionInfo> result = filter(fromDate, toDate, executionYear, erpTuitionInfoType, 
+                studentNumber, customerName, uiFiscalNumber,
+                erpTuitionDocumentNumber, pendingToExport, exportationSuccess);
 
         if (result.size() > MAX_SEARCH_RESULT_SIZE) {
             model.addAttribute("result_totalCount", result.size());
@@ -80,31 +82,35 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
         Collections.sort(executionYearsList, ExecutionYear.REVERSE_COMPARATOR_BY_YEAR);
 
         model.addAttribute("executionYearsList", executionYearsList);
+        
+        List<ERPTuitionInfoType> erpTuitionInfoTypesList = Lists.newArrayList();
+        
+        if(executionYear != null) { 
+            erpTuitionInfoTypesList = ERPTuitionInfoType.findForExecutionYear(executionYear).collect(Collectors.toList());
+            Collections.sort(erpTuitionInfoTypesList, ERPTuitionInfoType.COMPARE_BY_NAME);
+        }
+        
+        model.addAttribute("erpTuitionInfoTypesList", erpTuitionInfoTypesList);
         model.addAttribute("customersList", PersonCustomer.findAll().sorted(PersonCustomer.COMPARE_BY_NAME_IGNORE_CASE));
         model.addAttribute("result", result);
-        model.addAttribute("customer", customer);
 
-        if(customer != null && customer.isPersonCustomer()) {
-            model.addAttribute("customerName", customer.getName());
-            
-            if(((PersonCustomer) customer).getAssociatedPerson().getStudent() != null) {
-                model.addAttribute("studentNumber", customer.getBusinessIdentification());
-            }
-        }
+        model.addAttribute("customerName", customerName);
+        model.addAttribute("studentNumber", studentNumber);
+        model.addAttribute("uiFiscalNumber", uiFiscalNumber);
         
         return jspPage(_SEARCH_URI);
     }
 
     private List<ERPTuitionInfo> filter(final LocalDate fromDate, final LocalDate toDate, final ExecutionYear executionYear,
-            final String studentNumber, final String customerName, final String erpTuitionDocumentNumber,
-            final Boolean pendingToExport, final Boolean exportationSuccess, final Customer customer) {
+            final ERPTuitionInfoType erpTuitionInfoType, final String studentNumber, final String customerName, final String uiFiscalNumber, 
+            final String erpTuitionDocumentNumber, final Boolean pendingToExport, final Boolean exportationSuccess) {
 
         Stream<ERPTuitionInfo> stream = null;
 
-        if (customer != null) {
-            stream = customer.getErpTuitionInfosSet().stream();
+        if(erpTuitionInfoType != null) {
+            stream = erpTuitionInfoType.getErpTuitionInfosSet().stream();
         }
-
+        
         if (stream == null) {
             stream = ERPTuitionInfo.findAll();
         }
@@ -133,6 +139,10 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
 
         if (!Strings.isNullOrEmpty(customerName)) {
             stream = stream.filter(e -> e.getCustomer().matchesMultiFilter(customerName));
+        }
+        
+        if(!Strings.isNullOrEmpty(uiFiscalNumber)) {
+            stream = stream.filter(e -> uiFiscalNumber.equals(e.getCustomer().getUiFiscalNumber()));
         }
 
         if (pendingToExport != null) {
@@ -240,25 +250,37 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
         return redirect(READ_URL + "/" + erpTuitionInfo.getExternalId(), model, redirectAttributes);
     }
 
-    private static final String _SCHEDULE_FULL_EXPORTATION_URI = "/schedulefullexportation";
-    public static final String SCHEDULE_FULL_EXPORTATION_URL = CONTROLLER_URL + _SCHEDULE_FULL_EXPORTATION_URI;
-
-    private static final String _TESTS_MARK_SUCCESS_URI = "/testsmarksuccess";
-    public static final String TESTS_MARK_SUCCESS_URL = CONTROLLER_URL + _TESTS_MARK_SUCCESS_URI;
-
-    @RequestMapping(value = _TESTS_MARK_SUCCESS_URI + "/{erpTuitionInfoId}", method = RequestMethod.GET)
-    public String testsmarksuccess(@PathVariable("erpTuitionInfoId") final ERPTuitionInfo erpTuitionInfo, final Model model,
-            final RedirectAttributes redirectAttributes) {
-
-        sucess(erpTuitionInfo);
-
-        return redirect(READ_URL + "/" + erpTuitionInfo.getExternalId(), model, redirectAttributes);
+    private static final String _SEARCH_ERP_TUITION_INFO_CREATION_REPORT_FILE_URI = "/searcherptuitioninfocreationreportfile";
+    public static final String SEARCH_ERP_TUITION_INFO_CREATION_REPORT_FILE_URL = CONTROLLER_URL + _SEARCH_ERP_TUITION_INFO_CREATION_REPORT_FILE_URI;
+    
+    @RequestMapping(value = _SEARCH_ERP_TUITION_INFO_CREATION_REPORT_FILE_URI, method=RequestMethod.GET)
+    public String searcherptuitioninfocreationreportfile(final Model model) {
+        model.addAttribute("result", Bennu.getInstance().getErpTuitionInfoCreationReportFilesSet());
+        
+        return jspPage(_SEARCH_ERP_TUITION_INFO_CREATION_REPORT_FILE_URI);
     }
+    
+    private static final String _DOWNLOAD_ERP_TUITION_INFO_CREATION_REPORT_FILE_URI = "/downloaderptuitioninfocreationreportfile";
+    public static final String DOWNLOAD_ERP_TUITION_INFO_CREATION_REPORT_FILE_URL = CONTROLLER_URL + _DOWNLOAD_ERP_TUITION_INFO_CREATION_REPORT_FILE_URI;
+    
+    @RequestMapping(value = _DOWNLOAD_ERP_TUITION_INFO_CREATION_REPORT_FILE_URI + "/{fileId}", method=RequestMethod.GET)
+    public String searcherptuitioninfocreationreportfile(
+            @PathVariable("fileId") ERPTuitionInfoCreationReportFile file, final Model model, final HttpServletResponse response) {
+        model.addAttribute("result", Bennu.getInstance().getErpTuitionInfoCreationReportFilesSet());
+        
+        response.setContentLength(file.getContent().length);
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setHeader("Content-disposition", "attachment; filename=" + file.getFilename());
 
-    @Atomic
-    private void sucess(final ERPTuitionInfo erpTuitionInfo) {
-        erpTuitionInfo.markIntegratedWithSuccess("Test Success");
+        try {
+            response.getOutputStream().write(file.getContent());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        
+        return null;
     }
+    
 
     private String jspPage(final String page) {
         return JSP_PATH + "/" + page;

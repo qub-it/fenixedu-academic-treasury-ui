@@ -201,24 +201,13 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
 
         //PROCESSING PAYMENTS TABLE
 
-        if (erpTuitionInfo.isCredit()) {
-            paymentsDocuments.setNumberOfEntries(new BigInteger("2"));
-            paymentsDocuments.setTotalCredit(erpTuitionInfo.getTuitionDeltaAmount().abs());
-            paymentsDocuments.setTotalDebit(erpTuitionInfo.getTuitionDeltaAmount().abs());
+        paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
+        paymentsDocuments.setTotalCredit(BigDecimal.ZERO);
+        paymentsDocuments.setTotalDebit(BigDecimal.ZERO);
 
-            Payment paymentDocument = convertToSAFTPaymentDocument(erpTuitionInfo);
-            paymentsDocuments.getPayment().add(paymentDocument);
-
-            sourceDocuments.setPayments(paymentsDocuments);
-        } else {
-            paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
-            paymentsDocuments.setTotalCredit(BigDecimal.ZERO);
-            paymentsDocuments.setTotalDebit(BigDecimal.ZERO);
-
-            // Update Totals of Payment Documents
-            paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
-            sourceDocuments.setPayments(paymentsDocuments);
-        }
+        // Update Totals of Payment Documents
+        paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
+        sourceDocuments.setPayments(paymentsDocuments);
 
         // Update the Customer Table in SAFT
         for (final ERPCustomerFieldsBean customerBean : customerMap.values()) {

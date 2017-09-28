@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController"%>
 <%@page import="org.fenixedu.academictreasury.ui.integration.tuitioninfo.ERPTuitionInfoExportOperationController"%>
 <%@page import="org.fenixedu.academictreasury.ui.integration.tuitioninfo.ERPTuitionInfoController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -38,8 +39,8 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>&nbsp;
-   	<a href="${pageContext.request.contextPath}/academictreasury/erptuitioninfo/pendingdocuments">
-   		<spring:message code="label.ERPTuitionInfo.search.pending.documents" />
+   	<a href="${pageContext.request.contextPath}<%= ERPTuitionInfoController.SEARCH_ERP_TUITION_INFO_CREATION_REPORT_FILE_URL %>" target="_blank">
+   		<spring:message code="label.ErpTuitionInfoCreationReportFile.title" />
     </a>
 </div>
 
@@ -79,8 +80,12 @@ ${portal.toolkit()}
     </div>
 </c:if>
 
+<script type="text/javascript">
+	
+</script>
+
 <div class="panel panel-default">
-    <form method="get" class="form-horizontal">
+    <form id="searchForm" method="get" class="form-horizontal">
         <div class="panel-body">
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
@@ -101,6 +106,7 @@ ${portal.toolkit()}
                 </div>
             </div>
             
+            
 			<div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message code="label.ERPTuitionInfo.executionYear" />
@@ -118,9 +124,43 @@ ${portal.toolkit()}
 				<script>
 					$(document).ready(function() {
 						$("#erpTuitionInfo_executionYear").select2().select2('val', '${param.executionYearId != null ? param.executionYearId : null}');
+						$('#erpTuitionInfo_executionYear').on('select2:select', function (e) {
+							$('#searchForm').submit();
+						});
 					});
 				</script>
 			</div>        	
+        	
+			<div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.ERPTuitionInfo.erpTuitionInfoType" />
+                </div>
+                <div class="col-sm-3">
+                    <select id="erpTuitionInfo_erpTuitionInfoType" name="erpTuitionInfoTypeId">
+	                        <option></option>
+	                    <c:forEach var="erpTuitionInfoType" items="${erpTuitionInfoTypesList}">
+	                        <option value="${erpTuitionInfoType.externalId}">
+	                        	<c:out value="${erpTuitionInfoType.name}" />
+	                        	<c:if test="${erpTuitionInfoType.active}">
+	                        		&nbsp;[<spring:message code="label.ERPTuitionInfoType.active" />]
+	                        	</c:if>
+	                        </option>
+	                    </c:forEach>
+                    </select>
+                </div>
+                
+				<script>
+					$(document).ready(function() {
+						$("#erpTuitionInfo_erpTuitionInfoType").select2()
+							.select2('val', '${param.erpTuitionInfoTypeId != null ? param.erpTuitionInfoTypeId : null}');
+
+						$('#erpTuitionInfo_erpTuitionInfoType').on('select2:select', function (e) {
+							$('#searchForm').submit();
+						});
+					});
+				</script>
+			</div>        	
+        	
         	
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
@@ -141,6 +181,17 @@ ${portal.toolkit()}
                 <div class="col-sm-3">
                     <input id="erpTuitionInfo_customerName" class="form-control" type="text" name="customerName" 
                         value='<c:out value='${param.customerName != null ? param.customerName : customerName}'/>' />
+                </div>
+            </div>
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message
+                        code="label.ERPTuitionInfo.uiFiscalNumber" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="erpTuitionInfo_uiFiscalNumber" class="form-control" type="text" name="uiFiscalNumber" 
+                        value='<c:out value='${param.uiFiscalNumber != null ? param.uiFiscalNumber : uiFiscalNumber}'/>' />
                 </div>
             </div>
 
@@ -185,7 +236,8 @@ ${portal.toolkit()}
                         <option value="true"><spring:message code="label.yes" /></option>
                     </select>
 					<script>
-						$("#erpTuitionInfo_exportationSuccess").select().select('val', '<c:out value='${not empty param.exportationSuccess ? param.exportationSuccess : null }'/>');
+						$("#erpTuitionInfo_exportationSuccess").select2()
+							.select2('val', '<c:out value='${not empty param.exportationSuccess ? param.exportationSuccess : null }'/>');
 					</script>
                 </div>
             </div>
@@ -232,10 +284,14 @@ ${portal.toolkit()}
 							<table class="table table-bordered table-hover" style="background-color: transparent;">
 								<tr>
 									<td><spring:message code="label.ERPTuitionInfo.customer" /></td>
-									<td><c:out value='${row.customer.businessIdentification} - ${row.customer.name}' /></td>
+									<td>
+			                        	<a href="${pageContext.request.contextPath}<%= CustomerController.READ_URL %>/${row.customer.externalId}">
+										<c:out value='${row.customer.businessIdentification} - ${row.customer.name}' />
+										</a>
+									</td>
 								</tr>
 								<tr>
-									<td><spring:message code="label.ERPTuitionInfo.vat.number" /></td>
+									<td><spring:message code="label.ERPTuitionInfo.uiFiscalNumber" /></td>
 									<td><c:out value='${row.customer.uiFiscalNumber}' /></td>
 								</tr>
 								<tr>

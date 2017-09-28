@@ -23,6 +23,18 @@ public class ERPTuitionInfoExportOperation extends ERPTuitionInfoExportOperation
                     return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
                 }
             };
+            
+    public static final Comparator<ERPTuitionInfoExportOperation> COMPARE_BY_VERSIONING_CREATION_DATE = 
+            new Comparator<ERPTuitionInfoExportOperation>() {
+
+                @Override
+                public int compare(final ERPTuitionInfoExportOperation o1, final ERPTuitionInfoExportOperation o2) {
+                    int c = o1.getVersioningCreationDate().compareTo(o2.getVersioningCreationDate());
+                    
+                    return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
+                }
+        
+    };
 
     public ERPTuitionInfoExportOperation() {
         super();

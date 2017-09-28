@@ -39,7 +39,7 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;
-   	<a href='${pageContext.request.contextPath}<%= ERPTuitionInfoController.SEARCH_URL %>?studentNumber=<c:out value="${erpTuitionInfo.customer.businessIdentification}" />'>
+   	<a href='${pageContext.request.contextPath}<%= ERPTuitionInfoController.SEARCH_URL %>?studentNumber=<c:out value="${erpTuitionInfo.customer.businessIdentification}&uiFiscalNumber=${erpTuitionInfo.customer.uiFiscalNumber}" />'>
    		<spring:message code="label.event.back" />
     </a>
     &nbsp;|&nbsp;
@@ -120,6 +120,10 @@ ${portal.toolkit()}
                         </td>
                     </tr>
                     <tr>
+                    	<th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.uiFiscalNumber" /></th>
+                        <td><c:out value='${erpTuitionInfo.customer.uiFiscalNumber}' /></td>
+                    </tr>
+                    <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.executionYear" /></th>
                         <td><c:out value="${erpTuitionInfo.erpTuitionInfoType.executionYear.qualifiedName}" /></td>
                     </tr>
@@ -135,18 +139,45 @@ ${portal.toolkit()}
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.tuitionDeltaAmount" /></th>
                         <td><c:out value='${erpTuitionInfo.tuitionDeltaAmount}' /></td>
                     </tr>
+                    
                     <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.pendingToExport" /></th>
-                        <td><spring:message code='label.${erpTuitionInfo.pendingToExport}' /></td>
+                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.integrationState" /></th>
+                        <td>
+	                        <c:if test="${erpTuitionInfo.isPendingToExport()}">
+	                            <span class="label label-warning">
+	                            	<spring:message code="label.ERPTuitionInfo.is.pending.to.export" />
+	                            </span>
+	                        </c:if>
+	                        <c:if test="${not erpTuitionInfo.isPendingToExport()}">
+		                        <c:if test="${erpTuitionInfo.isExportationSuccess()}">
+		                            <span class="label label-info">
+		                            	<spring:message code="label.ERPTuitionInfo.is.success.true" />
+		                            </span>
+								</c:if>
+		                        <c:if test="${not erpTuitionInfo.isExportationSuccess()}">
+		                            <span class="label label-danger">
+		                            	<spring:message code="label.ERPTuitionInfo.is.success.false" />
+		                            </span>
+								</c:if>
+	                            </span>
+	                        </c:if>
+                        </td>
                     </tr>
-                    <tr>
-                        <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.exportationSuccess" /></th>
-                        <td><spring:message code='label.${erpTuitionInfo.exportationSuccess}' /></td>
-                    </tr>
+
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${erpTuitionInfo.getVersioningCreator()}' />] <joda:format value="${erpTuitionInfo.getVersioningCreationDate()}" style="SS" /></td>
                     </tr>
+                    
+				<c:if test="${erpTuitionInfo.isPendingToExport() && erpTuitionInfo.lastERPExportOperation.isPresent()}">
+					<tr>
+						<th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.lastExportationLog" /></th>
+						<td>
+							<pre><c:out value="${erpTuitionInfo.lastERPExportOperation.get().errorLog}" /></pre>
+						</td>
+					</tr>
+				</c:if>
+				
                 </tbody>
             </table>
         </form>

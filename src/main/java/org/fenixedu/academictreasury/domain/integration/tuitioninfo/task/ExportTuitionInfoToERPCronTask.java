@@ -4,12 +4,12 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionIn
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 
-@Task(englishTitle = "Create tuition information for ERP", readOnly = true)
-public class CreateTuitionInfoCronTask extends CronTask {
+@Task(englishTitle = "Export tuition information to ERP", readOnly = true)
+public class ExportTuitionInfoToERPCronTask extends CronTask {
 
     @Override
     public void runTask() throws Exception {
-        ERPTuitionInfo.triggerTuitionInfoCalculation(null, null);
+        ERPTuitionInfo.triggerTuitionExportationToERP(null);
     }
-
+    
 }
