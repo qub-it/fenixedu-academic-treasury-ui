@@ -47,11 +47,6 @@ ${portal.toolkit()}
    	<a href='${pageContext.request.contextPath}<%= ERPTuitionInfoExportOperationController.SEARCH_URL %>?erpTuitionInfoDocumentNumber=<c:out value="${erpTuitionInfo.uiDocumentNumber}" />'>
    		<spring:message code="label.ERPTuitionInfo.logs" />
     </a>
-    &nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>&nbsp;
-   	<a href='${pageContext.request.contextPath}<%= ERPTuitionInfoController.TESTS_MARK_SUCCESS_URL %>/${erpTuitionInfo.externalId}'>
-   		Marcar como exportado com sucesso
-    </a>
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -159,11 +154,12 @@ ${portal.toolkit()}
 		                            	<spring:message code="label.ERPTuitionInfo.is.success.false" />
 		                            </span>
 								</c:if>
+								
+									&nbsp;&nbsp;<em><c:out value='${erpTuitionInfo.exportationMessage}' /></em>
 	                            </span>
 	                        </c:if>
                         </td>
                     </tr>
-
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.Versioning.creator" /></th>
                         <td>[<c:out value='${erpTuitionInfo.getVersioningCreator()}' />] <joda:format value="${erpTuitionInfo.getVersioningCreationDate()}" style="SS" /></td>

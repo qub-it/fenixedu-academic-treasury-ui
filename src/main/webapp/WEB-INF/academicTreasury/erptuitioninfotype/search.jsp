@@ -101,9 +101,11 @@ ${portal.toolkit()}
 						<td><spring:message code="label.${row.active}" /></td>
 						<td>
 
+							<ul>
 							<c:forEach var="e" items="${row.erpTuitionInfoTypeAcademicEntriesSet}">
-								<c:out value="${e.description.content}" />
+								<li><c:out value="${e.description.content}" /></li>
 							</c:forEach>
+							</ul>
 							
 						</td>
 						<td>

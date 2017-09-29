@@ -119,11 +119,11 @@ angular.module('myAngularApp', ['ngSanitize', 'ui.select','bennuToolkit']).contr
                 <tbody>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.customer" /></th>
-                        <td><strong><c:out value='${customer.businessIdentification} - ${customer.name}' /></strong></td>
+                        <td><c:out value='${customer.businessIdentification} - ${customer.name}' /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.uiFiscalNumber" /></th>
-                        <td><strong><c:out value='${customer.uiFiscalNumber}' /></strong></td>
+                        <td><c:out value='${customer.uiFiscalNumber}' /></td>
                     </tr>
                 </tbody>
             </table>

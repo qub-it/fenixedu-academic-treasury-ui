@@ -213,7 +213,9 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
             final ERPTuitionInfo erpTuitionInfo = ERPTuitionInfo.exportTuitionInformation(
                     (PersonCustomer) bean.getDebtAccount().getCustomer(), bean.getErpTuitionInfoType(), bean.getExecutionYear());
 
-            erpTuitionInfo.export();
+            if(erpTuitionInfo.isPendingToExport()) {
+                erpTuitionInfo.export();
+            }
 
             return redirect(READ_URL + "/" + erpTuitionInfo.getExternalId(), model, redirectAttributes);
         } catch (final AcademicTreasuryDomainException e) {

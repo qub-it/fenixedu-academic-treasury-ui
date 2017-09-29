@@ -197,7 +197,7 @@ public class ERPTuitionInfoTypeAcademicEntry extends ERPTuitionInfoTypeAcademicE
                             otherEntry.getDegree().getPresentationNameI18N().getContent());
                 }
 
-                if (otherEntry.isDefinedForDegreeCurricularPlan()
+                if (otherEntry.isDefinedForDegreeType()
                         && academicEntry.getDegreeType() == otherEntry.getDegreeType()) {
                     throw new AcademicTreasuryDomainException(
                             "error.ERPTuitionInfoTypeAcademicEntry.entry.degreeType.of.degreeCurricularPlan.defined",

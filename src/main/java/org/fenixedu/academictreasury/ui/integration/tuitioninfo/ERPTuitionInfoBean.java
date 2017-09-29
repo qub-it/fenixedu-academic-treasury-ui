@@ -74,7 +74,11 @@ public class ERPTuitionInfoBean implements IBean {
     private boolean isForAnyOfTreasuryEvent(final ERPTuitionInfoType t) {
         for (final AcademicTreasuryEvent ev : tuitionAcademicTreasuryEvents()) {
             for (final ERPTuitionInfoTypeAcademicEntry entry : t.getErpTuitionInfoTypeAcademicEntriesSet()) {
-                if(entry.isAppliedOnAcademicTreasuryEvent(ev, this.executionYear)) {
+                if(entry.isForStandalone() || entry.isForExtracurricular()) {
+                    return true;
+                }
+                
+                if(entry.isAppliedForRegistration(ev.getRegistration(), this.executionYear)) {
                     return true;
                 }
             }

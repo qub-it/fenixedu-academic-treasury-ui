@@ -373,6 +373,10 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
                 }
                 
                 for (final PersonCustomer customer : PersonCustomer.findAll().collect(Collectors.<PersonCustomer> toSet())) {
+                    if(customer.getAssociatedPerson().getStudent() == null) {
+                        continue;
+                    }
+                    
                     if(!personCustomerPredicate.test(customer)) {
                         continue;
                     }
@@ -440,7 +444,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
         final byte[] spreadsheetContent = Spreadsheet.buildSpreadsheetContent(spreadsheet, null);
         
         final DateTime now = DateTime.now();
-        final String filename = Constants.bundle("label.ERPTuitionInfoCreationReportFile.filename", now.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD));
+        final String filename = Constants.bundle("label.ERPTuitionInfoCreationReportFile.filename", now.toString("yyyyMMddHHmmss"));
         ERPTuitionInfoCreationReportFile.create(filename, filename, spreadsheetContent);
         
     }
@@ -498,15 +502,21 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
         if (findUniquePendingToExport(customer, type).isPresent()) {
             final ERPTuitionInfo pendingErpTuitionInfo = findUniquePendingToExport(customer, type).get();
 
-            pendingErpTuitionInfo.editPendingToExport(totalAmount, deltaAmount, executionYear.getBeginLocalDate(),
-                    executionYear.getEndLocalDate());
-
             if (Constants.isZero(deltaAmount)) {
                 pendingErpTuitionInfo.cancelExportation(Constants.bundle("label.ERPTuitionInfo.cancelExportation.delta.zero"));
-                return null;
+                return pendingErpTuitionInfo;
+            } else {
+                if(Constants.isPositive(deltaAmount) && Constants.isNegative(pendingErpTuitionInfo.getTuitionDeltaAmount())) {
+                    pendingErpTuitionInfo.cancelExportation(Constants.bundle("label.ERPTuitionInfo.cancelExportation.delta.positive.but.pending.exportation.negative"));
+                } else if(Constants.isNegative(deltaAmount) && Constants.isPositive(pendingErpTuitionInfo.getTuitionDeltaAmount())) {
+                    pendingErpTuitionInfo.cancelExportation(Constants.bundle("label.ERPTuitionInfo.cancelExportation.delta.negative.but.pending.exportation.positive"));
+                } else {
+                    pendingErpTuitionInfo.editPendingToExport(totalAmount, deltaAmount, executionYear.getBeginLocalDate(),
+                            executionYear.getEndLocalDate());
+                    return pendingErpTuitionInfo;
+                }
             }
 
-            return pendingErpTuitionInfo;
         }
 
         if (org.fenixedu.academictreasury.util.Constants.isZero(deltaAmount)) {
@@ -536,7 +546,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
 
                     reportEntry.executionDate = DateTime.now().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
 
-                    reportEntry.studentNumber = c.getPerson().getStudent().getNumber().toString();
+                    reportEntry.studentNumber = c.getAssociatedPerson().getStudent().getNumber().toString();
                     reportEntry.studentName = c.getName();
                     reportEntry.customerFiscalNumber = c.getUiFiscalNumber();
 
@@ -572,10 +582,10 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
                     throw e;
                 } catch(final Throwable e) {
                     reportEntry.errorOccured = Boolean.TRUE.toString();
-                    reportEntry.errorDescription = e.getMessage();
+                    reportEntry.errorDescription = e.getClass().getSimpleName() + " - " + e.getMessage();
                     
                     final List<String> exceptionStackTraceList = Lists.newArrayList(ExceptionUtils.getFullStackTrace(e).split("\n"));
-                    reportEntry.errorDescription += "\n" + String.join("\n", exceptionStackTraceList.subList(0, Integer.max(exceptionStackTraceList.size(), 4)));
+                    reportEntry.errorDescription += "\n" + String.join("\n", exceptionStackTraceList.subList(0, Integer.min(exceptionStackTraceList.size(), 5)));
                     
                     throw e;
                 }
