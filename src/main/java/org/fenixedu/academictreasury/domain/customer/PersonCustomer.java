@@ -42,8 +42,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     protected PersonCustomer(final Person person, final String fiscalCountry, final String fiscalNumber) {
         this();
 
-        if (!DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())
-                && find(getPerson(), getFiscalCountry(), getFiscalNumber()).count() > 1) {
+        if (!DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber()) && find(getPerson(), getFiscalCountry(), getFiscalNumber()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.person.customer.duplicated");
         }
 
@@ -487,7 +486,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         return find(person).filter(pc -> !Strings.isNullOrEmpty(pc.getFiscalCountry())
                 && lowerCase(pc.getFiscalCountry()).equals(lowerCase(fiscalCountryCode))
                 && !Strings.isNullOrEmpty(pc.getFiscalNumber())
-                && lowerCase(pc.getFiscalNumber()).equals(lowerCase(fiscalNumber)));
+                && pc.getFiscalNumber().equals(fiscalNumber));
     }
 
     private static final Comparator<PersonCustomer> SORT_BY_PERSON_MERGE = new Comparator<PersonCustomer>() {
