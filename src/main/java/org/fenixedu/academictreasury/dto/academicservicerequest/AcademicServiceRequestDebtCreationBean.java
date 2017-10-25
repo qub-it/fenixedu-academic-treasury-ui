@@ -6,12 +6,15 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.services.EmolumentServices;
 import org.fenixedu.bennu.IBean;
 import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Lists;
@@ -77,11 +80,13 @@ public class AcademicServiceRequestDebtCreationBean implements Serializable, IBe
             academicServiceRequestesDataSource = Lists.newArrayList();
             return academicServiceRequestesDataSource;
         }
-
-        academicServiceRequestesDataSource = registration.getAcademicServiceRequestsSet().stream()
-                .map(l -> new TupleDataSourceBean(l.getExternalId(),
-                        l.getDescription() + " (" + l.getServiceRequestNumberYear() + ")"))
-                .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+        
+        academicServiceRequestesDataSource = AcademicTreasuryEvent
+                .find(((PersonCustomer) this.debtAccount.getCustomer()).getAssociatedPerson())
+            .filter(e -> e.isAcademicServiceRequestEvent())
+            .map(e -> e.getITreasuryServiceRequest())
+            .map(r -> new TupleDataSourceBean(r.getExternalId(), String.format("[%s] %s", r.getServiceRequestNumberYear(), r.getDescription())))
+            .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         return academicServiceRequestesDataSource;
     }
