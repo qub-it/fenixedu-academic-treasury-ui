@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
+import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoSettings;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoType;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry;
 import org.fenixedu.academictreasury.util.Constants;
@@ -45,6 +46,7 @@ public class ERPTuitionInfoBean implements IBean {
     
     private List<TupleDataSourceBean> executionYearDataSource() {
         final List<TupleDataSourceBean> result = ExecutionYear.readNotClosedExecutionYears().stream()
+                .filter(e -> ERPTuitionInfoSettings.getInstance().getActiveExecutionYearsSet().contains(e))
                 .sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR).collect(Collectors.toList()).stream()
                 .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getQualifiedName()))
                 .collect(Collectors.toList());
