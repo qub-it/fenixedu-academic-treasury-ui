@@ -19,10 +19,12 @@ import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.FiscalDataUpdateLog;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.dto.AdhocCustomerBean;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.util.Constants;
@@ -432,7 +434,22 @@ public class PersonCustomer extends PersonCustomer_Base {
     
     @Override
     @Atomic
-    public void changeFiscalNumber(final String countryCode, final String fiscalNumber) {
+    public void changeFiscalNumber(final AdhocCustomerBean bean) {
+        
+        final String oldFiscalCountry = getFiscalCountry();
+        final String oldFiscalNumber = getFiscalNumber();
+        final boolean changeFiscalNumberConfirmed = bean.isChangeFiscalNumberConfirmed();
+        final boolean withFinantialDocumentsIntegratedInERP = isWithFinantialDocumentsIntegratedInERP();
+        final boolean customerInformationMaybeIntegratedWithSuccess = isCustomerInformationMaybeIntegratedWithSuccess();
+        final boolean customerWithFinantialDocumentsIntegratedInPreviousERP = isCustomerWithFinantialDocumentsIntegratedInPreviousERP();
+        
+        if(!bean.isChangeFiscalNumberConfirmed()) {
+            throw new TreasuryDomainException("message.Customer.changeFiscalNumber.confirmation");
+        }
+        
+        final String countryCode = bean.getCountryCode();
+        final String fiscalNumber = bean.getFiscalNumber();
+        
         if(Strings.isNullOrEmpty(countryCode)) {
             throw new TreasuryDomainException("error.Customer.countryCode.required");
         }
@@ -478,8 +495,12 @@ public class PersonCustomer extends PersonCustomer_Base {
             setCountryCode(countryCode);
             setFiscalNumber(fiscalNumber);
         }
-
+        
         checkRules();
+
+        FiscalDataUpdateLog.create(this, oldFiscalCountry, oldFiscalNumber, 
+                changeFiscalNumberConfirmed, withFinantialDocumentsIntegratedInERP, customerInformationMaybeIntegratedWithSuccess, customerWithFinantialDocumentsIntegratedInPreviousERP);
+        
     }
     
     
