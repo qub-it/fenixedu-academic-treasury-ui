@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.fenixedu.academic.domain.Country;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.contacts.PhysicalAddress;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
@@ -21,9 +22,13 @@ import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
+import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
+import org.springframework.instrument.classloading.tomcat.TomcatLoadTimeWeaver;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -424,6 +429,60 @@ public class PersonCustomer extends PersonCustomer_Base {
         checkRules();
     }
 
+    
+    @Override
+    @Atomic
+    public void changeFiscalNumber(final String countryCode, final String fiscalNumber) {
+        if(Strings.isNullOrEmpty(countryCode)) {
+            throw new TreasuryDomainException("error.Customer.countryCode.required");
+        }
+        
+        if(Strings.isNullOrEmpty(fiscalNumber)) {
+            throw new TreasuryDomainException("error.Customer.fiscalNumber.required");
+        }
+        
+        // Check if fiscal information is different from current information
+        if(lowerCase(countryCode).equals(lowerCase(getCountryCode())) && fiscalNumber.equals(getFiscalNumber())) {
+            throw new TreasuryDomainException("error.Customer.already.with.fiscal.information");
+        }
+
+        if(isFiscalValidated() && isFiscalCodeValid()) {
+            throw new TreasuryDomainException("error.Customer.changeFiscalNumber.already.valid");
+        }
+        
+        if(isWithFinantialDocumentsIntegratedInERP()) {
+            throw new TreasuryDomainException("error.Customer.changeFiscalNumber.documents.integrated.erp");
+        }
+        
+        if(!FiscalCodeValidation.isValidFiscalNumber(countryCode, fiscalNumber)) {
+            throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
+        }
+        
+        final Optional<? extends PersonCustomer> customerOptional = findUnique(getAssociatedPerson(), countryCode, fiscalNumber);
+        if(isActive()) {
+            // Check if this customer has customer with same fiscal information
+            if(customerOptional.isPresent()) {
+                throw new TreasuryDomainException("error.Customer.changeFiscalNumber.customer.exists.for.fiscal.number");
+            }
+            
+            setCountryCode(countryCode);
+            setFiscalNumber(fiscalNumber);
+            getPerson().editSocialSecurityNumber(Country.readByTwoLetterCode(countryCode), fiscalNumber);
+        } else {
+            // Check if this customer has customer with same fiscal information
+            if(customerOptional.isPresent()) {
+                // Mark as merged
+                setFromPersonMerge(true);
+            }
+            
+            setCountryCode(countryCode);
+            setFiscalNumber(fiscalNumber);
+        }
+
+        checkRules();
+    }
+    
+    
     @Override
     public Set<? extends TreasuryEvent> getTreasuryEventsSet() {
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
