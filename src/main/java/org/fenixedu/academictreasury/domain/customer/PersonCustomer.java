@@ -440,7 +440,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         final String oldFiscalNumber = getFiscalNumber();
         final boolean changeFiscalNumberConfirmed = bean.isChangeFiscalNumberConfirmed();
         final boolean withFinantialDocumentsIntegratedInERP = isWithFinantialDocumentsIntegratedInERP();
-        final boolean customerInformationMaybeIntegratedWithSuccess = isCustomerInformationMaybeIntegratedWithSuccess();
+        final boolean customerInformationMaybeIntegratedWithSuccess = false; /* isCustomerInformationMaybeIntegratedWithSuccess() */;
         final boolean customerWithFinantialDocumentsIntegratedInPreviousERP = isCustomerWithFinantialDocumentsIntegratedInPreviousERP();
         
         if(!bean.isChangeFiscalNumberConfirmed()) {

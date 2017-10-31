@@ -612,6 +612,13 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
     }
+    
+    @Override
+    public void copyDebitEntryInformation(final DebitEntry sourceDebitEntry, final DebitEntry copyDebitEntry) {
+        copyDebitEntry.setCurricularCourse(sourceDebitEntry.getCurricularCourse());
+        copyDebitEntry.setEvaluationSeason(sourceDebitEntry.getEvaluationSeason());
+        copyDebitEntry.setExecutionSemester(sourceDebitEntry.getExecutionSemester());
+    }
 
     @Override
     public boolean isDeletable() {
