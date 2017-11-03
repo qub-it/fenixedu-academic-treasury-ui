@@ -440,7 +440,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         final String oldFiscalNumber = getFiscalNumber();
         final boolean changeFiscalNumberConfirmed = bean.isChangeFiscalNumberConfirmed();
         final boolean withFinantialDocumentsIntegratedInERP = isWithFinantialDocumentsIntegratedInERP();
-        final boolean customerInformationMaybeIntegratedWithSuccess = false; /* isCustomerInformationMaybeIntegratedWithSuccess() */;
+        final boolean customerInformationMaybeIntegratedWithSuccess = isCustomerInformationMaybeIntegratedWithSuccess();
         final boolean customerWithFinantialDocumentsIntegratedInPreviousERP = isCustomerWithFinantialDocumentsIntegratedInPreviousERP();
         
         if(!bean.isChangeFiscalNumberConfirmed()) {
@@ -467,7 +467,11 @@ public class PersonCustomer extends PersonCustomer_Base {
             throw new TreasuryDomainException("error.Customer.changeFiscalNumber.already.valid");
         }
         
-        if(isWithFinantialDocumentsIntegratedInERP()) {
+        if(customerInformationMaybeIntegratedWithSuccess) {
+            throw new TreasuryDomainException("warning.Customer.changeFiscalNumber.maybe.integrated.in.erp");
+        }
+        
+        if(withFinantialDocumentsIntegratedInERP) {
             throw new TreasuryDomainException("error.Customer.changeFiscalNumber.documents.integrated.erp");
         }
         
