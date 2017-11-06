@@ -1130,9 +1130,6 @@ class integration.tuitioninfo.ERPTuitionInfoSettings {
 class integration.tuitioninfo.ERPTuitionInfoType {
 	String code;
 	String name;
-	boolean forRegistration;
-	boolean forStandalone;
-	boolean forExtracurricular;
 	boolean active;
 }
 
@@ -1141,6 +1138,16 @@ class integration.tuitioninfo.ERPTuitionInfoType {
 			multiplicity 1..1;
 		}
 		
+		integration.tuitioninfo.ERPTuitionInfoType playsRole erpTuitionInfoTypes {
+			multiplicity *;
+		}
+	}
+	
+	relation ERPTuitionInfoTypeExecutionYear {
+		.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear {
+			multiplicity 1..1;
+		}
+
 		integration.tuitioninfo.ERPTuitionInfoType playsRole erpTuitionInfoTypes {
 			multiplicity *;
 		}
@@ -1156,14 +1163,71 @@ class integration.tuitioninfo.ERPTuitionInfoType {
 		}
 	}
 	
-	relation ERPTuitionInfoTypeDegreeType {
-		.org.fenixedu.academic.domain.degree.DegreeType playsRole degreeType {
-			multiplicity 0..1;
+	relation ERPTuitionInfoTypeTuitionProducts {
+		.org.fenixedu.treasury.domain.Product playsRole tuitionProducts {
+			multiplicity *;
 		}
 
 		integration.tuitioninfo.ERPTuitionInfoType playsRole erpTuitionInfoTypes {
 			multiplicity *;
 		}	
+	}
+
+
+class integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry {
+	boolean forRegistration;
+	boolean forStandalone;
+	boolean forExtracurricular;
+}
+
+	relation ERPTuitionInfoTypeAcademicEntryBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry playsRole erpTuitionInfoTypeAcademicEntry {
+			multiplicity *;
+		}
+	}
+	
+	relation ERPTuitionInfoTypeERPTuitionInfoTypeAcademicEntry {
+		integration.tuitioninfo.ERPTuitionInfoType playsRole erpTuitionInfoType {
+			multiplicity 1..1;
+		}
+
+		integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry playsRole erpTuitionInfoTypeAcademicEntries {
+			multiplicity *;
+		}
+	}
+	
+	relation ERPTuitionInfoTypeAcademicInfoEntryDegreeType {
+		.org.fenixedu.academic.domain.degree.DegreeType playsRole degreeType {
+			multiplicity 0..1;
+		}
+
+		integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry playsRole erpTuitionInfoTypeAcademicEntries {
+			multiplicity *;
+		}
+	}
+	
+	relation ERPTuitionInfoTypeAcademicInfoEntryDegree {
+		.org.fenixedu.academic.domain.Degree playsRole degree {
+			multiplicity 0..1;
+		}
+
+		integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry playsRole erpTuitionInfoTypeAcademicEntries {
+			multiplicity *;
+		}
+	}
+	
+	relation ERPTuitionInfoTypeAcademicInfoEntryDegreeCurricularPlan {
+		.org.fenixedu.academic.domain.DegreeCurricularPlan playsRole degreeCurricularPlan {
+			multiplicity 0..1;
+		}
+
+		integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry playsRole erpTuitionInfoTypeAcademicEntries {
+			multiplicity *;
+		}
 	}
 	
 class integration.tuitioninfo.ERPTuitionInfo {
@@ -1199,16 +1263,6 @@ class integration.tuitioninfo.ERPTuitionInfo {
 	
 	relation ERPTuitionInfoCustomer {
 		.org.fenixedu.treasury.domain.Customer playsRole customer {
-			multiplicity 1..1;
-		}
-		
-		integration.tuitioninfo.ERPTuitionInfo playsRole erpTuitionInfos {
-			multiplicity *;
-		}
-	}
-	
-	relation ERPTuitionInfoExecutionYear {
-		.org.fenixedu.academic.domain.ExecutionYear playsRole executionYear {
 			multiplicity 1..1;
 		}
 		
@@ -1268,4 +1322,18 @@ class integration.ERPTuitionInfoExportOperation extends .org.fenixedu.treasury.d
 		integration.ERPTuitionInfoExportOperation playsRole erpTuitionInfoExportOperations {
 			multiplicity *;
 		}
+	}
+
+class integration.ERPTuitionInfoCreationReportFile extends .org.fenixedu.bennu.io.domain.GenericFile {
+}
+
+	relation ERPTuitionInfoCreationReportFileBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		integration.ERPTuitionInfoCreationReportFile playsRole erpTuitionInfoCreationReportFiles {
+			multiplicity *;
+		}
+		
 	}

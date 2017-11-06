@@ -201,24 +201,13 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
 
         //PROCESSING PAYMENTS TABLE
 
-        if (erpTuitionInfo.isCredit()) {
-            paymentsDocuments.setNumberOfEntries(new BigInteger("2"));
-            paymentsDocuments.setTotalCredit(erpTuitionInfo.getTuitionDeltaAmount().abs());
-            paymentsDocuments.setTotalDebit(erpTuitionInfo.getTuitionDeltaAmount().abs());
+        paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
+        paymentsDocuments.setTotalCredit(BigDecimal.ZERO);
+        paymentsDocuments.setTotalDebit(BigDecimal.ZERO);
 
-            Payment paymentDocument = convertToSAFTPaymentDocument(erpTuitionInfo);
-            paymentsDocuments.getPayment().add(paymentDocument);
-
-            sourceDocuments.setPayments(paymentsDocuments);
-        } else {
-            paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
-            paymentsDocuments.setTotalCredit(BigDecimal.ZERO);
-            paymentsDocuments.setTotalDebit(BigDecimal.ZERO);
-
-            // Update Totals of Payment Documents
-            paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
-            sourceDocuments.setPayments(paymentsDocuments);
-        }
+        // Update Totals of Payment Documents
+        paymentsDocuments.setNumberOfEntries(BigInteger.ZERO);
+        sourceDocuments.setPayments(paymentsDocuments);
 
         // Update the Customer Table in SAFT
         for (final ERPCustomerFieldsBean customerBean : customerMap.values()) {
@@ -413,8 +402,7 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
 
             /* ANIL: 2015/10/20 converted from dateTime to Date */
             workDocument.setWorkDate(SAPExporter.convertToXMLDate(dataTypeFactory, documentDate));
-            workDocument.setCertificationDate(SAPExporter.convertToXMLDate(dataTypeFactory,
-                    SAPExporter.ERP_INTEGRATION_START_DATE.minusDays(1)));
+            workDocument.setCertificationDate(SAPExporter.convertToXMLDate(dataTypeFactory, erpTuitionInfo.getCreationDate()));
 
             // DocumentNumber
             workDocument.setDocumentNumber(erpTuitionInfo.getUiDocumentNumber());
@@ -529,7 +517,7 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
 
                 OrderReferences reference = new OrderReferences();
                 reference.setOriginatingON(firstERPTuitionInfo.getUiDocumentNumber());
-                reference.setOrderDate(SAPExporter.convertToXMLDateTime(dataTypeFactory,
+                reference.setOrderDate(SAPExporter.convertToXMLDate(dataTypeFactory,
                         erpTuitionInfo.getFirstERPTuitionInfo().getCreationDate()));
                 reference.setLineNumber(BigInteger.ONE);
 
@@ -674,11 +662,11 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
             }
 
             if (erpIntegrationConfiguration.getActive() == false) {
-                logBean.appendErrorLog(Constants.bundle("info.ERPExporter.configuration.inactive"));
+                logBean.appendErrorLog(org.fenixedu.treasury.util.Constants.bundle("info.ERPExporter.configuration.inactive"));
                 return false;
             }
 
-            logBean.appendIntegrationLog(Constants.bundle("info.ERPExporter.sending.inforation"));
+            logBean.appendIntegrationLog(org.fenixedu.treasury.util.Constants.bundle("info.ERPExporter.sending.inforation"));
 
             final IERPExternalService service = erpIntegrationConfiguration.getERPExternalServiceImplementation();
             final DocumentsInformationInput input = new DocumentsInformationInput();
@@ -687,32 +675,33 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
                 DocumentsInformationOutput sendInfoOnlineResult = service.sendInfoOnline(institution, input);
 
                 operation.setErpOperationId(sendInfoOnlineResult.getRequestId());
-                logBean.appendIntegrationLog(Constants.bundle("info.ERPExporter.sucess.sending.inforation.online",
+                logBean.appendIntegrationLog(org.fenixedu.treasury.util.Constants.bundle("info.ERPExporter.sucess.sending.inforation.online",
                         sendInfoOnlineResult.getRequestId()));
 
                 //if we have result in online situation, then check the information of integration STATUS
                 for (DocumentStatusWS status : sendInfoOnlineResult.getDocumentStatus()) {
                     if (status.isIntegratedWithSuccess()) {
 
-                        FinantialDocument document =
-                                FinantialDocument.findByUiDocumentNumber(institution, status.getDocumentNumber());
-                        if (document != null) {
-                            final String message = BundleUtil.getString(Constants.BUNDLE,
-                                    "info.ERPExporter.sucess.integrating.document", document.getUiDocumentNumber());
+                        ERPTuitionInfo tuitionInfo = 
+                                ERPTuitionInfo.findUniqueByDocumentNumber(status.getDocumentNumber()).orElse(null);
+                        
+                        if (tuitionInfo != null) {
+                            final String message = BundleUtil.getString(org.fenixedu.treasury.util.Constants.BUNDLE,
+                                    "info.ERPExporter.sucess.integrating.document", tuitionInfo.getUiDocumentNumber());
                             logBean.appendIntegrationLog(message);
-                            document.clearDocumentToExport(message);
+                            tuitionInfo.markIntegratedWithSuccess(message);
                         } else {
                             success = false;
-                            logBean.appendIntegrationLog(Constants.bundle("info.ERPExporter.error.integrating.document",
+                            logBean.appendIntegrationLog(org.fenixedu.treasury.util.Constants.bundle("info.ERPExporter.error.integrating.document",
                                     status.getDocumentNumber(), status.getErrorDescription()));
-                            logBean.appendErrorLog(Constants.bundle("info.ERPExporter.error.integrating.document",
+                            logBean.appendErrorLog(org.fenixedu.treasury.util.Constants.bundle("info.ERPExporter.error.integrating.document",
                                     status.getDocumentNumber(), status.getErrorDescription()));
                         }
                     } else {
                         success = false;
-                        logBean.appendIntegrationLog(Constants.bundle("info.ERPExporter.error.integrating.document",
+                        logBean.appendIntegrationLog(org.fenixedu.treasury.util.Constants.bundle("info.ERPExporter.error.integrating.document",
                                 status.getDocumentNumber(), status.getErrorDescription()));
-                        logBean.appendErrorLog(Constants.bundle("info.ERPExporter.error.integrating.document",
+                        logBean.appendErrorLog(org.fenixedu.treasury.util.Constants.bundle("info.ERPExporter.error.integrating.document",
                                 status.getDocumentNumber(), status.getErrorDescription()));
 
                     }
