@@ -42,8 +42,6 @@ public class ERPTuitionInfoTypeController extends AcademicTreasuryBaseController
     public String create(final Model model) {
         
         
-        
-        
         return jspPage(_CREATE_URI);
     }
     

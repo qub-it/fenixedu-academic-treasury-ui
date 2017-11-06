@@ -96,8 +96,8 @@ ${portal.toolkit()}
 			<tbody>
 				<c:forEach var="row" items="${result}">
 					<tr>
-						<td><c:out value='${row.code}' /></td>
-						<td><c:out value='${row.name}' /></td>
+						<td><c:out value='${row.erpTuitionInfoProduct.code}' /></td>
+						<td><c:out value='${row.erpTuitionInfoProduct.name}' /></td>
 						<td><spring:message code="label.${row.active}" /></td>
 						<td>
 

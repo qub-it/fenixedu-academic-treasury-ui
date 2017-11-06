@@ -63,7 +63,7 @@ public class ERPTuitionInfoBean implements IBean {
         
         final List<TupleDataSourceBean> result = ERPTuitionInfoType.findActiveForExecutionYear(executionYear)
                 .filter(t -> isForAnyOfTreasuryEvent(t))
-                .map(t -> new TupleDataSourceBean(t.getExternalId(), t.getName()))
+                .map(t -> new TupleDataSourceBean(t.getExternalId(), t.getErpTuitionInfoProduct().getName()))
                 .sorted(TupleDataSourceBean.COMPARE_BY_TEXT)
                 .collect(Collectors.toList());
                 

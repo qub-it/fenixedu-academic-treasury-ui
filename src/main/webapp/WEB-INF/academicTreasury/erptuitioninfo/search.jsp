@@ -140,7 +140,7 @@ ${portal.toolkit()}
 	                        <option></option>
 	                    <c:forEach var="erpTuitionInfoType" items="${erpTuitionInfoTypesList}">
 	                        <option value="${erpTuitionInfoType.externalId}">
-	                        	<c:out value="${erpTuitionInfoType.name}" />
+	                        	<c:out value="${erpTuitionInfoType.erpTuitionInfoProduct.name}" />
 	                        	<c:if test="${erpTuitionInfoType.active}">
 	                        		&nbsp;[<spring:message code="label.ERPTuitionInfoType.active" />]
 	                        	</c:if>
@@ -296,7 +296,7 @@ ${portal.toolkit()}
 								</tr>
 								<tr>
 									<td><spring:message code="label.ERPTuitionInfo.erpTuitionInfoType" /></td>
-									<td><c:out value='${row.erpTuitionInfoType.name}' /></td>
+									<td><c:out value='${row.erpTuitionInfoType.erpTuitionInfoProduct.name}' /></td>
 								</tr>
 								<tr>
 									<td><spring:message code="label.ERPTuitionInfo.executionYear" /></td>

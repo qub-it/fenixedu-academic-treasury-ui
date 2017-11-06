@@ -1127,10 +1127,9 @@ class integration.tuitioninfo.ERPTuitionInfoSettings {
 		}
 	}
 
-class integration.tuitioninfo.ERPTuitionInfoType {
+class integration.tuitioninfo.ERPTuitionInfoProduct {
 	String code;
 	String name;
-	boolean active;
 }
 
 	relation ERPTuitionInfoTypeBennu {
@@ -1138,6 +1137,30 @@ class integration.tuitioninfo.ERPTuitionInfoType {
 			multiplicity 1..1;
 		}
 		
+		integration.tuitioninfo.ERPTuitionInfoProduct playsRole erpTuitionInfoProducts {
+			multiplicity *;
+		}
+	}
+	
+class integration.tuitioninfo.ERPTuitionInfoType {
+	boolean active;
+}
+
+	relation ERPTuitionInfoProductBennu {
+		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+			multiplicity 1..1;
+		}
+		
+		integration.tuitioninfo.ERPTuitionInfoType playsRole erpTuitionInfoTypes {
+			multiplicity *;
+		}
+	}
+	
+	relation ERPTuitionInfoTypeERPTuitionInfoProduct {
+		integration.tuitioninfo.ERPTuitionInfoProduct playsRole erpTuitionInfoProduct {
+			multiplicity 1..1;
+		}
+
 		integration.tuitioninfo.ERPTuitionInfoType playsRole erpTuitionInfoTypes {
 			multiplicity *;
 		}

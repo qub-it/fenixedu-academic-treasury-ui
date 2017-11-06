@@ -291,7 +291,7 @@ public class ERPTuitionInfoTypeAcademicEntry extends ERPTuitionInfoTypeAcademicE
                 throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.event.define.some.of.the.products.of.type.but.not.all",
                         event.getPerson().getStudent().getNumber().toString(),
                         event.getPerson().getStudent().getName(),
-                        getErpTuitionInfoType().getName());
+                        getErpTuitionInfoType().getErpTuitionInfoProduct().getName());
             }
             
             return false;

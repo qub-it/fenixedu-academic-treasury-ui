@@ -491,8 +491,8 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
 
             final ERPTuitionInfoType tuitionInfoType = erpTuitionInfo.getErpTuitionInfoType();
 
-            if (tuitionInfoType.getCode() != null && baseProducts.containsKey(tuitionInfoType.getCode())) {
-                currentProduct = baseProducts.get(tuitionInfoType.getCode());
+            if (tuitionInfoType.getErpTuitionInfoProduct().getCode() != null && baseProducts.containsKey(tuitionInfoType.getErpTuitionInfoProduct().getCode())) {
+                currentProduct = baseProducts.get(tuitionInfoType.getErpTuitionInfoProduct().getCode());
             } else {
                 currentProduct = convertERPTuitionInfoTypeToSAFTProduct(tuitionInfoType);
                 baseProducts.put(currentProduct.getProductCode(), currentProduct);
@@ -507,7 +507,7 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
             }
 
             // Description
-            line.setDescription(tuitionInfoType.getName());
+            line.setDescription(tuitionInfoType.getErpTuitionInfoProduct().getName());
             List<OrderReferences> orderReferences = line.getOrderReferences();
 
             line.setMetadata(fillMetadata(erpTuitionInfo, dataTypeFactory));
@@ -562,10 +562,10 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
                 new org.fenixedu.treasury.generated.sources.saft.sap.Product();
 
         // ProductCode
-        p.setProductCode(tuitionInfoType.getCode());
+        p.setProductCode(tuitionInfoType.getErpTuitionInfoProduct().getCode());
 
         // ProductDescription
-        p.setProductDescription(tuitionInfoType.getName());
+        p.setProductDescription(tuitionInfoType.getErpTuitionInfoProduct().getName());
 
         // ProductGroup
         p.setProductGroup(AcademicTreasurySettings.getInstance().getTuitionProductGroup().getName().getContent());
@@ -836,7 +836,7 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
                 /* ANIL: 2015/10/20 converted from dateTime to Date */
                 sourceDocument.setInvoiceDate(SAPExporter.convertToXMLDate(dataTypeFactory, erpTuitionInfo.getCreationDate()));
 
-                sourceDocument.setDescription(erpTuitionInfo.getErpTuitionInfoType().getName());
+                sourceDocument.setDescription(erpTuitionInfo.getErpTuitionInfoType().getErpTuitionInfoProduct().getName());
                 line.getSourceDocumentID().add(sourceDocument);
 
                 //SettlementAmount
@@ -857,7 +857,7 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
                 /* ANIL: 2015/10/20 converted from dateTime to Date */
                 sourceDocument.setInvoiceDate(SAPExporter.convertToXMLDate(dataTypeFactory, erpTuitionInfo.getCreationDate()));
 
-                sourceDocument.setDescription(erpTuitionInfo.getErpTuitionInfoType().getName());
+                sourceDocument.setDescription(erpTuitionInfo.getErpTuitionInfoType().getErpTuitionInfoProduct().getName());
                 line.getSourceDocumentID().add(sourceDocument);
 
                 //SettlementAmount

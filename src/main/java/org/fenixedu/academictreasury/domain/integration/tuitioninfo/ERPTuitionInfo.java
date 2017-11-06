@@ -550,8 +550,8 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
                     reportEntry.studentName = c.getName();
                     reportEntry.customerFiscalNumber = c.getUiFiscalNumber();
 
-                    reportEntry.erpTuitionInfoTypeCode = t.getCode();
-                    reportEntry.erpTuitionInfoTypeName = t.getName();
+                    reportEntry.erpTuitionInfoTypeCode = t.getErpTuitionInfoProduct().getCode();
+                    reportEntry.erpTuitionInfoTypeName = t.getErpTuitionInfoProduct().getName();
                     reportEntry.executionYearQualifiedName = t.getExecutionYear().getQualifiedName();
                     
                     final ERPTuitionInfo erpTuitionInfo = exportTuitionInformation(c, t, t.getExecutionYear());

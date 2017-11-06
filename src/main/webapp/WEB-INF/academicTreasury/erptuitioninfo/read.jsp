@@ -32,8 +32,7 @@ ${portal.toolkit()}
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message code="label.ERPTuitionInfo.title" />
-        <small></small>
+        <spring:message code="label.ERPTuitionInfo.read.title" />
     </h1>
 </div>
 <%-- NAVIGATION --%>
@@ -124,7 +123,7 @@ ${portal.toolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.erpTuitionInfoType" /></th>
-                        <td><c:out value="${erpTuitionInfo.erpTuitionInfoType.name}" /></td>
+                        <td><c:out value="${erpTuitionInfo.erpTuitionInfoType.erpTuitionInfoProduct.name}" /></td>
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.ERPTuitionInfo.tuitionTotalAmount" /></th>

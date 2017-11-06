@@ -8,13 +8,9 @@ import java.util.stream.Stream;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.bennu.TupleDataSourceBean;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.Product;
-
-import com.google.common.base.Strings;
 
 public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
 
@@ -22,7 +18,7 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
 
         @Override
         public int compare(final ERPTuitionInfoType o1, final ERPTuitionInfoType o2) {
-            int c = o1.getName().compareTo(o2.getName());
+            int c = o1.getErpTuitionInfoProduct().getName().compareTo(o2.getErpTuitionInfoProduct().getName());
 
             return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
         }
@@ -36,13 +32,12 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
         setActive(true);
     }
 
-    private ERPTuitionInfoType(final ExecutionYear executionYear, final String code, final String name,
+    private ERPTuitionInfoType(final ExecutionYear executionYear, final ERPTuitionInfoProduct product,
             final Set<Product> tuitionProducts) {
         this();
 
         setExecutionYear(executionYear);
-        setCode(code);
-        setName(name);
+        setErpTuitionInfoProduct(product);
 
         getTuitionProductsSet().addAll(tuitionProducts);
 
@@ -59,22 +54,10 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.executionYear.required");
         }
 
-        if (Strings.isNullOrEmpty(getCode())) {
-            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.code.required");
-        }
-
-        if (Strings.isNullOrEmpty(getName())) {
-            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.name.required");
-        }
-
         if (getTuitionProductsSet().isEmpty()) {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.tuitionProducts.required");
         }
-
-        if (findByCode(getCode()).count() > 1) {
-            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.code.not.unique");
-        }
-
+        
     }
 
     public boolean isActive() {
@@ -95,6 +78,7 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
         }
 
         setBennu(null);
+        setErpTuitionInfoProduct(null);
         setErpTuitionInfoSettings(null);
         setExecutionYear(null);
         getTuitionProductsSet().clear();
@@ -130,16 +114,16 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
     }
 
     public static Stream<ERPTuitionInfoType> findByCode(final String code) {
-        return findAll().filter(e -> e.getCode().equals(code));
+        return findAll().filter(e -> e.getErpTuitionInfoProduct().getCode().equals(code));
     }
 
     public static Optional<ERPTuitionInfoType> findUniqueByCode(final String code) {
-        return findAll().filter(e -> e.getCode().equals(code)).findFirst();
+        return findAll().filter(e -> e.getErpTuitionInfoProduct().getCode().equals(code)).findFirst();
     }
 
-    public static ERPTuitionInfoType create(final ExecutionYear executionYear, final String code, final String name,
+    public static ERPTuitionInfoType create(final ExecutionYear executionYear, final ERPTuitionInfoProduct product,
             final Set<Product> tuitionProducts) {
-        return new ERPTuitionInfoType(executionYear, code, name, tuitionProducts);
+        return new ERPTuitionInfoType(executionYear, product, tuitionProducts);
     }
 
 }
