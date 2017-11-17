@@ -426,6 +426,9 @@ public class PersonCustomer extends PersonCustomer_Base {
     @Override
     @Atomic
     public void changeFiscalNumber(final AdhocCustomerBean bean) {
+        if(!Strings.isNullOrEmpty(getErpCustomerId())) {
+            throw new TreasuryDomainException("warning.Customer.changeFiscalNumber.maybe.integrated.in.erp");
+        }
         
         final String oldFiscalCountry = getFiscalCountry();
         final String oldFiscalNumber = getFiscalNumber();
