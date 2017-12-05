@@ -198,7 +198,7 @@ $(document).ready(function() {
 	product_options = [
 		<c:forEach items="${AcademicTax_product_options}" var="element"> 
 			{
-				text : "<c:out value='[${element.name.code}] ${element.name.content}'/>",  
+				text : "<c:out value='[${element.code}] ${element.name.content}'/>",  
 				id : "<c:out value='${element.externalId}'/>"
 			},
 		</c:forEach>
