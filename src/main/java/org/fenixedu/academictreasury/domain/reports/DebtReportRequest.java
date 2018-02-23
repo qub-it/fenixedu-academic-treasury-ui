@@ -127,18 +127,19 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                                 AcademicActBlockingSuspensionReportEntryBean.SPREADSHEET_HEADERS,
                                 DebtReportService.academicActBlockingSuspensionReport(DebtReportRequest.this, errorsLog)),
 
-                        ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
-                                DebtReportService.paymentReferenceCodeReport(DebtReportRequest.this, errorsLog)),
-
-                        ExcelSheet.create(sibsTransactionDetailSheetName(),
-                                SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
-                                DebtReportService.sibsTransactionDetailReport(DebtReportRequest.this, errorsLog)),
-
+//                        ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
+//                                DebtReportService.paymentReferenceCodeReport(DebtReportRequest.this, errorsLog)),
+//
+//                        ExcelSheet.create(sibsTransactionDetailSheetName(),
+//                                SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
+//                                DebtReportService.sibsTransactionDetailReport(DebtReportRequest.this, errorsLog)),
+//
                         ExcelSheet.create(treasuryExemptionSheetName(), TreasuryExemptionReportEntryBean.SPREADSHEET_HEADERS,
-                                DebtReportService.treasuryExemptionReport(DebtReportRequest.this, errorsLog)),
-
-                        ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS,
-                                DebtReportService.productReport(DebtReportRequest.this, errorsLog)) };
+                                DebtReportService.treasuryExemptionReport(DebtReportRequest.this, errorsLog))
+//
+//                        ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS,
+//                                DebtReportService.productReport(DebtReportRequest.this, errorsLog)) 
+                        };
             }
 
             private String decimalSeparator() {
