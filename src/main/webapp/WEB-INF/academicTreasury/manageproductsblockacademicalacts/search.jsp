@@ -1,3 +1,4 @@
+<%@page import="org.fenixedu.academictreasury.ui.manageproductsblockacademicalacts.ManageProductsForBlockAcademicalActs"%>
 <%@page
     import="org.fenixedu.academictreasury.ui.manageacademictreasurysettings.AcademicTreasurySettingsController"%>
 <%@page
@@ -28,10 +29,10 @@
 ${portal.toolkit()}
 
 <link
-    href="${pageContext.request.contextPath}/static/academictreasury/css/dataTables.responsive.css"
+    href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css"
     rel="stylesheet" />
 <script
-    src="${pageContext.request.contextPath}/static/academictreasury/js/dataTables.responsive.js"></script>
+    src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
 <link
     href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
     rel="stylesheet" />
@@ -100,12 +101,12 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;
-    <a class="" href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.ADDACADEMICALACTBLOCKINGPRODUCT_URL %>">
+    <a class="" href="${pageContext.request.contextPath}<%= ManageProductsForBlockAcademicalActs.ADD_PRODUCTS_BLOCKING_URL %>">
         <spring:message code="label.event.add" />
     </a>
     &nbsp;|&nbsp;
     <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>&nbsp;
-    <a class="" href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.REMOVEACADEMICALACTBLOCKINGPRODUCT_URL %>">
+    <a class="" href="${pageContext.request.contextPath}<%= ManageProductsForBlockAcademicalActs.REMOVE_PRODUCTS_FOR_BLOCKING_URL %>">
         <spring:message code="label.event.remove" />
     </a>
 </div>
@@ -125,6 +126,13 @@ ${portal.toolkit()}
 		    <datatables:table id="BlockingProductsTable" row="p" data="${blockingproducts}"
 		        cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 		
+		        <datatables:column>
+		            <datatables:columnHead>
+		            </datatables:columnHead>
+		
+		            <c:out value='${p.externalId}' />
+		        </datatables:column>
+
 		        <datatables:column>
 		            <datatables:columnHead>
 		                <spring:message code="label.Product.code" />
@@ -161,7 +169,7 @@ ${portal.toolkit()}
 </div>
 
 <h3 style="margin-top: 50px">
-    <spring:message code="label.AcademicTreasurySettings.academicalActBlockingProducts" />
+    <spring:message code="label.AcademicTreasurySettings.academicalActNonBlockingProducts" />
 </h3>
 
 <div class="col-sm-12">

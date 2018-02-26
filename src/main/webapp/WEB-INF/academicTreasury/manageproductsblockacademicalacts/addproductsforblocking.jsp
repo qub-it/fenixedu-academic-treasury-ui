@@ -28,10 +28,10 @@
 ${portal.toolkit()}
 
 <link
-    href="${pageContext.request.contextPath}/static/academictreasury/css/dataTables.responsive.css"
+    href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css"
     rel="stylesheet" />
 <script
-    src="${pageContext.request.contextPath}/static/academictreasury/js/dataTables.responsive.js"></script>
+    src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
 <link
     href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
     rel="stylesheet" />
@@ -47,10 +47,14 @@ ${portal.toolkit()}
 <script
     src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
 
+<%-- jQuery DataTables Checkboxes --%>
+<link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.9/css/dataTables.checkboxes.css" rel="stylesheet" />
+<script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.9/js/dataTables.checkboxes.min.js"></script>
+
 <%-- TITLE --%>
 <div class="page-header">
     <h1>
-        <spring:message code="label.title.academictreasury.ManageProductsForBlockAcademicalActs" />
+        <spring:message code="label.title.academictreasury.ManageProductsForBlockAcademicalActs.addProductsToBlock" />
         <small></small>
     </h1>
 </div>
@@ -92,77 +96,24 @@ ${portal.toolkit()}
     </div>
 </c:if>
 
-
-<h3 style="margin-top: 50px">
-    <spring:message code="label.AcademicTreasurySettings.academicalActBlockingProducts" />
-</h3>
-
-<%-- NAVIGATION --%>
-<div class="well well-sm" style="display: inline-block">
-    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;
-    <a class="" href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.ADDACADEMICALACTBLOCKINGPRODUCT_URL %>">
-        <spring:message code="label.event.add" />
-    </a>
-    &nbsp;|&nbsp;
-    <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>&nbsp;
-    <a class="" href="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.REMOVEACADEMICALACTBLOCKINGPRODUCT_URL %>">
-        <spring:message code="label.event.remove" />
-    </a>
-</div>
-
-<div class="col-sm-12">
-	<c:choose>
-		<c:when test="${empty blockingproducts}">
-	        <div class="alert alert-warning" role="alert">
-	            <p>
-	                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
-	                <spring:message code="label.noResultsFound" />
-	            </p>
-	        </div>
-		</c:when>
+<script type="text/javascript">
+	function submitOptions(tableID, formID, attributeName) {
+		array = $("#" + tableID).DataTable().rows(".selected")[0];
 		
-		<c:otherwise>
-		    <datatables:table id="BlockingProductsTable" row="p" data="${blockingproducts}"
-		        cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
+		$("#" + formID).empty();
+		if (array.length>0) {
+			$.each(array,function(index, value) {
+				externalId = $("#" + tableID).DataTable().row(value).data()["DT_RowId"];
+				$("#" + formID).append("<input type='hidden' name='" + attributeName+ "' value='" + externalId + "'/>");
+			});
+			$("#" + formID).submit();
+		} else {
+			messageAlert('<spring:message code = "label.warning"/>','<spring:message code = "label.select.mustselect"/>');
+		}
 		
-		        <datatables:column>
-		            <datatables:columnHead>
-		                <spring:message code="label.Product.code" />
-		            </datatables:columnHead>
-		
-		            <c:out value='${p.code}' />
-		        </datatables:column>
-		
-		        <datatables:column>
-		            <datatables:columnHead>
-		                <spring:message code="label.Product.name" />
-		            </datatables:columnHead>
-		            
-					<c:out value='${p.name.content}' />
-		        </datatables:column>
+	}
+</script>
 
-		        <datatables:column>
-		            <datatables:columnHead>
-		                <spring:message code="label.Product.active" />
-		            </datatables:columnHead>
-		            
-		            <spring:message code="label.${p.active}" />
-		        </datatables:column>
-		        
-		    </datatables:table>
-		    <script>
-				createDataTables("BlockingProductsTable",
-						true, false, true,
-						"${pageContext.request.contextPath}",
-						"${datatablesI18NUrl}");
-			</script>
-		</c:otherwise>
-	</c:choose>
-</div>
-
-<h3 style="margin-top: 50px">
-    <spring:message code="label.AcademicTreasurySettings.academicalActBlockingProducts" />
-</h3>
 
 <div class="col-sm-12">
 	<c:choose>
@@ -177,9 +128,13 @@ ${portal.toolkit()}
 		
 		<c:otherwise>
 		
-		    <datatables:table id="NonBlockingProductsTable" row="p" data="${nonblockingproducts}"
+		    <datatables:table id="nonBlockingProductsTable" row="p" data="${nonblockingproducts}"
 		        cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 		
+		        <datatables:column>
+		            <c:out value='${p.externalId}' />
+		        </datatables:column>
+
 		        <datatables:column>
 		            <datatables:columnHead>
 		                <spring:message code="label.Product.code" />
@@ -206,20 +161,26 @@ ${portal.toolkit()}
 		        
 		    </datatables:table>
 		    <script>
-				createDataTables("NonBlockingProductsTable",
-						true, false, true,
-						"${pageContext.request.contextPath}",
-						"${datatablesI18NUrl}");
+		    	$(document).ready(function() {
+					window.datatable = createDataTablesWithSelectionByCheckbox(
+							'nonBlockingProductsTable', 
+							true /*filterable*/, 
+							false /*show tools*/, 
+							true /*paging*/, 
+							"${pageContext.request.contextPath}","${datatablesI18NUrl}");
+		    	});
+
 			</script>
 
-	        <form id="addentries"
+	        <form id="addproducts"
 	            action="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.ADDACADEMICALACTBLOCKINGPRODUCT_URL %>"
-	            style="display: none;" method="POST"></form>
+	            style="display: none;" method="post">
+	        </form>
 	
-				<button id="addEntryButton" type="button" onclick="javascript:submitOptions('searchpendingentriesTable', 'addentries', 'debitEntrys')">
-					<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
-					    <spring:message code='label.event.add' />
-				</button>
+			<button id="addEntryButton" type="button" onclick="javascript:submitOptions('searchpendingentriesTable', 'addproducts', 'products')">
+				<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
+				    <spring:message code='label.event.add' />
+			</button>
 			
 			</form>
 		</c:otherwise>

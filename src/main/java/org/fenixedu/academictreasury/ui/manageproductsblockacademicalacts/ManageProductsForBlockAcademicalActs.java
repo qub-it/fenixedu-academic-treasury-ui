@@ -57,7 +57,7 @@ public class ManageProductsForBlockAcademicalActs extends AcademicTreasuryBaseCo
     }
     
     @RequestMapping(value = _ADD_PRODUCTS_FOR_BLOCKING_URI, method=RequestMethod.POST)
-    public String addproductsforblocking(@RequestParam("productIds") final List<Product> products, final Model model, final RedirectAttributes redirectAttributes) {
+    public String addproductsforblocking(@RequestParam("products") final List<Product> products, final Model model, final RedirectAttributes redirectAttributes) {
         
         try {
             
