@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.domain.settings;
 
 import java.util.Optional;
+import java.util.Set;
 
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -27,12 +28,26 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
     
     @Atomic
     public void addAcademicalActBlockingProduct(final Product product) {
-        addAcademicalActBlockingProducts(product);
+        super.addAcademicalActBlockingProducts(product);
     }
     
     @Atomic
     public void removeAcademicalActBlockingProduct(final Product product) {
-        removeAcademicalActBlockingProducts(product);
+        super.removeAcademicalActBlockingProducts(product);
+    }
+    
+    @Atomic
+    public void addProductsForAcademicalActBlocking(final Set<Product> products) {
+        for (Product product : products) {
+            addAcademicalActBlockingProduct(product);
+        }
+    }
+    
+    @Atomic
+    public void removeProductsForAcademicalActBlocking(final Set<Product> products) {
+        for (Product product : products) {
+            removeAcademicalActBlockingProduct(product);
+        }        
     }
 
     public boolean isAcademicalActBlocking(final Product product) {

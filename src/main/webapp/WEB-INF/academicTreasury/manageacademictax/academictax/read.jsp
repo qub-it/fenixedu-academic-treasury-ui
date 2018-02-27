@@ -87,6 +87,7 @@ ${portal.toolkit()}
 	<!-- /.modal-dialog -->
 </div>
 <!-- /.modal -->
+
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
 	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>&nbsp;<a
@@ -101,6 +102,7 @@ ${portal.toolkit()}
 		href="${pageContext.request.contextPath}<%= AcademicTaxController.UPDATE_URL %>${academicTax.externalId}"><spring:message
 			code="label.event.update" /></a> &nbsp;
 </div>
+
 <c:if test="${not empty infoMessages}">
 	<div class="alert alert-info" role="alert">
 

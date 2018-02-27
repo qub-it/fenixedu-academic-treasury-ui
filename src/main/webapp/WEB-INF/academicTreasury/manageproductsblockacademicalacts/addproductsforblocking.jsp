@@ -1,55 +1,12 @@
-<%@page
-    import="org.fenixedu.academictreasury.ui.manageacademictreasurysettings.AcademicTreasurySettingsController"%>
-<%@page
-    import="org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings"%>
+<%@page import="org.fenixedu.academictreasury.ui.manageproductsblockacademicalacts.ManageProductsForBlockAcademicalActsController"%>
+<%@page import="org.fenixedu.academictreasury.ui.manageacademictreasurysettings.AcademicTreasurySettingsController"%>
+<%@page import="org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="datatables"
-    uri="http://github.com/dandelion/datatables"%>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 
-<spring:url var="datatablesUrl"
-    value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
-<spring:url var="datatablesBootstrapJsUrl"
-    value="/javaScript/dataTables/media/js/jquery.dataTables.bootstrap.min.js"></spring:url>
-<script type="text/javascript" src="${datatablesUrl}"></script>
-<script type="text/javascript" src="${datatablesBootstrapJsUrl}"></script>
-<spring:url var="datatablesCssUrl"
-    value="/CSS/dataTables/dataTables.bootstrap.min.css" />
-
-<link rel="stylesheet" href="${datatablesCssUrl}" />
-<spring:url var="datatablesI18NUrl"
-    value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
-<link rel="stylesheet" type="text/css"
-    href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
-
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
-<%--${portal.angularToolkit()} --%>
-${portal.toolkit()}
-
-<link
-    href="${pageContext.request.contextPath}/static/academicTreasury/css/dataTables.responsive.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/static/academicTreasury/js/dataTables.responsive.js"></script>
-<link
-    href="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/css/dataTables.tableTools.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/webjars/datatables-tools/2.2.4/js/dataTables.tableTools.js"></script>
-<link
-    href="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/css/select2.min.css"
-    rel="stylesheet" />
-<script
-    src="${pageContext.request.contextPath}/webjars/select2/4.0.0-rc.2/dist/js/select2.min.js"></script>
-<script type="text/javascript"
-    src="${pageContext.request.contextPath}/webjars/bootbox/4.4.0/bootbox.js"></script>
-<script
-    src="${pageContext.request.contextPath}/static/academicTreasury/js/omnis.js"></script>
-
-<%-- jQuery DataTables Checkboxes --%>
-<link type="text/css" href="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.9/css/dataTables.checkboxes.css" rel="stylesheet" />
-<script type="text/javascript" src="//gyrocode.github.io/jquery-datatables-checkboxes/1.2.9/js/dataTables.checkboxes.min.js"></script>
+<jsp:include page="../commons/angularInclude.jsp" />
 
 <%-- TITLE --%>
 <div class="page-header">
@@ -57,6 +14,15 @@ ${portal.toolkit()}
         <spring:message code="label.title.academictreasury.ManageProductsForBlockAcademicalActs.addProductsToBlock" />
         <small></small>
     </h1>
+</div>
+
+<%-- NAVIGATION --%>
+<div class="well well-sm" style="display: inline-block">
+	<span class="glyphicon glyphicon-arrow-left" aria-hidden="true"></span>
+	&nbsp;
+	<a class="" href="${pageContext.request.contextPath}<%= ManageProductsForBlockAcademicalActsController.SEARCH_URL %>">
+		<spring:message code="label.event.back" />
+	</a>
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -97,18 +63,44 @@ ${portal.toolkit()}
 </c:if>
 
 <script type="text/javascript">
+
 	function submitOptions(tableID, formID, attributeName) {
-		array = $("#" + tableID).DataTable().rows(".selected")[0];
+		var array = window.datatable.column(0).checkboxes.selected();
 		
 		$("#" + formID).empty();
-		if (array.length>0) {
-			$.each(array,function(index, value) {
-				externalId = $("#" + tableID).DataTable().row(value).data()["DT_RowId"];
-				$("#" + formID).append("<input type='hidden' name='" + attributeName+ "' value='" + externalId + "'/>");
+		
+		var numberOfProducts = array.length;
+		if (numberOfProducts > 0) {
+			
+			var messageToShow = numberOfProducts > 1 ? '<spring:message code="label.ManageProductsForBlockAcademicalActs.addProducts.confirm.message" />' :
+				'<spring:message code="label.ManageProductsForBlockAcademicalActs.addProducts.confirm.message.singular" />'
+			
+			bootbox.dialog({
+				title : '<spring:message code="label.ManageProductsForBlockAcademicalActs.addProducts.confirm.title" />',
+				message: messageToShow.replace('{numberOfProducts}', numberOfProducts),
+				buttons: {
+					cancel: {
+						label: '<spring:message code="label.close" />',
+						callback: function() {
+							bootbox.hideAll();
+						}
+					},
+					success: {
+						label: '<spring:message code="label.true" />',
+						callback: function() {
+							$.each(array, function(index, value) {
+								$("#" + formID).append("<input type='hidden' name='" + attributeName + "' value='" + value + "'/>");
+							});
+							
+							$("#" + formID).submit();
+						}
+					}
+				}
 			});
-			$("#" + formID).submit();
+			
+			
 		} else {
-			messageAlert('<spring:message code = "label.warning"/>','<spring:message code = "label.select.mustselect"/>');
+			messageAlert('<spring:message code = "label.warning"/>','<spring:message code = "label.select.mustselect"/>', 0);
 		}
 		
 	}
@@ -173,11 +165,11 @@ ${portal.toolkit()}
 			</script>
 
 	        <form id="addproducts"
-	            action="${pageContext.request.contextPath}<%= AcademicTreasurySettingsController.ADDACADEMICALACTBLOCKINGPRODUCT_URL %>"
+	            action="${pageContext.request.contextPath}<%= ManageProductsForBlockAcademicalActsController.ADD_PRODUCTS_BLOCKING_URL %>"
 	            style="display: none;" method="post">
 	        </form>
 	
-			<button id="addEntryButton" type="button" onclick="javascript:submitOptions('searchpendingentriesTable', 'addproducts', 'products')">
+			<button id="addEntryButton" type="button" onclick="javascript:submitOptions('nonBlockingProductsTable', 'addproducts', 'products')">
 				<span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span>&nbsp;
 				    <spring:message code='label.event.add' />
 			</button>

@@ -1,13 +1,10 @@
-<%@page import="org.fenixedu.academictreasury.ui.manageproductsblockacademicalacts.ManageProductsForBlockAcademicalActs"%>
-<%@page
-    import="org.fenixedu.academictreasury.ui.manageacademictreasurysettings.AcademicTreasurySettingsController"%>
-<%@page
-    import="org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings"%>
+<%@page import="org.fenixedu.academictreasury.ui.manageproductsblockacademicalacts.ManageProductsForBlockAcademicalActsController"%>
+<%@page import="org.fenixedu.academictreasury.ui.manageacademictreasurysettings.AcademicTreasurySettingsController"%>
+<%@page import="org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
-<%@ taglib prefix="datatables"
-    uri="http://github.com/dandelion/datatables"%>
+<%@ taglib prefix="datatables" uri="http://github.com/dandelion/datatables"%>
 
 <spring:url var="datatablesUrl"
     value="/javaScript/dataTables/media/js/jquery.dataTables.latest.min.js" />
@@ -101,12 +98,12 @@ ${portal.toolkit()}
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>&nbsp;
-    <a class="" href="${pageContext.request.contextPath}<%= ManageProductsForBlockAcademicalActs.ADD_PRODUCTS_BLOCKING_URL %>">
+    <a class="" href="${pageContext.request.contextPath}<%= ManageProductsForBlockAcademicalActsController.ADD_PRODUCTS_BLOCKING_URL %>">
         <spring:message code="label.event.add" />
     </a>
     &nbsp;|&nbsp;
     <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>&nbsp;
-    <a class="" href="${pageContext.request.contextPath}<%= ManageProductsForBlockAcademicalActs.REMOVE_PRODUCTS_FOR_BLOCKING_URL %>">
+    <a class="" href="${pageContext.request.contextPath}<%= ManageProductsForBlockAcademicalActsController.REMOVE_PRODUCTS_FOR_BLOCKING_URL %>">
         <spring:message code="label.event.remove" />
     </a>
 </div>
@@ -126,13 +123,6 @@ ${portal.toolkit()}
 		    <datatables:table id="BlockingProductsTable" row="p" data="${blockingproducts}"
 		        cssClass="table responsive table-bordered table-hover" cdn="false" cellspacing="2">
 		
-		        <datatables:column>
-		            <datatables:columnHead>
-		            </datatables:columnHead>
-		
-		            <c:out value='${p.externalId}' />
-		        </datatables:column>
-
 		        <datatables:column>
 		            <datatables:columnHead>
 		                <spring:message code="label.Product.code" />

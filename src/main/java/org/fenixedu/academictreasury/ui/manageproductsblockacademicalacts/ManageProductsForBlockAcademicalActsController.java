@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.google.common.collect.Sets;
+
 
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.academictreasury.ManageProductsForBlockAcademicalActs", 
     accessGroup = "treasuryBackOffice")
-@RequestMapping(ManageProductsForBlockAcademicalActs.CONTROLLER_URL)
-public class ManageProductsForBlockAcademicalActs extends AcademicTreasuryBaseController {
+@RequestMapping(ManageProductsForBlockAcademicalActsController.CONTROLLER_URL)
+public class ManageProductsForBlockAcademicalActsController extends AcademicTreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/academicTreasury/manageproductsblockacademicalacts/";
     public static final String JSP_PATH = "academicTreasury/manageproductsblockacademicalacts/";
@@ -60,8 +62,9 @@ public class ManageProductsForBlockAcademicalActs extends AcademicTreasuryBaseCo
     public String addproductsforblocking(@RequestParam("products") final List<Product> products, final Model model, final RedirectAttributes redirectAttributes) {
         
         try {
+            AcademicTreasurySettings.getInstance().addProductsForAcademicalActBlocking(Sets.newHashSet(products));
             
-            return redirect("/", model, redirectAttributes);
+            return redirect(SEARCH_URL, model, redirectAttributes);
         } catch(final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return jspPage("addproductsforblocking");
@@ -74,15 +77,20 @@ public class ManageProductsForBlockAcademicalActs extends AcademicTreasuryBaseCo
     
     @RequestMapping(value = _REMOVE_PRODUCTS_FOR_BLOCKING_URI, method=RequestMethod.GET)
     public String removeproductsforblocking(final Model model) {
+        final AcademicTreasurySettings academicTreasurySettings = AcademicTreasurySettings.getInstance();
+        
+        model.addAttribute("blockingproducts", Product.findAll().filter(p -> academicTreasurySettings.isAcademicalActBlocking(p)).collect(Collectors.toSet()));
+
         return jspPage("removeproductsforblocking");
     }
 
     @RequestMapping(value = _REMOVE_PRODUCTS_FOR_BLOCKING_URI, method=RequestMethod.POST)
-    public String removeproductsforblocking(@RequestParam("productIds") final List<Product> products, final Model model, final RedirectAttributes redirectAttributes) {
+    public String removeproductsforblocking(@RequestParam("products") final List<Product> products, final Model model, final RedirectAttributes redirectAttributes) {
         
         try {
+            AcademicTreasurySettings.getInstance().removeProductsForAcademicalActBlocking(Sets.newHashSet(products));
 
-            return redirect("/", model, redirectAttributes);
+            return redirect(SEARCH_URL, model, redirectAttributes);
         } catch(final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return jspPage("removeproductsforblocking");
