@@ -15,9 +15,8 @@ public class DebtReportRequestResultFile extends DebtReportRequestResultFile_Bas
         setBennu(Bennu.getInstance());
         setDebtReportRequest(request);
 
-        final String filename =
-                Constants.bundle(String.format("label.DebtReportRequestResultFile.%s.filename", 
-                        request.getType().name()), new DateTime().toString("YYYYMMddHHmmss"));
+        final String filename = Constants.bundle("label.DebtReportRequestResultFile.ZIP.filename", 
+                new DateTime().toString("YYYYMMddHHmmss"));
 
         init(filename, filename, content);
         checkRules();

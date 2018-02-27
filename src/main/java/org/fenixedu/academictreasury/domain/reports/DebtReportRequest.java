@@ -1,6 +1,10 @@
 package org.fenixedu.academictreasury.domain.reports;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.reports.task.PendingDebtReportRequestsCronTask;
@@ -21,6 +25,7 @@ import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
 import org.fenixedu.treasury.util.streaming.spreadsheet.Spreadsheet;
+import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
 
@@ -85,9 +90,38 @@ public class DebtReportRequest extends DebtReportRequest_Base {
         if (getType().isRequestForInvoiceEntries()) {
 
             final ErrorsLog errorsLog = new ErrorsLog();
-            final byte[] content = extractInformation(errorsLog);
+            final byte[] debitCreditsContent = extractInformationForDebitAndCredits(errorsLog);
+            final byte[] settlementsContent = extractInformationForSettlements(errorsLog);
+            final byte[] othersContent = extractOtherTreasuryData(errorsLog);
 
-            writeReportResultFile(errorsLog, content);
+            try {
+                final ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ZipOutputStream zos = new ZipOutputStream(baos);
+
+                zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.INVOICE_ENTRIES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
+                zos.write(debitCreditsContent);
+                zos.closeEntry();
+
+                zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.SETTLEMENT_ENTRIES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
+                zos.write(settlementsContent);
+                zos.closeEntry();
+
+                zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.OTHER.filename", new DateTime().toString("YYYYMMddHHmmss"))));
+                zos.write(othersContent);
+                zos.closeEntry();
+
+                zos.close();
+                baos.close();
+
+                final byte[] contents = baos.toByteArray();
+                
+                
+                writeReportResultFile(errorsLog, contents);
+            } catch (final IOException e) {
+                throw new RuntimeException(e);
+            }
+            
+            
         }
     }
 
@@ -97,20 +131,13 @@ public class DebtReportRequest extends DebtReportRequest_Base {
         DebtReportRequestResultErrorsFile.create(this, errorsLog.getLog().getBytes());
         setBennuForPendingReportRequests(null);
     }
-
-    private byte[] extractInformation(final ErrorsLog errorsLog) {
+    
+    private byte[] extractInformationForSettlements(final ErrorsLog errorsLog) {
         return Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
 
             @Override
             public ExcelSheet[] getSheets() {
                 return new ExcelSheet[] {
-
-                        ExcelSheet.create(debitEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_DEBIT_HEADERS,
-                                DebtReportService.debitEntriesReport(DebtReportRequest.this, errorsLog)),
-
-                        ExcelSheet.create(creditEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_CREDIT_HEADERS,
-                                DebtReportService.creditEntriesReport(DebtReportRequest.this, errorsLog)),
-
                         ExcelSheet.create(settlementEntriesSheetName(), SettlementReportEntryBean.SPREADSHEET_HEADERS,
                                 DebtReportService.settlementEntriesReport(DebtReportRequest.this, errorsLog)),
 
@@ -120,6 +147,17 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                         ExcelSheet.create(reimbursementEntriesSheetName(), PaymentReportEntryBean.SPREADSHEET_HEADERS,
                                 DebtReportService.reimbursementEntriesReport(DebtReportRequest.this, errorsLog)),
 
+                };
+            }
+        }, errorsLog);
+    }
+    
+    private byte[] extractOtherTreasuryData(final ErrorsLog errorsLog) {
+        return Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
+
+            @Override
+            public ExcelSheet[] getSheets() {
+                return new ExcelSheet[] {
                         ExcelSheet.create(debtAccountEntriesSheetName(), DebtAccountReportEntryBean.SPREADSHEET_HEADERS,
                                 DebtReportService.debtAccountEntriesReport(DebtReportRequest.this, errorsLog)),
 
@@ -135,11 +173,28 @@ public class DebtReportRequest extends DebtReportRequest_Base {
 //                                DebtReportService.sibsTransactionDetailReport(DebtReportRequest.this, errorsLog)),
 //
                         ExcelSheet.create(treasuryExemptionSheetName(), TreasuryExemptionReportEntryBean.SPREADSHEET_HEADERS,
-                                DebtReportService.treasuryExemptionReport(DebtReportRequest.this, errorsLog))
-//
-//                        ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS,
-//                                DebtReportService.productReport(DebtReportRequest.this, errorsLog)) 
+                                DebtReportService.treasuryExemptionReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(productSheetName(), ProductReportEntryBean.SPREADSHEET_HEADERS,
+                                DebtReportService.productReport(DebtReportRequest.this, errorsLog)) 
                         };
+                };
+        }, errorsLog);
+    }
+
+    private byte[] extractInformationForDebitAndCredits(final ErrorsLog errorsLog) {
+        return Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
+
+            @Override
+            public ExcelSheet[] getSheets() {
+                return new ExcelSheet[] {
+
+                        ExcelSheet.create(debitEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_DEBIT_HEADERS,
+                                DebtReportService.debitEntriesReport(DebtReportRequest.this, errorsLog)),
+
+                        ExcelSheet.create(creditEntriesSheetName(), DebtReportEntryBean.SPREADSHEET_CREDIT_HEADERS,
+                                DebtReportService.creditEntriesReport(DebtReportRequest.this, errorsLog))
+                };
             }
 
             private String decimalSeparator() {

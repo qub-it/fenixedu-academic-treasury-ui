@@ -61,6 +61,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             Constants.bundle("label.DebtReportEntryBean.header.invoiceEntryDescription"),
             Constants.bundle("label.DebtReportEntryBean.header.documentNumber"),
             Constants.bundle("label.DebtReportEntryBean.header.documentExportationPending"),
+            "",
             Constants.bundle("label.DebtReportEntryBean.header.amountToPay"),
             Constants.bundle("label.DebtReportEntryBean.header.openAmountToPay"),
             Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
@@ -514,6 +515,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(invoiceEntryDescription);
                 row.createCell(i++).setCellValue(valueOrEmpty(documentNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
+                i++;
                 row.createCell(i++).setCellValue(valueOrEmpty(amountToPay));
                 row.createCell(i++).setCellValue(valueOrEmpty(openAmountToPay));
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountVatNumber));

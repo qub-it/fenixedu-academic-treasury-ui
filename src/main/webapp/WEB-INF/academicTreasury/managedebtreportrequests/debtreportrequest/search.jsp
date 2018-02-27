@@ -109,6 +109,12 @@ ${portal.angularToolkit()}
 <c:choose>
 	<c:when test="${not empty searchdebtreportrequestResultsDataSet}">
 
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<spring:message code="label.DebtReportRequest.zip.file.warning.message" />
+			</div>
+		</div>
+			
 		<datatables:table id="searchdebtreportrequestTable" row="row" data="${searchdebtreportrequestResultsDataSet}" 
 			cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
 			<datatables:column cssStyle="width:80px;align:center">
@@ -176,7 +182,7 @@ ${portal.angularToolkit()}
 					'searchdebtreportrequestTable',
 					false,
 					false,
-					false,
+					true,
 					"${pageContext.request.contextPath}",
 					"${datatablesI18NUrl}");
 		</script>

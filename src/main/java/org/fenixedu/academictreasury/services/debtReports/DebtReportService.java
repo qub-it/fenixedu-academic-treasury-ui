@@ -31,14 +31,14 @@ public class DebtReportService {
 
     public static Stream<DebtReportEntryBean> debitEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return DebitEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getEntryDateTime()))
+                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getVersioningCreationDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.isAnnulled())
                 .map(i -> new DebtReportEntryBean(i, request, log));
     }
 
     public static Stream<DebtReportEntryBean> creditEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return CreditEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getEntryDateTime()))
+                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getVersioningCreationDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.isAnnulled())
                 .map(i -> new DebtReportEntryBean(i, request, log));
     }
