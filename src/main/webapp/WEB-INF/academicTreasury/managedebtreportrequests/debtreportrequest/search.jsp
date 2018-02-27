@@ -109,12 +109,13 @@ ${portal.angularToolkit()}
 <c:choose>
 	<c:when test="${not empty searchdebtreportrequestResultsDataSet}">
 
-		<div class="panel panel-default">
-			<div class="panel-body">
+		<div class="alert alert-warning" role="alert">
+			<p>
+				<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
 				<spring:message code="label.DebtReportRequest.zip.file.warning.message" />
-			</div>
+			</p>
 		</div>
-			
+
 		<datatables:table id="searchdebtreportrequestTable" row="row" data="${searchdebtreportrequestResultsDataSet}" 
 			cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
 			<datatables:column cssStyle="width:80px;align:center">
