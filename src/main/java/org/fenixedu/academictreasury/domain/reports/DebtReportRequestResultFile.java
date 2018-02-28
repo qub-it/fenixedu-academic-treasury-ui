@@ -1,5 +1,8 @@
 package org.fenixedu.academictreasury.domain.reports;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.domain.Bennu;
@@ -26,6 +29,13 @@ public class DebtReportRequestResultFile extends DebtReportRequestResultFile_Bas
         if(getDebtReportRequest() == null) {
             throw new AcademicTreasuryDomainException("error.DebtReportRequestResultFile.debtReportRequest.required");
         }
+    }
+    
+    public BigDecimal getFilesizeMb() {
+        return (new BigDecimal(getSize()).setScale(4, RoundingMode.DOWN)
+                .divide(new BigDecimal(1024)))
+                .divide(new BigDecimal(1024))
+                .setScale(1, RoundingMode.DOWN);
     }
 
     @Override

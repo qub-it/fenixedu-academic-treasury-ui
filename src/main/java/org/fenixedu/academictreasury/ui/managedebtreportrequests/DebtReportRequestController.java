@@ -151,7 +151,8 @@ public class DebtReportRequestController extends AcademicTreasuryBaseController 
             final Model model, final HttpServletResponse response) {
         response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         response.setHeader("Content-disposition", "attachment; filename=" + resultFile.getFilename());
-
+        response.setContentLength(resultFile.getSize().intValue());
+        
         try {
             response.getOutputStream().write(resultFile.getContent());
         } catch (final IOException e) {

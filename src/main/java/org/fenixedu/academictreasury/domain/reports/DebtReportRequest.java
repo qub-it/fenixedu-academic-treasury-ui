@@ -92,6 +92,7 @@ public class DebtReportRequest extends DebtReportRequest_Base {
             final ErrorsLog errorsLog = new ErrorsLog();
             final byte[] debitCreditsContent = extractInformationForDebitAndCredits(errorsLog);
             final byte[] settlementsContent = extractInformationForSettlements(errorsLog);
+            final byte[] paymentCodesContent = extractInformationForPaymentCodes(errorsLog);
             final byte[] othersContent = extractOtherTreasuryData(errorsLog);
 
             try {
@@ -105,7 +106,11 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                 zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.SETTLEMENT_ENTRIES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
                 zos.write(settlementsContent);
                 zos.closeEntry();
-
+                
+                zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.PAYMENT_CODES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
+                zos.write(paymentCodesContent);
+                zos.closeEntry();
+                
                 zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.OTHER.filename", new DateTime().toString("YYYYMMddHHmmss"))));
                 zos.write(othersContent);
                 zos.closeEntry();
@@ -152,6 +157,23 @@ public class DebtReportRequest extends DebtReportRequest_Base {
         }, errorsLog);
     }
     
+    private byte[] extractInformationForPaymentCodes(final ErrorsLog errorsLog) {
+        return Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
+
+            @Override
+            public ExcelSheet[] getSheets() {
+                return new ExcelSheet[] {
+                    ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
+                            DebtReportService.paymentReferenceCodeReport(DebtReportRequest.this, errorsLog)),
+
+                    ExcelSheet.create(sibsTransactionDetailSheetName(),
+                            SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
+                            DebtReportService.sibsTransactionDetailReport(DebtReportRequest.this, errorsLog)),
+                };
+            }
+        }, errorsLog);
+    }
+    
     private byte[] extractOtherTreasuryData(final ErrorsLog errorsLog) {
         return Spreadsheet.buildSpreadsheetContent(new Spreadsheet() {
 
@@ -165,13 +187,6 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                                 AcademicActBlockingSuspensionReportEntryBean.SPREADSHEET_HEADERS,
                                 DebtReportService.academicActBlockingSuspensionReport(DebtReportRequest.this, errorsLog)),
 
-//                        ExcelSheet.create(paymentReferenceCodeSheetName(), PaymentReferenceCodeEntryBean.SPREADSHEET_HEADERS,
-//                                DebtReportService.paymentReferenceCodeReport(DebtReportRequest.this, errorsLog)),
-//
-//                        ExcelSheet.create(sibsTransactionDetailSheetName(),
-//                                SibsTransactionDetailEntryBean.SPREADSHEET_HEADERS,
-//                                DebtReportService.sibsTransactionDetailReport(DebtReportRequest.this, errorsLog)),
-//
                         ExcelSheet.create(treasuryExemptionSheetName(), TreasuryExemptionReportEntryBean.SPREADSHEET_HEADERS,
                                 DebtReportService.treasuryExemptionReport(DebtReportRequest.this, errorsLog)),
 
