@@ -227,7 +227,7 @@ ${portal.toolkit()}
 
                                     <p>
                                         <spring:message code="label.TuitionInstallmentTariff.amountPerEcts"
-                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
+                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
                                     </p>
                                 </c:if>
                                 <c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
@@ -267,7 +267,7 @@ ${portal.toolkit()}
 
                                     <p>
                                         <spring:message code="label.TuitionInstallmentTariff.amountPerUnits"
-                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
+                                            arguments="${installment.finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
                                     </p>
                                 </c:if>
                                 <c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">

@@ -222,7 +222,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 	
 				<div class="col-sm-6">
 					<input id="tuitionInstallmentTariff_fixedAmount"
-						class="form-control" type="number" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01" 
+						class="form-control" type="number" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.001" 
                         ng-model="object.fixedAmount" name="fixedamount" ng-required="object.tuitionCalculationType == 'FIXED_AMOUNT' || object.ectsCalculationType == 'FIXED_AMOUNT'"
 						value='<c:out value='${bean.fixedAmount}'/>' />
 				</div>
@@ -284,7 +284,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
                     </div>
 					<input id="tuitionInstallmentTariff_maximumAmount"
 						class="form-control" type="number" ng-model="object.maximumAmount"
-						name="maximumamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
+						name="maximumamount" pattern="[0-9]+(\.[0-9][0-9]?)?" min="0" step="0.01"
 						value="<c:out value='${bean.maximumAmount}'/>" ng-required="object.applyMaximumAmount" />
 				</div>
 				</div>

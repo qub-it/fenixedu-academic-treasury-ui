@@ -186,7 +186,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 	
 						<c:if test="${installment.ectsCalculationType.fixedAmount}">
 							<spring:message code="label.TuitionInstallmentTariff.amountPerEcts" 
-								arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" />
+								arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" />
 						</c:if>
 						<c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
 							<spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.ectsParameters"
@@ -207,7 +207,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						<p>&nbsp;</p>
 						
 						<p><spring:message code="label.TuitionInstallmentTariff.amountPerUnits" 
-							arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit)}" /></p>
+							arguments="${finantialEntity.finantialInstitution.currency.getValueFor(installment.amountPerEctsOrUnit, 3)}" /></p>
 					</c:if>
 					<c:if test="${installment.ectsCalculationType.dependentOnDefaultPaymentPlan}">
 						<p><em><spring:message code="label.TuitionInstallmentTariff.defaultPaymentPlanIndexed.unitsParameters"
@@ -436,7 +436,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
                         </div>
 					<input id="tuitionInstallmentTariff_fixedAmount"
 						class="form-control" type="number" ng-model="object.fixedAmount"
-						name="fixedamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
+						name="fixedamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.001"
 						value="<c:out value='${bean.fixedAmount}'/>" ng-required="object.tuitionCalculationType == 'FIXED_AMOUNT' || object.ectsCalculationType == 'FIXED_AMOUNT'" />
 				</div>
 				</div>
@@ -498,7 +498,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
                     </div>
 					<input id="tuitionInstallmentTariff_maximumAmount"
 						class="form-control" type="number" ng-model="object.maximumAmount"
-						name="maximumamount" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
+						name="maximumamount" pattern="[0-9]+(\.[0-9][0-9]?)?" min="0" step="0.01"
 						value="<c:out value='${bean.maximumAmount}'/>" ng-required="object.applyMaximumAmount" />
 				</div>
 				</div>
