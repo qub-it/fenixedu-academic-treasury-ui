@@ -14,6 +14,7 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.domain.integration.ERPTuitionInfoCreationReportFile;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfo;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoType;
+import org.fenixedu.academictreasury.domain.integration.tuitioninfo.exceptions.ERPTuitionInfoPendingException;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
@@ -206,18 +207,28 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
                 throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.executionYear.required");
             }
             
-            if(bean.getErpTuitionInfoType() == null) {
+            final PersonCustomer customer = (PersonCustomer) bean.getDebtAccount().getCustomer();
+            final ERPTuitionInfoType erpTuitionInfoType = bean.getErpTuitionInfoType();
+
+            if(erpTuitionInfoType == null) {
                 throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.erpTuitionInfoType.required");
             }
             
-            final ERPTuitionInfo erpTuitionInfo = ERPTuitionInfo.exportTuitionInformation(
-                    (PersonCustomer) bean.getDebtAccount().getCustomer(), bean.getErpTuitionInfoType(), bean.getExecutionYear());
-
-            if(erpTuitionInfo.isPendingToExport()) {
+            try {
+                final ERPTuitionInfo erpTuitionInfo = ERPTuitionInfo.exportTuitionInformation(customer, erpTuitionInfoType);
+    
+                if(erpTuitionInfo.isPendingToExport()) {
+                    erpTuitionInfo.export();
+                }
+                
+                return redirect(READ_URL + "/" + erpTuitionInfo.getExternalId(), model, redirectAttributes);
+            } catch(ERPTuitionInfoPendingException e) {
+                final ERPTuitionInfo erpTuitionInfo = ERPTuitionInfo.findUniquePendingToExport(customer, erpTuitionInfoType).get();
                 erpTuitionInfo.export();
+                
+                return redirect(READ_URL + "/" + erpTuitionInfo.getExternalId(), model, redirectAttributes);
             }
 
-            return redirect(READ_URL + "/" + erpTuitionInfo.getExternalId(), model, redirectAttributes);
         } catch (final AcademicTreasuryDomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
             return _create(debtAccount, model, redirectAttributes, bean);
@@ -230,6 +241,10 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
     @RequestMapping(value = _READ_URI + "/{erpTuitionInfoId}", method = RequestMethod.GET)
     public String read(@PathVariable("erpTuitionInfoId") final ERPTuitionInfo erpTuitionInfo, final Model model) {
 
+        if(erpTuitionInfo.isPendingToExport()) {
+            addErrorMessage(Constants.bundle("error.ERPTuitionInfo.pending.to.export", erpTuitionInfo.getUiDocumentNumber()), model);
+        }
+        
         model.addAttribute("erpTuitionInfo", erpTuitionInfo);
 
         return jspPage(_READ_URI);

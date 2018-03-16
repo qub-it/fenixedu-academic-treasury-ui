@@ -173,7 +173,19 @@ angular.module('myAngularApp', ['ngSanitize', 'ui.select','bennuToolkit']).contr
 					</ui-select>				
 				</div>
 			</div>
-
+			<div class="form-group row" ng-show="object.pendingErpTuitionInfoMessage">
+				<div class="col-sm-2 control-label">
+				</div> 
+				
+				<div class="col-sm-8">
+					<div class="alert alert-warning" role="alert">
+					
+						<p><span class="glyphicon glyphicon-warning-sign" aria-hidden="true">&nbsp;</span> {{object.pendingErpTuitionInfoMessage}}</p>
+						<p>&nbsp;</p>
+						<p>Clique em <strong>Submeter</strong> para exportar este documento pendente.</p>
+					</div>
+				</div>				
+			</div>
         </div>
         <div class="panel-footer">
             <input type="submit" class="btn btn-default" role="button" value="<spring:message code="label.submit" />" />

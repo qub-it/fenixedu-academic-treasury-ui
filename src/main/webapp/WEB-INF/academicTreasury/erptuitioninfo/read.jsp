@@ -84,7 +84,6 @@ ${portal.toolkit()}
     </div>
 </c:if>
 
-
 <div class="panel panel-primary">
     <div class="panel-heading">
         <h3 class="panel-title">

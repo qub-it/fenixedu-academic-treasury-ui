@@ -259,7 +259,7 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
              * espa?o. Nos casos em que n?o existe o registo comercial, deve ser
              * indicado o NIF.
              */
-            header.setCompanyID(finantialInstitution.getComercialRegistrationCode());
+            header.setCompanyID(finantialInstitution.getFiscalNumber());
 
             // CurrencyCode
             /*
