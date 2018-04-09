@@ -17,8 +17,8 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.joda.time.LocalDate;
@@ -28,7 +28,7 @@ import pt.ist.fenixframework.Atomic;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class TuitionDebtCreationBean implements Serializable, IBean {
+public class TuitionDebtCreationBean implements Serializable, ITreasuryBean {
 
     private static final long serialVersionUID = 1L;
 
@@ -40,13 +40,13 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
 
     private DebtAccount debtAccount;
 
-    private List<TupleDataSourceBean> registrationDataSource;
-    private List<TupleDataSourceBean> executionYearDataSource;
-    private List<TupleDataSourceBean> tuitionPaymentPlansDataSource;
+    private List<TreasuryTupleDataSourceBean> registrationDataSource;
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource;
+    private List<TreasuryTupleDataSourceBean> tuitionPaymentPlansDataSource;
 
-    private List<TupleDataSourceBean> standaloneEnrolmentsDataSource;
-    private List<TupleDataSourceBean> extracurricularEnrolmentsDataSource;
-    private List<TupleDataSourceBean> improvementEnrolmentEvaluationsDataSource;
+    private List<TreasuryTupleDataSourceBean> standaloneEnrolmentsDataSource;
+    private List<TreasuryTupleDataSourceBean> extracurricularEnrolmentsDataSource;
+    private List<TreasuryTupleDataSourceBean> improvementEnrolmentEvaluationsDataSource;
 
     private String errorMessage;
 
@@ -91,7 +91,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         }
     }
 
-    public List<TupleDataSourceBean> getExecutionYearDataSource() {
+    public List<TreasuryTupleDataSourceBean> getExecutionYearDataSource() {
         executionYearDataSource = Lists.newArrayList();
 
         for (final ExecutionYear executionYear : possibleExecutionYears()) {
@@ -108,7 +108,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
                 }
             }
             
-            executionYearDataSource.add(new TupleDataSourceBean(id, text));
+            executionYearDataSource.add(new TreasuryTupleDataSourceBean(id, text));
         }
 
         return executionYearDataSource;
@@ -121,7 +121,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         return executionYears;
     }
 
-    public List<TupleDataSourceBean> getRegistrationDataSource() {
+    public List<TreasuryTupleDataSourceBean> getRegistrationDataSource() {
         if (!isStudent()) {
             registrationDataSource = Lists.newArrayList();
             return registrationDataSource;
@@ -129,7 +129,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
 
         registrationDataSource =
                 ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet().stream()
-                        .map(r -> new TupleDataSourceBean(r.getExternalId(),
+                        .map(r -> new TreasuryTupleDataSourceBean(r.getExternalId(),
                                 String.format("[%s] %s", r.getDegree().getCode(), 
                                         r.getDegree().getPresentationNameI18N(getExecutionYear()).getContent())))
                 .collect(Collectors.toList());
@@ -137,7 +137,7 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
         return registrationDataSource;
     }
 
-    public List<TupleDataSourceBean> getTuitionPaymentPlansDataSource() {
+    public List<TreasuryTupleDataSourceBean> getTuitionPaymentPlansDataSource() {
         tuitionPaymentPlansDataSource = Lists.newArrayList();
 
         if (!isStudent()) {
@@ -163,21 +163,21 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
                     .find(tuitionPaymentPlanGroup,
                             studentCurricularPlan.getDegreeCurricularPlan(),
                             getExecutionYear())
-                    .map(t -> new TupleDataSourceBean(t.getExternalId(), t.getConditionsDescription().getContent()))
+                    .map(t -> new TreasuryTupleDataSourceBean(t.getExternalId(), t.getConditionsDescription().getContent()))
                     .collect(Collectors.toList());
         } else if (isStandaloneTuition() || isExtracurricularTuition()) {
             tuitionPaymentPlansDataSource =
                     TuitionPaymentPlan
                             .find(tuitionPaymentPlanGroup, enrolment.getCurricularCourse().getDegreeCurricularPlan(),
                                     getExecutionYear())
-                            .map(t -> new TupleDataSourceBean(t.getExternalId(), t.getConditionsDescription().getContent()))
+                            .map(t -> new TreasuryTupleDataSourceBean(t.getExternalId(), t.getConditionsDescription().getContent()))
                             .collect(Collectors.toList());
         }
 
         return tuitionPaymentPlansDataSource;
     }
 
-    public List<TupleDataSourceBean> getStandaloneEnrolmentsDataSource() {
+    public List<TreasuryTupleDataSourceBean> getStandaloneEnrolmentsDataSource() {
         if (!isStudent()) {
             standaloneEnrolmentsDataSource = Lists.newArrayList();
             return standaloneEnrolmentsDataSource;
@@ -190,12 +190,12 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
 
         standaloneEnrolmentsDataSource = TuitionServices.standaloneEnrolments(getRegistration(), getExecutionYear()).stream()
                 .sorted(Enrolment.COMPARATOR_BY_NAME_AND_ID).collect(Collectors.toList()).stream()
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
 
         return standaloneEnrolmentsDataSource;
     }
 
-    public List<TupleDataSourceBean> getExtracurricularEnrolmentsDataSource() {
+    public List<TreasuryTupleDataSourceBean> getExtracurricularEnrolmentsDataSource() {
         if (!isStudent()) {
             extracurricularEnrolmentsDataSource = Lists.newArrayList();
             return extracurricularEnrolmentsDataSource;
@@ -208,12 +208,12 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
 
         extracurricularEnrolmentsDataSource = TuitionServices.extracurricularEnrolments(getRegistration(), getExecutionYear())
                 .stream().sorted(Enrolment.COMPARATOR_BY_NAME_AND_ID).collect(Collectors.toList()).stream()
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
 
         return extracurricularEnrolmentsDataSource;
     }
 
-    public List<TupleDataSourceBean> getImprovementEnrolmentEvaluationsDataSource() {
+    public List<TreasuryTupleDataSourceBean> getImprovementEnrolmentEvaluationsDataSource() {
         if (!isStudent()) {
             improvementEnrolmentEvaluationsDataSource = Lists.newArrayList();
             return improvementEnrolmentEvaluationsDataSource;
@@ -226,9 +226,9 @@ public class TuitionDebtCreationBean implements Serializable, IBean {
 
         improvementEnrolmentEvaluationsDataSource =
                 TuitionServices.improvementEnrolments(getRegistration(), getExecutionYear()).stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(),
+                        .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(),
                                 l.getEnrolment().getName().getContent() + " - " + l.getExecutionPeriod().getQualifiedName()))
-                .collect(Collectors.toList()).stream().sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+                .collect(Collectors.toList()).stream().sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         return improvementEnrolmentEvaluationsDataSource;
     }

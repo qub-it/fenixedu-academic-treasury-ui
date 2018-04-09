@@ -14,8 +14,8 @@ import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.services.AcademicTaxServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.joda.time.LocalDate;
 
@@ -24,7 +24,7 @@ import com.google.common.collect.Sets;
 
 import pt.ist.fenixframework.Atomic;
 
-public class AcademicTaxDebtCreationBean implements Serializable, IBean {
+public class AcademicTaxDebtCreationBean implements Serializable, ITreasuryBean {
 
     private static final long serialVersionUID = 1L;
 
@@ -35,10 +35,10 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
 
     private DebtAccount debtAccount;
 
-    private List<TupleDataSourceBean> registrationDataSource;
-    private List<TupleDataSourceBean> executionYearDataSource;
-    private List<TupleDataSourceBean> academicTaxesDataSource;
-    private List<TupleDataSourceBean> improvementEnrolmentEvaluationsDataSource;
+    private List<TreasuryTupleDataSourceBean> registrationDataSource;
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource;
+    private List<TreasuryTupleDataSourceBean> academicTaxesDataSource;
+    private List<TreasuryTupleDataSourceBean> improvementEnrolmentEvaluationsDataSource;
 
     private AcademicTax academicTax;
 
@@ -81,7 +81,7 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
         getErrorMessage();
     }
 
-    public List<TupleDataSourceBean> getExecutionYearDataSource() {
+    public List<TreasuryTupleDataSourceBean> getExecutionYearDataSource() {
         executionYearDataSource = Lists.newArrayList();
 
         for (final ExecutionYear executionYear : possibleExecutionYears()) {
@@ -99,7 +99,7 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
                 }
             }
 
-            executionYearDataSource.add(new TupleDataSourceBean(id, text));
+            executionYearDataSource.add(new TreasuryTupleDataSourceBean(id, text));
         }
 
         return executionYearDataSource;
@@ -114,7 +114,7 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
                 .sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR).collect(Collectors.toList());
     }
 
-    public List<TupleDataSourceBean> getRegistrationDataSource() {
+    public List<TreasuryTupleDataSourceBean> getRegistrationDataSource() {
         if (!isStudent()) {
             registrationDataSource = Lists.newArrayList();
             return registrationDataSource;
@@ -122,7 +122,7 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
 
         registrationDataSource =
                 ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet().stream()
-                        .map(r -> new TupleDataSourceBean(r.getExternalId(),
+                        .map(r -> new TreasuryTupleDataSourceBean(r.getExternalId(),
                                 r.getDegree().getPresentationNameI18N(getExecutionYear()).getContent()))
                 .collect(Collectors.toList());
 
@@ -175,15 +175,15 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
         return errorMessage;
     }
 
-    public List<TupleDataSourceBean> getAcademicTaxesDataSource() {
+    public List<TreasuryTupleDataSourceBean> getAcademicTaxesDataSource() {
         academicTaxesDataSource =
-                AcademicTax.findAll().map(l -> new TupleDataSourceBean(l.getExternalId(), l.getProduct().getName().getContent()))
-                        .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+                AcademicTax.findAll().map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getProduct().getName().getContent()))
+                        .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         return academicTaxesDataSource;
     }
 
-    public List<TupleDataSourceBean> getImprovementEnrolmentEvaluationsDataSource() {
+    public List<TreasuryTupleDataSourceBean> getImprovementEnrolmentEvaluationsDataSource() {
         if (!isStudent()) {
             improvementEnrolmentEvaluationsDataSource = Lists.newArrayList();
             return improvementEnrolmentEvaluationsDataSource;
@@ -206,9 +206,9 @@ public class AcademicTaxDebtCreationBean implements Serializable, IBean {
 
         improvementEnrolmentEvaluationsDataSource =
                 TuitionServices.improvementEnrolments(getRegistration(), getExecutionYear()).stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(),
+                        .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(),
                                 l.getEnrolment().getName().getContent() + " - " + l.getExecutionPeriod().getQualifiedName()))
-                .collect(Collectors.toList()).stream().sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+                .collect(Collectors.toList()).stream().sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         return improvementEnrolmentEvaluationsDataSource;
     }

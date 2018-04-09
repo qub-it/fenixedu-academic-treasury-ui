@@ -7,14 +7,14 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
 
-public class MassiveDebtGenerationRequestFileBean implements Serializable, IBean {
+public class MassiveDebtGenerationRequestFileBean implements Serializable, ITreasuryBean {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,10 +26,10 @@ public class MassiveDebtGenerationRequestFileBean implements Serializable, IBean
     private String reason;
     private FinantialInstitution finantialInstitution;
 
-    private List<TupleDataSourceBean> massiveDebtGenerationTypeDataSource;
-    private List<TupleDataSourceBean> executionYearDataSource;
-    private List<TupleDataSourceBean> academicTaxesDataSource;
-    private List<TupleDataSourceBean> finantialInstitutionDataSource;
+    private List<TreasuryTupleDataSourceBean> massiveDebtGenerationTypeDataSource;
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource;
+    private List<TreasuryTupleDataSourceBean> academicTaxesDataSource;
+    private List<TreasuryTupleDataSourceBean> finantialInstitutionDataSource;
 
     private boolean forAcademicTax = false;
 
@@ -88,29 +88,29 @@ public class MassiveDebtGenerationRequestFileBean implements Serializable, IBean
                 getMassiveDebtGenerationType() != null ? getMassiveDebtGenerationType().isFinantialInstitutionRequired() : false);
     }
 
-    public List<TupleDataSourceBean> getMassiveDebtGenerationTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getMassiveDebtGenerationTypeDataSource() {
         return massiveDebtGenerationTypeDataSource = MassiveDebtGenerationType.findAllActive()
-                .map(e -> new TupleDataSourceBean(e.getExternalId(), e.getName())).collect(Collectors.toList());
+                .map(e -> new TreasuryTupleDataSourceBean(e.getExternalId(), e.getName())).collect(Collectors.toList());
     }
 
-    public List<TupleDataSourceBean> getExecutionYearDataSource() {
+    public List<TreasuryTupleDataSourceBean> getExecutionYearDataSource() {
         executionYearDataSource = possibleExecutionYears().stream()
-                .map(e -> new TupleDataSourceBean(e.getExternalId(), e.getQualifiedName())).collect(Collectors.toList());
+                .map(e -> new TreasuryTupleDataSourceBean(e.getExternalId(), e.getQualifiedName())).collect(Collectors.toList());
 
         return executionYearDataSource;
     }
 
-    public List<TupleDataSourceBean> getAcademicTaxesDataSource() {
+    public List<TreasuryTupleDataSourceBean> getAcademicTaxesDataSource() {
         academicTaxesDataSource =
-                AcademicTax.findAll().map(e -> new TupleDataSourceBean(e.getExternalId(), e.getProduct().getName().getContent()))
+                AcademicTax.findAll().map(e -> new TreasuryTupleDataSourceBean(e.getExternalId(), e.getProduct().getName().getContent()))
                         .collect(Collectors.toList());
 
         return academicTaxesDataSource;
     }
 
-    public List<TupleDataSourceBean> getFinantialInstitutionDataSource() {
+    public List<TreasuryTupleDataSourceBean> getFinantialInstitutionDataSource() {
         finantialInstitutionDataSource = FinantialInstitution.findAll()
-                .map(e -> new TupleDataSourceBean(e.getExternalId(), e.getName())).collect(Collectors.toList());
+                .map(e -> new TreasuryTupleDataSourceBean(e.getExternalId(), e.getName())).collect(Collectors.toList());
         
         return finantialInstitutionDataSource;
     }
@@ -205,7 +205,7 @@ public class MassiveDebtGenerationRequestFileBean implements Serializable, IBean
         this.executionYearRequired = executionYearRequired;
     }
 
-    public void setExecutionYearDataSource(List<TupleDataSourceBean> executionYearDataSource) {
+    public void setExecutionYearDataSource(List<TreasuryTupleDataSourceBean> executionYearDataSource) {
         this.executionYearDataSource = executionYearDataSource;
     }
 

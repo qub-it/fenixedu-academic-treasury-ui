@@ -397,10 +397,10 @@ class tuition.TuitionPaymentPlan {
 class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tariff.Tariff {
 	int installmentOrder;
 	TuitionCalculationType tuitionCalculationType;
-	BigDecimalT fixedAmount;
+	BigDecimalAT fixedAmount;
 	EctsCalculationType ectsCalculationType;
-	BigDecimal factor;
-	BigDecimal totalEctsOrUnits;
+	BigDecimalAT factor;
+	BigDecimalAT totalEctsOrUnits;
 	boolean academicalActBlockingOff;
 	boolean blockAcademicActsOnDebt;
 	BigDecimalAT maximumAmount;
@@ -424,12 +424,12 @@ class tuition.TuitionInstallmentTariff extends .org.fenixedu.treasury.domain.tar
 class event.AcademicTreasuryEvent extends .org.fenixedu.treasury.domain.event.TreasuryEvent {
 	
 	/* Properties used in academic to print documents with detailed pricing */
-	BigDecimal baseAmount; 
-	BigDecimal amountForAdditionalUnits;
-	BigDecimal amountForPages; 
-	BigDecimal maximumAmount; 
-	BigDecimal amountForLanguageTranslationRate;
-	BigDecimal amountForUrgencyRate;
+	BigDecimalAT baseAmount; 
+	BigDecimalAT amountForAdditionalUnits;
+	BigDecimalAT amountForPages; 
+	BigDecimalAT maximumAmount; 
+	BigDecimalAT amountForLanguageTranslationRate;
+	BigDecimalAT amountForUrgencyRate;
 }
 	
 	relation AcademicTreasuryEventPerson {
@@ -1256,8 +1256,8 @@ class integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry {
 class integration.tuitioninfo.ERPTuitionInfo {
 	DateTime creationDate;
 	String documentNumber;
-	BigDecimalT tuitionTotalAmount;
-	BigDecimalT tuitionDeltaAmount;
+	BigDecimalAT tuitionTotalAmount;
+	BigDecimalAT tuitionDeltaAmount;
 	LocalDate beginDate;
 	LocalDate endDate;
 	boolean exportationSuccess;

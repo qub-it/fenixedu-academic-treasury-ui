@@ -28,11 +28,11 @@
 package org.fenixedu.academictreasury.dto.reports;
 
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequestType;
-import org.fenixedu.bennu.IBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.joda.time.LocalDate;
 
 
-public class DebtReportRequestBean implements IBean {
+public class DebtReportRequestBean implements ITreasuryBean {
 	
 	private DebtReportRequestType type;
 	private org.joda.time.LocalDate beginDate;

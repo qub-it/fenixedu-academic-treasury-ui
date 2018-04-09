@@ -13,15 +13,15 @@ import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 import org.joda.time.LocalDate;
 
-public class AcademicTariffBean implements IBean, Serializable {
+public class AcademicTariffBean implements ITreasuryBean, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -77,11 +77,11 @@ public class AcademicTariffBean implements IBean, Serializable {
     private String sheetName;
 
     /* Used in tuition installment tariff edition */
-    private List<TupleDataSourceBean> tuitionCalculationTypeDataSource = null;
-    private List<TupleDataSourceBean> ectsCalculationTypeDataSource = null;
-    private List<TupleDataSourceBean> interestTypeDataSource = null;
-    private List<TupleDataSourceBean> dueDateCalculationTypeDataSource = null;
-    private List<TupleDataSourceBean> tuitionInstallmentProductDataSource = null;
+    private List<TreasuryTupleDataSourceBean> tuitionCalculationTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> ectsCalculationTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> interestTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> dueDateCalculationTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> tuitionInstallmentProductDataSource = null;
 
     public AcademicTariffBean() {
         setBeginDate(new LocalDate());

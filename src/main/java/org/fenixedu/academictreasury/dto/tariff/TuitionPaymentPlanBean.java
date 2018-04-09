@@ -26,8 +26,8 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
@@ -42,7 +42,7 @@ import com.google.common.collect.Sets;
 import edu.emory.mathcs.backport.java.util.Arrays;
 import edu.emory.mathcs.backport.java.util.Collections;
 
-public class TuitionPaymentPlanBean implements Serializable, IBean {
+public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
 
     private static final long serialVersionUID = 1L;
 
@@ -71,22 +71,22 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
     private String name;
     private boolean withLaboratorialClasses;
 
-    private List<TupleDataSourceBean> executionYearDataSource = null;
-    private List<TupleDataSourceBean> degreeTypeDataSource = null;
-    private List<TupleDataSourceBean> degreeCurricularPlanDataSource = null;
-    private List<TupleDataSourceBean> registrationRegimeTypeDataSource = null;
-    private List<TupleDataSourceBean> registrationProtocolDataSource = null;
-    private List<TupleDataSourceBean> ingressionDataSource = null;
-    private List<TupleDataSourceBean> curricularYearDataSource = null;
-    private List<TupleDataSourceBean> semesterDataSource = null;
-    private List<TupleDataSourceBean> statuteTypeDataSource = null;
-    private List<TupleDataSourceBean> payorDebtAccountDataSource = null;
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource = null;
+    private List<TreasuryTupleDataSourceBean> degreeTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> degreeCurricularPlanDataSource = null;
+    private List<TreasuryTupleDataSourceBean> registrationRegimeTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> registrationProtocolDataSource = null;
+    private List<TreasuryTupleDataSourceBean> ingressionDataSource = null;
+    private List<TreasuryTupleDataSourceBean> curricularYearDataSource = null;
+    private List<TreasuryTupleDataSourceBean> semesterDataSource = null;
+    private List<TreasuryTupleDataSourceBean> statuteTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> payorDebtAccountDataSource = null;
 
-    private List<TupleDataSourceBean> tuitionCalculationTypeDataSource = null;
-    private List<TupleDataSourceBean> ectsCalculationTypeDataSource = null;
-    private List<TupleDataSourceBean> interestTypeDataSource = null;
-    private List<TupleDataSourceBean> dueDateCalculationTypeDataSource = null;
-    private List<TupleDataSourceBean> tuitionInstallmentProductDataSource = null;
+    private List<TreasuryTupleDataSourceBean> tuitionCalculationTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> ectsCalculationTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> interestTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> dueDateCalculationTypeDataSource = null;
+    private List<TreasuryTupleDataSourceBean> tuitionInstallmentProductDataSource = null;
 
     public List<AcademicTariffBean> tuitionInstallmentBeans = Lists.newArrayList();
 
@@ -255,10 +255,10 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         }
     }
 
-    public static List<TupleDataSourceBean> dueDateCalculationTypeDataSource() {
+    public static List<TreasuryTupleDataSourceBean> dueDateCalculationTypeDataSource() {
         return ((List<DueDateCalculationType>) Arrays.asList(DueDateCalculationType.values())).stream()
                 .filter(t -> !t.isNoDueDate() && !t.isFixedDate())
-                .map(t -> new TupleDataSourceBean(t.name(), t.getDescriptionI18N().getContent())).collect(Collectors.toList());
+                .map(t -> new TreasuryTupleDataSourceBean(t.name(), t.getDescriptionI18N().getContent())).collect(Collectors.toList());
     }
 
     public List<String> addInstallment() {
@@ -583,47 +583,47 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         this.tuitionInstallmentBeans = tuitionInstallmentBeans;
     }
 
-    public List<TupleDataSourceBean> getDegreeTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getDegreeTypeDataSource() {
         return degreeTypeDataSource;
     }
 
-    public List<TupleDataSourceBean> getDegreeCurricularPlanDataSource() {
+    public List<TreasuryTupleDataSourceBean> getDegreeCurricularPlanDataSource() {
         return degreeCurricularPlanDataSource;
     }
 
-    public List<TupleDataSourceBean> getRegistrationRegimeTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getRegistrationRegimeTypeDataSource() {
         return registrationRegimeTypeDataSource;
     }
 
-    public List<TupleDataSourceBean> getRegistrationProtocolDataSource() {
+    public List<TreasuryTupleDataSourceBean> getRegistrationProtocolDataSource() {
         return registrationProtocolDataSource;
     }
 
-    public List<TupleDataSourceBean> getIngressionDataSource() {
+    public List<TreasuryTupleDataSourceBean> getIngressionDataSource() {
         return ingressionDataSource;
     }
 
-    public List<TupleDataSourceBean> getCurricularYearDataSource() {
+    public List<TreasuryTupleDataSourceBean> getCurricularYearDataSource() {
         return curricularYearDataSource;
     }
 
-    public List<TupleDataSourceBean> getSemesterDataSource() {
+    public List<TreasuryTupleDataSourceBean> getSemesterDataSource() {
         return semesterDataSource;
     }
 
-    public List<TupleDataSourceBean> getTuitionCalculationTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getTuitionCalculationTypeDataSource() {
         return tuitionCalculationTypeDataSource;
     }
 
-    public List<TupleDataSourceBean> getEctsCalculationTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getEctsCalculationTypeDataSource() {
         return ectsCalculationTypeDataSource;
     }
 
-    public List<TupleDataSourceBean> getInterestTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getInterestTypeDataSource() {
         return interestTypeDataSource;
     }
 
-    public List<TupleDataSourceBean> getTuitionInstallmentProductDataSource() {
+    public List<TreasuryTupleDataSourceBean> getTuitionInstallmentProductDataSource() {
         return tuitionInstallmentProductDataSource;
     }
 
@@ -865,23 +865,23 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
      * -------------
      */
 
-    public static final Comparator<TupleDataSourceBean> COMPARE_BY_ID_AND_TEXT = new Comparator<TupleDataSourceBean>() {
+    public static final Comparator<TreasuryTupleDataSourceBean> COMPARE_BY_ID_AND_TEXT = new Comparator<TreasuryTupleDataSourceBean>() {
 
         @Override
-        public int compare(final TupleDataSourceBean o1, final TupleDataSourceBean o2) {
+        public int compare(final TreasuryTupleDataSourceBean o1, final TreasuryTupleDataSourceBean o2) {
             if (o1.getId() == "") {
                 return -1;
             } else if (o2.getId() == "") {
                 return 1;
             }
 
-            return TupleDataSourceBean.COMPARE_BY_TEXT.compare(o1, o2);
+            return TreasuryTupleDataSourceBean.COMPARE_BY_TEXT.compare(o1, o2);
         }
     };
 
-    private List<TupleDataSourceBean> degreeTypeDataSource() {
-        final List<TupleDataSourceBean> result = Lists
-                .newArrayList(DegreeType.all().map((dt) -> new TupleDataSourceBean(dt.getExternalId(), dt.getName().getContent()))
+    private List<TreasuryTupleDataSourceBean> degreeTypeDataSource() {
+        final List<TreasuryTupleDataSourceBean> result = Lists
+                .newArrayList(DegreeType.all().map((dt) -> new TreasuryTupleDataSourceBean(dt.getExternalId(), dt.getName().getContent()))
                         .collect(Collectors.toList()));
 
         result.add(Constants.SELECT_OPTION);
@@ -889,27 +889,27 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> degreeCurricularPlanDataSource() {
+    private List<TreasuryTupleDataSourceBean> degreeCurricularPlanDataSource() {
         if (getExecutionYear() == null) {
-            return Collections.<TupleDataSourceBean> emptyList();
+            return Collections.<TreasuryTupleDataSourceBean> emptyList();
         }
 
         if (getDegreeType() == null) {
-            return Collections.<TupleDataSourceBean> emptyList();
+            return Collections.<TreasuryTupleDataSourceBean> emptyList();
         }
 
-        final List<TupleDataSourceBean> result = Lists.newArrayList();
+        final List<TreasuryTupleDataSourceBean> result = Lists.newArrayList();
         
         if(isShowAllDcps())  {
             result.addAll(Bennu.getInstance().getDegreeCurricularPlansSet().stream()
                     .filter(dcp -> dcp.getDegreeType() == getDegreeType())
-                    .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(),
+                    .map((dcp) -> new TreasuryTupleDataSourceBean(dcp.getExternalId(),
                             "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
                     .collect(Collectors.toList()));
         } else {
             result.addAll(ExecutionDegree.getAllByExecutionYearAndDegreeType(getExecutionYear(), getDegreeType()).stream()
                     .map(e -> e.getDegreeCurricularPlan())
-                    .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(),
+                    .map((dcp) -> new TreasuryTupleDataSourceBean(dcp.getExternalId(),
                             "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
                     .collect(Collectors.toList()));
         }
@@ -917,27 +917,27 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> semesterDataSource() {
-        final List<TupleDataSourceBean> result = getExecutionYear().getExecutionPeriodsSet().stream()
-                .map((cs) -> new TupleDataSourceBean(cs.getExternalId(), cs.getName())).collect(Collectors.toList());
+    private List<TreasuryTupleDataSourceBean> semesterDataSource() {
+        final List<TreasuryTupleDataSourceBean> result = getExecutionYear().getExecutionPeriodsSet().stream()
+                .map((cs) -> new TreasuryTupleDataSourceBean(cs.getExternalId(), cs.getName())).collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> curricularYearDataSource() {
-        final List<TupleDataSourceBean> result = Bennu.getInstance().getCurricularYearsSet().stream()
-                .map((cy) -> new TupleDataSourceBean(cy.getExternalId(), cy.getYear().toString())).collect(Collectors.toList());
+    private List<TreasuryTupleDataSourceBean> curricularYearDataSource() {
+        final List<TreasuryTupleDataSourceBean> result = Bennu.getInstance().getCurricularYearsSet().stream()
+                .map((cy) -> new TreasuryTupleDataSourceBean(cy.getExternalId(), cy.getYear().toString())).collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> ingressionDataSource() {
-        final List<TupleDataSourceBean> result = Bennu.getInstance().getIngressionTypesSet().stream()
-                .map((i) -> new TupleDataSourceBean(i.getExternalId(), i.getDescription().getContent()))
+    private List<TreasuryTupleDataSourceBean> ingressionDataSource() {
+        final List<TreasuryTupleDataSourceBean> result = Bennu.getInstance().getIngressionTypesSet().stream()
+                .map((i) -> new TreasuryTupleDataSourceBean(i.getExternalId(), i.getDescription().getContent()))
                 .collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
@@ -945,9 +945,9 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> registrationProtocolDataSource() {
-        final List<TupleDataSourceBean> result = Bennu.getInstance().getRegistrationProtocolsSet().stream()
-                .map((rp) -> new TupleDataSourceBean(rp.getExternalId(), rp.getDescription().getContent()))
+    private List<TreasuryTupleDataSourceBean> registrationProtocolDataSource() {
+        final List<TreasuryTupleDataSourceBean> result = Bennu.getInstance().getRegistrationProtocolsSet().stream()
+                .map((rp) -> new TreasuryTupleDataSourceBean(rp.getExternalId(), rp.getDescription().getContent()))
                 .collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
@@ -955,18 +955,18 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> registrationRegimeTypeDataSource() {
-        List<TupleDataSourceBean> result = ((List<RegistrationRegimeType>) Arrays.asList(RegistrationRegimeType.values()))
-                .stream().map((t) -> new TupleDataSourceBean(t.name(), t.getLocalizedName())).collect(Collectors.toList());
+    private List<TreasuryTupleDataSourceBean> registrationRegimeTypeDataSource() {
+        List<TreasuryTupleDataSourceBean> result = ((List<RegistrationRegimeType>) Arrays.asList(RegistrationRegimeType.values()))
+                .stream().map((t) -> new TreasuryTupleDataSourceBean(t.name(), t.getLocalizedName())).collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    public static List<TupleDataSourceBean> interestTypeDataSource() {
-        List<TupleDataSourceBean> result = InterestType.findAll().stream()
-                .map((it) -> new TupleDataSourceBean(it.name(), it.getDescriptionI18N().getContent()))
+    public static List<TreasuryTupleDataSourceBean> interestTypeDataSource() {
+        List<TreasuryTupleDataSourceBean> result = InterestType.findAll().stream()
+                .map((it) -> new TreasuryTupleDataSourceBean(it.name(), it.getDescriptionI18N().getContent()))
                 .collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
@@ -974,9 +974,9 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    public static List<TupleDataSourceBean> ectsCalculationTypeDataSource() {
-        List<TupleDataSourceBean> result = ((List<EctsCalculationType>) Arrays.asList(EctsCalculationType.values())).stream()
-                .map((ct) -> new TupleDataSourceBean(ct.name(), ct.getDescriptionI18N().getContent()))
+    public static List<TreasuryTupleDataSourceBean> ectsCalculationTypeDataSource() {
+        List<TreasuryTupleDataSourceBean> result = ((List<EctsCalculationType>) Arrays.asList(EctsCalculationType.values())).stream()
+                .map((ct) -> new TreasuryTupleDataSourceBean(ct.name(), ct.getDescriptionI18N().getContent()))
                 .collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
@@ -984,9 +984,9 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    public static List<TupleDataSourceBean> tuitionCalculationTypeDataSource() {
-        List<TupleDataSourceBean> result = ((List<TuitionCalculationType>) Arrays.asList(TuitionCalculationType.values()))
-                .stream().map((ct) -> new TupleDataSourceBean(ct.name(), ct.getDescriptionI18N().getContent()))
+    public static List<TreasuryTupleDataSourceBean> tuitionCalculationTypeDataSource() {
+        List<TreasuryTupleDataSourceBean> result = ((List<TuitionCalculationType>) Arrays.asList(TuitionCalculationType.values()))
+                .stream().map((ct) -> new TreasuryTupleDataSourceBean(ct.name(), ct.getDescriptionI18N().getContent()))
                 .collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
@@ -994,17 +994,17 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    public static List<TupleDataSourceBean> tuitionInstallmentProductDataSource(
+    public static List<TreasuryTupleDataSourceBean> tuitionInstallmentProductDataSource(
             final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, int desiredTuitionInstallmentOrder) {
-        List<TupleDataSourceBean> result = null;
+        List<TreasuryTupleDataSourceBean> result = null;
 
         if (tuitionPaymentPlanGroup != null && tuitionPaymentPlanGroup.isForRegistration()) {
             result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet().stream()
                     .filter(p -> p.isActive() && p.getTuitionInstallmentOrder() == desiredTuitionInstallmentOrder)
-                    .map(p -> new TupleDataSourceBean(p.getExternalId(), p.getName().getContent())).collect(Collectors.toList());
+                    .map(p -> new TreasuryTupleDataSourceBean(p.getExternalId(), p.getName().getContent())).collect(Collectors.toList());
         } else {
             result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet().stream()
-                    .filter(p -> p.isActive()).map(p -> new TupleDataSourceBean(p.getExternalId(), p.getName().getContent()))
+                    .filter(p -> p.isActive()).map(p -> new TreasuryTupleDataSourceBean(p.getExternalId(), p.getName().getContent()))
                     .collect(Collectors.toList());
         }
 
@@ -1013,20 +1013,20 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> statuteTypeDataSource() {
-        final List<TupleDataSourceBean> result = Bennu.getInstance().getStatuteTypesSet().stream()
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
+    private List<TreasuryTupleDataSourceBean> statuteTypeDataSource() {
+        final List<TreasuryTupleDataSourceBean> result = Bennu.getInstance().getStatuteTypesSet().stream()
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
 
         result.add(Constants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> payorDebtAccountDataSource() {
+    private List<TreasuryTupleDataSourceBean> payorDebtAccountDataSource() {
         final SortedSet<DebtAccount> payorDebtAccountsSet =
                 DebtAccount.findActiveAdhocDebtAccountsSortedByCustomerName(finantialEntity.getFinantialInstitution());
 
-        final List<TupleDataSourceBean> result = payorDebtAccountsSet.stream().map(l -> new TupleDataSourceBean(l.getExternalId(),
+        final List<TreasuryTupleDataSourceBean> result = payorDebtAccountsSet.stream().map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(),
                 String.format("%s - %s", l.getCustomer().getUiFiscalNumber(), l.getCustomer().getName()))).collect(Collectors.toList());
         
         result.add(Constants.SELECT_OPTION);
@@ -1034,10 +1034,10 @@ public class TuitionPaymentPlanBean implements Serializable, IBean {
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
-    private List<TupleDataSourceBean> executionYearDataSource() {
-        final List<TupleDataSourceBean> result = ExecutionYear.readNotClosedExecutionYears().stream()
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource() {
+        final List<TreasuryTupleDataSourceBean> result = ExecutionYear.readNotClosedExecutionYears().stream()
                 .sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR).collect(Collectors.toList()).stream()
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
 
         result.add(0, Constants.SELECT_OPTION);
 

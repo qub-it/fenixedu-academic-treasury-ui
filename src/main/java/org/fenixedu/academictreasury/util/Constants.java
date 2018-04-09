@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Set;
 
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -41,8 +41,8 @@ public class Constants {
     // HACK: org.joda.time.Interval does not allow open end dates so use this date in the future
     public static final DateTime INFINITY_DATE = new DateTime().plusYears(500);
 
-    public static final TupleDataSourceBean SELECT_OPTION =
-            new TupleDataSourceBean("", BundleUtil.getString(Constants.BUNDLE, "label.TupleDataSourceBean.select.description"));
+    public static final TreasuryTupleDataSourceBean SELECT_OPTION =
+            new TreasuryTupleDataSourceBean("", BundleUtil.getString(Constants.BUNDLE, "label.TreasuryTupleDataSourceBean.select.description"));
 
     public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
     public static final String DEFAULT_COUNTRY = "PT";
