@@ -35,21 +35,21 @@ import org.fenixedu.academic.domain.CompetenceCourse;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionYear;
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 
 import com.google.common.collect.Lists;
 
-public class CourseFunctionCostBean implements IBean {
+public class CourseFunctionCostBean implements ITreasuryBean {
 
     private CompetenceCourse competenceCourses;
     private DegreeCurricularPlan degreeCurricularPlan;
     private ExecutionYear executionYear;
     private BigDecimal functionCost;
 
-    private List<TupleDataSourceBean> executionYearDataSource;
-    private List<TupleDataSourceBean> degreeCurricularPlanDataSource;
-    private List<TupleDataSourceBean> competenceCoursesDataSource;
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource;
+    private List<TreasuryTupleDataSourceBean> degreeCurricularPlanDataSource;
+    private List<TreasuryTupleDataSourceBean> competenceCoursesDataSource;
 
     public CourseFunctionCostBean() {
 
@@ -60,7 +60,7 @@ public class CourseFunctionCostBean implements IBean {
         executionYearDataSource =
                 ExecutionYear.readNotClosedExecutionYears().stream().sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR)
                         .collect(Collectors.toList()).stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
+                        .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
 
         if (executionYear == null) {
             degreeCurricularPlanDataSource = Lists.newArrayList();
@@ -68,12 +68,12 @@ public class CourseFunctionCostBean implements IBean {
             return;
         }
 
-        final List<TupleDataSourceBean> result =
+        final List<TreasuryTupleDataSourceBean> result =
                 ExecutionDegree.getAllByExecutionYear(getExecutionYear()).stream().map(e -> e.getDegreeCurricularPlan())
-                        .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(), dcp.getPresentationName(getExecutionYear())))
+                        .map((dcp) -> new TreasuryTupleDataSourceBean(dcp.getExternalId(), dcp.getPresentationName(getExecutionYear())))
                         .collect(Collectors.toList());
 
-        degreeCurricularPlanDataSource = result.stream().sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+        degreeCurricularPlanDataSource = result.stream().sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         if (degreeCurricularPlan == null) {
             competenceCoursesDataSource = Lists.newArrayList();
@@ -82,8 +82,8 @@ public class CourseFunctionCostBean implements IBean {
 
         competenceCoursesDataSource =
                 degreeCurricularPlan.getCompetenceCourses().stream()
-                        .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getNameI18N().getContent()))
-                        .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+                        .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getNameI18N().getContent()))
+                        .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
     }
 
     public CompetenceCourse getCompetenceCourses() {
@@ -94,7 +94,7 @@ public class CourseFunctionCostBean implements IBean {
         competenceCourses = value;
     }
 
-    public List<TupleDataSourceBean> getCompetenceCoursesDataSource() {
+    public List<TreasuryTupleDataSourceBean> getCompetenceCoursesDataSource() {
         return competenceCoursesDataSource;
     }
 
@@ -106,7 +106,7 @@ public class CourseFunctionCostBean implements IBean {
         this.degreeCurricularPlan = degreeCurricularPlan;
     }
 
-    public List<TupleDataSourceBean> getDegreeCurricularPlanDataSource() {
+    public List<TreasuryTupleDataSourceBean> getDegreeCurricularPlanDataSource() {
         return degreeCurricularPlanDataSource;
     }
 
@@ -118,7 +118,7 @@ public class CourseFunctionCostBean implements IBean {
         executionYear = value;
     }
 
-    public List<TupleDataSourceBean> getExecutionYearDataSource() {
+    public List<TreasuryTupleDataSourceBean> getExecutionYearDataSource() {
         return executionYearDataSource;
     }
 

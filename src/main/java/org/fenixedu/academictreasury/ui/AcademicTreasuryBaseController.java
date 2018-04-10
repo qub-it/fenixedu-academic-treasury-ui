@@ -2,13 +2,13 @@ package org.fenixedu.academictreasury.ui;
 
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
-import org.fenixedu.bennu.spring.FenixEDUBaseController;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
+import org.fenixedu.treasury.ui.TreasuryBaseController;
 import org.fenixedu.treasury.util.Constants;
 import org.springframework.ui.Model;
 
-public class AcademicTreasuryBaseController extends FenixEDUBaseController {
+public class AcademicTreasuryBaseController extends TreasuryBaseController {
 
     protected void assertUserIsManager(Model model) {
         if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {

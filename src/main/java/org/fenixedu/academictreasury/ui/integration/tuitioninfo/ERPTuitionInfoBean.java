@@ -14,17 +14,17 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionIn
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoType;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-public class ERPTuitionInfoBean implements IBean {
+public class ERPTuitionInfoBean implements ITreasuryBean {
 
-    private List<TupleDataSourceBean> executionYearDataSource = Lists.newArrayList();
-    private List<TupleDataSourceBean> erpTuitionInfoTypeDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> erpTuitionInfoTypeDataSource = Lists.newArrayList();
     
     private DebtAccount debtAccount = null;
     private ExecutionYear executionYear = null;
@@ -49,11 +49,11 @@ public class ERPTuitionInfoBean implements IBean {
             .collect(Collectors.toSet());
     }
     
-    private List<TupleDataSourceBean> executionYearDataSource() {
-        final List<TupleDataSourceBean> result = ExecutionYear.readNotClosedExecutionYears().stream()
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource() {
+        final List<TreasuryTupleDataSourceBean> result = ExecutionYear.readNotClosedExecutionYears().stream()
                 .filter(e -> ERPTuitionInfoSettings.getInstance().getActiveExecutionYearsSet().contains(e))
                 .sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR).collect(Collectors.toList()).stream()
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getQualifiedName()))
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getQualifiedName()))
                 .collect(Collectors.toList());
 
         result.add(0, Constants.SELECT_OPTION);
@@ -61,15 +61,15 @@ public class ERPTuitionInfoBean implements IBean {
         return result;
     }
 
-    private List<TupleDataSourceBean> erpTuitionInfoTypeDataSource() {
+    private List<TreasuryTupleDataSourceBean> erpTuitionInfoTypeDataSource() {
         if(executionYear == null) {
             return Lists.newArrayList();
         }
         
-        final List<TupleDataSourceBean> result = ERPTuitionInfoType.findActiveForExecutionYear(executionYear)
+        final List<TreasuryTupleDataSourceBean> result = ERPTuitionInfoType.findActiveForExecutionYear(executionYear)
                 .filter(t -> isForAnyOfTreasuryEvent(t))
-                .map(t -> new TupleDataSourceBean(t.getExternalId(), t.getErpTuitionInfoProduct().getName()))
-                .sorted(TupleDataSourceBean.COMPARE_BY_TEXT)
+                .map(t -> new TreasuryTupleDataSourceBean(t.getExternalId(), t.getErpTuitionInfoProduct().getName()))
+                .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT)
                 .collect(Collectors.toList());
                 
 
@@ -128,11 +128,11 @@ public class ERPTuitionInfoBean implements IBean {
         return erpTuitionInfoType;
     }
     
-    public List<TupleDataSourceBean> getErpTuitionInfoTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getErpTuitionInfoTypeDataSource() {
         return erpTuitionInfoTypeDataSource;
     }
     
-    public List<TupleDataSourceBean> getExecutionYearDataSource() {
+    public List<TreasuryTupleDataSourceBean> getExecutionYearDataSource() {
         return executionYearDataSource;
     }
 

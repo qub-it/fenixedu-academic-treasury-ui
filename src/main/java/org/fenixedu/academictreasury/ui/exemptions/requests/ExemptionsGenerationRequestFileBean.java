@@ -1,9 +1,9 @@
 package org.fenixedu.academictreasury.ui.exemptions.requests;
 
-import org.fenixedu.bennu.IBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemptionType;
 
-public class ExemptionsGenerationRequestFileBean implements IBean {
+public class ExemptionsGenerationRequestFileBean implements ITreasuryBean {
 
     private TreasuryExemptionType treasuryExemptionType;
 

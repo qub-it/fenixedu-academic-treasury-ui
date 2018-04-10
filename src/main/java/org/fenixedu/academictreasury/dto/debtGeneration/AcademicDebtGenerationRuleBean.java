@@ -17,19 +17,19 @@ import org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerati
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.IBean;
-import org.fenixedu.bennu.TupleDataSourceBean;
+import org.fenixedu.treasury.dto.ITreasuryBean;
+import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 
 import com.google.common.collect.Lists;
 
-public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
+public class AcademicDebtGenerationRuleBean implements Serializable, ITreasuryBean {
 
     private static final long serialVersionUID = 1L;
 
-    public static class ProductEntry implements IBean, Serializable {
+    public static class ProductEntry implements ITreasuryBean, Serializable {
 
         private static final long serialVersionUID = 1L;
 
@@ -95,14 +95,14 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     private int numberOfDaysToDueDate = 0;
 
-    private List<TupleDataSourceBean> executionYearDataSource = Lists.newArrayList();
-    private List<TupleDataSourceBean> productDataSource = Lists.newArrayList();
-    private List<TupleDataSourceBean> paymentCodePoolDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> executionYearDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> productDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> paymentCodePoolDataSource = Lists.newArrayList();
 
-    private List<TupleDataSourceBean> degreeTypeDataSource = Lists.newArrayList();
-    private List<TupleDataSourceBean> degreeCurricularPlanDataSource = Lists.newArrayList();
-    private List<TupleDataSourceBean> academicTaxDueDateAlignmentTypeDataSource = Lists.newArrayList();
-    private List<TupleDataSourceBean> debtGenerationRuleRestrictionDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> degreeTypeDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> degreeCurricularPlanDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> academicTaxDueDateAlignmentTypeDataSource = Lists.newArrayList();
+    private List<TreasuryTupleDataSourceBean> debtGenerationRuleRestrictionDataSource = Lists.newArrayList();
 
     private boolean toAggregateDebitEntries;
     private boolean toCloseDebitNote;
@@ -116,7 +116,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
         executionYearDataSource = ExecutionYear.readNotClosedExecutionYears().stream()
                 .sorted(Collections.reverseOrder(ExecutionYear.COMPARATOR_BY_BEGIN_DATE))
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
 
         final List<Product> availableProducts = Lists.newArrayList();
 
@@ -135,17 +135,17 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         }
 
         productDataSource = availableProducts.stream().sorted(Product.COMPARE_BY_NAME)
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), String.format("%s [%s]", l.getName().getContent(), l.getCode()))).collect(Collectors.toList());
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), String.format("%s [%s]", l.getName().getContent(), l.getCode()))).collect(Collectors.toList());
 
         paymentCodePoolDataSource = PaymentCodePool.findAll().filter(PaymentCodePool::getActive)
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName())).collect(Collectors.toList());
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName())).collect(Collectors.toList());
 
-        degreeTypeDataSource = DegreeType.all().map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
-                .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+        degreeTypeDataSource = DegreeType.all().map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
+                .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         academicTaxDueDateAlignmentTypeDataSource = Lists.newArrayList(AcademicTaxDueDateAlignmentType.values()).stream()
-                .map(l -> new TupleDataSourceBean(l.name(), l.getDescriptionI18N().getContent()))
-                .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+                .map(l -> new TreasuryTupleDataSourceBean(l.name(), l.getDescriptionI18N().getContent()))
+                .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         academicTaxDueDateAlignmentTypeDataSource.add(0, Constants.SELECT_OPTION);
 
@@ -160,8 +160,8 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         toAlignAcademicTaxesDueDate = type.strategyImplementation().isToAlignAcademicTaxesDueDate();
 
         debtGenerationRuleRestrictionDataSource =
-                DebtGenerationRuleRestriction.findAll().map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName()))
-                        .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+                DebtGenerationRuleRestriction.findAll().map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName()))
+                        .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         debtGenerationRuleRestrictionDataSource.add(0, Constants.SELECT_OPTION);
     }
@@ -172,10 +172,10 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
         executionYearDataSource = ExecutionYear.readNotClosedExecutionYears().stream()
                 .sorted(Collections.reverseOrder(ExecutionYear.COMPARATOR_BY_BEGIN_DATE))
-                .map(l -> new TupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
 
-        degreeTypeDataSource = DegreeType.all().map(l -> new TupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
-                .sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+        degreeTypeDataSource = DegreeType.all().map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName().getContent()))
+                .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         this.aggregateOnDebitNote = rule.isAggregateOnDebitNote();
         this.aggregateAllOrNothing = rule.isAggregateAllOrNothing();
@@ -189,23 +189,23 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
 
     public void chooseDegreeType() {
         if (getExecutionYear() == null) {
-            degreeCurricularPlanDataSource = Collections.<TupleDataSourceBean> emptyList();
+            degreeCurricularPlanDataSource = Collections.<TreasuryTupleDataSourceBean> emptyList();
             return;
         }
 
         if (getDegreeType() == null) {
-            degreeCurricularPlanDataSource = Collections.<TupleDataSourceBean> emptyList();
+            degreeCurricularPlanDataSource = Collections.<TreasuryTupleDataSourceBean> emptyList();
             return;
         }
 
-        final List<TupleDataSourceBean> result =
+        final List<TreasuryTupleDataSourceBean> result =
                 ExecutionDegree.getAllByExecutionYearAndDegreeType(getExecutionYear(), getDegreeType()).stream()
                         .map(e -> e.getDegreeCurricularPlan())
-                        .map((dcp) -> new TupleDataSourceBean(dcp.getExternalId(),
+                        .map((dcp) -> new TreasuryTupleDataSourceBean(dcp.getExternalId(),
                                 "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
                 .collect(Collectors.toList());
 
-        degreeCurricularPlanDataSource = result.stream().sorted(TupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
+        degreeCurricularPlanDataSource = result.stream().sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
     }
 
     public void addEntry() {
@@ -358,35 +358,35 @@ public class AcademicDebtGenerationRuleBean implements Serializable, IBean {
         return degreeCurricularPlans;
     }
 
-    public List<TupleDataSourceBean> getExecutionYearDataSource() {
+    public List<TreasuryTupleDataSourceBean> getExecutionYearDataSource() {
         return executionYearDataSource;
     }
 
-    public List<TupleDataSourceBean> getProductDataSource() {
+    public List<TreasuryTupleDataSourceBean> getProductDataSource() {
         return productDataSource;
     }
 
-    public List<TupleDataSourceBean> getPaymentCodePoolDataSource() {
+    public List<TreasuryTupleDataSourceBean> getPaymentCodePoolDataSource() {
         return paymentCodePoolDataSource;
     }
 
-    public List<TupleDataSourceBean> getDegreeTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getDegreeTypeDataSource() {
         return degreeTypeDataSource;
     }
 
-    public List<TupleDataSourceBean> getDegreeCurricularPlanDataSource() {
+    public List<TreasuryTupleDataSourceBean> getDegreeCurricularPlanDataSource() {
         return degreeCurricularPlanDataSource;
     }
 
-    public List<TupleDataSourceBean> getAcademicTaxDueDateAlignmentTypeDataSource() {
+    public List<TreasuryTupleDataSourceBean> getAcademicTaxDueDateAlignmentTypeDataSource() {
         return academicTaxDueDateAlignmentTypeDataSource;
     }
     
-    public List<TupleDataSourceBean> getDebtGenerationRuleRestrictionDataSource() {
+    public List<TreasuryTupleDataSourceBean> getDebtGenerationRuleRestrictionDataSource() {
         return debtGenerationRuleRestrictionDataSource;
     }
     
-    public void setDebtGenerationRuleRestrictionDataSource(List<TupleDataSourceBean> debtGenerationRuleRestrictionDataSource) {
+    public void setDebtGenerationRuleRestrictionDataSource(List<TreasuryTupleDataSourceBean> debtGenerationRuleRestrictionDataSource) {
         this.debtGenerationRuleRestrictionDataSource = debtGenerationRuleRestrictionDataSource;
     }
 
