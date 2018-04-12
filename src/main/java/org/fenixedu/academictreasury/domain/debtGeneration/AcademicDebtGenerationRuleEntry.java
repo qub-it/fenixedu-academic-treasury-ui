@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.domain.Product;
 
 import pt.ist.fenixframework.Atomic;
@@ -14,7 +14,7 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
 
     protected AcademicDebtGenerationRuleEntry() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected AcademicDebtGenerationRuleEntry(final AcademicDebtGenerationRule rule, final Product product,
@@ -49,7 +49,7 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
     }
 
     private void checkRules() {
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.bennu.required");
         }
 
@@ -90,7 +90,7 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRuleEntry.delete.impossible");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
 
         setAcademicDebtGenerationRule(null);
         setProduct(null);
@@ -105,7 +105,7 @@ public class AcademicDebtGenerationRuleEntry extends AcademicDebtGenerationRuleE
     // @formatter: on
 
     public static Stream<AcademicDebtGenerationRuleEntry> findAll() {
-        return Bennu.getInstance().getAcademicDebtGenerationRuleEntriesSet().stream();
+        return FenixFramework.getDomainRoot().getAcademicDebtGenerationRuleEntriesSet().stream();
     }
 
     public static Stream<AcademicDebtGenerationRuleEntry> find(final AcademicDebtGenerationRule academicDebtGenerationRule) {

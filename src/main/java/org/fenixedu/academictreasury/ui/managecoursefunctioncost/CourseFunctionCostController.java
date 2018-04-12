@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.managecoursefunctioncost;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -129,7 +131,7 @@ public class CourseFunctionCostController extends AcademicTreasuryBaseController
         try {
             courseFunctionCost.delete();
 
-            addInfoMessage(Constants.bundle("label.CourseFunctionCost.delete.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.CourseFunctionCost.delete.success"), model);
             return redirect("/academictreasury/managecoursefunctioncost/coursefunctioncost/", model, redirectAttributes);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);

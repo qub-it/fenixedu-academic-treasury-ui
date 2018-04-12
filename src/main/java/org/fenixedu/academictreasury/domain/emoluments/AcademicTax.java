@@ -7,7 +7,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
@@ -29,7 +29,7 @@ public class AcademicTax extends AcademicTax_Base {
 
     protected AcademicTax() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected AcademicTax(final Product product, final boolean appliedOnRegistration,
@@ -47,7 +47,7 @@ public class AcademicTax extends AcademicTax_Base {
     }
 
     private void checkRules() {
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.AcademicTax.bennu.required");
         }
 
@@ -110,7 +110,7 @@ public class AcademicTax extends AcademicTax_Base {
             throw new AcademicTreasuryDomainException("error.AcademicTax.delete.impossible");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setProduct(null);
 
         super.deleteDomainObject();
@@ -123,7 +123,7 @@ public class AcademicTax extends AcademicTax_Base {
     // @formatter: on
 
     public static Stream<AcademicTax> findAll() {
-        return Bennu.getInstance().getAcademicTaxesSet().stream();
+        return FenixFramework.getDomainRoot().getAcademicTaxesSet().stream();
     }
 
     public static Optional<AcademicTax> findUnique(final Product product) {

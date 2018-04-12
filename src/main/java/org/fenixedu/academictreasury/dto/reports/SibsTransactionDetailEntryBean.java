@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -13,22 +15,22 @@ import org.joda.time.DateTime;
 public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
 
     public static String[] SPREADSHEET_HEADERS = { 
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.identification"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.versioningCreator"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.creationDate"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.whenProcessed"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.whenRegistered"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.amountPayed"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.sibsEntityReferenceCode"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.sibsPaymentReferenceCode"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.sibsTransactionId"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.debtAccountId"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.customerId"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.businessIdentification"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.fiscalNumber"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.customerName"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.settlementDocumentNumber"),
-        Constants.bundle("label.SibsTransactionDetailEntryBean.header.comments") };
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.identification"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.versioningCreator"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.creationDate"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.whenProcessed"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.whenRegistered"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.amountPayed"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.sibsEntityReferenceCode"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.sibsPaymentReferenceCode"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.sibsTransactionId"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.debtAccountId"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.customerId"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.businessIdentification"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.fiscalNumber"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.customerName"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.settlementDocumentNumber"),
+        academicTreasuryBundle("label.SibsTransactionDetailEntryBean.header.comments") };
 
     
     private String identification;
@@ -95,7 +97,7 @@ public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
             row.createCell(0).setCellValue(identification);
             
             if (!completed) {
-                row.createCell(1).setCellValue(Constants.bundle("error.DebtReportEntryBean.report.generation.verify.entry"));
+                row.createCell(1).setCellValue(academicTreasuryBundle("error.DebtReportEntryBean.report.generation.verify.entry"));
                 return;
             }
 

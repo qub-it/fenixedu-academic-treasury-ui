@@ -3,6 +3,8 @@ package org.fenixedu.academictreasury.domain.importation;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
+import pt.ist.fenixframework.FenixFramework;
+
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;

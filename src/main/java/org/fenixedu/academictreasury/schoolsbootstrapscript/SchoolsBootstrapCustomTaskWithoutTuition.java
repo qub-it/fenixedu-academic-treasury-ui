@@ -38,7 +38,7 @@
 //import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 //import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 //import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
-//import org.fenixedu.bennu.core.domain.Bennu;
+//import pt.ist.fenixframework.FenixFramework;
 //import org.fenixedu.bennu.scheduler.custom.CustomTask;
 //import org.fenixedu.commons.i18n.LocalizedString;
 //import org.fenixedu.treasury.domain.Currency;
@@ -1039,7 +1039,7 @@
 //            return null;
 //        }
 //
-//        for (final StatuteType statuteType : Bennu.getInstance().getStatuteTypesSet()) {
+//        for (final StatuteType statuteType : FenixFramework.getDomainRoot().getStatuteTypesSet()) {
 //            if (statuteType.getCode().equals(value.trim())) {
 //                return statuteType;
 //            }
@@ -1069,7 +1069,7 @@
 //            return null;
 //        }
 //
-//        for (final RegistrationProtocol registrationProtocol : Bennu.getInstance().getRegistrationProtocolsSet()) {
+//        for (final RegistrationProtocol registrationProtocol : FenixFramework.getDomainRoot().getRegistrationProtocolsSet()) {
 //            if (registrationProtocol.getCode().equals(value.trim())) {
 //                return registrationProtocol;
 //            }
@@ -6065,7 +6065,7 @@
 //            return null;
 //        }
 //
-//        for (DegreeType degreeType : Bennu.getInstance().getDegreeTypeSet()) {
+//        for (DegreeType degreeType : FenixFramework.getDomainRoot().getDegreeTypeSet()) {
 //            if (code.equals(degreeType.getCode())) {
 //                return degreeType;
 //            }
@@ -6132,7 +6132,7 @@
 //
 //    public Set<Degree> readDegreeBySigla(final String sigla) {
 //        final Set<Degree> result = Sets.newHashSet();
-//        for (final Degree degree : Bennu.getInstance().getDegreesSet()) {
+//        for (final Degree degree : FenixFramework.getDomainRoot().getDegreesSet()) {
 //            if (sigla.equals(degree.getSigla())) {
 //                result.add(degree);
 //            }

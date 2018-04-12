@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.ui.integration.tuitioninfo;
 
-import static org.fenixedu.academictreasury.util.Constants.bundle;
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
 
 import java.util.List;
 import java.util.Set;
@@ -103,7 +103,7 @@ public class ERPTuitionInfoBean implements ITreasuryBean {
             ERPTuitionInfo pendingErpTuitionInfo = ERPTuitionInfo.findUniquePendingToExport((PersonCustomer) getDebtAccount().getCustomer(), getErpTuitionInfoType()).orElse(null);
             
             if(pendingErpTuitionInfo != null) {
-                this.pendingErpTuitionInfoMessage = bundle("error.ERPTuitionInfo.pending.to.export", pendingErpTuitionInfo.getUiDocumentNumber());
+                this.pendingErpTuitionInfoMessage = academicTreasuryBundle("error.ERPTuitionInfo.pending.to.export", pendingErpTuitionInfo.getUiDocumentNumber());
             }
         }
         

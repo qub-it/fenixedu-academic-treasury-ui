@@ -4,7 +4,7 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 
 import com.google.common.base.Strings;
 
@@ -24,7 +24,7 @@ public class TreasuryImportType extends TreasuryImportType_Base {
 
     protected TreasuryImportType() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
     
     protected TreasuryImportType(final String name, final String clazz) {
@@ -50,12 +50,12 @@ public class TreasuryImportType extends TreasuryImportType_Base {
             throw new AcademicTreasuryDomainException("error.TreasuryImportType.delete.impossible");
         }
         
-        setBennu(null);
+        setDomainRoot(null);
         deleteDomainObject();
     }
 
     private void checkRules() {
-        if(getBennu() == null) {
+        if(getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.TreasuryImportType.bennu.required");
         }
         
@@ -79,7 +79,7 @@ public class TreasuryImportType extends TreasuryImportType_Base {
     }
 
     public static Stream<TreasuryImportType> findAll() {
-        return Bennu.getInstance().getTreasuryImportTypesSet().stream();
+        return FenixFramework.getDomainRoot().getTreasuryImportTypesSet().stream();
     }
     
     public static Stream<TreasuryImportType> findByClassName(final String clazz) {

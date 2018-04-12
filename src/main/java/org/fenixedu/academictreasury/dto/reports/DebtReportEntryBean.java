@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
@@ -36,108 +38,108 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
     // @formatter:off
     public static String[] SPREADSHEET_DEBIT_HEADERS = { 
-            Constants.bundle("label.DebtReportEntryBean.header.identification"),
-            Constants.bundle("label.DebtReportEntryBean.header.entryType"),
-            Constants.bundle("label.DebtReportEntryBean.header.versioningCreator"),
-            Constants.bundle("label.DebtReportEntryBean.header.creationDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.entryDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.dueDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.customerId"),
-            Constants.bundle("label.DebtReportEntryBean.header.debtAccountId"),
-            Constants.bundle("label.DebtReportEntryBean.header.name"),
-            Constants.bundle("label.DebtReportEntryBean.header.identificationType"),
-            Constants.bundle("label.DebtReportEntryBean.header.identificationNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.vatNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.email"),
-            Constants.bundle("label.DebtReportEntryBean.header.address"),
-            Constants.bundle("label.DebtReportEntryBean.header.studentNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.registrationNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.degreeType"),
-            Constants.bundle("label.DebtReportEntryBean.header.degreeCode"),
-            Constants.bundle("label.DebtReportEntryBean.header.degreeName"),
-            Constants.bundle("label.DebtReportEntryBean.header.executionYear"),
-            Constants.bundle("label.DebtReportEntryBean.header.executionSemester"),
-            Constants.bundle("label.DebtReportEntryBean.header.productCode"),
-            Constants.bundle("label.DebtReportEntryBean.header.invoiceEntryDescription"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentExportationPending"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.identification"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.entryType"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.versioningCreator"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.creationDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.entryDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.dueDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.customerId"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.debtAccountId"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.name"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.identificationType"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.identificationNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.vatNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.email"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.address"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.studentNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.registrationNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.degreeType"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.degreeCode"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.degreeName"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.executionYear"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.executionSemester"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.productCode"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.invoiceEntryDescription"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.documentNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.documentExportationPending"),
             "",
-            Constants.bundle("label.DebtReportEntryBean.header.amountToPay"),
-            Constants.bundle("label.DebtReportEntryBean.header.openAmountToPay"),
-            Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.name"),
-            Constants.bundle("label.DebtReportEntryBean.header.agreement"),
-            Constants.bundle("label.DebtReportEntryBean.header.ingression"),
-            Constants.bundle("label.DebtReportEntryBean.header.firstTimeStudent"),
-            Constants.bundle("label.DebtReportEntryBean.header.partialRegime"),
-            Constants.bundle("label.DebtReportEntryBean.header.statutes"),
-            Constants.bundle("label.DebtReportEntryBean.header.numberOfNormalEnrolments"),
-            Constants.bundle("label.DebtReportEntryBean.header.numberOfStandaloneEnrolments"),
-            Constants.bundle("label.DebtReportEntryBean.header.numberOfExtracurricularEnrolments"),
-            Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
-            Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuled"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuledReason"),
-            Constants.bundle("label.DebtReportEntryBean.header.closeDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.openAmountAtERPStartDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
-            Constants.bundle("label.DebtReportEntryBean.header.legacyERPCertificateDocumentReference"),
-            Constants.bundle("label.DebtReportEntryBean.header.erpCertificationDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.erpCertificateDocumentReference"),
-            Constants.bundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
+            academicTreasuryBundle("label.DebtReportEntryBean.header.amountToPay"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.openAmountToPay"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.payorDebtAcount.name"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.agreement"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.ingression"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.firstTimeStudent"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.partialRegime"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.statutes"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.numberOfNormalEnrolments"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.numberOfStandaloneEnrolments"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.numberOfExtracurricularEnrolments"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.documentAnnuled"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.documentAnnuledReason"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.closeDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.openAmountAtERPStartDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.legacyERPCertificateDocumentReference"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.erpCertificationDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.erpCertificateDocumentReference"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
             
     };
 
     public static String[] SPREADSHEET_CREDIT_HEADERS = { 
-            Constants.bundle("label.DebtReportEntryBean.header.identification"),
-            Constants.bundle("label.DebtReportEntryBean.header.entryType"),
-            Constants.bundle("label.DebtReportEntryBean.header.versioningCreator"),
-            Constants.bundle("label.DebtReportEntryBean.header.creationDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.entryDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.dueDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.customerId"),
-            Constants.bundle("label.DebtReportEntryBean.header.debtAccountId"),
-            Constants.bundle("label.DebtReportEntryBean.header.name"),
-            Constants.bundle("label.DebtReportEntryBean.header.identificationType"),
-            Constants.bundle("label.DebtReportEntryBean.header.identificationNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.vatNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.email"),
-            Constants.bundle("label.DebtReportEntryBean.header.address"),
-            Constants.bundle("label.DebtReportEntryBean.header.studentNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.registrationNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.degreeType"),            
-            Constants.bundle("label.DebtReportEntryBean.header.degreeCode"),
-            Constants.bundle("label.DebtReportEntryBean.header.degreeName"),
-            Constants.bundle("label.DebtReportEntryBean.header.executionYear"),
-            Constants.bundle("label.DebtReportEntryBean.header.executionSemester"),
-            Constants.bundle("label.DebtReportEntryBean.header.productCode"),
-            Constants.bundle("label.DebtReportEntryBean.header.invoiceEntryDescription"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentExportationPending"),
-            Constants.bundle("label.DebtReportEntryBean.header.debitEntry.identification"),
-            Constants.bundle("label.DebtReportEntryBean.header.amountToCredit"),
-            Constants.bundle("label.DebtReportEntryBean.header.openAmountToCredit"),
-            Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
-            Constants.bundle("label.DebtReportEntryBean.header.payorDebtAcount.name"),
-            Constants.bundle("label.DebtReportEntryBean.header.agreement"),
-            Constants.bundle("label.DebtReportEntryBean.header.ingression"),
-            Constants.bundle("label.DebtReportEntryBean.header.firstTimeStudent"),
-            Constants.bundle("label.DebtReportEntryBean.header.partialRegime"),
-            Constants.bundle("label.DebtReportEntryBean.header.statutes"),
-            Constants.bundle("label.DebtReportEntryBean.header.numberOfNormalEnrolments"),
-            Constants.bundle("label.DebtReportEntryBean.header.numberOfStandaloneEnrolments"),
-            Constants.bundle("label.DebtReportEntryBean.header.numberOfExtracurricularEnrolments"),
-            Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
-            Constants.bundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuled"),
-            Constants.bundle("label.DebtReportEntryBean.header.documentAnnuledReason"),
-            Constants.bundle("label.DebtReportEntryBean.header.closeDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.openAmountAtERPStartDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
-            Constants.bundle("label.DebtReportEntryBean.header.legacyERPCertificateDocumentReference"),
-            Constants.bundle("label.DebtReportEntryBean.header.erpCertificationDate"),
-            Constants.bundle("label.DebtReportEntryBean.header.erpCertificateDocumentReference"),
-            Constants.bundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
+            academicTreasuryBundle("label.DebtReportEntryBean.header.identification"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.entryType"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.versioningCreator"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.creationDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.entryDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.dueDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.customerId"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.debtAccountId"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.name"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.identificationType"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.identificationNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.vatNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.email"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.address"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.studentNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.registrationNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.degreeType"),            
+            academicTreasuryBundle("label.DebtReportEntryBean.header.degreeCode"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.degreeName"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.executionYear"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.executionSemester"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.productCode"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.invoiceEntryDescription"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.documentNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.documentExportationPending"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.debitEntry.identification"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.amountToCredit"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.openAmountToCredit"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.payorDebtAcount.name"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.agreement"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.ingression"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.firstTimeStudent"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.partialRegime"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.statutes"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.numberOfNormalEnrolments"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.numberOfStandaloneEnrolments"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.numberOfExtracurricularEnrolments"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.tuitionPaymentPlan"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.tuitionPaymentPlanConditions"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.documentAnnuled"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.documentAnnuledReason"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.closeDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.openAmountAtERPStartDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.exportedInLegacyERP"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.legacyERPCertificateDocumentReference"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.erpCertificationDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.erpCertificateDocumentReference"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.originSettlementNoteForAdvancedCredit")
     };
     // @formatter:on
 
@@ -451,9 +453,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
     private String entryType(final InvoiceEntry entry) {
         if (entry.isDebitNoteEntry()) {
-            return Constants.bundle("label.DebtReportEntryBean.debitNoteEntry");
+            return academicTreasuryBundle("label.DebtReportEntryBean.debitNoteEntry");
         } else if (entry.isCreditNoteEntry()) {
-            return Constants.bundle("label.DebtReportEntryBean.creditNoteEntry");
+            return academicTreasuryBundle("label.DebtReportEntryBean.creditNoteEntry");
         }
 
         return null;
@@ -484,7 +486,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             row.createCell(0).setCellValue(identification);
 
             if (!completed) {
-                row.createCell(1).setCellValue(Constants.bundle("error.DebtReportEntryBean.report.generation.verify.entry"));
+                row.createCell(1).setCellValue(academicTreasuryBundle("error.DebtReportEntryBean.report.generation.verify.entry"));
                 return;
             }
 
@@ -620,7 +622,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return Constants.bundle(value ? "label.true" : "label.false");
+        return academicTreasuryBundle(value ? "label.true" : "label.false");
     }
 
     private String valueOrEmpty(final Integer value) {

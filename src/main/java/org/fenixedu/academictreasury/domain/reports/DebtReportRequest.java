@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.domain.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.stream.Stream;
@@ -20,7 +22,7 @@ import org.fenixedu.academictreasury.dto.reports.SibsTransactionDetailEntryBean;
 import org.fenixedu.academictreasury.dto.reports.TreasuryExemptionReportEntryBean;
 import org.fenixedu.academictreasury.services.debtReports.DebtReportService;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
@@ -39,8 +41,8 @@ public class DebtReportRequest extends DebtReportRequest_Base {
 
     protected DebtReportRequest() {
         super();
-        setBennu(Bennu.getInstance());
-        setBennuForPendingReportRequests(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
+        setDomainRootForPendingReportRequests(FenixFramework.getDomainRoot());
     }
 
     protected DebtReportRequest(final DebtReportRequestBean bean) {
@@ -77,7 +79,7 @@ public class DebtReportRequest extends DebtReportRequest_Base {
     }
 
     public boolean isPending() {
-        return getBennuForPendingReportRequests() != null;
+        return getDomainRootForPendingReportRequests() != null;
     }
 
     public boolean isIncludeAnnuledEntries() {
@@ -99,19 +101,19 @@ public class DebtReportRequest extends DebtReportRequest_Base {
                 final ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 ZipOutputStream zos = new ZipOutputStream(baos);
 
-                zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.INVOICE_ENTRIES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
+                zos.putNextEntry(new ZipEntry(academicTreasuryBundle("label.DebtReportRequestResultFile.INVOICE_ENTRIES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
                 zos.write(debitCreditsContent);
                 zos.closeEntry();
 
-                zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.SETTLEMENT_ENTRIES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
+                zos.putNextEntry(new ZipEntry(academicTreasuryBundle("label.DebtReportRequestResultFile.SETTLEMENT_ENTRIES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
                 zos.write(settlementsContent);
                 zos.closeEntry();
                 
-                zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.PAYMENT_CODES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
+                zos.putNextEntry(new ZipEntry(academicTreasuryBundle("label.DebtReportRequestResultFile.PAYMENT_CODES.filename", new DateTime().toString("YYYYMMddHHmmss"))));
                 zos.write(paymentCodesContent);
                 zos.closeEntry();
                 
-                zos.putNextEntry(new ZipEntry(Constants.bundle("label.DebtReportRequestResultFile.OTHER.filename", new DateTime().toString("YYYYMMddHHmmss"))));
+                zos.putNextEntry(new ZipEntry(academicTreasuryBundle("label.DebtReportRequestResultFile.OTHER.filename", new DateTime().toString("YYYYMMddHHmmss"))));
                 zos.write(othersContent);
                 zos.closeEntry();
 
@@ -134,7 +136,7 @@ public class DebtReportRequest extends DebtReportRequest_Base {
     private void writeReportResultFile(final ErrorsLog errorsLog, final byte[] content) {
         DebtReportRequestResultFile.create(this, content);
         DebtReportRequestResultErrorsFile.create(this, errorsLog.getLog().getBytes());
-        setBennuForPendingReportRequests(null);
+        setDomainRootForPendingReportRequests(null);
     }
     
     private byte[] extractInformationForSettlements(final ErrorsLog errorsLog) {
@@ -225,59 +227,59 @@ public class DebtReportRequest extends DebtReportRequest_Base {
 
     @Atomic
     public void cancelRequest() {
-        setBennuForPendingReportRequests(null);
+        setDomainRootForPendingReportRequests(null);
     }
 
     protected String treasuryExemptionSheetName() {
-        return Constants.bundle("label.DebtReportRequest.treasuryExemptionSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.treasuryExemptionSheetName");
     }
 
     protected String sibsTransactionDetailSheetName() {
-        return Constants.bundle("label.DebtReportRequest.sibsTransactionDetailSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.sibsTransactionDetailSheetName");
     }
 
     protected String paymentReferenceCodeSheetName() {
-        return Constants.bundle("label.DebtReportRequest.paymentReferenceCodeSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.paymentReferenceCodeSheetName");
     }
 
     private String academicActBlockingSuspensionSheetName() {
-        return Constants.bundle("label.DebtReportRequest.academicActBlockingSuspensionSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.academicActBlockingSuspensionSheetName");
     }
 
     private String debitEntriesSheetName() {
-        return Constants.bundle("label.DebtReportRequest.debitEntriesSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.debitEntriesSheetName");
     }
 
     private String creditEntriesSheetName() {
-        return Constants.bundle("label.DebtReportRequest.creditEntriesSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.creditEntriesSheetName");
     }
 
     private String paymentEntriesSheetName() {
-        return Constants.bundle("label.DebtReportRequest.paymentEntriesSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.paymentEntriesSheetName");
     }
 
     private String settlementEntriesSheetName() {
-        return Constants.bundle("label.DebtReportRequest.settlementEntriesSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.settlementEntriesSheetName");
     }
 
     private String reimbursementEntriesSheetName() {
-        return Constants.bundle("label.DebtReportRequest.reimbursementEntriesSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.reimbursementEntriesSheetName");
     }
 
     private String debtAccountEntriesSheetName() {
-        return Constants.bundle("label.DebtReportRequest.debtAccountEntriesSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.debtAccountEntriesSheetName");
     }
 
     private String productSheetName() {
-        return Constants.bundle("label.DebtReportRequest.productsSheetName");
+        return academicTreasuryBundle("label.DebtReportRequest.productsSheetName");
     }
 
     public static Stream<DebtReportRequest> findAll() {
-        return Bennu.getInstance().getDebtReportRequestsSet().stream();
+        return FenixFramework.getDomainRoot().getDebtReportRequestsSet().stream();
     }
 
     public static Stream<DebtReportRequest> findPending() {
-        return Bennu.getInstance().getDebtReportRequestsSet().stream().filter(i -> i.isPending());
+        return FenixFramework.getDomainRoot().getDebtReportRequestsSet().stream().filter(i -> i.isPending());
     }
 
     @Atomic

@@ -1,7 +1,7 @@
 package org.fenixedu.academictreasury.domain.integration.tuitioninfo;
 
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.exporter.ERPTuitionInfoExporterForSAP;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.domain.document.Series;
 
 import pt.ist.fenixframework.Atomic;
@@ -10,7 +10,7 @@ public class ERPTuitionInfoSettings extends ERPTuitionInfoSettings_Base {
     
     public ERPTuitionInfoSettings() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
     
     @Atomic
@@ -31,10 +31,10 @@ public class ERPTuitionInfoSettings extends ERPTuitionInfoSettings_Base {
     
     @Atomic
     public static ERPTuitionInfoSettings getInstance() {
-        if(Bennu.getInstance().getErpTuitionInfoSettings() == null) {
+        if(FenixFramework.getDomainRoot().getErpTuitionInfoSettings() == null) {
             new ERPTuitionInfoSettings();
         }
         
-        return Bennu.getInstance().getErpTuitionInfoSettings();
+        return FenixFramework.getDomainRoot().getErpTuitionInfoSettings();
     }
 }

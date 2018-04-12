@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.tuitiondebtcreation.standalone;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
@@ -163,13 +165,13 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
             }
 
             if (!bean.isRegistrationTuition() && bean.getEnrolment() == null) {
-                addErrorMessage(Constants.bundle("error.TuitionDebtCreationBean.enrolment.required"),
+                addErrorMessage(academicTreasuryBundle("error.TuitionDebtCreationBean.enrolment.required"),
                         model);
                 dataMissing = true;
             }
 
             if (bean.getTuitionPaymentPlan() == null) {
-                addErrorMessage(Constants.bundle("error.TuitionDebtCreationBean.tuitionPaymentPlan.required"),
+                addErrorMessage(academicTreasuryBundle("error.TuitionDebtCreationBean.tuitionPaymentPlan.required"),
                         model);
                 dataMissing = true;
             }
@@ -179,7 +181,7 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
             }
             
             if(bean.isTuitionCharged()) {
-                addErrorMessage(Constants.bundle("error.TuitionDebtCreationBean.tuition.registration.already.charged"), model);
+                addErrorMessage(academicTreasuryBundle("error.TuitionDebtCreationBean.tuition.registration.already.charged"), model);
                 return _createFirstPage(debtAccount, bean, model);
             }
 
@@ -259,12 +261,12 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
 
             //Add the bean to be used in the View
             if (createdWithSuccess) {
-                addInfoMessage(Constants.bundle("label.TuitionPaymentPlan.tuition.installments.debit.entries.created.success"),
+                addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.tuition.installments.debit.entries.created.success"),
                         model);
                 return redirect(DebtAccountController.READ_URL + "/" + debtAccount.getExternalId(), model, redirectAttributes);
             }
 
-            addErrorMessage(Constants.bundle("label.TuitionPaymentPlan.tuition.installments.debit.entries.created.insuccess"),
+            addErrorMessage(academicTreasuryBundle("label.TuitionPaymentPlan.tuition.installments.debit.entries.created.insuccess"),
                     model);
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);

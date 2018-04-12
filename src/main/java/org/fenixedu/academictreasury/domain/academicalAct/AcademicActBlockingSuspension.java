@@ -5,7 +5,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 
@@ -26,7 +26,7 @@ public class AcademicActBlockingSuspension extends AcademicActBlockingSuspension
     protected AcademicActBlockingSuspension() {
         super();
         
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
     
     protected AcademicActBlockingSuspension(final Person person, final LocalDate beginDate, final LocalDate endDate, final String reason) {
@@ -41,7 +41,7 @@ public class AcademicActBlockingSuspension extends AcademicActBlockingSuspension
     }
     
     private void checkRules() {
-        if(getBennu() == null) {
+        if(getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.AcademicActBlockingSuspension.bennu.required");
         }
         
@@ -94,7 +94,7 @@ public class AcademicActBlockingSuspension extends AcademicActBlockingSuspension
             throw new AcademicTreasuryDomainException("error.AcademicActBlockingSuspension.delete.impossible");
         }
         
-        setBennu(null);
+        setDomainRoot(null);
         setPerson(null);
         
         super.deleteDomainObject();
@@ -109,7 +109,7 @@ public class AcademicActBlockingSuspension extends AcademicActBlockingSuspension
     
     
     public static Stream<AcademicActBlockingSuspension> findAll() {
-        return Bennu.getInstance().getAcademicActBlockingSuspensionsSet().stream();
+        return FenixFramework.getDomainRoot().getAcademicActBlockingSuspensionsSet().stream();
     }
     
     public static Stream<AcademicActBlockingSuspension> find(final Person person) {

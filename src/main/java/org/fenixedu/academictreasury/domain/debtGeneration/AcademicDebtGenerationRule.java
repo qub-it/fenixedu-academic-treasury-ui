@@ -15,7 +15,7 @@ import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean.ProductEntry;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +59,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     protected AcademicDebtGenerationRule() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected AcademicDebtGenerationRule(final AcademicDebtGenerationRuleBean bean) {
@@ -104,7 +104,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     }
 
     private void checkRules() {
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.bennu.required");
         }
 
@@ -197,7 +197,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
             throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.delete.impossible");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setAcademicDebtGenerationRuleType(null);
         getDegreeCurricularPlansSet().clear();
         setExecutionYear(null);
@@ -326,7 +326,7 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
     // @formatter: on
 
     public static Stream<AcademicDebtGenerationRule> findAll() {
-        return Bennu.getInstance().getAcademicDebtGenerationRuleSet().stream();
+        return FenixFramework.getDomainRoot().getAcademicDebtGenerationRuleSet().stream();
     }
 
     public static Stream<AcademicDebtGenerationRule> find(final AcademicDebtGenerationRuleType type,

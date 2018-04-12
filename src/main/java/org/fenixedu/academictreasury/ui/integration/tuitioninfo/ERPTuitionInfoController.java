@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.ui.integration.tuitioninfo;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -18,6 +20,8 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.exceptions.E
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
+import pt.ist.fenixframework.FenixFramework;
+
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -173,7 +177,7 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
         model.addAttribute("beanJson", getBeanJson(bean));
         
         if (((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson().getStudent() == null) {
-            addErrorMessage(Constants.bundle("error.ERPTuitionInfo.customer.not.student"), model);
+            addErrorMessage(academicTreasuryBundle("error.ERPTuitionInfo.customer.not.student"), model);
             return redirect(String.format("%s/%s", DebtAccountController.READ_URL, debtAccount.getExternalId()), model, redirectAttributes);
         }
         
@@ -242,7 +246,7 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
     public String read(@PathVariable("erpTuitionInfoId") final ERPTuitionInfo erpTuitionInfo, final Model model) {
 
         if(erpTuitionInfo.isPendingToExport()) {
-            addErrorMessage(Constants.bundle("error.ERPTuitionInfo.pending.to.export", erpTuitionInfo.getUiDocumentNumber()), model);
+            addErrorMessage(academicTreasuryBundle("error.ERPTuitionInfo.pending.to.export", erpTuitionInfo.getUiDocumentNumber()), model);
         }
         
         model.addAttribute("erpTuitionInfo", erpTuitionInfo);
@@ -259,7 +263,7 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
 
         try {
             erpTuitionInfo.export();
-            addInfoMessage(Constants.bundle("label.ERPTuitionInfo.export.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.ERPTuitionInfo.export.success"), model);
         } catch (final AcademicTreasuryDomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }

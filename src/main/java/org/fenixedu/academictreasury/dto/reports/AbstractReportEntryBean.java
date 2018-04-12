@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
@@ -30,7 +32,7 @@ public abstract class AbstractReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return Constants.bundle(value ? "label.true" : "label.false");
+        return academicTreasuryBundle(value ? "label.true" : "label.false");
     }
 
     protected String valueOrEmpty(final Integer value) {

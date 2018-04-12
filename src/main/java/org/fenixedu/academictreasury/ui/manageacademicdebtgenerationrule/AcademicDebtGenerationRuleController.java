@@ -38,7 +38,7 @@ import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRu
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
@@ -73,7 +73,7 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
 
     @RequestMapping(value = _CHOOSE_TYPE_URI)
     public String choosetype(Model model) {
-        model.addAttribute("academicDebtGenerationRuleTypesSet", Bennu.getInstance().getAcademicDebtGenerationRuleTypesSet());
+        model.addAttribute("academicDebtGenerationRuleTypesSet", FenixFramework.getDomainRoot().getAcademicDebtGenerationRuleTypesSet());
 
         return jspPage("choosetype");
     }

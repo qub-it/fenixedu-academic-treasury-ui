@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.domain.integration.tuitioninfo;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.Comparator;
@@ -25,7 +27,7 @@ import org.fenixedu.academictreasury.domain.integration.ERPTuitionInfoExportOper
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.exceptions.ERPTuitionInfoNoDifferencesException;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.exceptions.ERPTuitionInfoPendingException;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
@@ -58,7 +60,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
 
     public ERPTuitionInfo() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     public ERPTuitionInfo(final Customer customer, final ERPTuitionInfoType erpTuitionInfoType,
@@ -97,7 +99,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     }
 
     private void checkRules() {
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.bennu.required");
         }
 
@@ -186,7 +188,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     }
 
     public boolean isPendingToExport() {
-        return getBennuPendingToExport() != null;
+        return getDomainRootPendingToExport() != null;
     }
 
     public boolean isExportationSuccess() {
@@ -207,11 +209,11 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
 
     @Atomic
     public void markToInfoExport() {
-        setBennuPendingToExport(Bennu.getInstance());
+        setDomainRootPendingToExport(FenixFramework.getDomainRoot());
     }
 
     public void markIntegratedWithSuccess(final String message) {
-        setBennuPendingToExport(null);
+        setDomainRootPendingToExport(null);
         setExportationMessage(message);
         setExportationSuccess(true);
 
@@ -219,7 +221,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     }
 
     private void cancelExportation(final String reason) {
-        setBennuPendingToExport(null);
+        setDomainRootPendingToExport(null);
         setExportationMessage(reason);
         setExportationSuccess(false);
 
@@ -258,7 +260,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     // @formatter:on
 
     public static Stream<ERPTuitionInfo> findAll() {
-        return Bennu.getInstance().getErpTuitionInfosSet().stream();
+        return FenixFramework.getDomainRoot().getErpTuitionInfosSet().stream();
     }
 
     public static Stream<ERPTuitionInfo> find(final Customer customer) {
@@ -414,27 +416,27 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
                             
                             @Override
                             public String getName() {
-                                return Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.sheet.name");
+                                return academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.sheet.name");
                             }
                             
                             @Override
                             public String[] getHeaders() {
                                 return new String[] {
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.executionDate"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.studentNumber"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.studentName"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.customerFiscalNumber"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoTypeCode"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoTypeName"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.executionYearQualifiedName"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoExternalId"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoCreationDate"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoUpdateDate"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoDocumentNumber"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.totalAmount"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.deltaAmount"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.errorOccured"),
-                                        Constants.bundle("label.ERPTuitionInfoCalculationReportEntry.errorDescription")
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.executionDate"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.studentNumber"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.studentName"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.customerFiscalNumber"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoTypeCode"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoTypeName"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.executionYearQualifiedName"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoExternalId"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoCreationDate"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoUpdateDate"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.erpTuitionInfoDocumentNumber"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.totalAmount"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.deltaAmount"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.errorOccured"),
+                                        academicTreasuryBundle("label.ERPTuitionInfoCalculationReportEntry.errorDescription")
                                 };
                             }
                         }
@@ -445,7 +447,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
         final byte[] spreadsheetContent = Spreadsheet.buildSpreadsheetContent(spreadsheet, null);
         
         final DateTime now = DateTime.now();
-        final String filename = Constants.bundle("label.ERPTuitionInfoCreationReportFile.filename", now.toString("yyyyMMddHHmmss"));
+        final String filename = academicTreasuryBundle("label.ERPTuitionInfoCreationReportFile.filename", now.toString("yyyyMMddHHmmss"));
         ERPTuitionInfoCreationReportFile.create(filename, filename, spreadsheetContent);
         
     }
@@ -472,7 +474,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     }
 
     private static Stream<ERPTuitionInfo> findPendingToExport() {
-        return Bennu.getInstance().getErpTuitionInfosPendingToExportSet().stream();
+        return FenixFramework.getDomainRoot().getErpTuitionInfosPendingToExportSet().stream();
     }
 
     @Atomic(mode = TxMode.WRITE)

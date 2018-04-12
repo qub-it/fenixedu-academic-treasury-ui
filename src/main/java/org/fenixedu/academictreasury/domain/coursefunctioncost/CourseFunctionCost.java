@@ -11,7 +11,7 @@ import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.coursefunctioncost.CourseFunctionCostBean;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -21,7 +21,7 @@ public class CourseFunctionCost extends CourseFunctionCost_Base {
             final ExecutionYear executionYear, final BigDecimal functionCost) {
         super();
 
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
 
         setDegreeCurricularPlan(degreeCurricularPlan);
         setCompetenceCourses(competenceCourse);
@@ -56,7 +56,7 @@ public class CourseFunctionCost extends CourseFunctionCost_Base {
     @Atomic
     public void delete() {
 
-        setBennu(null);
+        setDomainRoot(null);
         setExecutionYear(null);
         setDegreeCurricularPlan(null);
         setCompetenceCourses(null);
@@ -65,7 +65,7 @@ public class CourseFunctionCost extends CourseFunctionCost_Base {
     }
 
     public static Stream<CourseFunctionCost> findAll() {
-        return Bennu.getInstance().getCourseFunctionCostsSet().stream();
+        return FenixFramework.getDomainRoot().getCourseFunctionCostsSet().stream();
     }
 
     public static Stream<CourseFunctionCost> find(final ExecutionYear executionYear, final CurricularCourse curricularCourse) {

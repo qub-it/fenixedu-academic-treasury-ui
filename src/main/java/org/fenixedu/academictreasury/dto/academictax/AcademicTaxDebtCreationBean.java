@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.academictax;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
@@ -93,9 +95,9 @@ public class AcademicTaxDebtCreationBean implements Serializable, ITreasuryBean 
                         executionYear) : TuitionServices.normalEnrolments(registration, executionYear);
 
                 if (enrolments.size() == 1) {
-                    text += " " + Constants.bundle("label.AcademicTaxDebtCreationBean.enrolments.one");
+                    text += " " + academicTreasuryBundle("label.AcademicTaxDebtCreationBean.enrolments.one");
                 } else if (enrolments.size() > 1) {
-                    text += " " + Constants.bundle("label.AcademicTaxDebtCreationBean.enrolments", String.valueOf(enrolments.size()));
+                    text += " " + academicTreasuryBundle("label.AcademicTaxDebtCreationBean.enrolments", String.valueOf(enrolments.size()));
                 }
             }
 
@@ -153,22 +155,22 @@ public class AcademicTaxDebtCreationBean implements Serializable, ITreasuryBean 
         errorMessage = "";
 
         if (academicTax == null) {
-            errorMessage = Constants.bundle("error.AcademicTaxDebtCreation.select.academic.tax");
+            errorMessage = academicTreasuryBundle("error.AcademicTaxDebtCreation.select.academic.tax");
             return errorMessage;
         }
         
         if (registration == null || executionYear == null) {
-            errorMessage = Constants.bundle("error.AcademicTaxDebtCreation.select.registration.and.execution.year");
+            errorMessage = academicTreasuryBundle("error.AcademicTaxDebtCreation.select.registration.and.execution.year");
             return errorMessage;
         }
         
         if(isImprovementTax() && this.improvementEvaluation == null) {
-            errorMessage = Constants.bundle("error.AcademicTaxDebtCreation.select.improvement.evaluation");
+            errorMessage = academicTreasuryBundle("error.AcademicTaxDebtCreation.select.improvement.evaluation");
             return errorMessage;
         }
         
         if(isCharged()) {
-            errorMessage = Constants.bundle("error.AcademicTaxDebtCreation.academic.tax.already.charged");
+            errorMessage = academicTreasuryBundle("error.AcademicTaxDebtCreation.academic.tax.already.charged");
             return errorMessage;
         }
             

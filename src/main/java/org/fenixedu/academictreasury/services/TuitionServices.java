@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.services;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
@@ -24,8 +26,8 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tuition.TuitionDebitEntryBean;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.domain.Currency;
 import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -36,9 +38,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
 
 public class TuitionServices {
 
@@ -193,8 +193,9 @@ public class TuitionServices {
             final LocalDate dueDate = tuitionInstallmentTariff.dueDate(debtDate);
             final Vat vat = tuitionInstallmentTariff.vat(debtDate);
             final BigDecimal amount = tuitionInstallmentTariff.amountToPay(academicTreasuryEvent);
+            final Currency currency = tuitionInstallmentTariff.getFinantialEntity().getFinantialInstitution().getCurrency();
 
-            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount));
+            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount, currency));
         }
 
         return entries.stream().sorted(new Comparator<TuitionDebitEntryBean>() {
@@ -427,8 +428,9 @@ public class TuitionServices {
             final LocalDate dueDate = tuitionInstallmentTariff.dueDate(debtDate);
             final Vat vat = tuitionInstallmentTariff.vat(debtDate);
             final BigDecimal amount = tuitionInstallmentTariff.amountToPay(academicTreasuryEvent, enrolment);
+            final Currency currency = tuitionInstallmentTariff.getFinantialEntity().getFinantialInstitution().getCurrency();
 
-            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount));
+            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount, currency));
         }
 
         return entries.stream().sorted(new Comparator<TuitionDebitEntryBean>() {
@@ -460,11 +462,11 @@ public class TuitionServices {
 
         DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
         if (!debitEntry.isProcessedInDebitNote()) {
-            debitEntry.annulDebitEntry(Constants.bundle("label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"));
+            debitEntry.annulDebitEntry(academicTreasuryBundle("label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"));
 
         } else {
             debitNote.anullDebitNoteWithCreditNote(
-                    Constants.bundle("label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"), false);
+                    academicTreasuryBundle("label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"), false);
 
         }
 
@@ -692,8 +694,9 @@ public class TuitionServices {
             final LocalDate dueDate = tuitionInstallmentTariff.dueDate(debtDate);
             final Vat vat = tuitionInstallmentTariff.vat(debtDate);
             final BigDecimal amount = tuitionInstallmentTariff.amountToPay(academicTreasuryEvent, enrolment);
+            final Currency currency = tuitionInstallmentTariff.getFinantialEntity().getFinantialInstitution().getCurrency();
 
-            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount));
+            entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount, currency));
         }
 
         return entries.stream().sorted(new Comparator<TuitionDebitEntryBean>() {
@@ -726,11 +729,11 @@ public class TuitionServices {
         final DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
         if (!debitEntry.isProcessedInDebitNote()) {
             debitEntry.annulDebitEntry(
-                    Constants.bundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"));
+                    academicTreasuryBundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"));
 
         } else {
             debitNote.anullDebitNoteWithCreditNote(
-                    Constants.bundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"), false);
+                    academicTreasuryBundle("label.TuitionServices.removeDebitEntryForExtracurricularEnrolment.reason"), false);
         }
 
         return true;

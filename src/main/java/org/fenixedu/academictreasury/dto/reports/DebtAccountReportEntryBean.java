@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
@@ -17,21 +19,21 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
 
     // @formatter:off
     public static String[] SPREADSHEET_HEADERS = { 
-            Constants.bundle("label.DebtAccountReportEntryBean.header.identification"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.versioningCreator"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.creationDate"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.finantialInstitutionName"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.customerId"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.name"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.identificationType"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.identificationNumber"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.vatNumber"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.email"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.address"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.addressCountryCode"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.studentNumber"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.vatNumberValid"),
-            Constants.bundle("label.DebtAccountReportEntryBean.header.totalInDebt") };
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.identification"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.versioningCreator"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.creationDate"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.finantialInstitutionName"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.customerId"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.name"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.identificationType"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.identificationNumber"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.vatNumber"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.email"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.address"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.addressCountryCode"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.studentNumber"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.vatNumberValid"),
+            academicTreasuryBundle("label.DebtAccountReportEntryBean.header.totalInDebt") };
     // @formatter:on
 
     final DebtAccount debtAccount;
@@ -129,7 +131,7 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
             row.createCell(0).setCellValue(identification);
 
             if (!completed) {
-                row.createCell(1).setCellValue(Constants.bundle("error.DebtReportEntryBean.report.generation.verify.entry"));
+                row.createCell(1).setCellValue(academicTreasuryBundle("error.DebtReportEntryBean.report.generation.verify.entry"));
                 return;
             }
 
@@ -169,7 +171,7 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return Constants.bundle(value ? "label.true" : "label.false");
+        return academicTreasuryBundle(value ? "label.true" : "label.false");
     }
 
     private String valueOrEmpty(final Integer value) {

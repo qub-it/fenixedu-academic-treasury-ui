@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.services;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -389,7 +391,7 @@ public class AcademicTaxServices {
         final DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
 
         if (!debitEntry.isProcessedInDebitNote()) {
-            debitEntry.annulDebitEntry(Constants.bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"));
+            debitEntry.annulDebitEntry(academicTreasuryBundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"));
 
 //            debitEntry.setCurricularCourse(null);
 //            debitEntry.setExecutionSemester(null);
@@ -398,7 +400,7 @@ public class AcademicTaxServices {
             return true;
         } else if (debitEntry.getCreditEntriesSet().isEmpty()) {
             debitNote.anullDebitNoteWithCreditNote(
-                    Constants.bundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"), false);
+                    academicTreasuryBundle("label.AcademicTaxServices.removeDebitEntryForImprovement.reason"), false);
             return true;
         }
 

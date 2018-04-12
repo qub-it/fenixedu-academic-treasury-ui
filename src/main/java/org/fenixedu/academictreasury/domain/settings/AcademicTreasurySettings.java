@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.ProductGroup;
 
@@ -14,7 +14,7 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
 
     protected AcademicTreasurySettings() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     @Atomic
@@ -69,7 +69,7 @@ public class AcademicTreasurySettings extends AcademicTreasurySettings_Base {
     // @formatter: on
 
     protected static Optional<AcademicTreasurySettings> find() {
-        return Bennu.getInstance().getAcademicTreasurySettingsSet().stream().findFirst();
+        return FenixFramework.getDomainRoot().getAcademicTreasurySettingsSet().stream().findFirst();
     }
 
     @Atomic

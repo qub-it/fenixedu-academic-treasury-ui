@@ -9,7 +9,7 @@ import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.domain.Product;
 
 public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
@@ -27,7 +27,7 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
 
     public ERPTuitionInfoType() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
         setErpTuitionInfoSettings(ERPTuitionInfoSettings.getInstance());
         setActive(true);
     }
@@ -46,7 +46,7 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
 
     private void checkRules() {
 
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.bennu.required");
         }
 
@@ -77,7 +77,7 @@ public class ERPTuitionInfoType extends ERPTuitionInfoType_Base {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.delete.not.possible");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
         setErpTuitionInfoProduct(null);
         setErpTuitionInfoSettings(null);
         setExecutionYear(null);

@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.ui.customer.forwardpayments;
 
+import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -48,8 +50,8 @@ public class CustomerAccountingForwardPaymentController
         }
 
         if (PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get() != debtAccount.getCustomer()) {
-            addErrorMessage(Constants.bundle("error.authorization.not.allow.to.modify.settlements"), model);
-            throw new SecurityException(Constants.bundle("error.authorization.not.allow.to.modify.settlements"));
+            addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.settlements"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.modify.settlements"));
         }
     }
 

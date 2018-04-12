@@ -1,11 +1,15 @@
 package org.fenixedu.academictreasury.domain.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import org.joda.time.DateTime;
+
+import pt.ist.fenixframework.FenixFramework;
 
 public class DebtReportRequestResultErrorsFile extends DebtReportRequestResultErrorsFile_Base {
 
@@ -16,7 +20,7 @@ public class DebtReportRequestResultErrorsFile extends DebtReportRequestResultEr
         setDebtReportRequest(request);
 
         final String filename =
-                Constants.bundle("label.DebtReportRequestResultErrorsFile.filename", new DateTime().toString("YYYYMMddHHmmss"));
+                academicTreasuryBundle("label.DebtReportRequestResultErrorsFile.filename", new DateTime().toString("YYYYMMddHHmmss"));
 
         init(filename, filename, content);
         checkRules();

@@ -97,11 +97,11 @@ public class Constants {
      **********/
     // @formatter: on
 
-    public static String bundle(final String key, final String... args) {
+    public static String academicTreasuryBundle(final String key, final String... args) {
         return BundleUtil.getString(Constants.BUNDLE, key, args);
     }
 
-    public static LocalizedString bundleI18N(final String key, final String... args) {
+    public static LocalizedString academicTreasuryBundleI18N(final String key, final String... args) {
         return BundleUtil.getLocalizedString(Constants.BUNDLE, key, args);
     }
     

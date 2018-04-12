@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 
 import com.google.common.base.Strings;
 
@@ -24,7 +24,7 @@ public class AcademicDebtGenerationRuleType extends AcademicDebtGenerationRuleTy
     
     protected AcademicDebtGenerationRuleType() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
     
     public AcademicDebtGenerationRuleType(final String code, final String name, final String strategyImplementation, final int orderNumber) {
@@ -76,7 +76,7 @@ public class AcademicDebtGenerationRuleType extends AcademicDebtGenerationRuleTy
     // @formatter: on
     
     public static Stream<AcademicDebtGenerationRuleType> findAll() {
-        return Bennu.getInstance().getAcademicDebtGenerationRuleTypesSet().stream();
+        return FenixFramework.getDomainRoot().getAcademicDebtGenerationRuleTypesSet().stream();
     }
     
     public static Optional<AcademicDebtGenerationRuleType> findByCode(final String code) {

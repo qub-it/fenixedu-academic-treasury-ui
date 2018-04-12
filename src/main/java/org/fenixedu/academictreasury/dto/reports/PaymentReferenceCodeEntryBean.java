@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.stream.Collectors;
 
@@ -23,26 +25,26 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
     private static final String TARGET_TYPE_MULTIPLE_ENTRIES = "M";
     private static final String TARGET_TYPE_NOT_DEFINED = "N";
 
-    public static String[] SPREADSHEET_HEADERS = { Constants.bundle("label.PaymentReferenceCodeEntryBean.header.identification"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.versioningCreator"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.creationDate"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.customerId"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.debtAccountId"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.name"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.identificationType"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.identificationNumber"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.vatNumber"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.email"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.address"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.addressCountryCode"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.studentNumber"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.entityCode"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.referenceCode"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.finantialDocumentNumber"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.payableAmount"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.description"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.target.type"),
-            Constants.bundle("label.PaymentReferenceCodeEntryBean.header.state") };
+    public static String[] SPREADSHEET_HEADERS = { academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.identification"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.versioningCreator"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.creationDate"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.customerId"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.debtAccountId"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.name"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.identificationType"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.identificationNumber"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.vatNumber"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.email"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.address"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.addressCountryCode"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.studentNumber"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.entityCode"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.referenceCode"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.finantialDocumentNumber"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.payableAmount"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.description"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.target.type"),
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.state") };
 
     private String identification;
     private String versioningCreator;
@@ -190,7 +192,7 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
             row.createCell(0).setCellValue(identification);
 
             if (!completed) {
-                row.createCell(1).setCellValue(Constants.bundle("error.DebtReportEntryBean.report.generation.verify.entry"));
+                row.createCell(1).setCellValue(academicTreasuryBundle("error.DebtReportEntryBean.report.generation.verify.entry"));
                 return;
             }
 

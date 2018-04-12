@@ -3,14 +3,14 @@ package org.fenixedu.academictreasury.domain.debtGeneration;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 
 public class DebtGenerationRuleRestriction extends DebtGenerationRuleRestriction_Base {
     
     public DebtGenerationRuleRestriction() {
         super();
 
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
     
     protected DebtGenerationRuleRestriction(final String name, final String strategyImplementation) {
@@ -36,7 +36,7 @@ public class DebtGenerationRuleRestriction extends DebtGenerationRuleRestriction
             throw new AcademicTreasuryDomainException("error.DebtGenerationRuleRestriction.academicDebtGenerationRulesSet.not.empty");
         }
         
-        setBennu(null);
+        setDomainRoot(null);
         
         deleteDomainObject();
     }
@@ -49,7 +49,7 @@ public class DebtGenerationRuleRestriction extends DebtGenerationRuleRestriction
     // @formatter:on
 
     public static Stream<DebtGenerationRuleRestriction> findAll() {
-        return Bennu.getInstance().getDebtGenerationRuleRestrictionsSet().stream();
+        return FenixFramework.getDomainRoot().getDebtGenerationRuleRestrictionsSet().stream();
     }
     
     public static Stream<DebtGenerationRuleRestriction> findByStrategyImplementation(final String strategyImplementation) {

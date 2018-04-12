@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -115,7 +117,7 @@ public class ImportTreasuryController extends AcademicTreasuryBaseController {
         try {
 
             treasuryImportFile.getTreasuryImportType().implementation().process(treasuryImportFile);
-            addInfoMessage(Constants.bundle("label.ImportTreasury.process.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.ImportTreasury.process.success"), model);
 
             if(Strings.isNullOrEmpty(request.getContextPath())) {
                 return new RedirectView(VIEW_URL + "/" + treasuryImportFile.getExternalId());

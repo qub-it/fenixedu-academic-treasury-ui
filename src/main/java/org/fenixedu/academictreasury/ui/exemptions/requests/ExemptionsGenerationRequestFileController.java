@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.ui.exemptions.requests;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.io.IOException;
 import java.util.stream.Collectors;
 
@@ -122,7 +124,7 @@ public class ExemptionsGenerationRequestFileController extends AcademicTreasuryB
         try {
             exemptionsGenerationRequestFile.process();
 
-            addInfoMessage(Constants.bundle("label.MassiveDebtGenerationRequestFile.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.MassiveDebtGenerationRequestFile.success"), model);
             return redirect(SEARCH_URL, model, redirectAttributes);
         } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);

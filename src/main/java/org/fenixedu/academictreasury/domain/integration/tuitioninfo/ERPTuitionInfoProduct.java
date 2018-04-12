@@ -3,7 +3,7 @@ package org.fenixedu.academictreasury.domain.integration.tuitioninfo;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 
 import com.google.common.base.Strings;
 
@@ -11,7 +11,7 @@ public class ERPTuitionInfoProduct extends ERPTuitionInfoProduct_Base {
     
     public ERPTuitionInfoProduct() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
     
     protected ERPTuitionInfoProduct(final String code, final String name) {
@@ -24,7 +24,7 @@ public class ERPTuitionInfoProduct extends ERPTuitionInfoProduct_Base {
     }
 
     private void checkRules() {
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.bennu.required");
         }
 
@@ -43,7 +43,7 @@ public class ERPTuitionInfoProduct extends ERPTuitionInfoProduct_Base {
     }
     
     public static Stream<ERPTuitionInfoProduct> findAll() {
-        return Bennu.getInstance().getErpTuitionInfoProductsSet().stream();
+        return FenixFramework.getDomainRoot().getErpTuitionInfoProductsSet().stream();
     }
 
     public static Stream<ERPTuitionInfoProduct> findByCode(final String code) {

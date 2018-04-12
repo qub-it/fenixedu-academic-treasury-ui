@@ -6,7 +6,7 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.util.LocalizedStringUtil;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
@@ -29,7 +29,7 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
 
     protected TuitionPaymentPlanGroup() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected TuitionPaymentPlanGroup(final String code, final LocalizedString name, boolean forRegistration,
@@ -116,13 +116,13 @@ public class TuitionPaymentPlanGroup extends TuitionPaymentPlanGroup_Base {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlanGroup.delete.impossible");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
 
         super.deleteDomainObject();
     }
 
     public static Stream<TuitionPaymentPlanGroup> findAll() {
-        return Bennu.getInstance().getTuitionPaymentPlanGroupsSet().stream();
+        return FenixFramework.getDomainRoot().getTuitionPaymentPlanGroupsSet().stream();
     }
 
     protected static Stream<TuitionPaymentPlanGroup> findDefaultGroupForRegistration() {

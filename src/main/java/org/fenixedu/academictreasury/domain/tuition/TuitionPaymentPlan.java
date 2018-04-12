@@ -26,7 +26,7 @@ import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.academictreasury.util.LocalizedStringUtil;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -55,7 +55,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     protected TuitionPaymentPlan() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected TuitionPaymentPlan(final DegreeCurricularPlan degreeCurricularPlan,
@@ -514,7 +514,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             throw new AcademicTreasuryDomainException("error.TuitionPaymentPlan.delete.impossible");
         }
 
-        setBennu(null);
+        setDomainRoot(null);
 
         while (!getTuitionInstallmentTariffsSet().isEmpty()) {
             getTuitionInstallmentTariffsSet().iterator().next().delete();
@@ -563,7 +563,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     // @formatter:on
 
     public static Stream<TuitionPaymentPlan> findAll() {
-        return Bennu.getInstance().getTuitionPaymentPlansSet().stream();
+        return FenixFramework.getDomainRoot().getTuitionPaymentPlansSet().stream();
     }
 
     public static Stream<TuitionPaymentPlan> find(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup) {

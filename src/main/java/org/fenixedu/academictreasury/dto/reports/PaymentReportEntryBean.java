@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
@@ -19,26 +21,26 @@ import org.springframework.util.StringUtils;
 public class PaymentReportEntryBean implements SpreadsheetRow {
 
     public static String[] SPREADSHEET_HEADERS = { 
-        Constants.bundle("label.PaymentReportEntryBean.header.identification"),
-        Constants.bundle("label.PaymentReportEntryBean.header.creationDate"),
-        Constants.bundle("label.PaymentReportEntryBean.header.responsible"),
-        Constants.bundle("label.PaymentReportEntryBean.header.settlementNoteNumber"),
-        Constants.bundle("label.PaymentReportEntryBean.header.settlementNoteDocumentDate"),
-        Constants.bundle("label.PaymentReportEntryBean.header.paymentDate"),
-        Constants.bundle("label.PaymentReportEntryBean.header.settlementNoteAnnuled"),
-        Constants.bundle("label.PaymentReportEntryBean.header.documentExportationPending"),
-        Constants.bundle("label.PaymentReportEntryBean.header.paymentMethod"),
-        Constants.bundle("label.PaymentReportEntryBean.header.amount"),
-        Constants.bundle("label.PaymentReportEntryBean.header.customerId"),
-        Constants.bundle("label.PaymentReportEntryBean.header.debtAccountId"),
-        Constants.bundle("label.PaymentReportEntryBean.header.name"),
-        Constants.bundle("label.PaymentReportEntryBean.header.identificationType"),
-        Constants.bundle("label.PaymentReportEntryBean.header.identificationNumber"),
-        Constants.bundle("label.PaymentReportEntryBean.header.vatNumber"),
-        Constants.bundle("label.PaymentReportEntryBean.header.email"),
-        Constants.bundle("label.PaymentReportEntryBean.header.address"),
-        Constants.bundle("label.PaymentReportEntryBean.header.studentNumber"),
-        Constants.bundle("label.PaymentReportEntryBean.header.closeDate"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.identification"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.creationDate"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.responsible"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.settlementNoteNumber"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.settlementNoteDocumentDate"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.paymentDate"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.settlementNoteAnnuled"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.documentExportationPending"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.paymentMethod"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.amount"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.customerId"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.debtAccountId"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.name"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.identificationType"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.identificationNumber"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.vatNumber"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.email"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.address"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.studentNumber"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.closeDate"),
     };
  
     
@@ -142,7 +144,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             row.createCell(0).setCellValue(identification);
 
             if(!completed) {
-                row.createCell(1).setCellValue(Constants.bundle("error.DebtReportEntryBean.report.generation.verify.entry"));
+                row.createCell(1).setCellValue(academicTreasuryBundle("error.DebtReportEntryBean.report.generation.verify.entry"));
                 return;
             }
             
@@ -187,7 +189,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return Constants.bundle(value ? "label.true" : "label.false");
+        return academicTreasuryBundle(value ? "label.true" : "label.false");
     }
 
     private String valueOrEmpty(final Integer value) {

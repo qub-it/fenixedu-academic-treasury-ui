@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.tuition;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
@@ -102,9 +104,9 @@ public class TuitionDebtCreationBean implements Serializable, ITreasuryBean {
                 final Set<Enrolment> normalEnrolments = TuitionServices.normalEnrolments(registration, executionYear);
                 
                 if(normalEnrolments.size() == 1) {
-                    text += " " + Constants.bundle("label.TuitionDebtCreationBean.enrolments.one");
+                    text += " " + academicTreasuryBundle("label.TuitionDebtCreationBean.enrolments.one");
                 } else if (normalEnrolments.size() > 1) {
-                    text += " " + Constants.bundle("label.TuitionDebtCreationBean.enrolments", String.valueOf(normalEnrolments.size()));
+                    text += " " + academicTreasuryBundle("label.TuitionDebtCreationBean.enrolments", String.valueOf(normalEnrolments.size()));
                 }
             }
             
@@ -258,30 +260,30 @@ public class TuitionDebtCreationBean implements Serializable, ITreasuryBean {
         this.tuitionPaymentPlan = null;
 
         if (registration == null || executionYear == null) {
-            errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.select.registration.and.executionYear");
+            errorMessage = academicTreasuryBundle("label.TuitionDebtCreationBean.infer.select.registration.and.executionYear");
             return errorMessage;
         }
 
         if ((isStandaloneTuition() || isExtracurricularTuition()) && enrolment == null) {
-            errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.select.enrolment");
+            errorMessage = academicTreasuryBundle("label.TuitionDebtCreationBean.infer.select.enrolment");
             return errorMessage;
         }
 
         if (isRegistrationTuition()) {
             if (TuitionServices.isTuitionForRegistrationCharged(registration, executionYear)) {
-                errorMessage = Constants.bundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
+                errorMessage = academicTreasuryBundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
                 return errorMessage;
             }
             
             this.tuitionPaymentPlan = TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear);
             
             if (tuitionPaymentPlan == null) {
-                errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.impossible");
+                errorMessage = academicTreasuryBundle("label.TuitionDebtCreationBean.infer.impossible");
             }
 
         } else if (isStandaloneTuition()) {
             if (TuitionServices.isTuitionForStandaloneCharged(registration, executionYear, enrolment)) {
-                errorMessage = Constants.bundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
+                errorMessage = academicTreasuryBundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
                 return errorMessage;
             }
             
@@ -289,12 +291,12 @@ public class TuitionDebtCreationBean implements Serializable, ITreasuryBean {
                     TuitionPaymentPlan.inferTuitionPaymentPlanForStandaloneEnrolment(registration, executionYear, enrolment);
             
             if (this.tuitionPaymentPlan == null) {
-                errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.impossible");
+                errorMessage = academicTreasuryBundle("label.TuitionDebtCreationBean.infer.impossible");
             }
 
         } else if (isExtracurricularTuition()) {
             if (TuitionServices.isTuitionForExtracurricularCharged(registration, executionYear, enrolment)) {
-                errorMessage = Constants.bundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
+                errorMessage = academicTreasuryBundle("error.TuitionDebtCreationBean.tuition.registration.already.charged");
                 return errorMessage;
             }
             
@@ -302,7 +304,7 @@ public class TuitionDebtCreationBean implements Serializable, ITreasuryBean {
                     TuitionPaymentPlan.inferTuitionPaymentPlanForExtracurricularEnrolment(registration, executionYear, enrolment);
             
             if (this.tuitionPaymentPlan == null) {
-                errorMessage = Constants.bundle("label.TuitionDebtCreationBean.infer.impossible");
+                errorMessage = academicTreasuryBundle("label.TuitionDebtCreationBean.infer.impossible");
             }
         }
 

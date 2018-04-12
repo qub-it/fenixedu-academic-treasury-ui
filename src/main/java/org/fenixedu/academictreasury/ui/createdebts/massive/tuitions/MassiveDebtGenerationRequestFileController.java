@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.createdebts.massive.tuitions;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.io.IOException;
 import java.util.stream.Collectors;
 
@@ -187,7 +189,7 @@ public class MassiveDebtGenerationRequestFileController extends AcademicTreasury
         try {
             massiveDebtGenerationRequestFile.process();
 
-            addInfoMessage(Constants.bundle("label.MassiveDebtGenerationRequestFile.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.MassiveDebtGenerationRequestFile.success"), model);
 
             redirect(SEARCH_URL, model, redirectAttributes);
 

@@ -15,7 +15,7 @@ import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.Academic
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -49,7 +49,6 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
 
     protected TuitionInstallmentTariff() {
         super();
-        setBennu(Bennu.getInstance());
     }
 
     protected TuitionInstallmentTariff(final FinantialEntity finantialEntity, final TuitionPaymentPlan tuitionPaymentPlan,

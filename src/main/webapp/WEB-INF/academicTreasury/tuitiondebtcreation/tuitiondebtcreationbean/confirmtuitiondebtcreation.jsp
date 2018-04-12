@@ -126,6 +126,15 @@ function backToCreate() {
         <form method="post" class="form-horizontal">
             <table class="table">
                 <tbody>
+					<tr>
+					    <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
+					    <td><c:out value='${debtAccount.customer.uiFiscalNumber}' /></td>
+					</tr>
+					
+					<tr>
+					    <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
+					    <td><c:out value='${debtAccount.customer.businessIdentification}' /> - <c:out value='${debtAccount.customer.name}' /></td>
+					</tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.TuitionDebtCreationBean.executionYear" /></th>
                         <td><c:out value='${tuitionPaymentPlan.executionYear.qualifiedName}' /></td>
@@ -195,7 +204,7 @@ function backToCreate() {
 				<datatables:column className="dt-center" cssStyle="width:40%">
 					<datatables:columnHead ><spring:message code="label.TuitionInstallmentTariff.amount" /></datatables:columnHead>
 			
-					<p><c:out value='${debtAccount.finantialInstitution.currency.getValueFor(installment.amount)}' /></p>
+					<p><c:out value='${installment.currency.getValueFor(installment.amount)}' /></p>
 				</datatables:column>
 			</datatables:table>
 		</c:if>

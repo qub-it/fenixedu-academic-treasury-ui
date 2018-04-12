@@ -1,10 +1,14 @@
 package org.fenixedu.academictreasury.domain.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.util.Constants;
+import pt.ist.fenixframework.FenixFramework;
+
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
@@ -18,7 +22,7 @@ public class DebtReportRequestResultFile extends DebtReportRequestResultFile_Bas
         setBennu(Bennu.getInstance());
         setDebtReportRequest(request);
 
-        final String filename = Constants.bundle("label.DebtReportRequestResultFile.ZIP.filename", 
+        final String filename = academicTreasuryBundle("label.DebtReportRequestResultFile.ZIP.filename", 
                 new DateTime().toString("YYYYMMddHHmmss"));
 
         init(filename, filename, content);

@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
@@ -11,22 +13,22 @@ public class ProductReportEntryBean extends AbstractReportEntryBean {
 
     // @formatter:off
     public static final String[] SPREADSHEET_HEADERS = { 
-            Constants.bundle("label.ProductReportEntryBean.header.identification"),
-            Constants.bundle("label.ProductReportEntryBean.header.group.code"),
-            Constants.bundle("label.ProductReportEntryBean.header.group"),
-            Constants.bundle("label.ProductReportEntryBean.header.code"),
-            Constants.bundle("label.ProductReportEntryBean.header.description.pt"),
-            Constants.bundle("label.ProductReportEntryBean.header.description.en"),
-            Constants.bundle("label.ProductReportEntryBean.header.unitOfMeasure.pt"),
-            Constants.bundle("label.ProductReportEntryBean.header.unitOfMeasure.en"),
-            Constants.bundle("label.ProductReportEntryBean.header.active"),
-            Constants.bundle("label.ProductReportEntryBean.header.legacy"),
-            Constants.bundle("label.ProductReportEntryBean.header.tuitionInstallmentOrder"),
-            Constants.bundle("label.ProductReportEntryBean.header.vatType.code"),
-            Constants.bundle("label.ProductReportEntryBean.header.vatType"),
-            Constants.bundle("label.ProductReportEntryBean.header.exemptionReason.code"),
-            Constants.bundle("label.ProductReportEntryBean.header.exemptionReason"),
-            Constants.bundle("label.ProductReportEntryBean.header.finantialInstitution") };
+            academicTreasuryBundle("label.ProductReportEntryBean.header.identification"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.group.code"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.group"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.code"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.description.pt"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.description.en"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.unitOfMeasure.pt"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.unitOfMeasure.en"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.active"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.legacy"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.tuitionInstallmentOrder"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.vatType.code"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.vatType"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.exemptionReason.code"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.exemptionReason"),
+            academicTreasuryBundle("label.ProductReportEntryBean.header.finantialInstitution") };
     // @formatter:on
 
     private String identification;
@@ -87,7 +89,7 @@ public class ProductReportEntryBean extends AbstractReportEntryBean {
             row.createCell(0).setCellValue(identification);
 
             if (!completed) {
-                row.createCell(1).setCellValue(Constants.bundle("error.DebtReportEntryBean.report.generation.verify.entry"));
+                row.createCell(1).setCellValue(academicTreasuryBundle("error.DebtReportEntryBean.report.generation.verify.entry"));
                 return;
             }
 

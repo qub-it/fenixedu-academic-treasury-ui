@@ -142,6 +142,30 @@ ${portal.angularToolkit()}
         value='${pageContext.request.contextPath}<%= OtherTuitionDebtCreationBeanController.CREATEPOSTBACK_URL  %>/${debtAccount.externalId}' />
 
     <input name="bean" type="hidden" value="{{ object }}" />
+
+	<div class="panel panel-primary">
+	    <div class="panel-heading">
+	        <h3 class="panel-title">
+	            <spring:message code="label.Customer.customerDetails" />
+	        </h3>
+	    </div>
+	    <div class="panel-body">
+	          <table class="table">
+	              <tbody>
+	                  <tr>
+	                      <th scope="row" class="col-xs-3"><spring:message code="label.Customer.fiscalNumber" /></th>
+	                      <td><c:out value='${debtAccount.customer.uiFiscalNumber}' /></td>
+	                  </tr>
+	
+	                  <tr>
+	                      <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.customer" /></th>
+	                      <td><c:out value='${debtAccount.customer.businessIdentification}' /> - <c:out value='${debtAccount.customer.name}' /></td>
+	                  </tr>
+	              </tbody>
+	          </table>
+	    </div>
+	</div>
+
     <div class="panel panel-default">
         <div class="panel-body">
 

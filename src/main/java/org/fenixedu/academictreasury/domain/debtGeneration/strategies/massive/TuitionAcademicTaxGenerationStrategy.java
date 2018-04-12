@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.domain.debtGeneration.strategies.massive;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -298,13 +300,13 @@ public class TuitionAcademicTaxGenerationStrategy implements IMassiveDebtGenerat
     @Override
     public String dataDescription(final MassiveDebtGenerationRequestFile file) {
         if(file.getTuitionPaymentPlanGroup() != null) {
-            return Constants.bundle("label.TuitionAcademicTaxGenerationStrategy.dataDescription.tuitionPaymentPlanGroup", 
+            return academicTreasuryBundle("label.TuitionAcademicTaxGenerationStrategy.dataDescription.tuitionPaymentPlanGroup", 
                         file.getTuitionPaymentPlanGroup().getName().getContent(), 
                         file.getExecutionYear().getQualifiedName(), 
                         file.getDebtDate().toString(org.fenixedu.academictreasury.util.Constants.DATE_FORMAT));
             
         } else {
-            return Constants.bundle("label.TuitionAcademicTaxGenerationStrategy.dataDescription.academicTax", 
+            return academicTreasuryBundle("label.TuitionAcademicTaxGenerationStrategy.dataDescription.academicTax", 
                     file.getAcademicTax().getProduct().getName().getContent(), 
                     file.getExecutionYear().getQualifiedName(), 
                     file.getDebtDate().toString(org.fenixedu.academictreasury.util.Constants.DATE_FORMAT));

@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.domain.integration.tuitioninfo;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundleI18N;
+
 import java.util.Locale;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -12,7 +14,7 @@ import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.document.DebitEntry;
@@ -24,7 +26,7 @@ public class ERPTuitionInfoTypeAcademicEntry extends ERPTuitionInfoTypeAcademicE
 
     public ERPTuitionInfoTypeAcademicEntry() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     private ERPTuitionInfoTypeAcademicEntry(final ERPTuitionInfoType type, final DegreeType degreeType) {
@@ -84,7 +86,7 @@ public class ERPTuitionInfoTypeAcademicEntry extends ERPTuitionInfoTypeAcademicE
 
     private void checkRules() {
 
-        if (getBennu() == null) {
+        if (getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.bennu.required");
         }
 
@@ -336,16 +338,16 @@ public class ERPTuitionInfoTypeAcademicEntry extends ERPTuitionInfoTypeAcademicE
         }
 
         if (isForStandalone()) {
-            return Constants.bundleI18N("label.ERPTuitionInfoTypeAcademicEntry.standalone.description");
+            return academicTreasuryBundleI18N("label.ERPTuitionInfoTypeAcademicEntry.standalone.description");
         } else if (isForExtracurricular()) {
-            return Constants.bundleI18N("label.ERPTuitionInfoTypeAcademicEntry.extracurricular.description");
+            return academicTreasuryBundleI18N("label.ERPTuitionInfoTypeAcademicEntry.extracurricular.description");
         }
 
         throw new RuntimeException("error");
     }
 
     public void delete() {
-        setBennu(null);
+        setDomainRoot(null);
         setErpTuitionInfoType(null);
 
         setDegreeCurricularPlan(null);

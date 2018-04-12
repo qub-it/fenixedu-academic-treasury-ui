@@ -3,7 +3,7 @@ package org.fenixedu.academictreasury.domain.debtGeneration.requests;
 import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 
 import com.google.common.base.Strings;
 
@@ -11,7 +11,7 @@ public class MassiveDebtGenerationType extends MassiveDebtGenerationType_Base {
     
     public MassiveDebtGenerationType() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
     
     public MassiveDebtGenerationType(final String name, final String implementationClass) {
@@ -25,7 +25,7 @@ public class MassiveDebtGenerationType extends MassiveDebtGenerationType_Base {
     }
 
     private void checkRules() {
-        if(getBennu() == null) {
+        if(getDomainRoot() == null) {
             throw new AcademicTreasuryDomainException("error.MassiveDebtGenerationType.bennu.required");
         }
         
@@ -83,7 +83,7 @@ public class MassiveDebtGenerationType extends MassiveDebtGenerationType_Base {
     // @formatter:on
     
     public static Stream<MassiveDebtGenerationType> findAll() {
-        return Bennu.getInstance().getMassiveDebtGenerationTypesSet().stream();
+        return FenixFramework.getDomainRoot().getMassiveDebtGenerationTypesSet().stream();
     }
     
     public static Stream<MassiveDebtGenerationType> findByClassName(final String className) {

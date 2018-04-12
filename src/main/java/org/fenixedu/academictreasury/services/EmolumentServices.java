@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.services;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -250,8 +252,7 @@ public class EmolumentServices {
                 return false;
             }
             //Annul debit entries, since new ones will be created to reflect the service request's changes
-            String reason = org.fenixedu.academictreasury.util.Constants
-                    .bundle("info.EmolumentServices.serviceRequest.change.value.anull.debit.entries");
+            String reason = academicTreasuryBundle("info.EmolumentServices.serviceRequest.change.value.anull.debit.entries");
             academicTresuryEvent.annulAllDebitEntries(reason);
         }
 
@@ -333,14 +334,12 @@ public class EmolumentServices {
 
         final DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
         if (!debitEntry.isProcessedInDebitNote()) {
-            debitEntry.annulDebitEntry(org.fenixedu.academictreasury.util.Constants
-                    .bundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"));
+            debitEntry.annulDebitEntry(academicTreasuryBundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"));
             debitEntry.delete();
 
             return true;
         } else if (debitEntry.getCreditEntriesSet().isEmpty()) {
-            debitNote.anullDebitNoteWithCreditNote(org.fenixedu.academictreasury.util.Constants
-                    .bundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"), false);
+            debitNote.anullDebitNoteWithCreditNote(academicTreasuryBundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"), false);
 
             return true;
         }

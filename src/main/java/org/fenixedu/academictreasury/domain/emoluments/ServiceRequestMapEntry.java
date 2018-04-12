@@ -6,7 +6,7 @@ import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituat
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
-import org.fenixedu.bennu.core.domain.Bennu;
+import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 
@@ -16,7 +16,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
 
     public ServiceRequestMapEntry() {
         super();
-        setBennu(Bennu.getInstance());
+        setDomainRoot(FenixFramework.getDomainRoot());
     }
 
     protected ServiceRequestMapEntry(final Product product, final ServiceRequestType requestType,
@@ -66,7 +66,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
 
         setServiceRequestType(null);
         setProduct(null);
-        setBennu(null);
+        setDomainRoot(null);
         super.deleteDomainObject();
     }
 
@@ -76,7 +76,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
      */
 
     public static Stream<ServiceRequestMapEntry> findAll() {
-        return Bennu.getInstance().getServiceRequestMapEntriesSet().stream();
+        return FenixFramework.getDomainRoot().getServiceRequestMapEntriesSet().stream();
     }
 
     public static Stream<ServiceRequestMapEntry> find(final Product product) {

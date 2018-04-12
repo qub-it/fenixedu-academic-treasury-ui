@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.academictaxdebtcreation;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
@@ -113,27 +115,27 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
 
             boolean dataMissing = false;
             if (bean.getRegistration() == null) {
-                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.registration.required"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.registration.required"), model);
                 dataMissing = true;
             }
 
             if (bean.getExecutionYear() == null) {
-                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.executionYear.required"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.executionYear.required"), model);
                 dataMissing = true;
             }
 
             if (bean.getDebtDate() == null) {
-                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.debtDate.required"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.debtDate.required"), model);
                 dataMissing = true;
             }
 
             if (bean.getAcademicTax() == null) {
-                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.academicTax.required"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.academicTax.required"), model);
                 dataMissing = true;
             }
 
             if (bean.isImprovementTax() && bean.getImprovementEvaluation() == null) {
-                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.improvementEvaluation.required"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.improvementEvaluation.required"), model);
                 dataMissing = true;
             }
 
@@ -143,11 +145,11 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
 
             if (bean.isImprovementTax()
                     && AcademicTaxServices.findAcademicTariff(bean.getImprovementEvaluation(), bean.getDebtDate()) == null) {
-                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.tariff.not.found"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.tariff.not.found"), model);
                 return _createFirstPage(debtAccount, bean, model);
             } else if (AcademicTaxServices.findAcademicTariff(bean.getAcademicTax(), bean.getRegistration(),
                     bean.getDebtDate()) == null) {
-                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.tariff.not.found"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.tariff.not.found"), model);
                 dataMissing = true;
                 return _createFirstPage(debtAccount, bean, model);
             }
@@ -157,7 +159,7 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                         .findAcademicTreasuryEventForImprovementTax(bean.getRegistration(), bean.getExecutionYear());
 
                 if (event != null && event.isChargedWithDebitEntry(bean.getImprovementEvaluation())) {
-                    addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.event.is.charged"), model);
+                    addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.event.is.charged"), model);
                     return _createFirstPage(debtAccount, bean, model);
                 }
             } else {
@@ -165,7 +167,7 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                         bean.getExecutionYear(), bean.getAcademicTax());
 
                 if (event != null && event.isChargedWithDebitEntry()) {
-                    addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.event.is.charged"), model);
+                    addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.event.is.charged"), model);
                     return _createFirstPage(debtAccount, bean, model);
                 }
             }
@@ -173,9 +175,9 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
             if (!bean.getAcademicTax().isImprovementTax() && !AcademicTaxServices.isAppliableOnRegistration(bean.getAcademicTax(),
                     bean.getRegistration(), bean.getExecutionYear())) {
                 if (AcademicTaxServices.isRegistrationFirstYear(bean.getRegistration(), bean.getExecutionYear())) {
-                    addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.academicTax.not.for.first.year"), model);
+                    addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.academicTax.not.for.first.year"), model);
                 } else {
-                    addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.academicTax.not.for.subsequent.years"),
+                    addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.academicTax.not.for.subsequent.years"),
                             model);
                 }
 
@@ -183,7 +185,7 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
             }
 
             if (bean.isCharged()) {
-                addErrorMessage(Constants.bundle("error.AcademicTaxDebtCreation.academic.tax.already.charged"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicTaxDebtCreation.academic.tax.already.charged"), model);
 
                 return _createFirstPage(debtAccount, bean, model);
             }

@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
@@ -11,16 +13,16 @@ import org.joda.time.DateTime;
 public class TreasuryExemptionReportEntryBean extends AbstractReportEntryBean {
 
     public static String[] SPREADSHEET_HEADERS = {
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.identification"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.versioningCreator"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.creationDate"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.customerId"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.debtAccountId"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.customerName"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.debitEntryId"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.debitEntryDescription"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.exemptedAmount"),
-            Constants.bundle("label.TreasuryExemptionReportEntryBean.header.reason") };
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.identification"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.versioningCreator"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.creationDate"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.customerId"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.debtAccountId"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.customerName"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.debitEntryId"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.debitEntryDescription"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.exemptedAmount"),
+            academicTreasuryBundle("label.TreasuryExemptionReportEntryBean.header.reason") };
 
     private String identification;
     private String versioningCreator;
@@ -76,7 +78,7 @@ public class TreasuryExemptionReportEntryBean extends AbstractReportEntryBean {
             row.createCell(0).setCellValue(identification);
 
             if (!completed) {
-                row.createCell(1).setCellValue(Constants.bundle("error.DebtReportEntryBean.report.generation.verify.entry"));
+                row.createCell(1).setCellValue(academicTreasuryBundle("error.DebtReportEntryBean.report.generation.verify.entry"));
                 return;
             }
 

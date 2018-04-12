@@ -1,5 +1,8 @@
 package org.fenixedu.academictreasury.domain.debtGeneration.strategies.massive;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundleI18N;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.List;
@@ -44,7 +47,7 @@ public class AnullDebitEntriesStrategy implements IMassiveDebtGenerationStrategy
 
     @Override
     public String dataDescription(MassiveDebtGenerationRequestFile file) {
-        return Constants.bundle("label.AnullDebitEntriesStrategy.dataDescription", file.getReason());
+        return academicTreasuryBundle("label.AnullDebitEntriesStrategy.dataDescription", file.getReason());
     }
 
     @Override
@@ -60,11 +63,11 @@ public class AnullDebitEntriesStrategy implements IMassiveDebtGenerationStrategy
                 
                 if (row.getDebitEntry().getFinantialDocument() != null) {
                     ((DebitNote) row.getDebitEntry().getFinantialDocument()).anullDebitNoteWithCreditNote(
-                            Constants.bundle("label.AnullDebitEntriesStrategy.anull.message", file.getReason()),
+                            academicTreasuryBundle("label.AnullDebitEntriesStrategy.anull.message", file.getReason()),
                             false);
                 } else {
                     row.getDebitEntry().annulDebitEntry(
-                            Constants.bundle("label.AnullDebitEntriesStrategy.anull.message", file.getReason()));
+                            academicTreasuryBundle("label.AnullDebitEntriesStrategy.anull.message", file.getReason()));
                 }
             } catch (final Exception e) {
                 throw new AcademicTreasuryDomainException("error.AnullDebitEntriesStrategy.on.anull.debit.entry",
@@ -215,7 +218,7 @@ public class AnullDebitEntriesStrategy implements IMassiveDebtGenerationStrategy
     }
 
     private boolean isYes(final String value) {
-        final LocalizedString ls = Constants.bundleI18N("label.true", new String[0]);
+        final LocalizedString ls = academicTreasuryBundleI18N("label.true", new String[0]);
 
         final String pt = ls.getContent(LOCALE_PT);
         final String en = ls.getContent(LOCALE_EN);
@@ -224,7 +227,7 @@ public class AnullDebitEntriesStrategy implements IMassiveDebtGenerationStrategy
     }
 
     private boolean isNo(final String value) {
-        final LocalizedString ls = Constants.bundleI18N("label.false", new String[0]);
+        final LocalizedString ls = academicTreasuryBundleI18N("label.false", new String[0]);
 
         final String pt = ls.getContent(LOCALE_PT);
         final String en = ls.getContent(LOCALE_EN);

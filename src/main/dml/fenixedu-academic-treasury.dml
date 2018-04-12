@@ -127,7 +127,7 @@ class emoluments.ServiceRequestMapEntry {
 }
 
 	relation ServiceRequestMapEntryBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -174,7 +174,7 @@ class emoluments.AcademicTax {
 }
 
 	relation AcademicTaxBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -208,7 +208,7 @@ class tuition.TuitionPaymentPlanGroup {
 
 	relation TuitionPaymentPlanGroupBennu {
 	
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -252,7 +252,7 @@ class tuition.TuitionPaymentPlan {
 	}
 
 	relation TuitionPaymentPlanBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -535,7 +535,7 @@ class debtGeneration.AcademicDebtGenerationRuleType {
 }
 
 	relation AcademicDebtGenerationRuleTypeBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -550,7 +550,7 @@ class debtGeneration.DebtGenerationRuleRestriction {
 }
 
 	relation DebtGenerationRuleRestrictionBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -586,7 +586,7 @@ class debtGeneration.AcademicDebtGenerationRule {
 	}
 
 	relation AcademicDebtGenerationRuleBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -643,7 +643,7 @@ class debtGeneration.AcademicDebtGenerationRuleEntry {
 }
 	
 	relation AcademicDebtGenerationRuleEntryBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -684,7 +684,7 @@ class academicalAct.AcademicActBlockingSuspension {
 }
 	
 	relation AcademicActBlockingSuspensionBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -714,7 +714,7 @@ class coursefunctioncost.CourseFunctionCost {
 }
 
 	relation CourseFunctionCostBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -762,7 +762,7 @@ class coursefunctioncost.CourseFunctionCost {
  */
 
 relation PendingRegistrationsForAcademicAcademicDebtGenerationRule {
-	.org.fenixedu.bennu.core.domain.Bennu playsRole bennuForPendingRegistrationsDebtCreation {
+	.pt.ist.fenixframework.DomainRoot playsRole domainRootForPendingRegistrationsDebtCreation {
 		multiplicity 0..1;
 	}
 		
@@ -783,7 +783,7 @@ class settings.AcademicTreasurySettings {
 }
 
 	relation AcademicTreasurySettingsBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -857,7 +857,7 @@ class reports.DebtReportRequestResultErrorsFile extends .org.fenixedu.bennu.io.d
 }
  
  	relation DebtReportRequestBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 	
@@ -868,7 +868,7 @@ class reports.DebtReportRequestResultErrorsFile extends .org.fenixedu.bennu.io.d
 	
 
 	relation PendingDebtReportRequestBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennuForPendingReportRequests {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRootForPendingReportRequests {
 			multiplicity 0..1;
 		}
 	
@@ -936,7 +936,7 @@ class debtGeneration.requests.MassiveDebtGenerationType {
 }
 
 	relation MassiveDebtGenerationTypeBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1054,7 +1054,7 @@ class importation.TreasuryImportType {
 }
 
 	relation TreasuryImportTypeBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1098,7 +1098,7 @@ class integration.tuitioninfo.ERPTuitionInfoSettings {
 }
 
 	relation ERPTuitionInfoSettingsBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1133,7 +1133,7 @@ class integration.tuitioninfo.ERPTuitionInfoProduct {
 }
 
 	relation ERPTuitionInfoTypeBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1147,7 +1147,7 @@ class integration.tuitioninfo.ERPTuitionInfoType {
 }
 
 	relation ERPTuitionInfoProductBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1204,7 +1204,7 @@ class integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry {
 }
 
 	relation ERPTuitionInfoTypeAcademicEntryBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1265,7 +1265,7 @@ class integration.tuitioninfo.ERPTuitionInfo {
 }
 
 	relation ERPTuitionInfoBennu {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennu {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRoot {
 			multiplicity 1..1;
 		}
 		
@@ -1275,7 +1275,7 @@ class integration.tuitioninfo.ERPTuitionInfo {
 	}
 	
 	relation ERPTuitionInfoBennuPendingToExport {
-		.org.fenixedu.bennu.core.domain.Bennu playsRole bennuPendingToExport {
+		.pt.ist.fenixframework.DomainRoot playsRole domainRootPendingToExport {
 			multiplicity 0..1;
 		}
 		

@@ -57,15 +57,18 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         IImprovementTreasuryEvent, IAcademicServiceRequestAndAcademicTaxTreasuryEvent {
 
     public AcademicTreasuryEvent() {
+        super();
     }
 
     protected AcademicTreasuryEvent(final ITreasuryServiceRequest iTreasuryServiceRequest) {
+        this();
         init(iTreasuryServiceRequest.getPerson(), iTreasuryServiceRequest,
                 ServiceRequestMapEntry.findProduct(iTreasuryServiceRequest));
     }
 
     protected AcademicTreasuryEvent(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Product product,
             final Registration registration, final ExecutionYear executionYear) {
+        this();
         init(tuitionPaymentPlanGroup, product, registration, executionYear);
 
         checkRules();
@@ -73,12 +76,14 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     protected AcademicTreasuryEvent(final AcademicTax academicTax, final Registration registration,
             final ExecutionYear executionYear) {
+        this();
         init(academicTax, registration, executionYear);
 
         checkRules();
     }
 
     protected AcademicTreasuryEvent(final Product product, final IAcademicTreasuryTarget target) {
+        this();
         init(product, target);
 
         checkRules();
