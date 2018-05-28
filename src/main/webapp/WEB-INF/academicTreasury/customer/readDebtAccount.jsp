@@ -120,7 +120,7 @@ ${portal.angularToolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.balance" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebt + debtAccount.calculatePendingInterestAmount())}" />
+                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.totalInDebtForAllDebtAccountsOfSameFinantialInstitution + debtAccount.calculateTotalPendingInterestAmountForAllDebtAccountsOfSameFinantialInstitution())}" />
                             <c:if test="${debtAccount.totalInDebt < 0 }">
                                 <span class="label label-warning"> <spring:message code="label.DebtAccount.customerHasAmountToRehimburse" />
                                 </span>
@@ -128,8 +128,8 @@ ${portal.angularToolkit()}
                     </tr>
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.DebtAccount.pendingInterestAmount" /></th>
-                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculatePendingInterestAmount())}" /> <c:if
-                                test='${ debtAccount.calculatePendingInterestAmount() > 0}'>
+                        <td><c:out value="${debtAccount.finantialInstitution.currency.getValueFor(debtAccount.calculateTotalPendingInterestAmountForAllDebtAccountsOfSameFinantialInstitution())}" /> <c:if
+                                test='${ debtAccount.calculateTotalPendingInterestAmountForAllDebtAccountsOfSameFinantialInstitution() > 0}'>
                                 <span class="label label-info"><spring:message code="label.DebtAccount.interestIncludedInDebtAmount" /></span>
                             </c:if></td>
                     </tr>

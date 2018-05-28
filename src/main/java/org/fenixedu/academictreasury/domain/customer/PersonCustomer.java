@@ -390,6 +390,11 @@ public class PersonCustomer extends PersonCustomer_Base {
         return globalBalance;
     }
 
+    @Override
+    public Set<Customer> getAllCustomers() {
+        return PersonCustomer.find(getAssociatedPerson()).collect(Collectors.toSet());
+    }
+    
     public void mergeWithPerson(final Person person) {
 
         if (getPerson() == person) {

@@ -55,17 +55,26 @@ public class CustomerAccountingForwardPaymentController
         }
     }
 
+    @Override
+    protected String redirectToDebtAccountUrl(final DebtAccount debtAccount, final Model model, final RedirectAttributes redirectAttributes) {
+        return redirect(readDebtAccountUrl() + activeDebtAccount(debtAccount).getExternalId(), model, redirectAttributes);
+    }
+
+    private DebtAccount activeDebtAccount(final DebtAccount debtAccount) {
+        return DebtAccount.findUnique(debtAccount.getFinantialInstitution(), ((PersonCustomer) debtAccount.getCustomer()).getActiveCustomer()).get();
+    }
+
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}")
     @Override
     public String chooseInvoiceEntries(@PathVariable(value = "debtAccountId") DebtAccount debtAccount,
-            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model) {
-        return super.chooseInvoiceEntries(debtAccount, bean, model);
+            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model, final RedirectAttributes redirectAttributes) {
+        return super.chooseInvoiceEntries(debtAccount, bean, model, redirectAttributes);
     }
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
     @Override
-    public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model) {
-        return super.chooseInvoiceEntries(bean, model);
+    public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true)   SettlementNoteBean bean, Model model, final RedirectAttributes redirectAttributes) {
+        return super.chooseInvoiceEntries(bean, model, redirectAttributes);
     }
 
     private static final String SUMMARY_URI = "/summary/";
