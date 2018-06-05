@@ -25,12 +25,9 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
-import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
-import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.util.Constants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
-import org.springframework.instrument.classloading.tomcat.TomcatLoadTimeWeaver;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
@@ -49,7 +46,8 @@ public class PersonCustomer extends PersonCustomer_Base {
     protected PersonCustomer(final Person person, final String fiscalCountry, final String fiscalNumber) {
         this();
 
-        if (!DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber()) && find(getPerson(), getFiscalCountry(), getFiscalNumber()).count() > 1) {
+        if (!DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber())
+                && find(getPerson(), getFiscalCountry(), getFiscalNumber()).count() > 1) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.person.customer.duplicated");
         }
 
@@ -106,7 +104,7 @@ public class PersonCustomer extends PersonCustomer_Base {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.person.customer.duplicated");
         }
     }
-    
+
     @Override
     public String getCode() {
         return this.getExternalId();
@@ -309,7 +307,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public boolean isDeletable() {
-        return !isActive() && getDebtAccountsSet().stream().allMatch(da -> da.isDeletable());
+        return getDebtAccountsSet().stream().allMatch(da -> da.isDeletable());
     }
 
     @Override
@@ -331,7 +329,17 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public void delete() {
+        if (!isDeletable()) {
+            throw new TreasuryDomainException("error.PersonCustomer.cannot.delete");
+        }
+
         super.setPersonForInactivePersonCustomer(null);
+        super.setPerson(null);
+
+        for (DebtAccount debtAccount : getDebtAccountsSet()) {
+            debtAccount.delete();
+        }
+
         super.delete();
     }
 
@@ -370,6 +378,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         return true;
     }
 
+    @Override
     public BigDecimal getGlobalBalance() {
         BigDecimal globalBalance = BigDecimal.ZERO;
 
@@ -427,86 +436,86 @@ public class PersonCustomer extends PersonCustomer_Base {
         checkRules();
     }
 
-    
     @Override
     @Atomic
     public void changeFiscalNumber(final AdhocCustomerBean bean) {
-        if(!Strings.isNullOrEmpty(getErpCustomerId())) {
+        if (!Strings.isNullOrEmpty(getErpCustomerId())) {
             throw new TreasuryDomainException("warning.Customer.changeFiscalNumber.maybe.integrated.in.erp");
         }
-        
+
         final String oldFiscalCountry = getFiscalCountry();
         final String oldFiscalNumber = getFiscalNumber();
         final boolean changeFiscalNumberConfirmed = bean.isChangeFiscalNumberConfirmed();
         final boolean withFinantialDocumentsIntegratedInERP = isWithFinantialDocumentsIntegratedInERP();
         final boolean customerInformationMaybeIntegratedWithSuccess = isCustomerInformationMaybeIntegratedWithSuccess();
-        final boolean customerWithFinantialDocumentsIntegratedInPreviousERP = isCustomerWithFinantialDocumentsIntegratedInPreviousERP();
-        
-        if(!bean.isChangeFiscalNumberConfirmed()) {
+        final boolean customerWithFinantialDocumentsIntegratedInPreviousERP =
+                isCustomerWithFinantialDocumentsIntegratedInPreviousERP();
+
+        if (!bean.isChangeFiscalNumberConfirmed()) {
             throw new TreasuryDomainException("message.Customer.changeFiscalNumber.confirmation");
         }
-        
+
         final String countryCode = bean.getCountryCode();
         final String fiscalNumber = bean.getFiscalNumber();
-        
-        if(Strings.isNullOrEmpty(countryCode)) {
+
+        if (Strings.isNullOrEmpty(countryCode)) {
             throw new TreasuryDomainException("error.Customer.countryCode.required");
         }
-        
-        if(Strings.isNullOrEmpty(fiscalNumber)) {
+
+        if (Strings.isNullOrEmpty(fiscalNumber)) {
             throw new TreasuryDomainException("error.Customer.fiscalNumber.required");
         }
-        
+
         // Check if fiscal information is different from current information
-        if(lowerCase(countryCode).equals(lowerCase(getCountryCode())) && fiscalNumber.equals(getFiscalNumber())) {
+        if (lowerCase(countryCode).equals(lowerCase(getCountryCode())) && fiscalNumber.equals(getFiscalNumber())) {
             throw new TreasuryDomainException("error.Customer.already.with.fiscal.information");
         }
 
-        if(isFiscalValidated() && isFiscalCodeValid()) {
+        if (isFiscalValidated() && isFiscalCodeValid()) {
             throw new TreasuryDomainException("error.Customer.changeFiscalNumber.already.valid");
         }
-        
-        if(customerInformationMaybeIntegratedWithSuccess) {
+
+        if (customerInformationMaybeIntegratedWithSuccess) {
             throw new TreasuryDomainException("warning.Customer.changeFiscalNumber.maybe.integrated.in.erp");
         }
-        
-        if(withFinantialDocumentsIntegratedInERP) {
+
+        if (withFinantialDocumentsIntegratedInERP) {
             throw new TreasuryDomainException("error.Customer.changeFiscalNumber.documents.integrated.erp");
         }
-        
-        if(!FiscalCodeValidation.isValidFiscalNumber(countryCode, fiscalNumber)) {
+
+        if (!FiscalCodeValidation.isValidFiscalNumber(countryCode, fiscalNumber)) {
             throw new TreasuryDomainException("error.Customer.fiscal.information.invalid");
         }
-        
+
         final Optional<? extends PersonCustomer> customerOptional = findUnique(getAssociatedPerson(), countryCode, fiscalNumber);
-        if(isActive()) {
+        if (isActive()) {
             // Check if this customer has customer with same fiscal information
-            if(customerOptional.isPresent()) {
+            if (customerOptional.isPresent()) {
                 throw new TreasuryDomainException("error.Customer.changeFiscalNumber.customer.exists.for.fiscal.number");
             }
-            
+
             setCountryCode(countryCode);
             setFiscalNumber(fiscalNumber);
             getPerson().editSocialSecurityNumber(Country.readByTwoLetterCode(countryCode), fiscalNumber);
         } else {
             // Check if this customer has customer with same fiscal information
-            if(customerOptional.isPresent()) {
+            if (customerOptional.isPresent()) {
                 // Mark as merged
                 setFromPersonMerge(true);
             }
-            
+
             setCountryCode(countryCode);
             setFiscalNumber(fiscalNumber);
         }
-        
+
         checkRules();
 
-        FiscalDataUpdateLog.create(this, oldFiscalCountry, oldFiscalNumber, 
-                changeFiscalNumberConfirmed, withFinantialDocumentsIntegratedInERP, customerInformationMaybeIntegratedWithSuccess, customerWithFinantialDocumentsIntegratedInPreviousERP);
-        
+        FiscalDataUpdateLog.create(this, oldFiscalCountry, oldFiscalNumber, changeFiscalNumberConfirmed,
+                withFinantialDocumentsIntegratedInERP, customerInformationMaybeIntegratedWithSuccess,
+                customerWithFinantialDocumentsIntegratedInPreviousERP);
+
     }
-    
-    
+
     @Override
     public Set<? extends TreasuryEvent> getTreasuryEventsSet() {
         final Person person = isActive() ? getPerson() : getPersonForInactivePersonCustomer();
@@ -568,8 +577,7 @@ public class PersonCustomer extends PersonCustomer_Base {
             final String fiscalNumber) {
         return find(person).filter(pc -> !Strings.isNullOrEmpty(pc.getFiscalCountry())
                 && lowerCase(pc.getFiscalCountry()).equals(lowerCase(fiscalCountryCode))
-                && !Strings.isNullOrEmpty(pc.getFiscalNumber())
-                && pc.getFiscalNumber().equals(fiscalNumber));
+                && !Strings.isNullOrEmpty(pc.getFiscalNumber()) && pc.getFiscalNumber().equals(fiscalNumber));
     }
 
     private static final Comparator<PersonCustomer> SORT_BY_PERSON_MERGE = new Comparator<PersonCustomer>() {
@@ -642,7 +650,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         return true;
     }
 
-    public static CustomerType getDefaultCustomerType(PersonCustomer person) {
+    public static CustomerType getDefaultCustomerType(final PersonCustomer person) {
         if (person.getPerson().getStudent() != null) {
             return CustomerType.findByCode(STUDENT_CODE).findFirst().orElse(null);
         } else {
