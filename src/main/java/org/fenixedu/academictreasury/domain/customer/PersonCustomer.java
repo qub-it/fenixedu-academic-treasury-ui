@@ -328,6 +328,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     @Override
+    @Atomic
     public void delete() {
         if (!isDeletable()) {
             throw new TreasuryDomainException("error.PersonCustomer.cannot.delete");
@@ -403,7 +404,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     public Set<Customer> getAllCustomers() {
         return PersonCustomer.find(getAssociatedPerson()).collect(Collectors.toSet());
     }
-    
+
     public void mergeWithPerson(final Person person) {
 
         if (getPerson() == person) {

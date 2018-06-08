@@ -4,6 +4,7 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
+import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.treasury.ITreasuryBridgeAPI;
 import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
@@ -21,24 +22,26 @@ import org.fenixedu.bennu.core.signals.Signal;
 import org.fenixedu.treasury.domain.bennu.signals.BennuSignalsServices;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 
+import pt.ist.fenixframework.FenixFramework;
+
 @WebListener
 public class AcademicTreasuryInitializer implements ServletContextListener {
 
     @Override
-    public void contextDestroyed(ServletContextEvent arg0) {
+    public void contextDestroyed(final ServletContextEvent arg0) {
     }
 
     @Override
-    public void contextInitialized(ServletContextEvent arg0) {
+    public void contextInitialized(final ServletContextEvent arg0) {
         registerNewRegistrationHandler();
         registerNewAcademicServiceRequestSituationHandler();
         registerAcademicServiceRequestCancelOrRejectHandler();
         registerStandaloneEnrolmentHandler();
         registerExtracurricularEnrolmentHandler();
         registerImprovementEnrolmentHandler();
-        
+
         TreasuryAccessControlAPI.registerExtension(new AcademicTreasuryAccessControlExtension());
-        
+
         DebitEntryDeletionListener.attach();
         ProductDeletionListener.attach();
 
@@ -46,20 +49,29 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
 
         TreasuryBridgeAPIFactory.registerImplementation(impl);
         BennuSignalsServices.registerSettlementEventHandler(impl);
+
+        addDeletionListeners();
     }
-    
+
+    private void addDeletionListeners() {
+        FenixFramework.getDomainModel().registerDeletionListener(Person.class, p -> {
+            p.getInactivePersonCustomersSet().forEach(ipc -> ipc.delete());
+        });
+    }
+
     private static void registerNewRegistrationHandler() {
         Signal.register(Registration.REGISTRATION_CREATE_SIGNAL, new RegistrationServices());
     }
-    
+
     private static void registerNewAcademicServiceRequestSituationHandler() {
         Signal.register(ITreasuryBridgeAPI.ACADEMIC_SERVICE_REQUEST_NEW_SITUATION_EVENT, new EmolumentServices());
     }
-    
+
     private static void registerAcademicServiceRequestCancelOrRejectHandler() {
-        Signal.register(ITreasuryBridgeAPI.ACADEMIC_SERVICE_REQUEST_REJECT_OR_CANCEL_EVENT, new AcademicServiceRequestCancelOrRejectHandler());
+        Signal.register(ITreasuryBridgeAPI.ACADEMIC_SERVICE_REQUEST_REJECT_OR_CANCEL_EVENT,
+                new AcademicServiceRequestCancelOrRejectHandler());
     }
-    
+
     private static void registerStandaloneEnrolmentHandler() {
         Signal.register(ITreasuryBridgeAPI.STANDALONE_ENROLMENT, new StandaloneEnrolmentHandler());
     }
