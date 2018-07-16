@@ -377,7 +377,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
 
         final DebitEntry debitEntry =
                 DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat(when), amount, dueDate,
-                        fillPriceProperties, getProduct(), standaloneDebitEntryName(standaloneEnrolment).getContent(),
+                        fillPriceProperties, getProduct(), standaloneDebitEntryName(standaloneEnrolment).getContent(Constants.DEFAULT_LANGUAGE),
                         Constants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, standaloneEnrolment);
@@ -405,7 +405,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
                 fillPricePropertiesForStandaloneOrExtracurricular(academicTreasuryEvent, extracurricularEnrolment, dueDate);
 
         final DebitEntry debitEntry = DebitEntry.create(Optional.empty(), debtAccount, academicTreasuryEvent, vat(when), amount,
-                dueDate, fillPriceProperties, getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(),
+                dueDate, fillPriceProperties, getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(Constants.DEFAULT_LANGUAGE),
                 Constants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, extracurricularEnrolment);
