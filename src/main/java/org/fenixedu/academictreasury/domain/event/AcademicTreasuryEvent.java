@@ -19,6 +19,8 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
+import org.fenixedu.academic.domain.studentCurriculum.CurriculumGroup;
+import org.fenixedu.academic.domain.studentCurriculum.RootCurriculumGroup;
 import org.fenixedu.academic.domain.treasury.AcademicTreasuryEventPayment;
 import org.fenixedu.academic.domain.treasury.IAcademicServiceRequestAndAcademicTaxTreasuryEvent;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
@@ -988,62 +990,81 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return BundleUtil.getLocalizedString(Constants.BUNDLE, detailed ? "label.true" : "label.false");
     }
 
-    public BigDecimal getEnrolledEctsUnits() {
-        if (getTuitionPaymentPlanGroup().isForRegistration()) {
-            Set<Enrolment> normalEnrolments = Sets.newHashSet(
-                    getRegistration().getStudentCurricularPlan(getExecutionYear()).getRoot().getEnrolmentsBy(getExecutionYear()));
+    public static BigDecimal getEnrolledEctsUnits(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear) {
+        if (tuitionPaymentPlanGroup.isForRegistration()) {
+            final RootCurriculumGroup root = registration.getStudentCurricularPlan(executionYear).getRoot();
+            return getRegistrationEnrolledEctsUnits(tuitionPaymentPlanGroup, registration, executionYear, root);
 
-            normalEnrolments.removeAll(getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
-
-            normalEnrolments.removeAll(getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
-
-            normalEnrolments = normalEnrolments.stream().filter(e -> !e.isAnnulled()).collect(Collectors.<Enrolment> toSet());
-
-            return normalEnrolments.stream().map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, b) -> a.add(b))
-                    .orElse(BigDecimal.ZERO);
-
-        } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
-            return getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).map(Enrolment.class::cast)
+        } else if (tuitionPaymentPlanGroup.isForStandalone()) {
+            return registration.getStandaloneCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).map(Enrolment.class::cast)
                     .filter(e -> !e.isAnnulled()).map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c))
                     .orElse(BigDecimal.ZERO);
-        } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
-            return getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).map(Enrolment.class::cast)
+            
+        } else if (tuitionPaymentPlanGroup.isForExtracurricular()) {
+            return registration.getExtraCurricularCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).map(Enrolment.class::cast)
                     .filter(e -> !e.isAnnulled()).map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c))
                     .orElse(BigDecimal.ZERO);
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
     }
+    
+    public static BigDecimal getRegistrationEnrolledEctsUnits(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear, 
+            final CurriculumGroup curriculumGroup) {
+        Set<Enrolment> normalEnrolments = Sets.newHashSet(curriculumGroup.getEnrolmentsBy(executionYear));
 
-    public BigDecimal getEnrolledCoursesCount() {
-        if (getTuitionPaymentPlanGroup().isForRegistration()) {
-            Set<Enrolment> normalEnrolments = Sets.newHashSet(
-                    getRegistration().getStudentCurricularPlan(getExecutionYear()).getRoot().getEnrolmentsBy(getExecutionYear()));
+        normalEnrolments.removeAll(registration.getStandaloneCurriculumLines().stream()
+                .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).collect(Collectors.toSet()));
 
-            normalEnrolments.removeAll(getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
+        normalEnrolments.removeAll(registration.getExtraCurricularCurriculumLines().stream()
+                .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).collect(Collectors.toSet()));
 
-            normalEnrolments.removeAll(getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).collect(Collectors.toSet()));
+        normalEnrolments = normalEnrolments.stream().filter(e -> !e.isAnnulled()).collect(Collectors.<Enrolment> toSet());
 
-            normalEnrolments = normalEnrolments.stream().filter(e -> !e.isAnnulled()).collect(Collectors.<Enrolment> toSet());
+        return normalEnrolments.stream().map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, b) -> a.add(b))
+                .orElse(BigDecimal.ZERO);
+    }
+    
+    public BigDecimal getEnrolledEctsUnits() {
+        return getEnrolledEctsUnits(getTuitionPaymentPlanGroup(), getRegistration(), getExecutionYear());
+    }
 
-            return new BigDecimal(normalEnrolments.size());
-        } else if (getTuitionPaymentPlanGroup().isForStandalone()) {
-            return new BigDecimal(getRegistration().getStandaloneCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).map(Enrolment.class::cast)
+    public static BigDecimal getEnrolledCoursesCount(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear) {
+        if (tuitionPaymentPlanGroup.isForRegistration()) {
+            final RootCurriculumGroup root = registration.getStudentCurricularPlan(executionYear).getRoot();
+            return getRegistrationEnrolledCoursesCount(tuitionPaymentPlanGroup, registration, executionYear, root);
+        } else if (tuitionPaymentPlanGroup.isForStandalone()) {
+            return new BigDecimal(registration.getStandaloneCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).map(Enrolment.class::cast)
                     .filter(e -> !e.isAnnulled()).count());
-        } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
-            return new BigDecimal(getRegistration().getExtraCurricularCurriculumLines().stream()
-                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == getExecutionYear()).map(Enrolment.class::cast)
+        } else if (tuitionPaymentPlanGroup.isForExtracurricular()) {
+            return new BigDecimal(registration.getExtraCurricularCurriculumLines().stream()
+                    .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).map(Enrolment.class::cast)
                     .filter(e -> !e.isAnnulled()).count());
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
+    }
+
+    public static BigDecimal getRegistrationEnrolledCoursesCount(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear, 
+            final CurriculumGroup curriculumGroup) {
+        Set<Enrolment> normalEnrolments = Sets.newHashSet(curriculumGroup.getEnrolmentsBy(executionYear));
+
+        normalEnrolments.removeAll(registration.getStandaloneCurriculumLines().stream()
+                .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).collect(Collectors.toSet()));
+
+        normalEnrolments.removeAll(registration.getExtraCurricularCurriculumLines().stream()
+                .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).collect(Collectors.toSet()));
+
+        normalEnrolments = normalEnrolments.stream().filter(e -> !e.isAnnulled()).collect(Collectors.<Enrolment> toSet());
+
+        return new BigDecimal(normalEnrolments.size());
+    }
+    
+    public BigDecimal getEnrolledCoursesCount() {
+        return getEnrolledCoursesCount(getTuitionPaymentPlanGroup(), getRegistration(), getExecutionYear());
     }
 
     public void updatePricingFields(final BigDecimal baseAmount, final BigDecimal amountForAdditionalUnits,

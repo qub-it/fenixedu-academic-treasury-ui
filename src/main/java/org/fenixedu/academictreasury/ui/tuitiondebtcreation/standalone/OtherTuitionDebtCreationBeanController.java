@@ -191,7 +191,7 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
                         bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
 
                 model.addAttribute("installments", TuitionServices.calculateInstallmentDebitEntryBeans(bean.getRegistration(),
-                        bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
+                        bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan(), true));
             } else if (bean.isStandaloneTuition()) {
 
                 final AcademicTreasuryEvent event = TuitionServices

@@ -42,6 +42,12 @@ import pt.ist.fenixframework.Atomic;
 
 public class TuitionServices {
 
+    private static final List<ITuitionServiceExtension> TUITION_SERVICE_EXTENSIONS = Lists.newArrayList();
+    
+    public static synchronized void registerTuitionServiceExtension(final ITuitionServiceExtension extension) {
+        TUITION_SERVICE_EXTENSIONS.add(extension);
+    }
+    
     public static boolean isToPayRegistrationTuition(final Registration registration, final ExecutionYear executionYear) {
         return registration.getRegistrationProtocol().isToPayGratuity();
     }
@@ -70,12 +76,18 @@ public class TuitionServices {
 
     @Atomic
     public static boolean createTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
-            final LocalDate when, final boolean forceCreationIfNotEnrolled, TuitionPaymentPlan tuitionPaymentPlan) {
+            final LocalDate debtDate, final boolean forceCreationIfNotEnrolled, TuitionPaymentPlan tuitionPaymentPlan) {
 
         if (!isToPayRegistrationTuition(registration, executionYear) && !forceCreationIfNotEnrolled) {
             return false;
         }
 
+        for (final ITuitionServiceExtension iTuitionServiceExtension : TUITION_SERVICE_EXTENSIONS) {
+            if(iTuitionServiceExtension.applyExtension(registration, executionYear)) {
+                return iTuitionServiceExtension.createTuitionForRegistration(registration, executionYear, debtDate, forceCreationIfNotEnrolled, tuitionPaymentPlan);
+            }
+        }
+        
         final Person person = registration.getPerson();
         final String fiscalCountryCode = PersonCustomer.countryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
@@ -122,7 +134,7 @@ public class TuitionServices {
         final AcademicTreasuryEvent academicTreasuryEvent =
                 AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).get();
 
-        return tuitionPaymentPlan.createDebitEntriesForRegistration(debtAccount, academicTreasuryEvent, when);
+        return tuitionPaymentPlan.createDebitEntriesForRegistration(debtAccount, academicTreasuryEvent, debtDate);
     }
 
     public static TuitionPaymentPlan usedPaymentPlan(final Registration registration, final ExecutionYear executionYear,
@@ -142,30 +154,20 @@ public class TuitionServices {
     @Atomic
     public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeans(final Registration registration,
             final ExecutionYear executionYear, final LocalDate debtDate) {
-        return calculateInstallmentDebitEntryBeans(registration, executionYear, debtDate, null);
+        return calculateInstallmentDebitEntryBeans(registration, executionYear, debtDate, null, true);
     }
 
-    @Atomic
     public static List<TuitionDebitEntryBean> calculateInstallmentDebitEntryBeans(final Registration registration,
-            final ExecutionYear executionYear, final LocalDate debtDate, TuitionPaymentPlan tuitionPaymentPlan) {
+            final ExecutionYear executionYear, final LocalDate debtDate, TuitionPaymentPlan tuitionPaymentPlan, final boolean applyTuitionServiceExtensions) {
 
-        final Person person = registration.getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(person);
-        final String fiscalNumber = PersonCustomer.fiscalNumber(person);
-        if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
-            throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
+        if(applyTuitionServiceExtensions) {
+            for (final ITuitionServiceExtension iTuitionServiceExtension : TUITION_SERVICE_EXTENSIONS) {
+                if(iTuitionServiceExtension.applyExtension(registration, executionYear)) {
+                    return iTuitionServiceExtension.calculateInstallmentDebitEntryBeans(registration, executionYear, debtDate, tuitionPaymentPlan);
+                }
+            }
         }
-
-        // Read person customer
-        if (!PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).isPresent()) {
-            PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
-        }
-
-        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
-        if (!personCustomer.isActive()) {
-            throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", fiscalCountryCode, fiscalNumber);
-        }
-
+        
         if (tuitionPaymentPlan == null) {
             tuitionPaymentPlan = TuitionPaymentPlan.inferTuitionPaymentPlanForRegistration(registration, executionYear);
         }
@@ -174,25 +176,17 @@ public class TuitionServices {
             return Lists.newArrayList();
         }
 
-        if (!DebtAccount.findUnique(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer)
-                .isPresent()) {
-            DebtAccount.create(tuitionPaymentPlan.getFinantialEntity().getFinantialInstitution(), personCustomer);
-        }
-
-        if (!AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).isPresent()) {
-            AcademicTreasuryEvent.createForRegistrationTuition(tuitionPaymentPlan.getProduct(), registration, executionYear);
-        }
-
-        final AcademicTreasuryEvent academicTreasuryEvent =
-                AcademicTreasuryEvent.findUniqueForRegistrationTuition(registration, executionYear).get();
-
         final List<TuitionDebitEntryBean> entries = Lists.newArrayList();
+
+        final BigDecimal enrolledEctsUnits = AcademicTreasuryEvent.getEnrolledEctsUnits(tuitionPaymentPlan.getTuitionPaymentPlanGroup(), registration, executionYear);
+        final BigDecimal enrolledCoursesCount = AcademicTreasuryEvent.getEnrolledCoursesCount(tuitionPaymentPlan.getTuitionPaymentPlanGroup(), registration, executionYear);
+        
         for (final TuitionInstallmentTariff tuitionInstallmentTariff : tuitionPaymentPlan.getTuitionInstallmentTariffsSet()) {
             final int installmentOrder = tuitionInstallmentTariff.getInstallmentOrder();
             final LocalizedString installmentName = tuitionPaymentPlan.installmentName(tuitionInstallmentTariff);
             final LocalDate dueDate = tuitionInstallmentTariff.dueDate(debtDate);
             final Vat vat = tuitionInstallmentTariff.vat(debtDate);
-            final BigDecimal amount = tuitionInstallmentTariff.amountToPay(academicTreasuryEvent);
+            final BigDecimal amount = tuitionInstallmentTariff.amountToPay(enrolledEctsUnits, enrolledCoursesCount);
             final Currency currency = tuitionInstallmentTariff.getFinantialEntity().getFinantialInstitution().getCurrency();
 
             entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount, currency));

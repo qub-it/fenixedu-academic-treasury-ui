@@ -615,77 +615,88 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         return findUniqueDefaultPaymentPlan(degreeCurricularPlan, executionYear).isPresent();
     }
 
-    public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final Registration registration,
-            final ExecutionYear executionYear) {
-        final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
-
-        if (studentCurricularPlan == null) {
-            return null;
-        }
-
-        final DegreeCurricularPlan degreeCurricularPlan = studentCurricularPlan.getDegreeCurricularPlan();
-
-        final RegistrationRegimeType regimeType = registration.getRegimeType(executionYear);
-        final RegistrationProtocol registrationProtocol = registration.getRegistrationProtocol();
-        final IngressionType ingression = registration.getIngressionType();
-        final Set<Integer> semestersWithEnrolments = semestersWithEnrolments(registration, executionYear);
-        final CurricularYear curricularYear = CurricularYear.readByYear(curricularYear(registration, executionYear));
-        final boolean firstTimeStudent = firstTimeStudent(registration, executionYear);
-        final Set<StatuteType> statutes =
-                Sets.newHashSet(registration.getStudent().getStatutesTypesValidOnAnyExecutionSemesterFor(executionYear));
-
+    public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final DegreeCurricularPlan degreeCurricularPlan,
+            final ExecutionYear executionYear, final InferTuitionStudentConditionsBean conditionsBean) {
+        
         final List<TuitionPaymentPlan> plans = TuitionPaymentPlan
                 .findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
                         degreeCurricularPlan, executionYear)
                 .collect(Collectors.toList());
-
+        
         final List<TuitionPaymentPlan> filtered = Lists.newArrayList();
         for (final TuitionPaymentPlan t : plans) {
-
-            if (t.getRegistrationRegimeType() != null && t.getRegistrationRegimeType() != regimeType) {
+            
+            if (t.getRegistrationRegimeType() != null && t.getRegistrationRegimeType() != conditionsBean.getRegimeType()) {
                 continue;
             }
-
-            if (t.getRegistrationProtocol() != null && t.getRegistrationProtocol() != registrationProtocol) {
+            
+            if (t.getRegistrationProtocol() != null && t.getRegistrationProtocol() != conditionsBean.getRegistrationProtocol()) {
                 continue;
             }
-
-            if (t.getIngression() != null && t.getIngression() != ingression) {
+            
+            if (t.getIngression() != null && t.getIngression() != conditionsBean.getIngression()) {
                 continue;
             }
-
+            
             if (t.getSemester() != null) {
-                if (semestersWithEnrolments.size() != 1) {
+                if (conditionsBean.getSemestersWithEnrolments().size() != 1) {
                     continue;
                 }
-
-                final Integer semester = semestersWithEnrolments.iterator().next();
-
+                
+                final Integer semester = conditionsBean.getSemestersWithEnrolments().iterator().next();
+                
                 if (!t.getSemester().equals(semester)) {
                     continue;
                 }
             }
-
-            if (t.getCurricularYear() != null && t.getCurricularYear() != curricularYear) {
+            
+            if (t.getCurricularYear() != null && t.getCurricularYear() != conditionsBean.getCurricularYear()) {
                 continue;
             }
-
-            if (t.getStatuteType() != null && !statutes.contains(t.getStatuteType())) {
+            
+            if (t.getStatuteType() != null && !conditionsBean.getStatutes().contains(t.getStatuteType())) {
                 continue;
             }
-
-            if (t.getFirstTimeStudent() && !firstTimeStudent) {
+            
+            if (t.getFirstTimeStudent() && !conditionsBean.isFirstTimeStudent()) {
                 continue;
             }
-
+            
             if (t.isCustomized()) {
                 continue;
             }
-
+            
             filtered.add(t);
         }
-
+        
         return !filtered.isEmpty() ? filtered.get(0) : null;
+    }    
+    
+    public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final Registration registration,
+            final ExecutionYear executionYear, final InferTuitionStudentConditionsBean conditionsBean) {
+        final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
+        
+        if (studentCurricularPlan == null) {
+            return null;
+        }
+        
+        final DegreeCurricularPlan degreeCurricularPlan = studentCurricularPlan.getDegreeCurricularPlan();
+        
+        return inferTuitionPaymentPlanForRegistration(degreeCurricularPlan, executionYear, conditionsBean);
+    }
+    
+    public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final Registration registration,
+            final ExecutionYear executionYear) {
+
+        final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
+        
+        if (studentCurricularPlan == null) {
+            return null;
+        }
+        
+        final InferTuitionStudentConditionsBean conditionsBean = InferTuitionStudentConditionsBean.build(registration, executionYear);
+        
+        return inferTuitionPaymentPlanForRegistration(registration, executionYear, conditionsBean);
     }
 
     public static TuitionPaymentPlan inferTuitionPaymentPlanForStandaloneEnrolment(final Registration registration,
@@ -745,11 +756,11 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         return registration.isFirstTime(executionYear);
     }
 
-    private static Integer curricularYear(final Registration registration, final ExecutionYear executionYear) {
+    public static Integer curricularYear(final Registration registration, final ExecutionYear executionYear) {
         return registration.getCurricularYear(executionYear);
     }
 
-    private static Set<Integer> semestersWithEnrolments(final Registration registration, final ExecutionYear executionYear) {
+    public static Set<Integer> semestersWithEnrolments(final Registration registration, final ExecutionYear executionYear) {
         return registration.getEnrolments(executionYear).stream().map(e -> (Integer) e.getExecutionPeriod().getSemester())
                 .collect(Collectors.toSet());
     }

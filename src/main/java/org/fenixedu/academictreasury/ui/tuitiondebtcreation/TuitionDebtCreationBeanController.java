@@ -119,7 +119,7 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
                     bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
 
             model.addAttribute("installments", TuitionServices.calculateInstallmentDebitEntryBeans(bean.getRegistration(),
-                    bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan()));
+                    bean.getExecutionYear(), bean.getDebtDate(), bean.getTuitionPaymentPlan(), true));
 
             return jspPage("confirmtuitiondebtcreation");
         } catch (final DomainException e) {

@@ -262,6 +262,13 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
     }
 
     public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent) {
+        final BigDecimal enrolledEctsUnits = academicTreasuryEvent.getEnrolledEctsUnits();
+        final BigDecimal enrolledCoursesCount = academicTreasuryEvent.getEnrolledCoursesCount();
+
+        return amountToPay(enrolledEctsUnits, enrolledCoursesCount);
+    }
+
+    public BigDecimal amountToPay(final BigDecimal enrolledEctsUnits, final BigDecimal enrolledCoursesCount) {
         if (!getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForRegistration()) {
             throw new RuntimeException("wrong call");
         }
@@ -270,9 +277,9 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         if (getTuitionCalculationType().isFixedAmount()) {
             amountToPay = getFixedAmount();
         } else if (getTuitionCalculationType().isEcts()) {
-            amountToPay = academicTreasuryEvent.getEnrolledEctsUnits().multiply(getAmountPerEctsOrUnit());
+            amountToPay = enrolledEctsUnits.multiply(getAmountPerEctsOrUnit());
         } else if (getTuitionCalculationType().isUnits()) {
-            amountToPay = academicTreasuryEvent.getEnrolledCoursesCount().multiply(getAmountPerEctsOrUnit());
+            amountToPay = enrolledCoursesCount.multiply(getAmountPerEctsOrUnit());
         }
 
         if (amountToPay == null) {
@@ -285,7 +292,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
 
         return amountToPay;
     }
-
+    
     public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent, final Enrolment enrolment) {
         if (!(getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForStandalone()
                 || getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForExtracurricular())) {
