@@ -29,25 +29,49 @@ public class TuitionDebitEntryBean {
     public int getInstallmentOrder() {
         return installmentOrder;
     }
+    
+    public void setInstallmentOrder(int installmentOrder) {
+        this.installmentOrder = installmentOrder;
+    }
 
     public LocalizedString getDescription() {
         return description;
+    }
+    
+    public void setDescription(LocalizedString description) {
+        this.description = description;
     }
 
     public LocalDate getDueDate() {
         return dueDate;
     }
+    
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
 
     public BigDecimal getVatRate() {
         return vatRate;
+    }
+    
+    public void setVatRate(BigDecimal vatRate) {
+        this.vatRate = vatRate;
     }
 
     public BigDecimal getAmount() {
         return amount;
     }
     
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+    
     public Currency getCurrency() {
         return currency;
+    }
+    
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
     }
 
 }

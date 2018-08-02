@@ -140,7 +140,7 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
         try {
 
             TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(), bean.getDebtDate(),
-                    false, bean.getTuitionPaymentPlan());
+                    false, bean.getTuitionPaymentPlan(), true);
 
             //Success Validation
             //Add the bean to be used in the View

@@ -993,7 +993,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public static BigDecimal getEnrolledEctsUnits(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear) {
         if (tuitionPaymentPlanGroup.isForRegistration()) {
             final RootCurriculumGroup root = registration.getStudentCurricularPlan(executionYear).getRoot();
-            return getRegistrationEnrolledEctsUnits(tuitionPaymentPlanGroup, registration, executionYear, root);
+            return getRegistrationEnrolledEctsUnits(root, executionYear);
 
         } else if (tuitionPaymentPlanGroup.isForStandalone()) {
             return registration.getStandaloneCurriculumLines().stream()
@@ -1011,8 +1011,9 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
     }
     
-    public static BigDecimal getRegistrationEnrolledEctsUnits(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear, 
-            final CurriculumGroup curriculumGroup) {
+    public static BigDecimal getRegistrationEnrolledEctsUnits(final CurriculumGroup curriculumGroup, final ExecutionYear executionYear) {
+        final Registration registration = curriculumGroup.getRegistration();
+        
         Set<Enrolment> normalEnrolments = Sets.newHashSet(curriculumGroup.getEnrolmentsBy(executionYear));
 
         normalEnrolments.removeAll(registration.getStandaloneCurriculumLines().stream()
@@ -1034,7 +1035,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public static BigDecimal getEnrolledCoursesCount(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear) {
         if (tuitionPaymentPlanGroup.isForRegistration()) {
             final RootCurriculumGroup root = registration.getStudentCurricularPlan(executionYear).getRoot();
-            return getRegistrationEnrolledCoursesCount(tuitionPaymentPlanGroup, registration, executionYear, root);
+            return getRegistrationEnrolledCoursesCount(root, executionYear);
         } else if (tuitionPaymentPlanGroup.isForStandalone()) {
             return new BigDecimal(registration.getStandaloneCurriculumLines().stream()
                     .filter(l -> l.isEnrolment() && l.getExecutionYear() == executionYear).map(Enrolment.class::cast)
@@ -1048,8 +1049,9 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
     }
 
-    public static BigDecimal getRegistrationEnrolledCoursesCount(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear, 
-            final CurriculumGroup curriculumGroup) {
+    public static BigDecimal getRegistrationEnrolledCoursesCount(final CurriculumGroup curriculumGroup, final ExecutionYear executionYear) {
+        final Registration registration = curriculumGroup.getRegistration();
+
         Set<Enrolment> normalEnrolments = Sets.newHashSet(curriculumGroup.getEnrolmentsBy(executionYear));
 
         normalEnrolments.removeAll(registration.getStandaloneCurriculumLines().stream()

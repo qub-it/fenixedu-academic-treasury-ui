@@ -250,7 +250,7 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
             boolean createdWithSuccess = false;
             if (bean.isRegistrationTuition()) {
                 createdWithSuccess = TuitionServices.createTuitionForRegistration(bean.getRegistration(), bean.getExecutionYear(),
-                        bean.getDebtDate(), true, bean.getTuitionPaymentPlan());
+                        bean.getDebtDate(), true, bean.getTuitionPaymentPlan(), true);
             } else if (bean.isStandaloneTuition()) {
                 createdWithSuccess = TuitionServices.createTuitionForStandalone(bean.getEnrolment(), bean.getTuitionPaymentPlan(),
                         bean.getDebtDate(), true);

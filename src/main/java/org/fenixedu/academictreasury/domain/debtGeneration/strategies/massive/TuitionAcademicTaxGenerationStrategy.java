@@ -70,7 +70,7 @@ public class TuitionAcademicTaxGenerationStrategy implements IMassiveDebtGenerat
                 if (file.getTuitionPaymentPlanGroup() != null) {
                     boolean createdTuition =
                             TuitionServices.createTuitionForRegistration(row.getStudentCurricularPlan().getRegistration(),
-                                    file.getExecutionYear(), file.getDebtDate(), true, row.getTuitionPaymentPlan());
+                                    file.getExecutionYear(), file.getDebtDate(), true, row.getTuitionPaymentPlan(), true);
 
                     if (!createdTuition) {
                         final Integer registrationNumber = row.getStudentCurricularPlan().getRegistration().getNumber();

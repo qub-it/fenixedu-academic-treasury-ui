@@ -71,20 +71,22 @@ public class TuitionServices {
     @Atomic
     public static boolean createInferedTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
             final LocalDate when, final boolean forceCreationIfNotEnrolled) {
-        return createTuitionForRegistration(registration, executionYear, when, forceCreationIfNotEnrolled, null);
+        return createTuitionForRegistration(registration, executionYear, when, forceCreationIfNotEnrolled, null, true);
     }
 
     @Atomic
     public static boolean createTuitionForRegistration(final Registration registration, final ExecutionYear executionYear,
-            final LocalDate debtDate, final boolean forceCreationIfNotEnrolled, TuitionPaymentPlan tuitionPaymentPlan) {
+            final LocalDate debtDate, final boolean forceCreationIfNotEnrolled, TuitionPaymentPlan tuitionPaymentPlan, final boolean applyTuitionServiceExtensions) {
 
         if (!isToPayRegistrationTuition(registration, executionYear) && !forceCreationIfNotEnrolled) {
             return false;
         }
 
-        for (final ITuitionServiceExtension iTuitionServiceExtension : TUITION_SERVICE_EXTENSIONS) {
-            if(iTuitionServiceExtension.applyExtension(registration, executionYear)) {
-                return iTuitionServiceExtension.createTuitionForRegistration(registration, executionYear, debtDate, forceCreationIfNotEnrolled, tuitionPaymentPlan);
+        if(applyTuitionServiceExtensions) {
+            for (final ITuitionServiceExtension iTuitionServiceExtension : TUITION_SERVICE_EXTENSIONS) {
+                if(iTuitionServiceExtension.applyExtension(registration, executionYear)) {
+                    return iTuitionServiceExtension.createTuitionForRegistration(registration, executionYear, debtDate, forceCreationIfNotEnrolled, tuitionPaymentPlan);
+                }
             }
         }
         
@@ -176,11 +178,16 @@ public class TuitionServices {
             return Lists.newArrayList();
         }
 
-        final List<TuitionDebitEntryBean> entries = Lists.newArrayList();
-
         final BigDecimal enrolledEctsUnits = AcademicTreasuryEvent.getEnrolledEctsUnits(tuitionPaymentPlan.getTuitionPaymentPlanGroup(), registration, executionYear);
         final BigDecimal enrolledCoursesCount = AcademicTreasuryEvent.getEnrolledCoursesCount(tuitionPaymentPlan.getTuitionPaymentPlanGroup(), registration, executionYear);
         
+        return buildInstallmentDebitEntryBeans(tuitionPaymentPlan, debtDate, enrolledEctsUnits, enrolledCoursesCount);
+    }
+
+    public static List<TuitionDebitEntryBean> buildInstallmentDebitEntryBeans(final TuitionPaymentPlan tuitionPaymentPlan, final LocalDate debtDate,
+            final BigDecimal enrolledEctsUnits, final BigDecimal enrolledCoursesCount) {
+        
+        final List<TuitionDebitEntryBean> entries = Lists.newArrayList();
         for (final TuitionInstallmentTariff tuitionInstallmentTariff : tuitionPaymentPlan.getTuitionInstallmentTariffsSet()) {
             final int installmentOrder = tuitionInstallmentTariff.getInstallmentOrder();
             final LocalizedString installmentName = tuitionPaymentPlan.installmentName(tuitionInstallmentTariff);
@@ -192,14 +199,9 @@ public class TuitionServices {
             entries.add(new TuitionDebitEntryBean(installmentOrder, installmentName, dueDate, vat.getTaxRate(), amount, currency));
         }
 
-        return entries.stream().sorted(new Comparator<TuitionDebitEntryBean>() {
-
-            @Override
-            public int compare(TuitionDebitEntryBean o1, TuitionDebitEntryBean o2) {
-                return o1.getInstallmentOrder() - o2.getInstallmentOrder();
-            }
-
-        }).collect(Collectors.toList());
+        final Comparator<? super TuitionDebitEntryBean> comparator = (o1, o2) -> o1.getInstallmentOrder() - o2.getInstallmentOrder();
+        
+        return entries.stream().sorted(comparator).collect(Collectors.toList());
     }
 
     /* **********
