@@ -909,8 +909,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         USED_DATE("41"),
 
-        TUITION_PAYOR_DEBT_ACCOUNT("42");
-
+        TUITION_PAYOR_DEBT_ACCOUNT("42"),
+        
+        EFFECTIVE_TUITION_PAYMENT_PLAN("43");
+        
         private String code;
 
         private AcademicTreasuryEventKeys(final String code) {

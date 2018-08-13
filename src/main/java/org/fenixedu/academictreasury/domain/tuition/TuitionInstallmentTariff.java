@@ -292,7 +292,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
 
         return amountToPay;
     }
-    
+
     public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent, final Enrolment enrolment) {
         if (!(getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForStandalone()
                 || getTuitionPaymentPlan().getTuitionPaymentPlanGroup().isForExtracurricular())) {
