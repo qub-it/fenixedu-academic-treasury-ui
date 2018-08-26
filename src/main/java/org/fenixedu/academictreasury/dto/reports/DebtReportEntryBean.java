@@ -326,7 +326,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getInstitutionalOrDefaultEmailAddressValue();
         }
 
-        this.address = customer.getAddress();
+        this.address = customer.getUiCompleteAddress();
 
         if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null
                 && ((PersonCustomer) customer).getPerson().getStudent() != null) {

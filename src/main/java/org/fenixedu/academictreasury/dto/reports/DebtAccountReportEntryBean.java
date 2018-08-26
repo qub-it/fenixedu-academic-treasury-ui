@@ -93,7 +93,7 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
                         .getInstitutionalOrDefaultEmailAddressValue();
             }
 
-            this.address = debtAccount.getCustomer().getAddress();
+            this.address = debtAccount.getCustomer().getUiCompleteAddress();
             this.addressCountryCode = valueOrEmpty(debtAccount.getCustomer().getAddressCountryCode());
 
             if (debtAccount.getCustomer().isPersonCustomer() && ((PersonCustomer) debtAccount.getCustomer()).getPerson() != null
