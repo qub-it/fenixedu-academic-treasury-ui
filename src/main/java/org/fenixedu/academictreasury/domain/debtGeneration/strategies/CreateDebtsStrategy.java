@@ -276,7 +276,7 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
                 }
 
                 /* HACK: For now limit forcing for first time students only */
-                boolean forceCreation = entry.isCreateDebt() && registration.isFirstTime(rule.getExecutionYear());
+                boolean forceCreation = entry.isCreateDebt() && entry.isForceCreation() && registration.isFirstTime(rule.getExecutionYear());
 
                 AcademicTaxServices.createAcademicTax(registration, executionYear, academicTax, forceCreation);
             }
