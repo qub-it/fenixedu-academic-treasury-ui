@@ -11,11 +11,14 @@ import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.ReimbursementEntry;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
 public class ReimbursementReportEntryBean implements SpreadsheetRow {
@@ -52,7 +55,7 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
     private boolean settlementNoteAnnuled;
     private boolean documentExportationPending;
     private String paymentMethod;
-    private String amount;
+    private BigDecimal amount;
     private String customerId;
     private String debtAccountId;
     private String name;
@@ -63,8 +66,19 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
     private String address;
     private Integer studentNumber;
 
+    private DateTime closeDate;
+    private Boolean exportedInLegacyERP;
+
+    private LocalDate erpCertificationDate;
+    private String erpCertificateDocumentReference;
+    
+    private String erpCustomerId;
+    private String erpPayorCustomerId;
+    
+    private String decimalSeparator;
+    
     public ReimbursementReportEntryBean(final ReimbursementEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
-        final String decimalSeparator = request.getDecimalSeparator();
+        this.decimalSeparator = request != null ? request.getDecimalSeparator() : DebtReportRequest.DOT;
         
         paymentEntry = entry;
 
@@ -81,19 +95,39 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
             this.documentExportationPending = settlementNote.isDocumentToExport();
             this.paymentMethod = entry.getPaymentMethod().getName().getContent();
             this.amount = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency()
-                    .getValueWithScale(entry.getReimbursedAmount()).toString();
+                    .getValueWithScale(entry.getReimbursedAmount());
 
-            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
-                this.amount = this.amount.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
-            }
-            
             fillStudentInformation(entry);
 
+            fillERPInformation(settlementNote);
+            
             this.completed = true;
 
         } catch (final Exception e) {
             e.printStackTrace();
             errorsLog.addError(entry, e);
+        }
+    }
+
+    private void fillERPInformation(final SettlementNote settlementNote) {
+        this.closeDate = settlementNote != null ? settlementNote.getCloseDate() : null;
+        this.exportedInLegacyERP =
+                settlementNote != null ? settlementNote.isExportedInLegacyERP() : false;
+
+        this.erpCertificationDate =
+                settlementNote != null ? settlementNote.getErpCertificationDate() : null;
+
+        this.erpCertificateDocumentReference = settlementNote != null ? settlementNote
+                .getErpCertificateDocumentReference() : null;
+
+        this.erpCustomerId = settlementNote.getDebtAccount().getCustomer().getErpCustomerId();
+
+        
+        if(!settlementNote.getSettlemetEntriesSet().isEmpty()) {
+            final SettlementEntry settlementEntry = settlementNote.getSettlemetEntriesSet().iterator().next();
+            if(settlementEntry.getInvoiceEntry().getFinantialDocument() != null && ((Invoice) settlementEntry.getInvoiceEntry().getFinantialDocument()).getPayorDebtAccount() != null) {
+                this.erpPayorCustomerId = ((Invoice) settlementEntry.getInvoiceEntry().getFinantialDocument()).getPayorDebtAccount().getCustomer().getErpCustomerId();
+            }
         }
     }
 
@@ -159,7 +193,16 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(settlementNoteAnnuled));
             row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
             row.createCell(i++).setCellValue(valueOrEmpty(paymentMethod));
-            row.createCell(i++).setCellValue(amount.toString());
+            
+            {
+                String value = amount != null ? amount.toString() : "";
+                if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                    value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                }
+                
+                row.createCell(i++).setCellValue(value);
+            }
+            
             row.createCell(i++).setCellValue(customerId);
             row.createCell(i++).setCellValue(debtAccountId);
             row.createCell(i++).setCellValue(valueOrEmpty(name));
@@ -220,4 +263,236 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
         return "";
     }
 
+    // @formatter:off
+    /* *****************
+     * GETTERS & SETTERS
+     * *****************
+     */
+    // @formatter:on
+    
+    public ReimbursementEntry getPaymentEntry() {
+        return paymentEntry;
+    }
+
+    public void setPaymentEntry(ReimbursementEntry paymentEntry) {
+        this.paymentEntry = paymentEntry;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public String getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(String identification) {
+        this.identification = identification;
+    }
+
+    public DateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(DateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getResponsible() {
+        return responsible;
+    }
+
+    public void setResponsible(String responsible) {
+        this.responsible = responsible;
+    }
+
+    public String getSettlementNoteNumber() {
+        return settlementNoteNumber;
+    }
+
+    public void setSettlementNoteNumber(String settlementNoteNumber) {
+        this.settlementNoteNumber = settlementNoteNumber;
+    }
+
+    public DateTime getSettlementNoteDocumentDate() {
+        return settlementNoteDocumentDate;
+    }
+
+    public void setSettlementNoteDocumentDate(DateTime settlementNoteDocumentDate) {
+        this.settlementNoteDocumentDate = settlementNoteDocumentDate;
+    }
+
+    public DateTime getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(DateTime paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public boolean isSettlementNoteAnnuled() {
+        return settlementNoteAnnuled;
+    }
+
+    public void setSettlementNoteAnnuled(boolean settlementNoteAnnuled) {
+        this.settlementNoteAnnuled = settlementNoteAnnuled;
+    }
+
+    public boolean isDocumentExportationPending() {
+        return documentExportationPending;
+    }
+
+    public void setDocumentExportationPending(boolean documentExportationPending) {
+        this.documentExportationPending = documentExportationPending;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getDebtAccountId() {
+        return debtAccountId;
+    }
+
+    public void setDebtAccountId(String debtAccountId) {
+        this.debtAccountId = debtAccountId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalizedString getIdentificationType() {
+        return identificationType;
+    }
+
+    public void setIdentificationType(LocalizedString identificationType) {
+        this.identificationType = identificationType;
+    }
+
+    public String getIdentificationNumber() {
+        return identificationNumber;
+    }
+
+    public void setIdentificationNumber(String identificationNumber) {
+        this.identificationNumber = identificationNumber;
+    }
+
+    public String getVatNumber() {
+        return vatNumber;
+    }
+
+    public void setVatNumber(String vatNumber) {
+        this.vatNumber = vatNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Integer getStudentNumber() {
+        return studentNumber;
+    }
+
+    public void setStudentNumber(Integer studentNumber) {
+        this.studentNumber = studentNumber;
+    }
+
+    public DateTime getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(DateTime closeDate) {
+        this.closeDate = closeDate;
+    }
+
+    public Boolean getExportedInLegacyERP() {
+        return exportedInLegacyERP;
+    }
+
+    public void setExportedInLegacyERP(Boolean exportedInLegacyERP) {
+        this.exportedInLegacyERP = exportedInLegacyERP;
+    }
+
+    public LocalDate getErpCertificationDate() {
+        return erpCertificationDate;
+    }
+
+    public void setErpCertificationDate(LocalDate erpCertificationDate) {
+        this.erpCertificationDate = erpCertificationDate;
+    }
+
+    public String getErpCertificateDocumentReference() {
+        return erpCertificateDocumentReference;
+    }
+
+    public void setErpCertificateDocumentReference(String erpCertificateDocumentReference) {
+        this.erpCertificateDocumentReference = erpCertificateDocumentReference;
+    }
+
+    public String getErpCustomerId() {
+        return erpCustomerId;
+    }
+
+    public void setErpCustomerId(String erpCustomerId) {
+        this.erpCustomerId = erpCustomerId;
+    }
+
+    public String getErpPayorCustomerId() {
+        return erpPayorCustomerId;
+    }
+
+    public void setErpPayorCustomerId(String erpPayorCustomerId) {
+        this.erpPayorCustomerId = erpPayorCustomerId;
+    }
+
+    public String getDecimalSeparator() {
+        return decimalSeparator;
+    }
+
+    public void setDecimalSeparator(String decimalSeparator) {
+        this.decimalSeparator = decimalSeparator;
+    }
+
+    
 }

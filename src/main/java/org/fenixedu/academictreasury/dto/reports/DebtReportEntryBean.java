@@ -2,6 +2,9 @@ package org.fenixedu.academictreasury.dto.reports;
 
 import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
 
+import java.io.Serializable;
+import java.math.BigDecimal;
+
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
@@ -159,6 +162,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String identificationNumber;
     private String vatNumber;
     private String email;
+    private String emailForSendingEmails;
     private String address;
     private Integer studentNumber;
     private Integer registrationNumber;
@@ -170,14 +174,12 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String productCode;
     private String invoiceEntryDescription;
     private String documentNumber;
-    private boolean documentExportationPending;
-    private boolean annuled;
+    private Boolean documentExportationPending;
+    private Boolean annuled;
     private String annuledReason;
     private String debitEntryIdentification;
-    private String baseAmount;
-    private String creditedAmount;
-    private String amountToPay;
-    private String openAmountToPay;
+    private BigDecimal amountToPay;
+    private BigDecimal openAmountToPay;
     private String payorDebtAccountVatNumber;
     private String payorDebtAccountName;
     private LocalizedString agreement;
@@ -185,25 +187,31 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private Boolean firstTimeStudent;
     private Boolean partialRegime;
     private String statutes;
-    private int numberOfNormalEnrolments;
-    private int numberOfStandaloneEnrolments;
-    private int numberOfExtracurricularEnrolments;
+    private Integer numberOfNormalEnrolments;
+    private Integer numberOfStandaloneEnrolments;
+    private Integer numberOfExtracurricularEnrolments;
     private String tuitionPaymentPlan;
     private String tuitionPaymentPlanConditions;
 
     private DateTime closeDate;
-    private String openAmountAtERPStartDate;
-    private boolean exportedInLegacyERP;
+    private BigDecimal openAmountAtERPStartDate;
+    private Boolean exportedInLegacyERP;
     private String legacyERPCertificateDocumentReference;
 
     private LocalDate erpCertificationDate;
     private String erpCertificateDocumentReference;
+    
+    private String erpCustomerId;
+    private String erpPayorCustomerId;
 
     private String originSettlementNoteForAdvancedCredit;
+    
+    private String decimalSeparator;
 
     public DebtReportEntryBean(final InvoiceEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
-        final String decimalSeparator = request.getDecimalSeparator();
-
+        this.decimalSeparator = request != null ? request.getDecimalSeparator() : DebtReportRequest.DOT;
+        final Currency currency = entry.getDebtAccount().getFinantialInstitution().getCurrency();
+        
         this.invoiceEntry = entry;
 
         try {
@@ -242,55 +250,10 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 this.debitEntryIdentification = ((CreditEntry) entry).getDebitEntry().getExternalId();
             }
 
-            final Currency currency = entry.getDebtAccount().getFinantialInstitution().getCurrency();
+            this.amountToPay = currency.getValueWithScale(entry.getAmountWithVat());
+            this.openAmountToPay = currency.getValueWithScale(entry.getOpenAmount());
 
-            this.baseAmount = currency.getValueWithScale(entry.getAmountWithVat()).toString();
-
-            /* TODO Consider: 
-            if (entry.isDebitNoteEntry()) {
-                final DebitEntry debitEntry = (DebitEntry) entry;
-                this.amountToPay = currency.getValueWithScale(debitEntry.getAmountWithVat()).toString();
-            } else if(entry.isCreditNoteEntry()) {
-            }
-            */
-
-            this.amountToPay = currency.getValueWithScale(entry.getAmountWithVat()).toString();
-            this.openAmountToPay = currency.getValueWithScale(entry.getOpenAmount()).toString();
-
-            if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
-                this.amountToPay = this.amountToPay.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
-                this.openAmountToPay = this.openAmountToPay.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
-            }
-
-            this.closeDate = entry.getFinantialDocument() != null ? entry.getFinantialDocument().getCloseDate() : null;
-            this.openAmountAtERPStartDate = currency
-                    .getValueWithScale(
-                            SAPExporterUtils.openAmountAtDate((InvoiceEntry) entry, SAPExporter.ERP_INTEGRATION_START_DATE))
-                    .toString();
-            this.exportedInLegacyERP =
-                    entry.getFinantialDocument() != null ? entry.getFinantialDocument().isExportedInLegacyERP() : false;
-
-            this.legacyERPCertificateDocumentReference = entry.getFinantialDocument() != null ? entry.getFinantialDocument()
-                    .getLegacyERPCertificateDocumentReference() : null;
-
-            this.erpCertificationDate =
-                    entry.getFinantialDocument() != null ? entry.getFinantialDocument().getErpCertificationDate() : null;
-
-            this.erpCertificateDocumentReference = entry.getFinantialDocument() != null ? entry.getFinantialDocument()
-                    .getErpCertificateDocumentReference() : null;
-
-            if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
-                this.openAmountAtERPStartDate =
-                        this.openAmountAtERPStartDate.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
-            }
-
-            if (entry.getFinantialDocument() != null && entry.getFinantialDocument().isCreditNote()
-                    && ((CreditNote) entry.getFinantialDocument()).isAdvancePayment()) {
-                final AdvancedPaymentCreditNote advancedCreditNote = (AdvancedPaymentCreditNote) entry.getFinantialDocument();
-                this.originSettlementNoteForAdvancedCredit =
-                        advancedCreditNote.getAdvancedPaymentSettlementNote() != null ? advancedCreditNote
-                                .getAdvancedPaymentSettlementNote().getUiDocumentNumber() : "";
-            }
+            fillERPInformation(entry);
 
             this.completed = true;
         } catch (final Exception e) {
@@ -298,6 +261,40 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             errorsLog.addError(entry, e);
         }
 
+    }
+
+    private void fillERPInformation(final InvoiceEntry entry) {
+        final Currency currency = entry.getDebtAccount().getFinantialInstitution().getCurrency();
+
+        this.closeDate = entry.getFinantialDocument() != null ? entry.getFinantialDocument().getCloseDate() : null;
+        this.openAmountAtERPStartDate = currency
+                .getValueWithScale(
+                        SAPExporterUtils.openAmountAtDate((InvoiceEntry) entry, SAPExporter.ERP_INTEGRATION_START_DATE));
+        this.exportedInLegacyERP =
+                entry.getFinantialDocument() != null ? entry.getFinantialDocument().isExportedInLegacyERP() : false;
+
+        this.legacyERPCertificateDocumentReference = entry.getFinantialDocument() != null ? entry.getFinantialDocument()
+                .getLegacyERPCertificateDocumentReference() : null;
+
+        this.erpCertificationDate =
+                entry.getFinantialDocument() != null ? entry.getFinantialDocument().getErpCertificationDate() : null;
+
+        this.erpCertificateDocumentReference = entry.getFinantialDocument() != null ? entry.getFinantialDocument()
+                .getErpCertificateDocumentReference() : null;
+
+        this.erpCustomerId = entry.getDebtAccount().getCustomer().getErpCustomerId();
+
+        if(entry.getFinantialDocument() != null && ((Invoice) entry.getFinantialDocument()).getPayorDebtAccount() != null) {
+            this.erpPayorCustomerId = ((Invoice) entry.getFinantialDocument()).getPayorDebtAccount().getCustomer().getErpCustomerId();
+        }
+        
+        if (entry.getFinantialDocument() != null && entry.getFinantialDocument().isCreditNote()
+                && ((CreditNote) entry.getFinantialDocument()).isAdvancePayment()) {
+            final AdvancedPaymentCreditNote advancedCreditNote = (AdvancedPaymentCreditNote) entry.getFinantialDocument();
+            this.originSettlementNoteForAdvancedCredit =
+                    advancedCreditNote.getAdvancedPaymentSettlementNote() != null ? advancedCreditNote
+                            .getAdvancedPaymentSettlementNote().getUiDocumentNumber() : "";
+        }
     }
 
     private void fillStudentInformation(final InvoiceEntry entry) {
@@ -321,9 +318,11 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
         if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null) {
             this.email = ((PersonCustomer) customer).getPerson().getInstitutionalOrDefaultEmailAddressValue();
+            this.emailForSendingEmails = ((PersonCustomer) customer).getPerson().getEmailForSendingEmails();
         } else if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null) {
             this.email =
                     ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getInstitutionalOrDefaultEmailAddressValue();
+            this.emailForSendingEmails = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getEmailForSendingEmails();
         }
 
         this.address = customer.getUiCompleteAddress();
@@ -336,6 +335,10 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             this.studentNumber = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent().getNumber();
         }
 
+        fillAcademicInformation(entry);
+    }
+
+    private void fillAcademicInformation(final InvoiceEntry entry) {
         final DebitEntry debitEntry = entry.isDebitNoteEntry() ? (DebitEntry) entry : ((CreditEntry) entry).getDebitEntry();
 
         if (debitEntry != null) {
@@ -483,7 +486,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
         final ErrorsLog errorsLog = (ErrorsLog) ierrorsLog;
 
         try {
-            row.createCell(0).setCellValue(identification);
+            row.createCell(0).setCellValue(valueOrEmpty(identification));
 
             if (!completed) {
                 row.createCell(1).setCellValue(academicTreasuryBundle("error.DebtReportEntryBean.report.generation.verify.entry"));
@@ -493,14 +496,14 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             if (invoiceEntry.isDebitNoteEntry()) {
                 int i = 1;
 
-                row.createCell(i++).setCellValue(entryType);
-                row.createCell(i++).setCellValue(versioningCreator);
+                row.createCell(i++).setCellValue(valueOrEmpty(entryType));
+                row.createCell(i++).setCellValue(valueOrEmpty(versioningCreator));
                 row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
                 row.createCell(i++).setCellValue(entryDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD));
                 row.createCell(i++).setCellValue(dueDate.toString(Constants.DATE_FORMAT_YYYY_MM_DD));
-                row.createCell(i++).setCellValue(customerId);
-                row.createCell(i++).setCellValue(debtAccountId);
-                row.createCell(i++).setCellValue(name);
+                row.createCell(i++).setCellValue(valueOrEmpty(customerId));
+                row.createCell(i++).setCellValue(valueOrEmpty(debtAccountId));
+                row.createCell(i++).setCellValue(valueOrEmpty(name));
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(vatNumber));
@@ -513,13 +516,28 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeName));
                 row.createCell(i++).setCellValue(valueOrEmpty(executionYear));
                 row.createCell(i++).setCellValue(valueOrEmpty(executionSemester));
-                row.createCell(i++).setCellValue(productCode);
-                row.createCell(i++).setCellValue(invoiceEntryDescription);
+                row.createCell(i++).setCellValue(valueOrEmpty(productCode));
+                row.createCell(i++).setCellValue(valueOrEmpty(invoiceEntryDescription));
                 row.createCell(i++).setCellValue(valueOrEmpty(documentNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
                 i++;
-                row.createCell(i++).setCellValue(valueOrEmpty(amountToPay));
-                row.createCell(i++).setCellValue(valueOrEmpty(openAmountToPay));
+                
+                {
+                    String value = amountToPay != null ? amountToPay.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+                
+                {
+                    String value = openAmountToPay != null ? openAmountToPay.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+                
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountVatNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountName));
                 row.createCell(i++).setCellValue(valueOrEmpty(agreement));
@@ -535,7 +553,15 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(annuled));
                 row.createCell(i++).setCellValue(valueOrEmpty(annuledReason));
                 row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
-                row.createCell(i++).setCellValue(valueOrEmpty(openAmountAtERPStartDate));
+                
+                {
+                    String value = openAmountAtERPStartDate != null ? openAmountAtERPStartDate.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+                
                 row.createCell(i++).setCellValue(valueOrEmpty(exportedInLegacyERP));
                 row.createCell(i++).setCellValue(valueOrEmpty(legacyERPCertificateDocumentReference));
                 row.createCell(i++).setCellValue(valueOrEmpty(erpCertificationDate));
@@ -544,14 +570,14 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
             } else if (invoiceEntry.isCreditNoteEntry()) {
                 int i = 1;
-                row.createCell(i++).setCellValue(entryType);
-                row.createCell(i++).setCellValue(versioningCreator);
+                row.createCell(i++).setCellValue(valueOrEmpty(entryType));
+                row.createCell(i++).setCellValue(valueOrEmpty(versioningCreator));
                 row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
                 row.createCell(i++).setCellValue(entryDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD));
                 row.createCell(i++).setCellValue(dueDate.toString(Constants.DATE_FORMAT_YYYY_MM_DD));
-                row.createCell(i++).setCellValue(customerId);
-                row.createCell(i++).setCellValue(debtAccountId);
-                row.createCell(i++).setCellValue(name);
+                row.createCell(i++).setCellValue(valueOrEmpty(customerId));
+                row.createCell(i++).setCellValue(valueOrEmpty(debtAccountId));
+                row.createCell(i++).setCellValue(valueOrEmpty(name));
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(vatNumber));
@@ -564,13 +590,28 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(degreeName));
                 row.createCell(i++).setCellValue(valueOrEmpty(executionYear));
                 row.createCell(i++).setCellValue(valueOrEmpty(executionSemester));
-                row.createCell(i++).setCellValue(productCode);
-                row.createCell(i++).setCellValue(invoiceEntryDescription);
+                row.createCell(i++).setCellValue(valueOrEmpty(productCode));
+                row.createCell(i++).setCellValue(valueOrEmpty(invoiceEntryDescription));
                 row.createCell(i++).setCellValue(valueOrEmpty(documentNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
                 row.createCell(i++).setCellValue(valueOrEmpty(debitEntryIdentification));
-                row.createCell(i++).setCellValue(valueOrEmpty(amountToPay));
-                row.createCell(i++).setCellValue(valueOrEmpty(openAmountToPay));
+                
+                {
+                    String value = amountToPay != null ? amountToPay.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+                
+                {
+                    String value = openAmountToPay != null ? openAmountToPay.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+                
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountVatNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountName));
                 row.createCell(i++).setCellValue(valueOrEmpty(agreement));
@@ -586,7 +627,15 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(annuled));
                 row.createCell(i++).setCellValue(valueOrEmpty(annuledReason));
                 row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
-                row.createCell(i++).setCellValue(valueOrEmpty(openAmountAtERPStartDate));
+                
+                {
+                    String value = openAmountAtERPStartDate != null ? openAmountAtERPStartDate.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+                
                 row.createCell(i++).setCellValue(valueOrEmpty(exportedInLegacyERP));
                 row.createCell(i++).setCellValue(valueOrEmpty(legacyERPCertificateDocumentReference));
                 row.createCell(i++).setCellValue(valueOrEmpty(erpCertificationDate));
@@ -652,5 +701,445 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
         return "";
     }
+    
+    // @formatter:off
+    /* *****************
+     * GETTERS & SETTERS
+     * *****************
+     */
+    // @formatter:on
+    
+    
+    public InvoiceEntry getInvoiceEntry() {
+        return invoiceEntry;
+    }
 
+    public void setInvoiceEntry(InvoiceEntry invoiceEntry) {
+        this.invoiceEntry = invoiceEntry;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public String getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(String identification) {
+        this.identification = identification;
+    }
+
+    public String getEntryType() {
+        return entryType;
+    }
+
+    public void setEntryType(String entryType) {
+        this.entryType = entryType;
+    }
+
+    public String getVersioningCreator() {
+        return versioningCreator;
+    }
+
+    public void setVersioningCreator(String versioningCreator) {
+        this.versioningCreator = versioningCreator;
+    }
+
+    public DateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(DateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public DateTime getEntryDate() {
+        return entryDate;
+    }
+
+    public void setEntryDate(DateTime entryDate) {
+        this.entryDate = entryDate;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getDebtAccountId() {
+        return debtAccountId;
+    }
+
+    public void setDebtAccountId(String debtAccountId) {
+        this.debtAccountId = debtAccountId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalizedString getIdentificationType() {
+        return identificationType;
+    }
+
+    public void setIdentificationType(LocalizedString identificationType) {
+        this.identificationType = identificationType;
+    }
+
+    public String getIdentificationNumber() {
+        return identificationNumber;
+    }
+
+    public void setIdentificationNumber(String identificationNumber) {
+        this.identificationNumber = identificationNumber;
+    }
+
+    public String getVatNumber() {
+        return vatNumber;
+    }
+
+    public void setVatNumber(String vatNumber) {
+        this.vatNumber = vatNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public String getEmailForSendingEmails() {
+        return emailForSendingEmails;
+    }
+    
+    public void setEmailForSendingEmails(String emailForSendingEmails) {
+        this.emailForSendingEmails = emailForSendingEmails;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Integer getStudentNumber() {
+        return studentNumber;
+    }
+
+    public void setStudentNumber(Integer studentNumber) {
+        this.studentNumber = studentNumber;
+    }
+
+    public Integer getRegistrationNumber() {
+        return registrationNumber;
+    }
+
+    public void setRegistrationNumber(Integer registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+
+    public String getDegreeType() {
+        return degreeType;
+    }
+
+    public void setDegreeType(String degreeType) {
+        this.degreeType = degreeType;
+    }
+
+    public String getDegreeCode() {
+        return degreeCode;
+    }
+
+    public void setDegreeCode(String degreeCode) {
+        this.degreeCode = degreeCode;
+    }
+
+    public LocalizedString getDegreeName() {
+        return degreeName;
+    }
+
+    public void setDegreeName(LocalizedString degreeName) {
+        this.degreeName = degreeName;
+    }
+
+    public String getExecutionYear() {
+        return executionYear;
+    }
+
+    public void setExecutionYear(String executionYear) {
+        this.executionYear = executionYear;
+    }
+
+    public String getExecutionSemester() {
+        return executionSemester;
+    }
+
+    public void setExecutionSemester(String executionSemester) {
+        this.executionSemester = executionSemester;
+    }
+
+    public String getProductCode() {
+        return productCode;
+    }
+
+    public void setProductCode(String productCode) {
+        this.productCode = productCode;
+    }
+
+    public String getInvoiceEntryDescription() {
+        return invoiceEntryDescription;
+    }
+
+    public void setInvoiceEntryDescription(String invoiceEntryDescription) {
+        this.invoiceEntryDescription = invoiceEntryDescription;
+    }
+
+    public String getDocumentNumber() {
+        return documentNumber;
+    }
+
+    public void setDocumentNumber(String documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
+    public Boolean getDocumentExportationPending() {
+        return documentExportationPending;
+    }
+
+    public void setDocumentExportationPending(Boolean documentExportationPending) {
+        this.documentExportationPending = documentExportationPending;
+    }
+
+    public Boolean getAnnuled() {
+        return annuled;
+    }
+
+    public void setAnnuled(Boolean annuled) {
+        this.annuled = annuled;
+    }
+
+    public String getAnnuledReason() {
+        return annuledReason;
+    }
+
+    public void setAnnuledReason(String annuledReason) {
+        this.annuledReason = annuledReason;
+    }
+
+    public String getDebitEntryIdentification() {
+        return debitEntryIdentification;
+    }
+
+    public void setDebitEntryIdentification(String debitEntryIdentification) {
+        this.debitEntryIdentification = debitEntryIdentification;
+    }
+
+    public BigDecimal getAmountToPay() {
+        return amountToPay;
+    }
+
+    public void setAmountToPay(BigDecimal amountToPay) {
+        this.amountToPay = amountToPay;
+    }
+
+    public BigDecimal getOpenAmountToPay() {
+        return openAmountToPay;
+    }
+
+    public void setOpenAmountToPay(BigDecimal openAmountToPay) {
+        this.openAmountToPay = openAmountToPay;
+    }
+
+    public String getPayorDebtAccountVatNumber() {
+        return payorDebtAccountVatNumber;
+    }
+
+    public void setPayorDebtAccountVatNumber(String payorDebtAccountVatNumber) {
+        this.payorDebtAccountVatNumber = payorDebtAccountVatNumber;
+    }
+
+    public String getPayorDebtAccountName() {
+        return payorDebtAccountName;
+    }
+
+    public void setPayorDebtAccountName(String payorDebtAccountName) {
+        this.payorDebtAccountName = payorDebtAccountName;
+    }
+
+    public LocalizedString getAgreement() {
+        return agreement;
+    }
+
+    public void setAgreement(LocalizedString agreement) {
+        this.agreement = agreement;
+    }
+
+    public LocalizedString getIngression() {
+        return ingression;
+    }
+
+    public void setIngression(LocalizedString ingression) {
+        this.ingression = ingression;
+    }
+
+    public Boolean getFirstTimeStudent() {
+        return firstTimeStudent;
+    }
+
+    public void setFirstTimeStudent(Boolean firstTimeStudent) {
+        this.firstTimeStudent = firstTimeStudent;
+    }
+
+    public Boolean getPartialRegime() {
+        return partialRegime;
+    }
+
+    public void setPartialRegime(Boolean partialRegime) {
+        this.partialRegime = partialRegime;
+    }
+
+    public String getStatutes() {
+        return statutes;
+    }
+
+    public void setStatutes(String statutes) {
+        this.statutes = statutes;
+    }
+
+    public Integer getNumberOfNormalEnrolments() {
+        return numberOfNormalEnrolments;
+    }
+
+    public void setNumberOfNormalEnrolments(Integer numberOfNormalEnrolments) {
+        this.numberOfNormalEnrolments = numberOfNormalEnrolments;
+    }
+
+    public Integer getNumberOfStandaloneEnrolments() {
+        return numberOfStandaloneEnrolments;
+    }
+
+    public void setNumberOfStandaloneEnrolments(Integer numberOfStandaloneEnrolments) {
+        this.numberOfStandaloneEnrolments = numberOfStandaloneEnrolments;
+    }
+
+    public Integer getNumberOfExtracurricularEnrolments() {
+        return numberOfExtracurricularEnrolments;
+    }
+
+    public void setNumberOfExtracurricularEnrolments(Integer numberOfExtracurricularEnrolments) {
+        this.numberOfExtracurricularEnrolments = numberOfExtracurricularEnrolments;
+    }
+
+    public String getTuitionPaymentPlan() {
+        return tuitionPaymentPlan;
+    }
+
+    public void setTuitionPaymentPlan(String tuitionPaymentPlan) {
+        this.tuitionPaymentPlan = tuitionPaymentPlan;
+    }
+
+    public String getTuitionPaymentPlanConditions() {
+        return tuitionPaymentPlanConditions;
+    }
+
+    public void setTuitionPaymentPlanConditions(String tuitionPaymentPlanConditions) {
+        this.tuitionPaymentPlanConditions = tuitionPaymentPlanConditions;
+    }
+
+    public DateTime getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(DateTime closeDate) {
+        this.closeDate = closeDate;
+    }
+
+    public BigDecimal getOpenAmountAtERPStartDate() {
+        return openAmountAtERPStartDate;
+    }
+
+    public void setOpenAmountAtERPStartDate(BigDecimal openAmountAtERPStartDate) {
+        this.openAmountAtERPStartDate = openAmountAtERPStartDate;
+    }
+
+    public Boolean getExportedInLegacyERP() {
+        return exportedInLegacyERP;
+    }
+
+    public void setExportedInLegacyERP(Boolean exportedInLegacyERP) {
+        this.exportedInLegacyERP = exportedInLegacyERP;
+    }
+
+    public String getLegacyERPCertificateDocumentReference() {
+        return legacyERPCertificateDocumentReference;
+    }
+
+    public void setLegacyERPCertificateDocumentReference(String legacyERPCertificateDocumentReference) {
+        this.legacyERPCertificateDocumentReference = legacyERPCertificateDocumentReference;
+    }
+
+    public LocalDate getErpCertificationDate() {
+        return erpCertificationDate;
+    }
+
+    public void setErpCertificationDate(LocalDate erpCertificationDate) {
+        this.erpCertificationDate = erpCertificationDate;
+    }
+
+    public String getErpCertificateDocumentReference() {
+        return erpCertificateDocumentReference;
+    }
+
+    public void setErpCertificateDocumentReference(String erpCertificateDocumentReference) {
+        this.erpCertificateDocumentReference = erpCertificateDocumentReference;
+    }
+    
+    public String getErpCustomerId() {
+        return erpCustomerId;
+    }
+    
+    public void setErpCustomerId(String erpCustomerId) {
+        this.erpCustomerId = erpCustomerId;
+    }
+    
+    public String getErpPayorCustomerId() {
+        return erpPayorCustomerId;
+    }
+    
+    public void setErpPayorCustomerId(String erpPayorCustomerId) {
+        this.erpPayorCustomerId = erpPayorCustomerId;
+    }
+
+    public String getOriginSettlementNoteForAdvancedCredit() {
+        return originSettlementNoteForAdvancedCredit;
+    }
+
+    public void setOriginSettlementNoteForAdvancedCredit(String originSettlementNoteForAdvancedCredit) {
+        this.originSettlementNoteForAdvancedCredit = originSettlementNoteForAdvancedCredit;
+    }
+    
 }

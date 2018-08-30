@@ -21,8 +21,6 @@ import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SibsTransactionDetailEntryBean;
 import org.fenixedu.academictreasury.dto.reports.TreasuryExemptionReportEntryBean;
 import org.fenixedu.academictreasury.services.debtReports.DebtReportService;
-import org.fenixedu.academictreasury.util.Constants;
-import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.scheduler.TaskRunner;
 import org.fenixedu.bennu.scheduler.domain.SchedulerSystem;
 import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
@@ -33,6 +31,7 @@ import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.Atomic;
 import pt.ist.fenixframework.Atomic.TxMode;
+import pt.ist.fenixframework.FenixFramework;
 
 public class DebtReportRequest extends DebtReportRequest_Base {
 

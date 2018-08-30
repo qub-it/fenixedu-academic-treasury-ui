@@ -11,11 +11,14 @@ import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.PaymentEntry;
+import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
 public class PaymentReportEntryBean implements SpreadsheetRow {
@@ -56,7 +59,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private boolean settlementNoteAnnuled;
     private boolean documentExportationPending;
     private String paymentMethod;
-    private String amount;
+    private BigDecimal amount;
     private String customerId;
     private String debtAccountId;
     private String name;
@@ -68,9 +71,18 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private Integer studentNumber;
 
     private DateTime closeDate;
+    private Boolean exportedInLegacyERP;
+
+    private LocalDate erpCertificationDate;
+    private String erpCertificateDocumentReference;
+    
+    private String erpCustomerId;
+    private String erpPayorCustomerId;
+    
+    private String decimalSeparator;
     
     public PaymentReportEntryBean(final PaymentEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
-        final String decimalSeparator = request.getDecimalSeparator();
+        this.decimalSeparator = request.getDecimalSeparator();
         
         paymentEntry = entry;
         
@@ -86,21 +98,39 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             this.settlementNoteAnnuled = settlementNote.isAnnulled();
             this.documentExportationPending = settlementNote.isDocumentToExport();
             this.paymentMethod = entry.getPaymentMethod().getName().getContent();
-            this.amount = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(entry.getPayedAmount()).toString();
-            
-            if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
-                this.amount = this.amount.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
-            }
+            this.amount = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency().getValueWithScale(entry.getPayedAmount());
             
             fillStudentInformation(entry);
             
-            this.closeDate = settlementNote.getCloseDate();
+            fillERPInformation(settlementNote);
             
             this.completed = true;
             
         } catch(final Exception e) {
             e.printStackTrace();
             errorsLog.addError(entry, e);
+        }
+    }
+    
+    private void fillERPInformation(final SettlementNote settlementNote) {
+        this.closeDate = settlementNote != null ? settlementNote.getCloseDate() : null;
+        this.exportedInLegacyERP =
+                settlementNote != null ? settlementNote.isExportedInLegacyERP() : false;
+
+        this.erpCertificationDate =
+                settlementNote != null ? settlementNote.getErpCertificationDate() : null;
+
+        this.erpCertificateDocumentReference = settlementNote != null ? settlementNote
+                .getErpCertificateDocumentReference() : null;
+
+        this.erpCustomerId = settlementNote.getDebtAccount().getCustomer().getErpCustomerId();
+
+        
+        if(!settlementNote.getSettlemetEntriesSet().isEmpty()) {
+            final SettlementEntry settlementEntry = settlementNote.getSettlemetEntriesSet().iterator().next();
+            if(settlementEntry.getInvoiceEntry().getFinantialDocument() != null && ((Invoice) settlementEntry.getInvoiceEntry().getFinantialDocument()).getPayorDebtAccount() != null) {
+                this.erpPayorCustomerId = ((Invoice) settlementEntry.getInvoiceEntry().getFinantialDocument()).getPayorDebtAccount().getCustomer().getErpCustomerId();
+            }
         }
     }
     
@@ -158,7 +188,17 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(settlementNoteAnnuled));
             row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
             row.createCell(i++).setCellValue(valueOrEmpty(paymentMethod));
-            row.createCell(i++).setCellValue(amount.toString());
+
+            {
+                String value = amount != null ? amount.toString() : "";
+                
+                if(DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                    value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                }
+                
+                row.createCell(i++).setCellValue(value);
+            }
+            
             row.createCell(i++).setCellValue(customerId);
             row.createCell(i++).setCellValue(debtAccountId);
             row.createCell(i++).setCellValue(valueOrEmpty(name));
