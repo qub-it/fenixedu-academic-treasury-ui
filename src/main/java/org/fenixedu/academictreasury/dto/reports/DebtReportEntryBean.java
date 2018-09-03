@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academic.domain.ExecutionYear;
+import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.domain.contacts.EmailAddress;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
@@ -161,8 +163,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private LocalizedString identificationType;
     private String identificationNumber;
     private String vatNumber;
-    private String email;
+    private String institutionalOrDefaultEmail;
     private String emailForSendingEmails;
+    private String personalEmail;
     private String address;
     private Integer studentNumber;
     private Integer registrationNumber;
@@ -305,37 +308,43 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
         this.name = customer.getName();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null
-                && ((PersonCustomer) customer).getPerson().getIdDocumentType() != null) {
-            this.identificationType = ((PersonCustomer) customer).getPerson().getIdDocumentType().getLocalizedNameI18N();
-        } else if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null
-                && ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getIdDocumentType() != null) {
-
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null
+                && ((PersonCustomer) customer).getAssociatedPerson().getIdDocumentType() != null) {
+            this.identificationType = ((PersonCustomer) customer).getAssociatedPerson().getIdDocumentType().getLocalizedNameI18N();
         }
-
+        
         this.identificationNumber = customer.getIdentificationNumber();
         this.vatNumber = customer.getUiFiscalNumber();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null) {
-            this.email = ((PersonCustomer) customer).getPerson().getInstitutionalOrDefaultEmailAddressValue();
-            this.emailForSendingEmails = ((PersonCustomer) customer).getPerson().getEmailForSendingEmails();
-        } else if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null) {
-            this.email =
-                    ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getInstitutionalOrDefaultEmailAddressValue();
-            this.emailForSendingEmails = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getEmailForSendingEmails();
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null) {
+            final Person person = ((PersonCustomer) customer).getAssociatedPerson();
+            this.institutionalOrDefaultEmail = person.getInstitutionalOrDefaultEmailAddressValue();
+            this.emailForSendingEmails = person.getEmailForSendingEmails();
+            this.personalEmail = personalEmail(person) != null ? personalEmail(person).getValue() : "";
         }
 
         this.address = customer.getUiCompleteAddress();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null
-                && ((PersonCustomer) customer).getPerson().getStudent() != null) {
-            this.studentNumber = ((PersonCustomer) customer).getPerson().getStudent().getNumber();
-        } else if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null
-                && ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent() != null) {
-            this.studentNumber = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent().getNumber();
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null
+                && ((PersonCustomer) customer).getAssociatedPerson().getStudent() != null) {
+            this.studentNumber = ((PersonCustomer) customer).getAssociatedPerson().getStudent().getNumber();
         }
 
         fillAcademicInformation(entry);
+    }
+
+    static EmailAddress personalEmail(final Person person) {
+        return person.getPendingOrValidPartyContacts(EmailAddress.class).stream().map(EmailAddress.class::cast).filter(EmailAddress::isPersonalType).sorted((e1, e2) ->  {
+            if(e1.isValid() && !e2.isValid()) {
+                return -1;
+            }
+            
+            if(!e1.isValid() && e2.isValid()) {
+                return 1;
+            }
+            
+            return EmailAddress.COMPARATOR_BY_EMAIL.compare(e1, e2);
+        }).findFirst().orElse(null);
     }
 
     private void fillAcademicInformation(final InvoiceEntry entry) {
@@ -507,7 +516,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(vatNumber));
-                row.createCell(i++).setCellValue(valueOrEmpty(email));
+                row.createCell(i++).setCellValue(valueOrEmpty(institutionalOrDefaultEmail));
                 row.createCell(i++).setCellValue(valueOrEmpty(address));
                 row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(registrationNumber));
@@ -581,7 +590,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
                 row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(vatNumber));
-                row.createCell(i++).setCellValue(valueOrEmpty(email));
+                row.createCell(i++).setCellValue(valueOrEmpty(institutionalOrDefaultEmail));
                 row.createCell(i++).setCellValue(valueOrEmpty(address));
                 row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(registrationNumber));
@@ -822,12 +831,12 @@ public class DebtReportEntryBean implements SpreadsheetRow {
         this.vatNumber = vatNumber;
     }
 
-    public String getEmail() {
-        return email;
+    public String getInstitutionalOrDefaultEmail() {
+        return institutionalOrDefaultEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setInstitutionalOrDefaultEmail(String institutionalOrDefaultEmail) {
+        this.institutionalOrDefaultEmail = institutionalOrDefaultEmail;
     }
     
     public String getEmailForSendingEmails() {
@@ -837,7 +846,15 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     public void setEmailForSendingEmails(String emailForSendingEmails) {
         this.emailForSendingEmails = emailForSendingEmails;
     }
-
+    
+    public String getPersonalEmail() {
+        return personalEmail;
+    }
+    
+    public void setPersonalEmail(String personalEmail) {
+        this.personalEmail = personalEmail;
+    }
+    
     public String getAddress() {
         return address;
     }

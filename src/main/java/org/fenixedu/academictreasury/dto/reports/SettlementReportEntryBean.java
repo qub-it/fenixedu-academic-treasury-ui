@@ -1,10 +1,13 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean.personalEmail;
 import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
 
 import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
+import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.domain.contacts.EmailAddress;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
@@ -86,7 +89,9 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
     private LocalizedString identificationType;
     private String identificationNumber;
     private String vatNumber;
-    private String email;
+    private String institutionalOrDefaultEmail;
+    private String emailForSendingEmails;
+    private String personalEmail;
     private String address;
     private Integer studentNumber;
     private Integer registrationNumber;
@@ -266,27 +271,24 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
         
         this.name = customer.getName();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null && ((PersonCustomer) customer).getPerson().getIdDocumentType() != null) {
-            this.identificationType = ((PersonCustomer) customer).getPerson().getIdDocumentType().getLocalizedNameI18N();
-        } else if(customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null && ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getIdDocumentType() != null) {
-            this.identificationType = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getIdDocumentType().getLocalizedNameI18N();
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null && ((PersonCustomer) customer).getAssociatedPerson().getIdDocumentType() != null) {
+            this.identificationType = ((PersonCustomer) customer).getAssociatedPerson().getIdDocumentType().getLocalizedNameI18N();
         }
 
         this.identificationNumber = customer.getIdentificationNumber();
         this.vatNumber = customer.getUiFiscalNumber();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null) {
-            this.email = ((PersonCustomer) customer).getPerson().getInstitutionalOrDefaultEmailAddressValue();
-        } else if(customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null) {
-            this.email = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getInstitutionalOrDefaultEmailAddressValue();
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null) {
+            final Person person = ((PersonCustomer) customer).getAssociatedPerson();
+            this.institutionalOrDefaultEmail = person.getInstitutionalOrDefaultEmailAddressValue();
+            this.emailForSendingEmails = person.getEmailForSendingEmails();
+            this.personalEmail = personalEmail(person) != null ? personalEmail(person).getValue() : "";
         }
 
         this.address = customer.getAddress();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null && ((PersonCustomer) customer).getPerson().getStudent() != null) {
-            this.studentNumber = ((PersonCustomer) customer).getPerson().getStudent().getNumber();
-        } else if(customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null && ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent() != null) {
-            this.studentNumber = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent().getNumber();
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null && ((PersonCustomer) customer).getAssociatedPerson().getStudent() != null) {
+            this.studentNumber = ((PersonCustomer) customer).getAssociatedPerson().getStudent().getNumber();
         }
     }
 
@@ -353,7 +355,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
             row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));
             row.createCell(i++).setCellValue(valueOrEmpty(vatNumber));
-            row.createCell(i++).setCellValue(valueOrEmpty(email));
+            row.createCell(i++).setCellValue(valueOrEmpty(institutionalOrDefaultEmail));
             row.createCell(i++).setCellValue(valueOrEmpty(address));
             row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
             row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
@@ -415,7 +417,6 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
      * *****************
      */
     // @formatter:on
-    
     
     public SettlementEntry getSettlementEntry() {
         return settlementEntry;
@@ -609,12 +610,28 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
         this.vatNumber = vatNumber;
     }
 
-    public String getEmail() {
-        return email;
+    public String getInstitutionalOrDefaultEmail() {
+        return institutionalOrDefaultEmail;
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void setInstitutionalOrDefaultEmailEmail(String institutionalOrDefaultEmail) {
+        this.institutionalOrDefaultEmail = institutionalOrDefaultEmail;
+    }
+    
+    public String getEmailForSendingEmails() {
+        return emailForSendingEmails;
+    }
+    
+    public void setEmailForSendingEmails(String emailForSendingEmails) {
+        this.emailForSendingEmails = emailForSendingEmails;
+    }
+    
+    public String getPersonalEmail() {
+        return personalEmail;
+    }
+    
+    public void setPersonalEmail(String personalEmail) {
+        this.personalEmail = personalEmail;
     }
 
     public String getAddress() {

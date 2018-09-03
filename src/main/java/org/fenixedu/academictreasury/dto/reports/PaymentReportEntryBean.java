@@ -1,10 +1,13 @@
 package org.fenixedu.academictreasury.dto.reports;
 
+import static org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean.personalEmail;
 import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
 
 import java.math.BigDecimal;
 
 import org.apache.poi.ss.usermodel.Row;
+import org.fenixedu.academic.domain.Person;
+import org.fenixedu.academic.domain.contacts.EmailAddress;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
@@ -66,7 +69,9 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private LocalizedString identificationType;
     private String identificationNumber;
     private String vatNumber;
-    private String email;
+    private String institutionalOrDefaultEmail;
+    private String emailForSendingEmails;
+    private String personalEmail;
     private String address;
     private Integer studentNumber;
 
@@ -82,7 +87,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private String decimalSeparator;
     
     public PaymentReportEntryBean(final PaymentEntry entry, final DebtReportRequest request, final ErrorsLog errorsLog) {
-        this.decimalSeparator = request.getDecimalSeparator();
+        this.decimalSeparator = request != null ? request.getDecimalSeparator() : DebtReportRequest.COMMA;
         
         paymentEntry = entry;
         
@@ -142,27 +147,25 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
         
         this.name = customer.getName();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null && ((PersonCustomer) customer).getPerson().getIdDocumentType() != null) {
-            this.identificationType = ((PersonCustomer) customer).getPerson().getIdDocumentType().getLocalizedNameI18N();
-        } else if(customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null && ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getIdDocumentType() != null) {
-            this.identificationType = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getIdDocumentType().getLocalizedNameI18N();
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null && ((PersonCustomer) customer).getAssociatedPerson().getIdDocumentType() != null) {
+            this.identificationType = ((PersonCustomer) customer).getAssociatedPerson().getIdDocumentType().getLocalizedNameI18N();
         }
 
         this.identificationNumber = customer.getIdentificationNumber();
         this.vatNumber = customer.getUiFiscalNumber();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null) {
-            this.email = ((PersonCustomer) customer).getPerson().getInstitutionalOrDefaultEmailAddressValue();
-        } else if(customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null) {
-            this.email = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getInstitutionalOrDefaultEmailAddressValue();
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null) {
+            final Person person = ((PersonCustomer) customer).getAssociatedPerson();
+            this.institutionalOrDefaultEmail = person.getInstitutionalOrDefaultEmailAddressValue();
+            this.emailForSendingEmails = person.getEmailForSendingEmails();
+            this.personalEmail = personalEmail(person) != null ? personalEmail(person).getValue() : "";
         }
 
         this.address = customer.getAddress();
 
-        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getPerson() != null && ((PersonCustomer) customer).getPerson().getStudent() != null) {
-            this.studentNumber = ((PersonCustomer) customer).getPerson().getStudent().getNumber();
-        } else if(customer.isPersonCustomer() && ((PersonCustomer) customer).getPersonForInactivePersonCustomer() != null && ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent() != null) {
-            this.studentNumber = ((PersonCustomer) customer).getPersonForInactivePersonCustomer().getStudent().getNumber();
+        if (customer.isPersonCustomer() && ((PersonCustomer) customer).getAssociatedPerson() != null && ((PersonCustomer) customer).getAssociatedPerson().getStudent() != null) {
+            final Person person = ((PersonCustomer) customer).getAssociatedPerson();
+            this.studentNumber = person.getStudent().getNumber();
         }
     }
 
@@ -205,7 +208,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             row.createCell(i++).setCellValue(valueOrEmpty(identificationType));
             row.createCell(i++).setCellValue(valueOrEmpty(identificationNumber));
             row.createCell(i++).setCellValue(valueOrEmpty(vatNumber));
-            row.createCell(i++).setCellValue(valueOrEmpty(email));
+            row.createCell(i++).setCellValue(valueOrEmpty(institutionalOrDefaultEmail));
             row.createCell(i++).setCellValue(valueOrEmpty(address));
             row.createCell(i++).setCellValue(valueOrEmpty(studentNumber));
             row.createCell(i++).setCellValue(valueOrEmpty(closeDate));
@@ -260,4 +263,252 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
         return "";
     }
 
+    
+    // @formatter:off
+    /* *****************
+     * GETTERS & SETTERS
+     * *****************
+     */
+    // @formatter:on
+    public PaymentEntry getPaymentEntry() {
+        return paymentEntry;
+    }
+
+    public void setPaymentEntry(PaymentEntry paymentEntry) {
+        this.paymentEntry = paymentEntry;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    public String getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(String identification) {
+        this.identification = identification;
+    }
+
+    public DateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(DateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getResponsible() {
+        return responsible;
+    }
+
+    public void setResponsible(String responsible) {
+        this.responsible = responsible;
+    }
+
+    public String getSettlementNoteNumber() {
+        return settlementNoteNumber;
+    }
+
+    public void setSettlementNoteNumber(String settlementNoteNumber) {
+        this.settlementNoteNumber = settlementNoteNumber;
+    }
+
+    public DateTime getSettlementNoteDocumentDate() {
+        return settlementNoteDocumentDate;
+    }
+
+    public void setSettlementNoteDocumentDate(DateTime settlementNoteDocumentDate) {
+        this.settlementNoteDocumentDate = settlementNoteDocumentDate;
+    }
+
+    public DateTime getPaymentDate() {
+        return paymentDate;
+    }
+
+    public void setPaymentDate(DateTime paymentDate) {
+        this.paymentDate = paymentDate;
+    }
+
+    public boolean isSettlementNoteAnnuled() {
+        return settlementNoteAnnuled;
+    }
+
+    public void setSettlementNoteAnnuled(boolean settlementNoteAnnuled) {
+        this.settlementNoteAnnuled = settlementNoteAnnuled;
+    }
+
+    public boolean isDocumentExportationPending() {
+        return documentExportationPending;
+    }
+
+    public void setDocumentExportationPending(boolean documentExportationPending) {
+        this.documentExportationPending = documentExportationPending;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+
+    public BigDecimal getAmount() {
+        return amount;
+    }
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getDebtAccountId() {
+        return debtAccountId;
+    }
+
+    public void setDebtAccountId(String debtAccountId) {
+        this.debtAccountId = debtAccountId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalizedString getIdentificationType() {
+        return identificationType;
+    }
+
+    public void setIdentificationType(LocalizedString identificationType) {
+        this.identificationType = identificationType;
+    }
+
+    public String getIdentificationNumber() {
+        return identificationNumber;
+    }
+
+    public void setIdentificationNumber(String identificationNumber) {
+        this.identificationNumber = identificationNumber;
+    }
+
+    public String getVatNumber() {
+        return vatNumber;
+    }
+
+    public void setVatNumber(String vatNumber) {
+        this.vatNumber = vatNumber;
+    }
+
+    public String getInstitutionalOrDefaultEmail() {
+        return institutionalOrDefaultEmail;
+    }
+
+    public void setInstitutionalOrDefaultEmail(String institutionalOrDefaultEmail) {
+        this.institutionalOrDefaultEmail = institutionalOrDefaultEmail;
+    }
+
+    public String getEmailForSendingEmails() {
+        return emailForSendingEmails;
+    }
+
+    public void setEmailForSendingEmails(String emailForSendingEmails) {
+        this.emailForSendingEmails = emailForSendingEmails;
+    }
+
+    public String getPersonalEmail() {
+        return personalEmail;
+    }
+
+    public void setPersonalEmail(String personalEmail) {
+        this.personalEmail = personalEmail;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public Integer getStudentNumber() {
+        return studentNumber;
+    }
+
+    public void setStudentNumber(Integer studentNumber) {
+        this.studentNumber = studentNumber;
+    }
+
+    public DateTime getCloseDate() {
+        return closeDate;
+    }
+
+    public void setCloseDate(DateTime closeDate) {
+        this.closeDate = closeDate;
+    }
+
+    public Boolean getExportedInLegacyERP() {
+        return exportedInLegacyERP;
+    }
+
+    public void setExportedInLegacyERP(Boolean exportedInLegacyERP) {
+        this.exportedInLegacyERP = exportedInLegacyERP;
+    }
+
+    public LocalDate getErpCertificationDate() {
+        return erpCertificationDate;
+    }
+
+    public void setErpCertificationDate(LocalDate erpCertificationDate) {
+        this.erpCertificationDate = erpCertificationDate;
+    }
+
+    public String getErpCertificateDocumentReference() {
+        return erpCertificateDocumentReference;
+    }
+
+    public void setErpCertificateDocumentReference(String erpCertificateDocumentReference) {
+        this.erpCertificateDocumentReference = erpCertificateDocumentReference;
+    }
+
+    public String getErpCustomerId() {
+        return erpCustomerId;
+    }
+
+    public void setErpCustomerId(String erpCustomerId) {
+        this.erpCustomerId = erpCustomerId;
+    }
+
+    public String getErpPayorCustomerId() {
+        return erpPayorCustomerId;
+    }
+
+    public void setErpPayorCustomerId(String erpPayorCustomerId) {
+        this.erpPayorCustomerId = erpPayorCustomerId;
+    }
+
+    public String getDecimalSeparator() {
+        return decimalSeparator;
+    }
+
+    public void setDecimalSeparator(String decimalSeparator) {
+        this.decimalSeparator = decimalSeparator;
+    }    
+    
+    
 }
