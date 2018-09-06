@@ -59,8 +59,8 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private String settlementNoteNumber;
     private DateTime settlementNoteDocumentDate;
     private DateTime paymentDate;
-    private boolean settlementNoteAnnuled;
-    private boolean documentExportationPending;
+    private Boolean settlementNoteAnnuled;
+    private Boolean documentExportationPending;
     private String paymentMethod;
     private BigDecimal amount;
     private String customerId;
@@ -334,19 +334,19 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
         this.paymentDate = paymentDate;
     }
 
-    public boolean isSettlementNoteAnnuled() {
+    public Boolean getSettlementNoteAnnuled() {
         return settlementNoteAnnuled;
     }
 
-    public void setSettlementNoteAnnuled(boolean settlementNoteAnnuled) {
+    public void setSettlementNoteAnnuled(Boolean settlementNoteAnnuled) {
         this.settlementNoteAnnuled = settlementNoteAnnuled;
     }
 
-    public boolean isDocumentExportationPending() {
+    public boolean getDocumentExportationPending() {
         return documentExportationPending;
     }
 
-    public void setDocumentExportationPending(boolean documentExportationPending) {
+    public void setDocumentExportationPending(Boolean documentExportationPending) {
         this.documentExportationPending = documentExportationPending;
     }
 
