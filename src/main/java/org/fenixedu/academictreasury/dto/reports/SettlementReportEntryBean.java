@@ -65,6 +65,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
         };
  
     private SettlementEntry settlementEntry;
+    private SettlementNote settlementNote;
     private boolean completed;
     
     private String identification;
@@ -116,9 +117,9 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
         this.decimalSeparator = request != null ? request.getDecimalSeparator() : DebtReportRequest.DOT;
         
         this.settlementEntry = entry;
+        this.settlementNote = (SettlementNote) entry.getFinantialDocument();
 
         try {
-            final SettlementNote settlementNote = (SettlementNote) entry.getFinantialDocument();
             final Currency currency = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency();
             
             this.identification = entry.getExternalId();
@@ -424,6 +425,14 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
 
     public void setSettlementEntry(SettlementEntry settlementEntry) {
         this.settlementEntry = settlementEntry;
+    }
+    
+    public SettlementNote getSettlementNote() {
+        return settlementNote;
+    }
+    
+    public void setSettlementNote(SettlementNote settlementNote) {
+        this.settlementNote = settlementNote;
     }
 
     public boolean isCompleted() {
