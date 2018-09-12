@@ -20,7 +20,6 @@ import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.util.ExcelUtils;
-import pt.ist.fenixframework.FenixFramework;
 
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
@@ -429,7 +428,7 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
 
         Registration result = null;
         for (final Registration registration : Registration.readByNumber(registrationNumber)) {
-            if (registration.getLastStateType() == null && !registration.getLastStateType().isActive()) {
+            if (registration.getLastStateType() == null || !registration.getLastStateType().isActive()) {
                 continue;
             }
 
