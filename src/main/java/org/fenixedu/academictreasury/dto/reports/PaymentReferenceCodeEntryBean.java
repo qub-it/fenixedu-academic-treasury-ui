@@ -63,7 +63,7 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
     private String entityCode;
     private String referenceCode;
     private String finantialDocumentNumber;
-    private String payableAmount;
+    private BigDecimal payableAmount;
     private String description;
     private String targetType;
     private String state;
@@ -72,9 +72,12 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
 
     boolean completed = false;
 
+    private String decimalSeparator;
+
     public PaymentReferenceCodeEntryBean(final PaymentReferenceCode paymentReferenceCode, final DebtReportRequest request,
             final ErrorsLog errorsLog) {
-        final String decimalSeparator = request.getDecimalSeparator();
+        this.decimalSeparator = request != null ? request.getDecimalSeparator() : DebtReportRequest.DOT;
+        final Currency currency = paymentReferenceCode.getPaymentCodePool().getFinantialInstitution().getCurrency();
 
         try {
             this.paymentReferenceCode = paymentReferenceCode;
@@ -151,13 +154,7 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
             }
 
             if (paymentReferenceCode.getPayableAmount() != null) {
-                final Currency currency = paymentReferenceCode.getPaymentCodePool().getFinantialInstitution().getCurrency();
-
-                this.payableAmount = currency.getValueWithScale(paymentReferenceCode.getPayableAmount()).toString();
-
-                if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
-                    this.payableAmount = this.payableAmount.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
-                }
+                this.payableAmount = currency.getValueWithScale(paymentReferenceCode.getPayableAmount());
             }
 
             if (paymentReferenceCode.getTargetPayment() != null) {
@@ -214,7 +211,17 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
             row.createCell(i++).setCellValue(valueOrEmpty(entityCode));
             row.createCell(i++).setCellValue(valueOrEmpty(referenceCode));
             row.createCell(i++).setCellValue(valueOrEmpty(finantialDocumentNumber));
-            row.createCell(i++).setCellValue(valueOrEmpty(payableAmount));
+
+            {
+
+                String value = this.payableAmount != null ? this.payableAmount.toString() : "";
+                
+                if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                    value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                }
+                
+                row.createCell(i++).setCellValue(valueOrEmpty(value));
+            }
             row.createCell(i++).setCellValue(valueOrEmpty(description));
             row.createCell(i++).setCellValue(valueOrEmpty(targetType));
             row.createCell(i++).setCellValue(valueOrEmpty(state));
@@ -360,11 +367,11 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
         this.finantialDocumentNumber = finantialDocumentNumber;
     }
 
-    public String getPayableAmount() {
+    public BigDecimal getPayableAmount() {
         return payableAmount;
     }
 
-    public void setPayableAmount(String payableAmount) {
+    public void setPayableAmount(BigDecimal payableAmount) {
         this.payableAmount = payableAmount;
     }
 
@@ -406,6 +413,14 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+    
+    public String getDecimalSeparator() {
+        return decimalSeparator;
+    }
+    
+    public void setDecimalSeparator(String decimalSeparator) {
+        this.decimalSeparator = decimalSeparator;
     }
 
     
