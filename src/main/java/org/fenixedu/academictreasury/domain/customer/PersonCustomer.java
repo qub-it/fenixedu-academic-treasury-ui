@@ -16,6 +16,7 @@ import org.fenixedu.academic.dto.person.PersonBean;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
+import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.CustomerType;
 import org.fenixedu.treasury.domain.FinantialInstitution;
@@ -548,7 +549,30 @@ public class PersonCustomer extends PersonCustomer_Base {
         final String fiscalNumber = !Strings.isNullOrEmpty(fiscalNumber(person)) ? fiscalNumber(person) : "";
         return fiscalCountry + " " + fiscalNumber;
     }
-
+    
+    @Override
+    public LocalizedString getIdentificationTypeDesignation() {
+        final Person person = getAssociatedPerson();
+        
+        if(person.getIdDocumentType() != null) {
+            return person.getIdDocumentType().getLocalizedNameI18N();
+        }
+        
+        return null;
+    }
+    
+    @Override
+    public String getIdentificationTypeCode() {
+        final Person person = getAssociatedPerson();
+        
+        if(person.getIdDocumentType() != null) {
+            return person.getIdDocumentType().getName();
+        }
+        
+        return null;
+    }
+    
+    
     // @formatter: off
     /************
      * SERVICES *
