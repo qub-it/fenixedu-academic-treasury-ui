@@ -25,7 +25,8 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
     private static final String TARGET_TYPE_MULTIPLE_ENTRIES = "M";
     private static final String TARGET_TYPE_NOT_DEFINED = "N";
 
-    public static String[] SPREADSHEET_HEADERS = { academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.identification"),
+    public static String[] SPREADSHEET_HEADERS = { 
+            academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.identification"),
             academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.versioningCreator"),
             academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.creationDate"),
             academicTreasuryBundle("label.PaymentReferenceCodeEntryBean.header.customerId"),
@@ -224,4 +225,188 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
         }
     }
 
+    // @formatter:off
+    /* *****************
+     * GETTERS & SETTERS
+     * *****************
+     */
+    // @formatter:on
+    
+    public String getIdentification() {
+        return identification;
+    }
+
+    public void setIdentification(String identification) {
+        this.identification = identification;
+    }
+
+    public String getVersioningCreator() {
+        return versioningCreator;
+    }
+
+    public void setVersioningCreator(String versioningCreator) {
+        this.versioningCreator = versioningCreator;
+    }
+
+    public DateTime getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(DateTime creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
+    }
+
+    public String getDebtAccountId() {
+        return debtAccountId;
+    }
+
+    public void setDebtAccountId(String debtAccountId) {
+        this.debtAccountId = debtAccountId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public LocalizedString getIdentificationType() {
+        return identificationType;
+    }
+
+    public void setIdentificationType(LocalizedString identificationType) {
+        this.identificationType = identificationType;
+    }
+
+    public String getIdentificationNumber() {
+        return identificationNumber;
+    }
+
+    public void setIdentificationNumber(String identificationNumber) {
+        this.identificationNumber = identificationNumber;
+    }
+
+    public String getVatNumber() {
+        return vatNumber;
+    }
+
+    public void setVatNumber(String vatNumber) {
+        this.vatNumber = vatNumber;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getAddressCountryCode() {
+        return addressCountryCode;
+    }
+
+    public void setAddressCountryCode(String addressCountryCode) {
+        this.addressCountryCode = addressCountryCode;
+    }
+
+    public Integer getStudentNumber() {
+        return studentNumber;
+    }
+
+    public void setStudentNumber(Integer studentNumber) {
+        this.studentNumber = studentNumber;
+    }
+
+    public String getEntityCode() {
+        return entityCode;
+    }
+
+    public void setEntityCode(String entityCode) {
+        this.entityCode = entityCode;
+    }
+
+    public String getReferenceCode() {
+        return referenceCode;
+    }
+
+    public void setReferenceCode(String referenceCode) {
+        this.referenceCode = referenceCode;
+    }
+
+    public String getFinantialDocumentNumber() {
+        return finantialDocumentNumber;
+    }
+
+    public void setFinantialDocumentNumber(String finantialDocumentNumber) {
+        this.finantialDocumentNumber = finantialDocumentNumber;
+    }
+
+    public String getPayableAmount() {
+        return payableAmount;
+    }
+
+    public void setPayableAmount(String payableAmount) {
+        this.payableAmount = payableAmount;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTargetType() {
+        return targetType;
+    }
+
+    public void setTargetType(String targetType) {
+        this.targetType = targetType;
+    }
+
+    public String getState() {
+        return state;
+    }
+
+    public void setState(String state) {
+        this.state = state;
+    }
+
+    public PaymentReferenceCode getPaymentReferenceCode() {
+        return paymentReferenceCode;
+    }
+
+    public void setPaymentReferenceCode(PaymentReferenceCode paymentReferenceCode) {
+        this.paymentReferenceCode = paymentReferenceCode;
+    }
+
+    public boolean isCompleted() {
+        return completed;
+    }
+
+    public void setCompleted(boolean completed) {
+        this.completed = completed;
+    }
+
+    
 }
