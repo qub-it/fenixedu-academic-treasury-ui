@@ -114,10 +114,10 @@ public class CreatePaymentReferencesStrategy implements IAcademicDebtGenerationR
                     processDebtsForRegistration(rule, registration);
                 } catch (final AcademicTreasuryDomainException e) {
                     if(!MESSAGES_TO_IGNORE.contains(e.getMessage())) {
-                        logger.info(e.getMessage());
+                        logger.debug(e.getMessage());
                     }
                 } catch(final TreasuryDomainException e) {
-                    logger.info(e.getMessage());
+                    logger.debug(e.getMessage());
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }

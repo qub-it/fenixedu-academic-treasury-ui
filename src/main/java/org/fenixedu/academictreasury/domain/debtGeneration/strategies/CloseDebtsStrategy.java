@@ -99,7 +99,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
                 try {
                     processDebtsForRegistration(rule, registration);
                 } catch (final AcademicTreasuryDomainException e) {
-                    logger.info(e.getMessage());
+                    logger.debug(e.getMessage());
                 } catch (final Exception e) {
                     e.printStackTrace();
                 }
@@ -122,7 +122,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
         try {
             processDebtsForRegistration(rule, registration);
         } catch (final AcademicTreasuryDomainException e) {
-            logger.info(e.getMessage());
+            logger.debug(e.getMessage());
         } catch (final Exception e) {
             e.printStackTrace();
         }
