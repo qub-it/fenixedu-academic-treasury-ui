@@ -572,6 +572,10 @@ public class PersonCustomer extends PersonCustomer_Base {
         return null;
     }
     
+    @Override
+    public String getIban() {
+        return getAssociatedPerson().getIban();
+    }
     
     // @formatter: off
     /************
