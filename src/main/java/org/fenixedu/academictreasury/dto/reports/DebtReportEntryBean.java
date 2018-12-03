@@ -71,6 +71,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             "",
             academicTreasuryBundle("label.DebtReportEntryBean.header.amountToPay"),
             academicTreasuryBundle("label.DebtReportEntryBean.header.openAmountToPay"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.openAmountWithInterest"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.pendingInterestAmount"),
             academicTreasuryBundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
             academicTreasuryBundle("label.DebtReportEntryBean.header.payorDebtAcount.name"),
             academicTreasuryBundle("label.DebtReportEntryBean.header.agreement"),
@@ -183,6 +185,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String debitEntryIdentification;
     private BigDecimal amountToPay;
     private BigDecimal openAmountToPay;
+    private BigDecimal openAmountWithInterest;
+    private BigDecimal pendingInterestAmount;
     private String payorDebtAccountVatNumber;
     private String payorDebtAccountName;
     private LocalizedString agreement;
@@ -255,6 +259,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
             this.amountToPay = currency.getValueWithScale(entry.getAmountWithVat());
             this.openAmountToPay = currency.getValueWithScale(entry.getOpenAmount());
+            this.openAmountWithInterest = currency.getValueWithScale(entry.getOpenAmountWithInterests());
+            this.pendingInterestAmount =
+                    currency.getValueWithScale(entry.getOpenAmountWithInterests().subtract(entry.getOpenAmount()));
 
             fillERPInformation(entry);
 
@@ -546,7 +553,23 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     }
                     row.createCell(i++).setCellValue(valueOrEmpty(value));
                 }
-                
+
+                {
+                    String value = openAmountWithInterest != null ? openAmountWithInterest.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+
+                {
+                    String value = pendingInterestAmount != null ? pendingInterestAmount.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountVatNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountName));
                 row.createCell(i++).setCellValue(valueOrEmpty(agreement));
@@ -989,6 +1012,22 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
     public void setOpenAmountToPay(BigDecimal openAmountToPay) {
         this.openAmountToPay = openAmountToPay;
+    }
+
+    public BigDecimal getOpenAmountWithInterest() {
+        return openAmountWithInterest;
+    }
+
+    public void setOpenAmountWithInterest(BigDecimal openAmountWithInterest) {
+        this.openAmountWithInterest = openAmountWithInterest;
+    }
+
+    public BigDecimal getPendingInterestAmount() {
+        return pendingInterestAmount;
+    }
+
+    public void setPendingInterestAmount(BigDecimal pendingInterestAmount) {
+        this.pendingInterestAmount = pendingInterestAmount;
     }
 
     public String getPayorDebtAccountVatNumber() {
