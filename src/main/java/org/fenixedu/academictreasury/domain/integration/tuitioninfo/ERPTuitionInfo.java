@@ -356,6 +356,10 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     }
     
     public static void triggerTuitionInfoCalculation(Predicate<ERPTuitionInfoType> erpTuitionInfoTypeFilterPredicate, Predicate<PersonCustomer> personCustomerPredicate) {
+        if(!ERPTuitionInfoSettings.getInstance().isExportationActive()) {
+            throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.exportation.active.disabled");
+        }
+        
         if(erpTuitionInfoTypeFilterPredicate == null) {
             erpTuitionInfoTypeFilterPredicate = t -> true;
         }
@@ -453,6 +457,10 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     }
     
     public static void triggerTuitionExportationToERP(Predicate<ERPTuitionInfo> erpTuitionInfoPredicate) {
+        if(!ERPTuitionInfoSettings.getInstance().isExportationActive()) {
+            throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.exportation.active.disabled");
+        }
+        
         if(erpTuitionInfoPredicate == null) {
             erpTuitionInfoPredicate = t -> true;
         }
@@ -480,6 +488,10 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     @Atomic(mode = TxMode.WRITE)
     public static ERPTuitionInfo exportTuitionInformation(final PersonCustomer customer, final ERPTuitionInfoType type) {
 
+        if(!ERPTuitionInfoSettings.getInstance().isExportationActive()) {
+            throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.exportation.active.disabled");
+        }
+        
         final ExecutionYear executionYear = type.getExecutionYear();
         
         BigDecimal totalAmount = BigDecimal.ZERO;
@@ -547,6 +559,10 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
             @Override
             @Atomic(mode = TxMode.READ)
             public ERPTuitionInfo call() throws Exception {
+                if(!ERPTuitionInfoSettings.getInstance().isExportationActive()) {
+                    throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.exportation.active.disabled");
+                }
+                
                 ERPTuitionInfoCalculationReportEntry reportEntry = new ERPTuitionInfoCalculationReportEntry();
                 reportEntries.add(reportEntry);
                 
@@ -605,6 +621,10 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
     }
     
     protected static Callable<ERPTuitionInfo> exportTuitionInformationCallable(final ERPTuitionInfo erpTuitionInfo) {
+        if(!ERPTuitionInfoSettings.getInstance().isExportationActive()) {
+            throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.exportation.active.disabled");
+        }
+        
         return new Callable<ERPTuitionInfo>() {
             private String erpTuitionInfoId = erpTuitionInfo.getExternalId();
             
