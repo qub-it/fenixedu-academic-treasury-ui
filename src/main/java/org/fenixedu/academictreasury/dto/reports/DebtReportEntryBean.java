@@ -563,10 +563,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     row.createCell(i++).setCellValue(valueOrEmpty(value));
                 }
 
-                if (TreasurySettings.getInstance().getInterestProduct().getCode().equals(productCode)) {
-                    row.createCell(i++).setCellValue("");
-                }
-                else {
+                {
                     String value = pendingInterestAmount != null ? pendingInterestAmount.toString() : "0";
                     if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
                         value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
