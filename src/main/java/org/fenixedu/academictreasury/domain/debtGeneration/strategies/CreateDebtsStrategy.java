@@ -253,7 +253,7 @@ public class CreateDebtsStrategy implements IAcademicDebtGenerationRuleStrategy 
 
                 final Product interestProduct = TreasurySettings.getInstance().getInterestProduct();
                 final Set<DebitEntry> treasuryEventDebitEntries = DebitEntry.findActive(treasuryEvent)
-                        .filter(d -> d.getProduct() != interestProduct).collect(Collectors.toSet());
+                        .filter(d -> d.getProduct() != interestProduct).collect(Collectors.<DebitEntry> toSet());
 
                 if (!treasuryEventDebitEntries.equals(debitEntries)) {
                     throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.not.all.debitEntries.aggregated");

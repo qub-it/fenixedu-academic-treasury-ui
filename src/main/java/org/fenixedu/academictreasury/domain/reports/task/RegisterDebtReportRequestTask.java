@@ -18,10 +18,13 @@ public class RegisterDebtReportRequestTask extends CronTask {
         
         // Avoid automatic creation of many reports if in this day there are some reports created
         
-        if(DebtReportRequest.findAll().filter(r -> r.getVersioningCreationDate().toLocalDate().compareTo(now) == 0).count()  > MAX_REPORTS_DAY) {
-            taskLog("Exceeded the report requests %d\n", MAX_REPORTS_DAY);
+        if(DebtReportRequest.findAll().filter(r -> r.getVersioningCreationDate().toLocalDate().compareTo(now) == 0).count()  >= MAX_REPORTS_DAY) {
+            taskLog("Exceeded the report requests %d. Please request explicitly.\n", MAX_REPORTS_DAY);
+            return;
         };
-        
+
+        taskLog("Requesting a new debt report");
+
         final DebtReportRequestBean bean = new DebtReportRequestBean();
         
         bean.setBeginDate(new LocalDate(1950, 1, 1));

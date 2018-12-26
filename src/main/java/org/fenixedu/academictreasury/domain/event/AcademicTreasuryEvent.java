@@ -777,7 +777,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         final Set<AcademicTreasuryEvent> result = Sets.newHashSet();
 
         for (final AcademicTax academicTax : AcademicTax.findAll().collect(Collectors.toSet())) {
-            result.addAll(findForAcademicTax(registration, executionYear, academicTax).collect(Collectors.toSet()));
+            result.addAll(findForAcademicTax(registration, executionYear, academicTax).collect(Collectors.<AcademicTreasuryEvent> toSet()));
         }
 
         return result.stream();

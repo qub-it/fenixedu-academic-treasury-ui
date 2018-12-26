@@ -91,7 +91,7 @@ public class ERPTuitionInfoController extends AcademicTreasuryBaseController {
         List<ERPTuitionInfoType> erpTuitionInfoTypesList = Lists.newArrayList();
         
         if(executionYear != null) { 
-            erpTuitionInfoTypesList = ERPTuitionInfoType.findForExecutionYear(executionYear).collect(Collectors.toList());
+            erpTuitionInfoTypesList = ERPTuitionInfoType.findForExecutionYear(executionYear).collect(Collectors.<ERPTuitionInfoType> toList());
             Collections.sort(erpTuitionInfoTypesList, ERPTuitionInfoType.COMPARE_BY_NAME);
         }
         

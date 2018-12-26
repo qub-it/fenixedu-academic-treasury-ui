@@ -53,7 +53,8 @@ public class ERPTuitionInfoTypeController extends AcademicTreasuryBaseController
     
     @RequestMapping(value=_SEARCH_URI + "/{executionYearId}", method=RequestMethod.GET)
     public String search(final Model model, @PathVariable("executionYearId") final ExecutionYear executionYear) {
-        final Set<ERPTuitionInfoType> erpTuitionInfoTypesSet = ERPTuitionInfoType.findForExecutionYear(executionYear).collect(Collectors.toSet());
+        final Set<ERPTuitionInfoType> erpTuitionInfoTypesSet = ERPTuitionInfoType.findForExecutionYear(executionYear)
+                .collect(Collectors.<ERPTuitionInfoType> toSet());
         
         List<ExecutionYear> executionYearOptions = new ArrayList<>(ExecutionYear.readNotClosedExecutionYears());
         Collections.sort(executionYearOptions, ExecutionYear.REVERSE_COMPARATOR_BY_YEAR);

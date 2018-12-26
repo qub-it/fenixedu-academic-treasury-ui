@@ -403,7 +403,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     @Override
     public Set<Customer> getAllCustomers() {
-        return PersonCustomer.find(getAssociatedPerson()).collect(Collectors.toSet());
+        return PersonCustomer.find(getAssociatedPerson()).collect(Collectors.<Customer> toSet());
     }
 
     public void mergeWithPerson(final Person person) {
