@@ -29,6 +29,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.Invoice;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporter;
 import org.fenixedu.treasury.services.integration.erp.sap.SAPExporterUtils;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
@@ -71,6 +72,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             "",
             academicTreasuryBundle("label.DebtReportEntryBean.header.amountToPay"),
             academicTreasuryBundle("label.DebtReportEntryBean.header.openAmountToPay"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.openAmountWithInterestToDate"),
+            academicTreasuryBundle("label.DebtReportEntryBean.header.pendingInterestAmount"),
             academicTreasuryBundle("label.DebtReportEntryBean.header.payorDebtAcount.vatNumber"),
             academicTreasuryBundle("label.DebtReportEntryBean.header.payorDebtAcount.name"),
             academicTreasuryBundle("label.DebtReportEntryBean.header.agreement"),
@@ -183,6 +186,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
     private String debitEntryIdentification;
     private BigDecimal amountToPay;
     private BigDecimal openAmountToPay;
+    private BigDecimal openAmountWithInterestToDate;
+    private BigDecimal pendingInterestAmount;
     private String payorDebtAccountVatNumber;
     private String payorDebtAccountName;
     private LocalizedString agreement;
@@ -255,6 +260,9 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
             this.amountToPay = currency.getValueWithScale(entry.getAmountWithVat());
             this.openAmountToPay = currency.getValueWithScale(entry.getOpenAmount());
+            this.openAmountWithInterestToDate = currency.getValueWithScale(entry.getOpenAmountWithInterests());
+            this.pendingInterestAmount =
+                    currency.getValueWithScale(entry.getOpenAmountWithInterests().subtract(entry.getOpenAmount()));
 
             fillERPInformation(entry);
 
@@ -546,7 +554,23 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                     }
                     row.createCell(i++).setCellValue(valueOrEmpty(value));
                 }
-                
+
+                {
+                    String value = openAmountWithInterestToDate != null ? openAmountWithInterestToDate.toString() : "";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+
+                {
+                    String value = pendingInterestAmount != null ? pendingInterestAmount.toString() : "0";
+                    if (DebtReportRequest.COMMA.equals(decimalSeparator)) {
+                        value = value.replace(DebtReportRequest.DOT, DebtReportRequest.COMMA);
+                    }
+                    row.createCell(i++).setCellValue(valueOrEmpty(value));
+                }
+
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountVatNumber));
                 row.createCell(i++).setCellValue(valueOrEmpty(payorDebtAccountName));
                 row.createCell(i++).setCellValue(valueOrEmpty(agreement));
@@ -989,6 +1013,22 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
     public void setOpenAmountToPay(BigDecimal openAmountToPay) {
         this.openAmountToPay = openAmountToPay;
+    }
+
+    public BigDecimal getOpenAmountWithInterestToDate() {
+        return openAmountWithInterestToDate;
+    }
+
+    public void setOpenAmountWithInterestToDate(BigDecimal openAmountWithInterestToDate) {
+        this.openAmountWithInterestToDate = openAmountWithInterestToDate;
+    }
+
+    public BigDecimal getPendingInterestAmount() {
+        return pendingInterestAmount;
+    }
+
+    public void setPendingInterestAmount(BigDecimal pendingInterestAmount) {
+        this.pendingInterestAmount = pendingInterestAmount;
     }
 
     public String getPayorDebtAccountVatNumber() {
