@@ -274,7 +274,7 @@ ${portal.toolkit()}
 				</tr>
 			</thead>
 			<tbody>
-				<c:forEach var="row" items="${result}">
+				<c:forEach var="row" items="${result}" varStatus="st">
 					<tr>
 						<td><c:out value='${row.erpTuitionInfoProduct.code}' /></td>
 						<td><c:out value='${row.erpTuitionInfoProduct.name}' /></td>
@@ -325,8 +325,11 @@ ${portal.toolkit()}
 									</c:otherwise>
 								</c:choose> 
 							</button>
-
-							<button class="btn btn-default btn-xs" href="${pageContext.request.contextPath}<%= ERPTuitionInfoTypeController.UPDATE_URL %>/${executionYear.externalId}/${row.externalId}">
+							
+							<form id="updateForm-${st.index}" action="${pageContext.request.contextPath}<%= ERPTuitionInfoTypeController.UPDATE_URL %>/${executionYear.externalId}/${row.externalId}" method="get">
+							</form>
+							
+							<button class="btn btn-default btn-xs" form="updateForm-${st.index}">
 				                <span class="glyphicon glyphicon-pencil" aria-hidden="true">&nbsp;</span>
 								<spring:message code='label.update'/>
 							</button>
