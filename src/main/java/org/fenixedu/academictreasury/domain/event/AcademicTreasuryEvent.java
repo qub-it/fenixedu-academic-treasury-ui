@@ -1512,4 +1512,17 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return (ITreasuryServiceRequest) super.getAcademicServiceRequest();
     }
 
+    /* --------------------
+     * CUSTOMER INFORMATION
+     * --------------------
+     */
+
+    public String getPersonName() {
+        if(getPerson() != null) {
+            return getPerson().getName();
+        }
+        
+        return null;
+    }
+    
 }
