@@ -326,7 +326,7 @@ ${portal.toolkit()}
 								</c:choose> 
 							</button>
 							
-							<form id="updateForm-${st.index}" action="${pageContext.request.contextPath}<%= ERPTuitionInfoTypeController.UPDATE_URL %>/${executionYear.externalId}/${row.externalId}" method="get">
+							<form id="updateForm-${st.index}" action="${pageContext.request.contextPath}<%= ERPTuitionInfoTypeController.UPDATE_URL %>/${executionYear.externalId}/${row.externalId}" method="get" style="display: inline-block">
 							</form>
 							
 							<button class="btn btn-default btn-xs" form="updateForm-${st.index}">

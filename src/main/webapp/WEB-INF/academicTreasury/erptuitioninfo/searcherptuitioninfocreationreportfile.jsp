@@ -107,7 +107,7 @@ ${portal.toolkit()}
 					language : {
 						url : "${datatablesI18NUrl}",
 					},
-					"paging": false,
+					"paging": true,
 					//CHANGE_ME adjust the actions column width if needed
 					"columnDefs" : [],
 					"order": [[ 0, "desc" ]],

@@ -293,7 +293,10 @@ angular.module('angularApp', ['ngSanitize', 'ui.select']).controller('Controller
 			
 							<c:forEach var="entry" items="${bean.degrees}" varStatus="loopStatus">
 								<tr>
-									<td><c:out value="${entry.presentationNameI18N.content}" /></td>
+									<td>
+										[<c:out value="${entry.code}" />]
+										<c:out value="${entry.presentationNameI18N.content}" />
+									</td>
 			
 									<td>
 										<form method="post" class="form-horizontal"
@@ -308,7 +311,12 @@ angular.module('angularApp', ['ngSanitize', 'ui.select']).controller('Controller
 			
 							<c:forEach var="entry" items="${bean.degreeCurricularPlans}" varStatus="loopStatus">
 								<tr>
-									<td><c:out value="${entry.degree.presentationNameI18N.content}" /> - <c:out value="${entry.name}" /></td>
+									<td>
+										[<c:out value="${entry.degree.code}" />]
+										<c:out value="${entry.degree.presentationNameI18N.content}" />
+										-
+										<c:out value="${entry.name}" />
+									</td>
 			
 									<td>
 										<form method="post" class="form-horizontal"
