@@ -44,6 +44,12 @@ public enum AcademicTaxDueDateAlignmentType {
                 continue;
             }
 
+            LocalDate oldDueDate = debitEntry.getDueDate();
+            
+            if(oldDueDate != null && dueDateToApply != null && oldDueDate.equals(dueDateToApply)) {
+                continue;
+            }
+            
             debitEntry.setDueDate(dueDateToApply);
         }
     }
