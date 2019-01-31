@@ -35,7 +35,7 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -154,7 +154,7 @@ public class EmolumentServices {
         final AcademicTariff academicTariff = findTariffForAcademicServiceRequest(iTreasuryServiceRequest, debtDate);
 
         if (academicTariff == null) {
-            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", debtDate.toString(Constants.DATE_FORMAT));
+            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", debtDate.toString(TreasuryConstants.DATE_FORMAT));
         }
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
@@ -224,7 +224,7 @@ public class EmolumentServices {
         final AcademicTariff academicTariff = findTariffForAcademicServiceRequest(iTreasuryServiceRequest, when);
 
         if (academicTariff == null) {
-            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", when.toString(Constants.DATE_FORMAT));
+            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", when.toString(TreasuryConstants.DATE_FORMAT));
         }
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
@@ -248,7 +248,7 @@ public class EmolumentServices {
                             .orElse(BigDecimal.ZERO));
             BigDecimal newTotalAmount = academicTariff.amountToPay(academicTresuryEvent);
             //Do nothing, since the value is the same
-            if (Constants.isEqual(oldtotalAmount, newTotalAmount)) {
+            if (TreasuryConstants.isEqual(oldtotalAmount, newTotalAmount)) {
                 return false;
             }
             //Annul debit entries, since new ones will be created to reflect the service request's changes
@@ -264,7 +264,7 @@ public class EmolumentServices {
             return false;
         }
 
-        if (Constants.isEqual(debitEntry.getOpenAmount(), BigDecimal.ZERO)) {
+        if (TreasuryConstants.isEqual(debitEntry.getOpenAmount(), BigDecimal.ZERO)) {
             throw new AcademicTreasuryDomainException("error.EmolumentServices.academicServiceRequest.amount.equals.to.zero");
         }
 

@@ -34,7 +34,7 @@ import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.erp.ERPExternalServiceImplementation.SAPExternalService;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 
 import com.google.common.base.Strings;
@@ -97,8 +97,8 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
         final VatExemptionReason exemptionReason = VatExemptionReason.findByCode("M07");
 
         if (!Product.findUniqueByCode("TRANSFERENCIA_SALDO").isPresent()) {
-            final LocalizedString productName = new LocalizedString(Constants.DEFAULT_LANGUAGE, "Transferência de Saldo");
-            final LocalizedString quantityName = new LocalizedString(Constants.DEFAULT_LANGUAGE, "Unidade");
+            final LocalizedString productName = new LocalizedString(TreasuryConstants.DEFAULT_LANGUAGE, "Transferência de Saldo");
+            final LocalizedString quantityName = new LocalizedString(TreasuryConstants.DEFAULT_LANGUAGE, "Unidade");
 
             final Product product = Product.create(otherProductGroup, "TRANSFERENCIA_SALDO", productName, quantityName, true,
                     false, 0, exemptionVatType, FinantialInstitution.findAll().collect(Collectors.toList()), exemptionReason);
@@ -305,7 +305,7 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
             }
 
             if (Strings.isNullOrEmpty(customer.getFiscalCountry())) {
-                customer.setCountryCode(Constants.DEFAULT_COUNTRY);
+                customer.setCountryCode(TreasuryConstants.DEFAULT_COUNTRY);
             }
 
             customer.setAddressCountryCode(customer.getFiscalCountry());
@@ -374,7 +374,7 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
 
         if (Series.findByCode(finantialInstitution, "REG") == null) {
             final Series regulationSeries = Series.create(finantialInstitution, "REG",
-                    new LocalizedString(Constants.DEFAULT_LANGUAGE, "Regularização"), false, false, false, false, false);
+                    new LocalizedString(TreasuryConstants.DEFAULT_LANGUAGE, "Regularização"), false, false, false, false, false);
 
             finantialInstitution.setRegulationSeries(regulationSeries);
 

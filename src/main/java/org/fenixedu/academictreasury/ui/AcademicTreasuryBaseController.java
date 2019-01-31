@@ -1,11 +1,13 @@
 package org.fenixedu.academictreasury.ui;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
 import org.fenixedu.treasury.ui.TreasuryBaseController;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 
 public class AcademicTreasuryBaseController extends TreasuryBaseController {
@@ -14,8 +16,8 @@ public class AcademicTreasuryBaseController extends TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isManager(Authenticate.getUser())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.manager"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.manager"));
+            addErrorMessage(treasuryBundle("error.authorization.not.manager"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.manager"));
         }
     }
 
@@ -23,8 +25,8 @@ public class AcademicTreasuryBaseController extends TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.backoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.backoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.backoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.backoffice"));
         }
     }
 
@@ -32,8 +34,8 @@ public class AcademicTreasuryBaseController extends TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser())) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.frontoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.frontoffice"));
         }
     }
 
@@ -41,8 +43,8 @@ public class AcademicTreasuryBaseController extends TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isBackOfficeMember(Authenticate.getUser(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.backoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.backoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.backoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.backoffice"));
         }
     }
 
@@ -50,8 +52,8 @@ public class AcademicTreasuryBaseController extends TreasuryBaseController {
         if (TreasuryAccessControl.getInstance().isFrontOfficeMember(Authenticate.getUser(), finantialInstitution)) {
             return;
         } else {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"), model);
-            throw new SecurityException(BundleUtil.getString(Constants.BUNDLE, "error.authorization.not.frontoffice"));
+            addErrorMessage(treasuryBundle("error.authorization.not.frontoffice"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.frontoffice"));
         }
     }
 }

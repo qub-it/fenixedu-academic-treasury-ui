@@ -41,7 +41,6 @@ import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
-import org.fenixedu.treasury.util.Constants;
 import org.joda.time.Interval;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;

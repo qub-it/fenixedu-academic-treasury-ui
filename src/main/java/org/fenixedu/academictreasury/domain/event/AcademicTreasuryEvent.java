@@ -101,7 +101,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         setPerson(person);
         setITreasuryServiceRequest(iTreasuryServiceRequest);
-        setPropertiesJsonMap(org.fenixedu.treasury.util.Constants.propertiesMapToJson(fillPropertiesMap()));
+        setPropertiesJsonMap(org.fenixedu.treasury.util.TreasuryConstants.propertiesMapToJson(fillPropertiesMap()));
         setDescription(descriptionForAcademicServiceRequest());
 
         checkRules();
@@ -139,7 +139,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         setTuitionPaymentPlanGroup(tuitionPaymentPlanGroup);
         setRegistration(registration);
         setExecutionYear(executionYear);
-        setPropertiesJsonMap(org.fenixedu.treasury.util.Constants.propertiesMapToJson(fillPropertiesMap()));
+        setPropertiesJsonMap(org.fenixedu.treasury.util.TreasuryConstants.propertiesMapToJson(fillPropertiesMap()));
 
         checkRules();
     }
@@ -164,7 +164,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         setPerson(registration.getPerson());
         setRegistration(registration);
         setExecutionYear(executionYear);
-        setPropertiesJsonMap(org.fenixedu.treasury.util.Constants.propertiesMapToJson(fillPropertiesMap()));
+        setPropertiesJsonMap(org.fenixedu.treasury.util.TreasuryConstants.propertiesMapToJson(fillPropertiesMap()));
 
         checkRules();
     }

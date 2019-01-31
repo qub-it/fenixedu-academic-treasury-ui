@@ -1,7 +1,7 @@
 package org.fenixedu.academictreasury.domain.integration.tuitioninfo.exporter;
 
 import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
-import static org.fenixedu.treasury.util.Constants.treasuryBundle;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.File;
 import java.io.IOException;
@@ -689,8 +689,7 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
                                 ERPTuitionInfo.findUniqueByDocumentNumber(status.getDocumentNumber()).orElse(null);
                         
                         if (tuitionInfo != null) {
-                            final String message = BundleUtil.getString(org.fenixedu.treasury.util.Constants.BUNDLE,
-                                    "info.ERPExporter.sucess.integrating.document", tuitionInfo.getUiDocumentNumber());
+                            final String message = treasuryBundle("info.ERPExporter.sucess.integrating.document", tuitionInfo.getUiDocumentNumber());
                             logBean.appendIntegrationLog(message);
                             tuitionInfo.markIntegratedWithSuccess(message);
                         } else {

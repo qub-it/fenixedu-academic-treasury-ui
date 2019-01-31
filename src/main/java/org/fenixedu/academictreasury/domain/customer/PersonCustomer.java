@@ -26,7 +26,7 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.dto.AdhocCustomerBean;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.joda.time.LocalDate;
 
@@ -93,7 +93,7 @@ public class PersonCustomer extends PersonCustomer_Base {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.may.only.be.related.to.person.with.one.relation");
         }
 
-        if (DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber()) && !Constants.isDefaultCountry(getFiscalCountry())) {
+        if (DEFAULT_FISCAL_NUMBER.equals(getFiscalNumber()) && !TreasuryConstants.isDefaultCountry(getFiscalCountry())) {
             throw new AcademicTreasuryDomainException(
                     "error.PersonCustomer.default.fiscal.number.applied.only.to.default.country");
         }
@@ -347,7 +347,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
     public boolean isBlockingAcademicalActs(final LocalDate when) {
 
-        if (DebtAccount.find(this).map(da -> Constants.isGreaterThan(da.getTotalInDebt(), BigDecimal.ZERO))
+        if (DebtAccount.find(this).map(da -> TreasuryConstants.isGreaterThan(da.getTotalInDebt(), BigDecimal.ZERO))
                 .reduce((a, c) -> a || c).orElse(Boolean.FALSE)) {
             return DebitEntry.find(this).map(d -> isDebitEntryBlockingAcademicalActs(d, when)).reduce((a, c) -> a || c)
                     .orElse(Boolean.FALSE);

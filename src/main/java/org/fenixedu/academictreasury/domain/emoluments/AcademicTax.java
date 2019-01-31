@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.domain.emoluments;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
@@ -7,13 +9,11 @@ import java.util.stream.Stream;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
-import pt.ist.fenixframework.FenixFramework;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
-import org.fenixedu.treasury.util.Constants;
 
 import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 public class AcademicTax extends AcademicTax_Base {
 
@@ -94,7 +94,7 @@ public class AcademicTax extends AcademicTax_Base {
     @Override
     protected void checkForDeletionBlockers(Collection<String> blockers) {
         if (!getAcademicTreasuryEventSet().isEmpty()) {
-            blockers.add(BundleUtil.getString(Constants.BUNDLE, "error.AcademicTax.delete.has.treasury.events"));
+            blockers.add(academicTreasuryBundle("error.AcademicTax.delete.has.treasury.events"));
         }
         super.checkForDeletionBlockers(blockers);
     }

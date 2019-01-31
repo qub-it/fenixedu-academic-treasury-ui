@@ -30,7 +30,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemptionType;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
-import org.fenixedu.treasury.util.Constants;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Strings;
@@ -363,7 +363,7 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
                                 }
 
                                 final DebitEntry tuitionDebitEntry = debitEntriesSet.iterator().next();
-                                if (Constants.isLessThan(amountToExempt, BigDecimal.ZERO) || Constants.isGreaterThan(amountToExempt, tuitionDebitEntry.getTotalAmount())) {
+                                if (TreasuryConstants.isLessThan(amountToExempt, BigDecimal.ZERO) || TreasuryConstants.isGreaterThan(amountToExempt, tuitionDebitEntry.getTotalAmount())) {
                                     throw new AcademicTreasuryDomainException("error.ExemptionsGenerationRequestFile.amountToExempt.invalid",
                                             String.valueOf(rowNum), amountToExemptValue);
                                 }
@@ -394,7 +394,7 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
                     } else {
                         debitEntry = debitEntries.iterator().next();
 
-                        if (Constants.isLessThan(amountToExempt, BigDecimal.ZERO) || Constants.isGreaterThan(amountToExempt, debitEntry.getTotalAmount())) {
+                        if (TreasuryConstants.isLessThan(amountToExempt, BigDecimal.ZERO) || TreasuryConstants.isGreaterThan(amountToExempt, debitEntry.getTotalAmount())) {
                             throw new AcademicTreasuryDomainException("error.ExemptionsGenerationRequestFile.amountToExempt.invalid",
                                     String.valueOf(rowNum), amountToExemptValue);
                         }
