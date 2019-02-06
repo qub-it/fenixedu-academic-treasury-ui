@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.ui.manageemoluments;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -71,7 +73,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         try {
             academicTariff.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicTariff.delete.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.AcademicTariff.delete.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }

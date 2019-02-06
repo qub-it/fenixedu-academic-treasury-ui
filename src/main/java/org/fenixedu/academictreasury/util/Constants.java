@@ -42,7 +42,7 @@ public class Constants {
     public static final DateTime INFINITY_DATE = new DateTime().plusYears(500);
 
     public static final TreasuryTupleDataSourceBean SELECT_OPTION =
-            new TreasuryTupleDataSourceBean("", BundleUtil.getString(Constants.BUNDLE, "label.TreasuryTupleDataSourceBean.select.description"));
+            new TreasuryTupleDataSourceBean("", academicTreasuryBundle("label.TreasuryTupleDataSourceBean.select.description"));
 
     public static final Locale DEFAULT_LANGUAGE = new Locale("PT");
     public static final String DEFAULT_COUNTRY = "PT";
@@ -99,6 +99,10 @@ public class Constants {
 
     public static String academicTreasuryBundle(final String key, final String... args) {
         return BundleUtil.getString(Constants.BUNDLE, key, args);
+    }
+    
+    public static String academicTreasuryBundle(final Locale locale, final String key, final String... args) {
+        return BundleUtil.getString(Constants.BUNDLE, locale, key, args);
     }
 
     public static LocalizedString academicTreasuryBundleI18N(final String key, final String... args) {

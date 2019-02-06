@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.academicservicerequestdebtcreation;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
@@ -118,21 +120,20 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
             boolean dataMissing = false;
             if (bean.getRegistration() == null) {
                 addErrorMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "error.AcademicServiceRequestDebtCreation.registration.required"),
+                        academicTreasuryBundle("error.AcademicServiceRequestDebtCreation.registration.required"),
                         model);
                 dataMissing = true;
             }
 
             if (bean.getDebtDate() == null) {
                 addErrorMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "error.AcademicServiceRequestDebtCreation.debtDate.required"),
+                        academicTreasuryBundle("error.AcademicServiceRequestDebtCreation.debtDate.required"),
                         model);
                 dataMissing = true;
             }
 
             if (bean.getAcademicServiceRequest() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE,
-                        "error.AcademicServiceRequestDebtCreation.academicServiceRequest.required"), model);
+                addErrorMessage(academicTreasuryBundle("error.AcademicServiceRequestDebtCreation.academicServiceRequest.required"), model);
                 dataMissing = true;
             }
 
@@ -143,7 +144,7 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
             ITreasuryServiceRequest iTreasuryServiceRequest = (ITreasuryServiceRequest) bean.getAcademicServiceRequest();
             if (EmolumentServices.findTariffForAcademicServiceRequest(iTreasuryServiceRequest, bean.getDebtDate()) == null) {
                 addErrorMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "error.AcademicServiceRequestDebtCreation.tariff.not.found"),
+                        academicTreasuryBundle("error.AcademicServiceRequestDebtCreation.tariff.not.found"),
                         model);
                 return _createFirstPage(debtAccount, bean, model);
             }
@@ -152,7 +153,7 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
 
             if (event != null && event.isChargedWithDebitEntry()) {
                 addErrorMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "error.AcademicServiceRequestDebtCreation.event.is.charged"),
+                        academicTreasuryBundle("error.AcademicServiceRequestDebtCreation.event.is.charged"),
                         model);
 
                 return _createFirstPage(debtAccount, bean, model);
@@ -187,7 +188,7 @@ public class AcademicServiceRequestDebtCreationBeanController extends AcademicTr
             EmolumentServices.createAcademicServiceRequestEmolument((ITreasuryServiceRequest) bean.getAcademicServiceRequest(),
                     bean.getDebtDate());
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicServiceRequest.debit.entries.created.success"),
+            addInfoMessage(academicTreasuryBundle("label.AcademicServiceRequest.debit.entries.created.success"),
                     model);
 
             return redirect(DebtAccountController.READ_URL + "/" + debtAccount.getExternalId(), model, redirectAttributes);

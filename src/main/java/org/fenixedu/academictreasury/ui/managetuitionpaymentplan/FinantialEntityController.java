@@ -34,6 +34,7 @@ import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialEntity;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -59,7 +60,9 @@ public class FinantialEntityController extends AcademicTreasuryBaseController {
 
     @RequestMapping(value = _CHOOSEFINANTIALENTITY_URI)
     public String chooseFinantialEntity(final Model model) {
-        model.addAttribute("choosefinantialentityResultsDataSet", FinantialEntity.findWithBackOfficeAccessFor(Authenticate.getUser())
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        model.addAttribute("choosefinantialentityResultsDataSet", FinantialEntity.findWithBackOfficeAccessFor(loggedUsername)
                 .sorted(FinantialEntity.COMPARE_BY_NAME).collect(Collectors.toList()));
 
         return jspPage("choosefinantialentity");

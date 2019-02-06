@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.manageacademictax;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.stream.Collectors;
 
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
@@ -113,12 +115,12 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
             //call the Atomic delete function
             deleteAcademicTax(academicTax);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.success.create"), model);
+            addInfoMessage(academicTreasuryBundle("label.success.create"), model);
             return true;
         } catch (AcademicTreasuryDomainException ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
         return false;
     }
@@ -150,9 +152,9 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
 
             return redirect(READ_URL + academicTax.getExternalId(), model, redirectAttributes);
         } catch (AcademicTreasuryDomainException ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
         return create(model);
     }
@@ -191,9 +193,9 @@ public class AcademicTaxController extends AcademicTreasuryBaseController {
 
             return redirect(READ_URL + academicTax.getExternalId(), model, redirectAttributes);
         } catch (AcademicTreasuryDomainException ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(academicTax, model);
     }

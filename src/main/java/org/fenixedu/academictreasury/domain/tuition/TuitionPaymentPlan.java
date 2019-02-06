@@ -1,5 +1,7 @@
 package org.fenixedu.academictreasury.domain.tuition;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.math.BigDecimal;
 import java.util.Comparator;
 import java.util.List;
@@ -192,7 +194,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                     isCustomized() ? "label.TuitionPaymentPlan.paymentPlanName.customized" : "label.TuitionPaymentPlan.paymentPlanName";
 
             result = result.with(locale,
-                    BundleUtil.getString(Constants.BUNDLE, paymentPlanLabel,
+                    Constants.academicTreasuryBundle(paymentPlanLabel,
                             "[" + getDegreeCurricularPlan().getDegree().getCode() + "] "
                                     + getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale) + " - "
                                     + getDegreeCurricularPlan().getName(),
@@ -209,16 +211,16 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             StringBuilder description = new StringBuilder();
 
             if (isDefaultPaymentPlan()) {
-                description.append(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.defaultPaymentPlan"))
+                description.append(academicTreasuryBundle("label.TuitionPaymentPlan.defaultPaymentPlan"))
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getTuitionPaymentPlanGroup().isForStandalone()) {
-                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.standalone"))
+                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.standalone"))
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
 
             } else if (getTuitionPaymentPlanGroup().isForExtracurricular()) {
-                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.extracurricular"))
+                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.extracurricular"))
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
@@ -236,14 +238,14 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (getCurricularYear() != null) {
-                description.append(BundleUtil.getString(Constants.BUNDLE, locale,
+                description.append(academicTreasuryBundle(locale,
                         "label.TuitionPaymentPlan.curricularYear.description", String.valueOf(getCurricularYear().getYear())))
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getSemester() != null) {
                 description
-                        .append(BundleUtil.getString(Constants.BUNDLE, locale,
+                        .append(academicTreasuryBundle(locale,
                                 "label.TuitionPaymentPlan.curricularSemester.description", String.valueOf(getSemester())))
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
@@ -253,19 +255,19 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (isFirstTimeStudent()) {
-                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.firstTimeStudent"))
+                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.firstTimeStudent"))
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (isCustomized()) {
-                description.append(BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.customized"))
+                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.customized"))
                         .append(" [").append(getCustomizedName().getContent()).append("]")
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (isWithLaboratorialClasses()) {
                 description.append(
-                        BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.withLaboratorialClasses"))
+                        academicTreasuryBundle(locale, "label.TuitionPaymentPlan.withLaboratorialClasses"))
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
@@ -314,7 +316,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             final String installmentName =
-                    BundleUtil.getString(Constants.BUNDLE, locale, label, String.valueOf(installmentTariff.getInstallmentOrder()),
+                    academicTreasuryBundle(locale, label, String.valueOf(installmentTariff.getInstallmentOrder()),
                             getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale),
                             getExecutionYear().getQualifiedName());
 

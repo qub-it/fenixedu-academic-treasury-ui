@@ -34,7 +34,11 @@ public class DebtReportRequestResultErrorsFile extends DebtReportRequestResultEr
 
     @Override
     public boolean isAccessible(final User user) {
-        return TreasuryAccessControlAPI.isBackOfficeMember(user);
+        return isAccessible(user.getUsername());
+    }
+    
+    public boolean isAccessible(final String username) {
+        return TreasuryAccessControlAPI.isBackOfficeMember(username);
     }
 
     public static DebtReportRequestResultErrorsFile create(final DebtReportRequest request, final byte[] content) {

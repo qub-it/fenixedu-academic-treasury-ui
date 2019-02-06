@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -114,7 +116,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
 
             tuitionPaymentPlan.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.deletion.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.deletion.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -215,15 +217,14 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
         List<String> messages = bean.validateStudentConditions();
         if (!messages.isEmpty()) {
             for (String m : messages) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, m), model);
+                addErrorMessage(academicTreasuryBundle(m), model);
             }
 
             return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
         }
 
         if (bean.isCustomized() && Strings.isNullOrEmpty(bean.getName())) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
-                    model);
+            addErrorMessage(academicTreasuryBundle("error.TuitionPaymentPlan.custom.payment.plan.name.required"), model);
             return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
         }
 
@@ -261,7 +262,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
 
         if (!errorMessages.isEmpty()) {
             for (final String error : errorMessages) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error), model);
+                addErrorMessage(academicTreasuryBundle(error), model);
             }
         } else {
             bean.resetInstallmentFields();
@@ -377,7 +378,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
 
             tuitionPaymentPlan.orderUp();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.order.up.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.order.up.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -401,7 +402,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
 
             tuitionPaymentPlan.orderDown();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.order.down.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.order.down.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -508,7 +509,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
 
             //Success Validation
             //Add the bean to be used in the View
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.copy.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.copy.success"), model);
 
             return redirect(
                     String.format("%s/%s/%s", DegreeCurricularPlanController.CHOOSEDEGREECURRICULARPLAN_URL,
@@ -595,7 +596,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             
             //Success Validation
             //Add the bean to be used in the View
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.edit.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.edit.success"), model);
 
             final FinantialEntity finantialEntity = tuitionInstallmentTariff.getFinantialEntity();
             final ExecutionYear executionYear = tuitionInstallmentTariff.getTuitionPaymentPlan().getExecutionYear();

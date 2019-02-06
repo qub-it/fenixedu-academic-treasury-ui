@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.manageservicerequestmapentry;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
@@ -72,7 +74,7 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
         try {
             serviceRequestMapEntry.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.ServiceRequestMapEntry.delete.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.ServiceRequestMapEntry.delete.success"), model);
         } catch (final DomainException e) {
             addErrorMessage(e.getLocalizedMessage(), model);
         }
@@ -111,7 +113,7 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
             ServiceRequestMapEntry.create(product, serviceRequestType, createEventOnSituationType, generatePaymentCode,
                     paymentCodePool, debitEntryDescriptionExtensionFormat);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.ServiceRequestMapEntry.create.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.ServiceRequestMapEntry.create.success"), model);
 
             return redirect("/academictreasury/manageservicerequestmapentry/servicerequestmapentry/", model, redirectAttributes);
         } catch (DomainException de) {

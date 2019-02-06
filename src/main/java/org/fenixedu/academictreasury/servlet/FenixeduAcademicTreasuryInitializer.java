@@ -6,6 +6,8 @@ import javax.servlet.annotation.WebListener;
 
 import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
+import org.fenixedu.academictreasury.services.AcademicTreasuryPlataformDependentServicesFactory;
+import org.fenixedu.academictreasury.services.FenixEduAcademicTreasuryPlatformDependentServices;
 
 import pt.ist.fenixframework.FenixFramework;
 import pt.ist.fenixframework.dml.DeletionListener;
@@ -15,6 +17,8 @@ public class FenixeduAcademicTreasuryInitializer implements ServletContextListen
 
     @Override
     public void contextInitialized(ServletContextEvent event) {
+        AcademicTreasuryPlataformDependentServicesFactory.registerImplementation(new FenixEduAcademicTreasuryPlatformDependentServices());
+        
         setupListenerForServiceRequestTypeDelete();
     }
 

@@ -35,9 +35,7 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tuition.TuitionDebtCreationBean;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
-import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
@@ -148,19 +146,19 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
 
             boolean dataMissing = false;
             if (bean.getRegistration() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.registration.required"),
+                addErrorMessage(academicTreasuryBundle("error.TuitionDebtCreationBean.registration.required"),
                         model);
                 dataMissing = true;
             }
 
             if (bean.getExecutionYear() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.executionYear.required"),
+                addErrorMessage(academicTreasuryBundle("error.TuitionDebtCreationBean.executionYear.required"),
                         model);
                 dataMissing = true;
             }
 
             if (bean.getDebtDate() == null) {
-                addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.debtDate.required"), model);
+                addErrorMessage(academicTreasuryBundle("error.TuitionDebtCreationBean.debtDate.required"), model);
                 dataMissing = true;
             }
 
@@ -198,7 +196,7 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
                         .findAcademicTreasuryEventTuitionForStandalone(bean.getRegistration(), bean.getExecutionYear());
 
                 if (event != null && event.isChargedWithDebitEntry(bean.getEnrolment())) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.event.is.charged"),
+                    addErrorMessage(academicTreasuryBundle("error.TuitionDebtCreationBean.event.is.charged"),
                             model);
                     return _createFirstPage(debtAccount, bean, model);
                 }
@@ -215,7 +213,7 @@ public class OtherTuitionDebtCreationBeanController extends AcademicTreasuryBase
                         .findAcademicTreasuryEventTuitionForExtracurricular(bean.getRegistration(), bean.getExecutionYear());
 
                 if (event != null && event.isChargedWithDebitEntry(bean.getEnrolment())) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionDebtCreationBean.event.is.charged"),
+                    addErrorMessage(academicTreasuryBundle("error.TuitionDebtCreationBean.event.is.charged"),
                             model);
                     return _createFirstPage(debtAccount, bean, model);
                 }

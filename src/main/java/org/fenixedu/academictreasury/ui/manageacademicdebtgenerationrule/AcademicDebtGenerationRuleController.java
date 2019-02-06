@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.manageacademicdebtgenerationrule;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.Collections;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
@@ -124,7 +126,7 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
         try {
             academicDebtGenerationRule.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicDebtGenerationRule.delete.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.AcademicDebtGenerationRule.delete.success"), model);
             return redirect(String.format("%s/%s/%s", SEARCH_URL, type.getExternalId(), executionYear.getExternalId()), model,
                     redirectAttributes);
         } catch (DomainException ex) {

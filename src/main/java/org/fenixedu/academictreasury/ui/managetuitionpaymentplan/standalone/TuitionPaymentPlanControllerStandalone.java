@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan.standalone;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -46,6 +48,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialEntity;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -81,8 +84,10 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
 
     @RequestMapping(value = _CHOOSEFINANTIALENTITY_URI)
     public String chooseFinantialEntity(final Model model) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
         model.addAttribute("choosefinantialentityResultsDataSet",
-                FinantialEntity.findWithBackOfficeAccessFor(Authenticate.getUser()).sorted(FinantialEntity.COMPARE_BY_NAME)
+                FinantialEntity.findWithBackOfficeAccessFor(loggedUsername).sorted(FinantialEntity.COMPARE_BY_NAME)
                         .collect(Collectors.toList()));
 
         model.addAttribute("executionYear", ExecutionYear.readCurrentExecutionYear());
@@ -160,7 +165,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
 
             tuitionPaymentPlan.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.deletion.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.deletion.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -179,7 +184,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
 
         if (!TuitionPaymentPlanGroup.findUniqueDefaultGroupForStandalone().isPresent()) {
             addInfoMessage(
-                    BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.defaultGroupForStandalone.required"),
+                    academicTreasuryBundle("label.TuitionPaymentPlanGroup.defaultGroupForStandalone.required"),
                     model);
             return chooseDegreeCurricularPlan(finantialEntity, executionYear, model);
         }
@@ -228,8 +233,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
         if (bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
-                    model);
+            addErrorMessage(academicTreasuryBundle("error.TuitionPaymentPlan.choose.degree.curricular.plans"), model);
 
             return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
         }
@@ -269,7 +273,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
 
             if (bean.isCustomized() && Strings.isNullOrEmpty(bean.getName())) {
                 addErrorMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
+                        academicTreasuryBundle("error.TuitionPaymentPlan.custom.payment.plan.name.required"),
                         model);
                 return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
             }
@@ -328,7 +332,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
 
             tuitionPaymentPlan.orderUp();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.order.up.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.order.up.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -352,7 +356,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
 
             tuitionPaymentPlan.orderDown();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.order.down.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.order.down.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }

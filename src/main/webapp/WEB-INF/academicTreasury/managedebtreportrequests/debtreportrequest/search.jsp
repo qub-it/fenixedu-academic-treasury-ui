@@ -1,4 +1,4 @@
-<%@page import="org.fenixedu.bennu.core.security.Authenticate"%>
+<%@page import="org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory"%>
 <%@page import="org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI"%>
 <%@page import="org.fenixedu.academictreasury.ui.managedebtreportrequests.DebtReportRequestController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -157,7 +157,7 @@ ${portal.angularToolkit()}
 					</a></p>
 				</c:forEach>
 				
-				<% if(TreasuryAccessControlAPI.isManager(Authenticate.getUser())) { %>
+				<% if(TreasuryAccessControlAPI.isManager(TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername())) { %>
 				
 				<c:forEach var="result" items="${row.debtReportRequestResultErrorsFiles}">
 					<p><a href="${pageContext.request.contextPath}<%= DebtReportRequestController.DOWNLOAD_ERRORS_URL %>/${result.externalId}">

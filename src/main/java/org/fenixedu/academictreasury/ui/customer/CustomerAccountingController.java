@@ -1,6 +1,5 @@
 package org.fenixedu.academictreasury.ui.customer;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,6 +13,7 @@ import org.fenixedu.academictreasury.services.reports.DocumentPrinter;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.academictreasury.ui.customer.forwardpayments.CustomerAccountingForwardPaymentController;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
@@ -23,11 +23,11 @@ import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
-import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.joda.time.DateTime;
 import org.springframework.http.HttpStatus;
@@ -91,7 +91,9 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("readCustomerUrl", getReadCustomerUrl());
         model.addAttribute("readAccountUrl", getReadAccountUrl());
 
-        Customer customer = Authenticate.getUser().getPerson().getPersonCustomer();
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        Customer customer = User.findByUsername(loggedUsername).getPerson().getPersonCustomer();
         model.addAttribute("customer", customer);
 
         if (customer == null) {

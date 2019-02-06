@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplangroup;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.stream.Collectors;
 
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -33,8 +35,6 @@ import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
@@ -84,13 +84,13 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
         try {
             tuitionPaymentPlanGroup.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.delete.sucess"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlanGroup.delete.sucess"), model);
 
             return redirect(route("/"), model, redirectAttributes);
         } catch (AcademicTreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + tde.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.delete") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.delete") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.delete") + ex.getLocalizedMessage(), model);
         }
 
         return jspPage("search");
@@ -123,12 +123,12 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
                     TuitionPaymentPlanGroup
                             .create(code, name, forRegistration, forStandalone, forExtracurricular, currentProduct);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlanGroup.creation.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlanGroup.creation.success"), model);
             return redirect(route("/read", group.getExternalId()), model, redirectAttributes);
         } catch (AcademicTreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + tde.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.create") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.create") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.create") + ex.getLocalizedMessage(), model);
         }
         return create(model);
     }
@@ -160,9 +160,9 @@ public class TuitionPaymentPlanGroupController extends AcademicTreasuryBaseContr
 
             return redirect(route("/read", tuitionPaymentPlanGroup.getExternalId()), model, redirectAttributes);
         } catch (AcademicTreasuryDomainException tde) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + tde.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.update") + tde.getLocalizedMessage(), model);
         } catch (Exception ex) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "label.error.update") + ex.getLocalizedMessage(), model);
+            addErrorMessage(academicTreasuryBundle("label.error.update") + ex.getLocalizedMessage(), model);
         }
         return update(tuitionPaymentPlanGroup, model);
     }

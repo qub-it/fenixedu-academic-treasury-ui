@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.manageacademicactblockingsuspension;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Person;
@@ -139,7 +141,7 @@ public class AcademicActBlockingSuspensionController extends AcademicTreasuryBas
 
             AcademicActBlockingSuspension.create(((PersonCustomer) debtAccount.getCustomer()).getPerson(), beginDate, endDate, reason);
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicActBlockingSuspension.created.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.AcademicActBlockingSuspension.created.success"), model);
             return redirect(SEARCH_URL + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {
             addErrorMessage(de.getLocalizedMessage(), model);

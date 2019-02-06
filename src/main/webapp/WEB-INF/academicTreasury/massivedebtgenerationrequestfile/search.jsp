@@ -130,13 +130,15 @@ ${portal.toolkit()}
 
 		</datatables:table>
 		<script>
-			createDataTables(
+			var table = createDataTables(
 					'simpletable',
 					false,
 					false,
 					true,
 					"${pageContext.request.contextPath}",
 					"${datatablesI18NUrl}");
+			
+			table.order([0, 'desc']).draw();
 		</script>
 		
 	</c:when>

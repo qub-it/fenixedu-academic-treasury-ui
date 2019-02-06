@@ -1,102 +1,99 @@
 package org.fenixedu.academictreasury.services.accesscontrol.spi;
 
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
 
-import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
-import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
-import org.fenixedu.bennu.core.domain.User;
+import org.fenixedu.academictreasury.services.AcademicTreasuryPlataformDependentServicesFactory;
+import org.fenixedu.academictreasury.services.IAcademicTreasuryPlatformDependentServices;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.services.accesscontrol.spi.ITreasuryAccessControlExtension;
 
 import com.google.common.collect.Sets;
 
-public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessControlExtension {
+public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessControlExtension<Object> {
 
     @Override
-    public boolean isFrontOfficeMember(final User user) {
-        return FinantialInstitution.findAll().map(l -> isFrontOfficeMember(user, l)).reduce((a, b) -> a || b).orElse(false);
+    public boolean isFrontOfficeMember(final String username) {
+        return FinantialInstitution.findAll().map(l -> isFrontOfficeMember(username, l)).reduce((a, b) -> a || b).orElse(false);
     }
 
     @Override
-    public boolean isFrontOfficeMember(final User user, final FinantialInstitution finantialInstitution) {
-        return FinantialEntity.find(finantialInstitution).map(l -> isFrontOfficeMember(user, l)).reduce((a, b) -> a || b)
+    public boolean isFrontOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
+        return FinantialEntity.find(finantialInstitution).map(l -> isFrontOfficeMember(username, l)).reduce((a, b) -> a || b)
                 .orElse(false);
     }
 
-    private boolean isFrontOfficeMember(final User user, final FinantialEntity finantialEntity) {
-        if (finantialEntity.getAdministrativeOffice() == null) {
-            return false;
-        }
-
-        return AcademicAccessRule.isMember(user, AcademicOperationType.MANAGE_STUDENT_PAYMENTS, Collections.emptySet(),
-                Collections.singleton(finantialEntity.getAdministrativeOffice()));
+    private boolean isFrontOfficeMember(final String username, final FinantialEntity finantialEntity) {
+        return AcademicTreasuryPlataformDependentServicesFactory.implementation().isFrontOfficeMember(username, finantialEntity);
+    }
+    
+    @Override
+    public boolean isBackOfficeMember(final String username) {
+        return FinantialInstitution.findAll().map(l -> isBackOfficeMember(username, l)).reduce((a, b) -> a || b).orElse(false);
     }
 
     @Override
-    public boolean isBackOfficeMember(final User user) {
-        return FinantialInstitution.findAll().map(l -> isBackOfficeMember(user, l)).reduce((a, b) -> a || b).orElse(false);
+    public boolean isBackOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
+        return FinantialEntity.find(finantialInstitution).map(l -> isBackOfficeMember(username, l)).reduce((a, b) -> a || b).orElse(false);
     }
 
     @Override
-    public boolean isBackOfficeMember(final User user, final FinantialInstitution finantialInstitution) {
-        return FinantialEntity.findAll().map(l -> isBackOfficeMember(user, l)).reduce((a, b) -> a || b).orElse(false);
+    public boolean isBackOfficeMember(final String username, final FinantialEntity finantialEntity) {
+        return AcademicTreasuryPlataformDependentServicesFactory.implementation().isBackOfficeMember(username, finantialEntity);
     }
 
     @Override
-    public boolean isBackOfficeMember(final User user, final FinantialEntity finantialEntity) {
-        if (finantialEntity.getAdministrativeOffice() == null) {
-            return false;
-        }
-
-        return AcademicAccessRule.isMember(user, AcademicOperationType.MANAGE_STUDENT_PAYMENTS_ADV, Collections.emptySet(),
-                Collections.singleton(finantialEntity.getAdministrativeOffice()));
+    public boolean isManager(final String username) {
+        return false;
     }
 
     @Override
-    public Set<User> getFrontOfficeMembers() {
-        return FinantialEntity.findAll().filter(l -> l.getAdministrativeOffice() != null)
-                .map(l -> AcademicAccessRule.getMembers(AcademicOperationType.MANAGE_STUDENT_PAYMENTS, Collections.emptySet(),
-                        Collections.singleton(l.getAdministrativeOffice())).collect(Collectors.toSet()))
-                .reduce((a, b) -> Sets.union(a, b)).orElse(Collections.emptySet());
+    public boolean isAllowToModifySettlements(final String username, final FinantialInstitution finantialInstitution) {
+        return FinantialEntity.find(finantialInstitution).map(l -> isAllowToModifySettlements(username, l)).reduce((a, b) -> a || b).orElse(false);
+    }
+
+    private boolean isAllowToModifySettlements(final String username, final FinantialEntity finantialEntity) {
+        return AcademicTreasuryPlataformDependentServicesFactory.implementation().isAllowToModifySettlements(username, finantialEntity);
     }
 
     @Override
-    public Set<User> getBackOfficeMembers() {
-        return FinantialEntity.findAll().filter(l -> l.getAdministrativeOffice() != null)
-                .map(l -> AcademicAccessRule.getMembers(AcademicOperationType.MANAGE_STUDENT_PAYMENTS_ADV, Collections.emptySet(),
-                        Collections.singleton(l.getAdministrativeOffice())).collect(Collectors.toSet()))
-                .reduce((a, b) -> Sets.union(a, b)).orElse(Collections.emptySet());
+    public boolean isAllowToModifyInvoices(final String username, final FinantialInstitution finantialInstitution) {
+        return FinantialEntity.find(finantialInstitution).map(l -> isAllowToModifyInvoices(username, l)).reduce((a, b) -> a || b).orElse(false);
+    }
+
+    private boolean isAllowToModifyInvoices(final String username, final FinantialEntity finantialEntity) {
+        return AcademicTreasuryPlataformDependentServicesFactory.implementation().isAllowToModifyInvoices(username, finantialEntity);
     }
 
     @Override
-    public boolean isAllowToModifySettlements(final User user, final FinantialInstitution finantialInstitution) {
-        return FinantialEntity.findAll().map(l -> isAllowToModifySettlements(user, l)).reduce((a, b) -> a || b).orElse(false);
-    }
-
-    private boolean isAllowToModifySettlements(final User user, final FinantialEntity finantialEntity) {
-        if (finantialEntity.getAdministrativeOffice() == null) {
-            return false;
-        }
-
-        return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_SETTLEMENTS, Collections.emptySet(),
-                Collections.singleton(finantialEntity.getAdministrativeOffice()));
+    public Set<String> getFrontOfficeMemberUsernames() {
+        final IAcademicTreasuryPlatformDependentServices services = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        
+        final Set<String> result = Sets.newHashSet();
+        
+        FinantialEntity.findAll().forEach(entity -> {
+            result.addAll(services.getFrontOfficeMemberUsernames(entity));
+        });
+        
+        return result;
     }
 
     @Override
-    public boolean isAllowToModifyInvoices(final User user, final FinantialInstitution finantialInstitution) {
-        return FinantialEntity.findAll().map(l -> isAllowToModifyInvoices(user, l)).reduce((a, b) -> a || b).orElse(false);
+    public Set<String> getBackOfficeMemberUsernames() {
+        final IAcademicTreasuryPlatformDependentServices services = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        
+        final Set<String> result = Sets.newHashSet();
+        
+        FinantialEntity.findAll().forEach(entity -> {
+            result.addAll(services.getBackOfficeMemberUsernames(entity));
+        });
+        
+        return result;
     }
 
-    private boolean isAllowToModifyInvoices(final User user, final FinantialEntity finantialEntity) {
-        if (finantialEntity.getAdministrativeOffice() == null) {
-            return false;
-        }
-
-        return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_INVOICES, Collections.emptySet(),
-                Collections.singleton(finantialEntity.getAdministrativeOffice()));
+    @Override
+    public Set<String> getTreasuryManagerMemberUsernames() {
+        return Sets.newHashSet();
     }
 
 }

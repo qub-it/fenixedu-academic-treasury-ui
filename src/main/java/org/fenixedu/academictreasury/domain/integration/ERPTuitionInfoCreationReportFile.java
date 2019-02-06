@@ -5,6 +5,7 @@ import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControl;
+import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 
 import pt.ist.fenixframework.Atomic;
 
@@ -23,9 +24,12 @@ public class ERPTuitionInfoCreationReportFile extends ERPTuitionInfoCreationRepo
 
     @Override
     public boolean isAccessible(User arg0) {
-        return TreasuryAccessControl.getInstance().isBackOfficeMember(arg0);
+        return isAccessible(arg0.getUsername());
     }
     
+    public boolean isAccessible(final String username) {
+        return TreasuryAccessControlAPI.isBackOfficeMember(username);
+    }
     
     // @formatter:off
     /* ********

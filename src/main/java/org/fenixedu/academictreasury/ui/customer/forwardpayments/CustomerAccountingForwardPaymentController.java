@@ -9,11 +9,13 @@ import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.ui.customer.CustomerAccountingController;
+import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,7 +43,9 @@ public class CustomerAccountingForwardPaymentController
 
     @Override
     protected void checkPermissions(DebtAccount debtAccount, Model model) {
-        final Person person = Authenticate.getUser().getPerson();
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        final Person person = User.findByUsername(loggedUsername).getPerson();
         final String fiscalCountryCode = PersonCustomer.countryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
         if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {

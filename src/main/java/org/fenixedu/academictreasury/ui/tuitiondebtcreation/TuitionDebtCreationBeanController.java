@@ -26,6 +26,8 @@
  */
 package org.fenixedu.academictreasury.ui.tuitiondebtcreation;
 
+import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
@@ -144,8 +146,7 @@ public class TuitionDebtCreationBeanController extends AcademicTreasuryBaseContr
 
             //Success Validation
             //Add the bean to be used in the View
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
-                    "label.TuitionPaymentPlan.tuition.installments.debit.entries.created.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.tuition.installments.debit.entries.created.success"), model);
 
             return redirect(DebtAccountController.READ_URL + "/" + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {

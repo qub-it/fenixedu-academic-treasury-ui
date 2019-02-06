@@ -92,7 +92,11 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
 
     @Override
     public boolean isAccessible(final User user) {
-        return TreasuryAccessControlAPI.isBackOfficeMember(user);
+        return isAccessible(user.getUsername());
+    }
+    
+    public boolean isAccessible(final String username) {
+        return TreasuryAccessControlAPI.isBackOfficeMember(username);
     }
 
     @Atomic

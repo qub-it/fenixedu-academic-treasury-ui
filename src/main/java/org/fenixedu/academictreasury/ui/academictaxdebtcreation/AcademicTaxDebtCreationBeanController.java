@@ -227,7 +227,7 @@ public class AcademicTaxDebtCreationBeanController extends AcademicTreasuryBaseC
                         bean.getDebtDate(), true);
             }
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.AcademicTax.debit.entries.created.success"), model);
+            addInfoMessage(academicTreasuryBundle("label.AcademicTax.debit.entries.created.success"), model);
 
             return redirect(DebtAccountController.READ_URL + "/" + debtAccount.getExternalId(), model, redirectAttributes);
         } catch (DomainException de) {

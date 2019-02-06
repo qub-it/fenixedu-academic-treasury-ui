@@ -1,20 +1,18 @@
 package org.fenixedu.academictreasury.ui.manageemoluments;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialEntity;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import pt.ist.fenixframework.Atomic;
 
 @Component("org.fenixedu.academictreasury.ui.manageemoluments.FinantialEntityController")
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageEmoluments",
@@ -34,7 +32,9 @@ public class FinantialEntityController extends AcademicTreasuryBaseController {
     }
 
     private List<FinantialEntity> getSearchUniverseChooseFinantialEntityDataSet() {
-        return FinantialEntity.findWithBackOfficeAccessFor(Authenticate.getUser())
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
+        return FinantialEntity.findWithBackOfficeAccessFor(loggedUsername)
                 .sorted(FinantialEntity.COMPARE_BY_NAME).collect(Collectors.toList());
     }
 

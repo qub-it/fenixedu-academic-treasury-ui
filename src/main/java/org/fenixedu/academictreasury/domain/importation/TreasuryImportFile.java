@@ -35,7 +35,11 @@ public class TreasuryImportFile extends TreasuryImportFile_Base {
 
     @Override
     public boolean isAccessible(final User user) {
-        return TreasuryAccessControlAPI.isBackOfficeMember(user);
+        return isAccessible(user.getUsername());
+    }
+    
+    public boolean isAccessible(final String username) {
+        return TreasuryAccessControlAPI.isBackOfficeMember(username);
     }
 
     public boolean isProcessed() {

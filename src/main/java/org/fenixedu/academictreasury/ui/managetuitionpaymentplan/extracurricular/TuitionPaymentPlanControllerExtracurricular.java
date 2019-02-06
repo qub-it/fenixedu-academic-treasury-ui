@@ -46,6 +46,7 @@ import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialEntity;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -80,9 +81,10 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
 
     @RequestMapping(value = _CHOOSEFINANTIALENTITY_URI)
     public String chooseFinantialEntity(final Model model) {
-
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        
         model.addAttribute("choosefinantialentityResultsDataSet",
-                FinantialEntity.findWithBackOfficeAccessFor(Authenticate.getUser()).sorted(FinantialEntity.COMPARE_BY_NAME)
+                FinantialEntity.findWithBackOfficeAccessFor(loggedUsername).sorted(FinantialEntity.COMPARE_BY_NAME)
                         .collect(Collectors.toList()));
 
         model.addAttribute("executionYear", ExecutionYear.readCurrentExecutionYear());
