@@ -35,6 +35,7 @@ import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
 import org.fenixedu.treasury.domain.tariff.InterestRate;
 import org.fenixedu.treasury.domain.tariff.InterestType;
 import org.fenixedu.treasury.domain.tariff.Tariff;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -402,7 +403,7 @@ public class AcademicTariff extends AcademicTariff_Base {
                 fillPriceCommonPropertiesForAcademicServiceRequest(debtAccount, academicTreasuryEvent, when);
 
         return DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat, amount, dueDate,
-                fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
+                fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), Constants.DEFAULT_QUANTITY,
                 this.getInterestRate(), when.toDateTimeAtStartOfDay());
     }
 
@@ -430,7 +431,7 @@ public class AcademicTariff extends AcademicTariff_Base {
                 fillPricePropertiesForAcademicTax(debtAccount, academicTreasuryEvent, when);
 
         return DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat, amount, dueDate,
-                fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
+                fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), Constants.DEFAULT_QUANTITY,
                 this.getInterestRate(), when.toDateTimeAtStartOfDay());
     }
 
@@ -458,7 +459,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent, enrolmentEvaluation);
 
         final DebitEntry debitEntry = DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat,
-                amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(), Constants.DEFAULT_QUANTITY,
+                amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), Constants.DEFAULT_QUANTITY,
                 this.getInterestRate(), new DateTime());
 
         academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);

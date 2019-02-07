@@ -49,6 +49,7 @@ import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 
@@ -360,7 +361,7 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         final BigDecimal amount = academicTariff.amountToPay(numberOfUnits, numberOfPages);
         final DebitEntry debitEntry = DebitEntry.create(Optional.of(debitNote), debtAccount, treasuryEvent, vat, amount, dueDate,
                 target.getAcademicTreasuryTargetPropertiesMap(), product,
-                target.getAcademicTreasuryTargetDescription().getContent(), BigDecimal.ONE, academicTariff.getInterestRate(),
+                target.getAcademicTreasuryTargetDescription().getContent(TreasuryConstants.DEFAULT_LANGUAGE), BigDecimal.ONE, academicTariff.getInterestRate(),
                 when.toDateTimeAtStartOfDay());
 
         if (createPaymentCode) {
@@ -405,7 +406,7 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         final DebitNote debitNote = DebitNote.create(debtAccount, documentNumberSeries, now);
         final DebitEntry debitEntry = DebitEntry.create(Optional.of(debitNote), debtAccount, treasuryEvent, vat, amount, dueDate,
                 target.getAcademicTreasuryTargetPropertiesMap(), product,
-                target.getAcademicTreasuryTargetDescription().getContent(), BigDecimal.ONE, null, when.toDateTimeAtStartOfDay());
+                target.getAcademicTreasuryTargetDescription().getContent(TreasuryConstants.DEFAULT_LANGUAGE), BigDecimal.ONE, null, when.toDateTimeAtStartOfDay());
 
         if (createPaymentCode) {
             createPaymentReferenceCode(pool, debitEntry, when, dueDate);

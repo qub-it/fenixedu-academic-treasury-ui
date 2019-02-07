@@ -115,9 +115,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             if (iTreasuryServiceRequest.getExecutionYear() != null) {
                 result = result
                         .with(locale,
-                                String.format("%s [%s - %s] (%s)", product.getName().getContent(locale),
+                                String.format("%s [%s - %s] (%s)", 
+                                        product.getName().getContent(locale),
                                         iTreasuryServiceRequest.getRegistration().getDegree().getPresentationNameI18N()
-                                                .getContent(),
+                                                .getContent(locale),
                                         iTreasuryServiceRequest.getExecutionYear().getQualifiedName(),
                                         iTreasuryServiceRequest.getServiceRequestNumberYear()));
             } else {
@@ -148,8 +149,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             final ExecutionYear executionYear) {
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
-            final String name = String.format("%s [%s - %s]", product.getName().getContent(),
-                    registration.getDegree().getPresentationNameI18N().getContent(), executionYear.getQualifiedName());
+            final String name = String.format("%s [%s - %s]", product.getName().getContent(locale),
+                    registration.getDegree().getPresentationNameI18N().getContent(locale), executionYear.getQualifiedName());
 
             result = result.with(locale, name);
         }
@@ -175,10 +176,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             String name = null;
             if (academicTax.isAppliedOnRegistration()) {
-                name = String.format("%s [%s - %s]", academicTax.getProduct().getName().getContent(),
-                        registration.getDegree().getPresentationNameI18N().getContent(), executionYear.getQualifiedName());
+                name = String.format("%s [%s - %s]", academicTax.getProduct().getName().getContent(locale),
+                        registration.getDegree().getPresentationNameI18N().getContent(locale), executionYear.getQualifiedName());
             } else {
-                name = String.format("%s [%s]", academicTax.getProduct().getName().getContent(),
+                name = String.format("%s [%s]", academicTax.getProduct().getName().getContent(locale),
                         executionYear.getQualifiedName());
             }
 
