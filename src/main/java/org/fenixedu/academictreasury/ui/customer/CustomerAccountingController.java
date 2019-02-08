@@ -1,11 +1,14 @@
 package org.fenixedu.academictreasury.ui.customer;
 
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
+
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
@@ -30,6 +33,7 @@ import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
@@ -57,6 +61,13 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     private static final String READ_ACCOUNT_URI = "/account/read/";
     public static final String READ_ACCOUNT_URL = CONTROLLER_URL + READ_ACCOUNT_URI;
 
+    @Autowired
+    private HttpServletRequest request;
+
+    @Autowired
+    private HttpServletResponse response;
+    
+    
     public String getReadCustomerUrl() {
         return CustomerAccountingController.READ_CUSTOMER_URL;
     }
@@ -116,6 +127,8 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
     @RequestMapping(value = READ_ACCOUNT_URI + "{oid}")
     public String readAccount(@PathVariable(value = "oid") final DebtAccount debtAccount, final Model model) {
+        checkPermissions(debtAccount, model);
+        
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount));
         model.addAttribute("printSettlementNoteUrl", getPrintSettlementNote());
@@ -293,6 +306,9 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     @ResponseBody
     public Object printsettlementnote(@PathVariable("settlementNoteId") final SettlementNote settlementNote, final Model model,
             final RedirectAttributes redirectAttributes) {
+
+        checkPermissions(settlementNote.getDebtAccount(), model);
+        
         try {
             byte[] report = org.fenixedu.treasury.services.reports.DocumentPrinter.printFinantialDocument(settlementNote,
                     DocumentPrinter.PDF);
@@ -317,6 +333,8 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public Object printpaymentreferences(@PathVariable("oid") DebtAccount debtAccount, final Model model,
             final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
 
+        checkPermissions(debtAccount, model);
+        
         try {
             response.addHeader("Content-Disposition",
                     "attachment; filename=referencias_" + new DateTime().toString("yyyyMMddHHmmss") + ".pdf");
@@ -338,6 +356,8 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public String downloadcertifieddocumentprint(@PathVariable("oid") final FinantialDocument finantialDocument,
             final Model model, final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
 
+        checkPermissions(finantialDocument.getDebtAccount(), model);
+        
         try {
             final byte[] contents = ERPExporterManager.downloadCertifiedDocumentPrint(finantialDocument);
 
@@ -358,6 +378,16 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         }
     }
 
+    protected void checkPermissions(DebtAccount debtAccount, Model model) {
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) debtAccount.getCustomer()).getPerson()) {
+            Authenticate.logout(request, response);
+
+            addErrorMessage(treasuryBundle("error.authorization.not.allow.to.access.customer"), model);
+            throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.access.customer"));
+        }
+    }
+
+    
     public String jspPage(final String page) {
         return JSP_PATH + page;
     }
