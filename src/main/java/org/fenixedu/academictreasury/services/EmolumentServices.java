@@ -47,17 +47,6 @@ import pt.ist.fenixframework.Atomic;
 
 public class EmolumentServices {
 
-    @Atomic
-    public static Product createEmolument(final String code, final LocalizedString name, final VatType vatType,
-            final FinantialInstitution finantialInstitution) {
-        if (AcademicTreasurySettings.getInstance().getEmolumentsProductGroup() == null) {
-            throw new AcademicTreasuryDomainException("error.EmolumentServices.emoluments.product.group.not.defined");
-        }
-
-        return Product.create(AcademicTreasurySettings.getInstance().getEmolumentsProductGroup(), code, name,
-                Product.defaultUnitOfMeasure(), true, false, 0, vatType, Collections.singletonList(finantialInstitution), null);
-    }
-
     public static Stream<Product> findEmoluments(final FinantialEntity finantialEntity) {
         if (AcademicTreasurySettings.getInstance().getEmolumentsProductGroup() == null) {
             throw new AcademicTreasuryDomainException("error.EmolumentServices.emoluments.product.group.not.defined");

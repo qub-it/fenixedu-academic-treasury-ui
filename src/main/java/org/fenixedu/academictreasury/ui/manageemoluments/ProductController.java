@@ -56,31 +56,4 @@ public class ProductController extends AcademicTreasuryBaseController {
                 finantialEntity.getExternalId(), product.getExternalId());
     }
 
-    @RequestMapping(value = "/createemolument/{finantialEntityId}", method = RequestMethod.GET)
-    public String createemolument(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity, final Model model) {
-        model.addAttribute("finantialEntity", finantialEntity);
-        model.addAttribute("vatType_options", VatType.findAll().collect(Collectors.toSet()));
-
-        return "academicTreasury/manageemoluments/product/createemolument";
-    }
-
-    @RequestMapping(value = "/createemolument/{finantialEntityId}", method = RequestMethod.POST)
-    public String createemolument(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity, @RequestParam(
-            value = "code", required = false) final java.lang.String code,
-            @RequestParam(value = "name", required = false) final LocalizedString name, @RequestParam(value = "vattype",
-                    required = false) final VatType vatType, final Model model) {
-
-        try {
-            final Product product =
-                    EmolumentServices.createEmolument(code, name, vatType, finantialEntity.getFinantialInstitution());
-
-            model.addAttribute("product", product);
-            return String.format("redirect:/academictreasury/manageemoluments/product/searchemoluments/%s",
-                    finantialEntity.getExternalId());
-        } catch (final DomainException de) {
-            addErrorMessage(de.getLocalizedMessage(), model);
-            return createemolument(finantialEntity, model);
-        }
-    }
-
 }
