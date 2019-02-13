@@ -126,7 +126,12 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     }
 
     @RequestMapping(value = READ_ACCOUNT_URI + "{oid}")
-    public String readAccount(@PathVariable(value = "oid") final DebtAccount debtAccount, final Model model) {
+    public String readAccount(@PathVariable(value = "oid") final DebtAccount debtAccount, final Model model, final RedirectAttributes redirectAttributes) {
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson()) {
+            Authenticate.logout(request, response);
+            return redirect("/", model, redirectAttributes);
+        }
+        
         checkPermissions(debtAccount, model);
         
         model.addAttribute("debtAccount", debtAccount);
@@ -307,6 +312,11 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public Object printsettlementnote(@PathVariable("settlementNoteId") final SettlementNote settlementNote, final Model model,
             final RedirectAttributes redirectAttributes) {
 
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) settlementNote.getDebtAccount().getCustomer()).getAssociatedPerson()) {
+            Authenticate.logout(request, response);
+            return redirect("/", model, redirectAttributes);
+        }
+        
         checkPermissions(settlementNote.getDebtAccount(), model);
         
         try {
@@ -333,6 +343,11 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public Object printpaymentreferences(@PathVariable("oid") DebtAccount debtAccount, final Model model,
             final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
 
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson()) {
+            Authenticate.logout(request, response);
+            return redirect("/", model, redirectAttributes);
+        }
+        
         checkPermissions(debtAccount, model);
         
         try {
@@ -356,6 +371,11 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public String downloadcertifieddocumentprint(@PathVariable("oid") final FinantialDocument finantialDocument,
             final Model model, final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
 
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) finantialDocument.getDebtAccount().getCustomer()).getAssociatedPerson()) {
+            Authenticate.logout(request, response);
+            return redirect("/", model, redirectAttributes);
+        }
+        
         checkPermissions(finantialDocument.getDebtAccount(), model);
         
         try {
@@ -374,14 +394,12 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             return null;
         } catch (final Exception e) {
             addErrorMessage(e.getLocalizedMessage(), model);
-            return readAccount(finantialDocument.getDebtAccount(), model);
+            return readAccount(finantialDocument.getDebtAccount(), model, redirectAttributes);
         }
     }
 
     protected void checkPermissions(DebtAccount debtAccount, Model model) {
-        if (Authenticate.getUser().getPerson() != ((PersonCustomer) debtAccount.getCustomer()).getPerson()) {
-            Authenticate.logout(request, response);
-
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson()) {
             addErrorMessage(treasuryBundle("error.authorization.not.allow.to.access.customer"), model);
             throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.access.customer"));
         }
