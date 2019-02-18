@@ -33,6 +33,7 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.document.Series;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.streaming.spreadsheet.ExcelSheet;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.Spreadsheet;
@@ -584,8 +585,9 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
 
                     reportEntry.erpTuitionInfoExternalId = erpTuitionInfo.getExternalId();
                     reportEntry.erpTuitionInfoCreationDate = erpTuitionInfo.getVersioningCreationDate().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
-                    reportEntry.erpTuitionInfoUpdateDate = erpTuitionInfo.getVersioningUpdateDate() != null ? 
-                            erpTuitionInfo.getVersioningUpdateDate().getDate().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD) : "";
+                    
+                    final DateTime versioningUpdateDate = TreasuryPlataformDependentServicesFactory.implementation().versioningUpdateDate(erpTuitionInfo);
+                    reportEntry.erpTuitionInfoUpdateDate = versioningUpdateDate != null ? versioningUpdateDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD) : "";
                     reportEntry.erpTuitionInfoDocumentNumber = erpTuitionInfo.getUiDocumentNumber();
 
                     reportEntry.totalAmount = erpTuitionInfo.getTuitionTotalAmount().toString();
