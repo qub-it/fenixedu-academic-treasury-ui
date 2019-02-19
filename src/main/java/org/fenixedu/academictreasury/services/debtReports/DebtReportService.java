@@ -26,19 +26,20 @@ import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 
 public class DebtReportService {
 
     public static Stream<DebtReportEntryBean> debitEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return DebitEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getVersioningCreationDate()))
+                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(i)))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.isAnnulled())
                 .map(i -> new DebtReportEntryBean(i, request, log));
     }
 
     public static Stream<DebtReportEntryBean> creditEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return CreditEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getVersioningCreationDate()))
+                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(i)))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.isAnnulled())
                 .map(i -> new DebtReportEntryBean(i, request, log));
     }

@@ -9,6 +9,7 @@ import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
@@ -62,8 +63,8 @@ public class DebtAccountReportEntryBean implements SpreadsheetRow {
 
         try {
             this.identification = debtAccount.getExternalId();
-            this.versioningCreator = debtAccount.getVersioningCreator();
-            this.creationDate = debtAccount.getVersioningCreationDate();
+            this.versioningCreator = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(debtAccount);
+            this.creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(debtAccount);
             this.finantialInstitutionName = debtAccount.getFinantialInstitution().getName();
             this.customerId = debtAccount.getCustomer().getExternalId();
             this.name = debtAccount.getCustomer().getName();

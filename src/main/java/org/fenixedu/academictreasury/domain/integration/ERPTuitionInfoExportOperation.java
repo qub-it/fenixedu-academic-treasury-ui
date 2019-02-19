@@ -7,6 +7,7 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionIn
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.OperationFile;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.joda.time.DateTime;
 
 import pt.ist.fenixframework.Atomic;
@@ -29,7 +30,7 @@ public class ERPTuitionInfoExportOperation extends ERPTuitionInfoExportOperation
 
                 @Override
                 public int compare(final ERPTuitionInfoExportOperation o1, final ERPTuitionInfoExportOperation o2) {
-                    int c = o1.getVersioningCreationDate().compareTo(o2.getVersioningCreationDate());
+                    int c = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o1).compareTo(TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o2));
                     
                     return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
                 }

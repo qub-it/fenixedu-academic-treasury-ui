@@ -16,6 +16,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.joda.time.DateTime;
 
@@ -83,8 +84,8 @@ public class PaymentReferenceCodeEntryBean extends AbstractReportEntryBean {
             this.paymentReferenceCode = paymentReferenceCode;
 
             this.identification = paymentReferenceCode.getExternalId();
-            this.versioningCreator = paymentReferenceCode.getVersioningCreator();
-            this.creationDate = paymentReferenceCode.getVersioningCreationDate();
+            this.versioningCreator = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(paymentReferenceCode);
+            this.creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(paymentReferenceCode);
 
             if (paymentReferenceCode.getTargetPayment() != null) {
                 DebtAccount referenceDebtAccount = paymentReferenceCode.getTargetPayment().getDebtAccount();

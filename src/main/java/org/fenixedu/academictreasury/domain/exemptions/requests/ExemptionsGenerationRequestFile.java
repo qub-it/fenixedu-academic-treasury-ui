@@ -30,6 +30,7 @@ import org.fenixedu.treasury.domain.event.TreasuryEvent;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemptionType;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 
@@ -46,7 +47,8 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
 
                 @Override
                 public int compare(final ExemptionsGenerationRequestFile o1, final ExemptionsGenerationRequestFile o2) {
-                    int c = o1.getVersioningCreationDate().compareTo(o2.getVersioningCreationDate());
+                    int c = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o1)
+                            .compareTo(TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o2));
 
                     return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
                 }
@@ -94,7 +96,7 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
     public boolean isAccessible(final User user) {
         return isAccessible(user.getUsername());
     }
-    
+
     public boolean isAccessible(final String username) {
         return TreasuryAccessControlAPI.isBackOfficeMember(username);
     }
@@ -360,18 +362,20 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
                                     throw new AcademicTreasuryDomainException(
                                             "error.ExemptionsGenerationRequestFile.installmentOrder.debit.entries.found.more.than.one",
                                             String.valueOf(rowNum), installmentOrderValue);
-                                } else if(debitEntriesSet.isEmpty()) {
+                                } else if (debitEntriesSet.isEmpty()) {
                                     throw new AcademicTreasuryDomainException(
                                             "error.ExemptionsGenerationRequestFile.installmentOrder.debit.entries.not.found",
                                             String.valueOf(rowNum), installmentOrderValue);
                                 }
 
                                 final DebitEntry tuitionDebitEntry = debitEntriesSet.iterator().next();
-                                if (TreasuryConstants.isLessThan(amountToExempt, BigDecimal.ZERO) || TreasuryConstants.isGreaterThan(amountToExempt, tuitionDebitEntry.getTotalAmount())) {
-                                    throw new AcademicTreasuryDomainException("error.ExemptionsGenerationRequestFile.amountToExempt.invalid",
+                                if (TreasuryConstants.isLessThan(amountToExempt, BigDecimal.ZERO)
+                                        || TreasuryConstants.isGreaterThan(amountToExempt, tuitionDebitEntry.getTotalAmount())) {
+                                    throw new AcademicTreasuryDomainException(
+                                            "error.ExemptionsGenerationRequestFile.amountToExempt.invalid",
                                             String.valueOf(rowNum), amountToExemptValue);
                                 }
-                                
+
                                 tuitionInstallmentsOrderSet.add(installmentOrder);
                             }
                         }
@@ -398,15 +402,16 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
                     } else {
                         debitEntry = debitEntries.iterator().next();
 
-                        if (TreasuryConstants.isLessThan(amountToExempt, BigDecimal.ZERO) || TreasuryConstants.isGreaterThan(amountToExempt, debitEntry.getTotalAmount())) {
-                            throw new AcademicTreasuryDomainException("error.ExemptionsGenerationRequestFile.amountToExempt.invalid",
-                                    String.valueOf(rowNum), amountToExemptValue);
+                        if (TreasuryConstants.isLessThan(amountToExempt, BigDecimal.ZERO)
+                                || TreasuryConstants.isGreaterThan(amountToExempt, debitEntry.getTotalAmount())) {
+                            throw new AcademicTreasuryDomainException(
+                                    "error.ExemptionsGenerationRequestFile.amountToExempt.invalid", String.valueOf(rowNum),
+                                    amountToExemptValue);
                         }
-                        
+
                     }
                 }
 
-                
                 final ExemptionsGenerationRowResult rowResult = new ExemptionsGenerationRowResult(rowNum, registration,
                         executionYear, treasuryEvent, debitEntry, amountToExempt, reasonValue, tuitionInstallmentsOrderSet);
 

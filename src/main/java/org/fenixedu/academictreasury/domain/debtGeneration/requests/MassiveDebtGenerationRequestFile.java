@@ -10,10 +10,10 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.joda.time.LocalDate;
 
 import pt.ist.fenixframework.Atomic;
-import pt.ist.fenixframework.FenixFramework;
 
 /**
  * This class applies not only for debt generation but also for other
@@ -29,7 +29,7 @@ public class MassiveDebtGenerationRequestFile extends MassiveDebtGenerationReque
 
                 @Override
                 public int compare(final MassiveDebtGenerationRequestFile o1, final MassiveDebtGenerationRequestFile o2) {
-                    int c = o1.getVersioningCreationDate().compareTo(o2.getVersioningCreationDate());
+                    int c = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o1).compareTo(TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(o2));
 
                     return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
                 }

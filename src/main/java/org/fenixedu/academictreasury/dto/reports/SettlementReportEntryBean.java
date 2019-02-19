@@ -25,6 +25,7 @@ import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
@@ -123,8 +124,8 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
             final Currency currency = settlementNote.getDebtAccount().getFinantialInstitution().getCurrency();
             
             this.identification = entry.getExternalId();
-            this.creationDate = entry.getVersioningCreationDate();
-            this.responsible = entry.getVersioningCreator();
+            this.creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(entry);
+            this.responsible = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(entry);
             this.invoiceEntryIdentification = entry.getInvoiceEntry().getExternalId();
             this.settlementNoteNumber = settlementNote.getUiDocumentNumber();
             this.settlementNoteDocumentDate = settlementNote.getDocumentDate();

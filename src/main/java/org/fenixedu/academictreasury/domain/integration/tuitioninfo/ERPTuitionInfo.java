@@ -584,7 +584,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
                     final ERPTuitionInfo erpTuitionInfo = exportTuitionInformation(c, t);
 
                     reportEntry.erpTuitionInfoExternalId = erpTuitionInfo.getExternalId();
-                    reportEntry.erpTuitionInfoCreationDate = erpTuitionInfo.getVersioningCreationDate().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+                    reportEntry.erpTuitionInfoCreationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(erpTuitionInfo).toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
                     
                     final DateTime versioningUpdateDate = TreasuryPlataformDependentServicesFactory.implementation().versioningUpdateDate(erpTuitionInfo);
                     reportEntry.erpTuitionInfoUpdateDate = versioningUpdateDate != null ? versioningUpdateDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD) : "";

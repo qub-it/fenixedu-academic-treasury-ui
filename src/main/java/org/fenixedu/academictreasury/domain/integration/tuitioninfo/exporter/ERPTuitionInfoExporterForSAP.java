@@ -3,8 +3,6 @@ package org.fenixedu.academictreasury.domain.integration.tuitioninfo.exporter;
 import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -30,15 +28,9 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionIn
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoType;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.IERPTuitionInfoExporter;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
-import org.fenixedu.academictreasury.util.Constants;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.treasury.domain.FinantialInstitution;
-import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.Vat;
-import org.fenixedu.treasury.domain.VatExemptionReason;
-import org.fenixedu.treasury.domain.VatType;
 import org.fenixedu.treasury.domain.document.ERPCustomerFieldsBean;
-import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.integration.ERPConfiguration;
 import org.fenixedu.treasury.domain.integration.IntegrationOperationLogBean;
@@ -59,6 +51,7 @@ import org.fenixedu.treasury.generated.sources.saft.sap.SourceDocuments.Payments
 import org.fenixedu.treasury.generated.sources.saft.sap.SourceDocuments.WorkingDocuments.WorkDocument;
 import org.fenixedu.treasury.generated.sources.saft.sap.SourceDocuments.WorkingDocuments.WorkDocument.Line.Metadata;
 import org.fenixedu.treasury.generated.sources.saft.sap.Tax;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.IERPExternalService;
 import org.fenixedu.treasury.services.integration.erp.SaftConfig;
 import org.fenixedu.treasury.services.integration.erp.dto.DocumentStatusWS;
@@ -424,7 +417,7 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
 
             status.setWorkStatusDate(SAPExporter.convertToXMLDateTime(dataTypeFactory, documentDate));
             // Utilizador responsável pelo estado atual do docu-mento.
-            status.setSourceID(erpTuitionInfo.getVersioningCreator());
+            status.setSourceID(TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(erpTuitionInfo));
 
             status.setSourceBilling(SAFTPTSourceBilling.P);
 
@@ -460,8 +453,9 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
             workDocument.setPeriod(documentDate.getMonthOfYear());
 
             // SourceID
+            String creator = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(erpTuitionInfo);
             workDocument.setSourceID(
-                    !Strings.isNullOrEmpty(erpTuitionInfo.getVersioningCreator()) ? erpTuitionInfo.getVersioningCreator() : "");
+                    !Strings.isNullOrEmpty(creator) ? creator : "");
 
         } catch (DatatypeConfigurationException e) {
             e.printStackTrace();
@@ -800,8 +794,9 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
             status.setPaymentStatusDate(SAPExporter.convertToXMLDate(dataTypeFactory, erpTuitionInfo.getCreationDate()));
 
             // Utilizador responsável pelo estado atual do docu-mento.
+            String creator = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(erpTuitionInfo);
             status.setSourceID(
-                    !Strings.isNullOrEmpty(erpTuitionInfo.getVersioningCreator()) ? erpTuitionInfo.getVersioningCreator() : " ");
+                    !Strings.isNullOrEmpty(creator) ? creator : " ");
             status.setReason("");
 
             // Deve ser preenchido com:

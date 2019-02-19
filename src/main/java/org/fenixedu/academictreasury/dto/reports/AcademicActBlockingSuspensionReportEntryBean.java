@@ -9,6 +9,7 @@ import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.commons.i18n.LocalizedString;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -58,8 +59,8 @@ public class AcademicActBlockingSuspensionReportEntryBean extends AbstractReport
 
         try {
             this.identification = academicActBlockingSuspension.getExternalId();
-            this.versioningCreator = academicActBlockingSuspension.getVersioningCreator();
-            this.creationDate = academicActBlockingSuspension.getVersioningCreationDate();
+            this.versioningCreator = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(academicActBlockingSuspension);
+            this.creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(academicActBlockingSuspension);
 
             final Person person = academicActBlockingSuspension.getPerson();
 

@@ -9,6 +9,7 @@ import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.util.Constants;
 import org.fenixedu.treasury.domain.paymentcodes.SibsTransactionDetail;
+import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 import org.joda.time.DateTime;
 
@@ -61,8 +62,8 @@ public class SibsTransactionDetailEntryBean extends AbstractReportEntryBean {
             this.sibsTransactionDetail = detail;
             
             this.identification = detail.getExternalId();
-            this.versioningCreator = detail.getVersioningCreator();
-            this.creationDate = detail.getVersioningCreationDate();
+            this.versioningCreator = TreasuryPlataformDependentServicesFactory.implementation().versioningCreatorUsername(detail);
+            this.creationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(detail);
             this.whenProcessed = detail.getWhenProcessed();
             this.whenRegistered = detail.getWhenRegistered();
             this.amountPayed = detail.getAmountPayed() != null ? detail.getAmountPayed().toString() : "";
