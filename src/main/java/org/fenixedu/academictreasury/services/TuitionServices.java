@@ -780,13 +780,13 @@ public class TuitionServices {
 
         final LocalDate stateDate = lastRegistrationState.getStateDate().toLocalDate();
         final LocalDate dateOnBeginExecutionYearCivilDate =
-                new LocalDate(executionYear.getBeginCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
+                new LocalDate(executionYear.getAcademicInterval().getStart().getYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
         final LocalDate dateOnEndExecutionYearCivilDate =
-                new LocalDate(executionYear.getEndCivilYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
+                new LocalDate(executionYear.getAcademicInterval().getEnd().getYear(), stateDate.getMonthOfYear(), stateDate.getDayOfMonth());
 
-        if (executionYear.containsDate(dateOnBeginExecutionYearCivilDate)) {
+        if (executionYear.containsDate(dateOnBeginExecutionYearCivilDate.toDateTimeAtStartOfDay())) {
             return dateOnBeginExecutionYearCivilDate;
-        } else if (executionYear.containsDate(dateOnEndExecutionYearCivilDate)) {
+        } else if (executionYear.containsDate(dateOnEndExecutionYearCivilDate.toDateTimeAtStartOfDay())) {
             return dateOnEndExecutionYearCivilDate;
         }
 

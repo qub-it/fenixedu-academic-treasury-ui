@@ -245,7 +245,8 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     public void updateDatesBasedOnSelectedExecutionYear() {
-        int executionYearInterval = executionYear.getBeginCivilYear() - copiedExecutionYear.getBeginCivilYear();
+        int executionYearInterval = executionYear.getAcademicInterval().getStart().getYear()
+                - copiedExecutionYear.getAcademicInterval().getStart().getYear();
 
         for (final AcademicTariffBean academicTariffBean : tuitionInstallmentBeans) {
             academicTariffBean.setBeginDate(academicTariffBean.getBeginDate().plusYears(executionYearInterval));
