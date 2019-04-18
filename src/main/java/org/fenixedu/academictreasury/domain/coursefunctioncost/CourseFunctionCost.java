@@ -10,7 +10,7 @@ import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.coursefunctioncost.CourseFunctionCostBean;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import pt.ist.fenixframework.FenixFramework;
 
 import pt.ist.fenixframework.Atomic;
@@ -48,7 +48,7 @@ public class CourseFunctionCost extends CourseFunctionCost_Base {
             throw new AcademicTreasuryDomainException("error.CourseFunctionCost.functionCost.required");
         }
 
-        if (Constants.isNegative(getFunctionCost())) {
+        if (AcademicTreasuryConstants.isNegative(getFunctionCost())) {
             throw new AcademicTreasuryDomainException("error.CourseFunctionCost.functionCost.must.be.positive.or.zero");
         }
     }

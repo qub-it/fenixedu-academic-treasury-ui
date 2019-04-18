@@ -26,7 +26,7 @@
  */
 package org.fenixedu.academictreasury.ui.createdebts.massive.tuitions;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -39,7 +39,7 @@ import org.fenixedu.academictreasury.domain.debtGeneration.requests.MassiveDebtG
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;

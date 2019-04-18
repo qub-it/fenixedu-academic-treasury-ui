@@ -26,7 +26,7 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,7 +39,7 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
@@ -178,7 +178,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
         if (bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
+            addErrorMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
                     model);
 
             return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);

@@ -1,8 +1,8 @@
 package org.fenixedu.academictreasury.dto.reports;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.util.streaming.spreadsheet.SpreadsheetRow;
 import org.joda.time.DateTime;
@@ -16,7 +16,7 @@ public abstract class AbstractReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return value.toString(Constants.DATE_FORMAT_YYYY_MM_DD);        
+        return value.toString(AcademicTreasuryConstants.DATE_FORMAT_YYYY_MM_DD);        
     }
     
     protected String valueOrEmpty(final DateTime value) {
@@ -24,7 +24,7 @@ public abstract class AbstractReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return value.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+        return value.toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
     }
 
     protected String valueOrEmpty(final Boolean value) {

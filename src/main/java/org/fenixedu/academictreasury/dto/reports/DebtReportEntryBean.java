@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.dto.reports;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -17,7 +17,7 @@ import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
 import org.fenixedu.academictreasury.services.TuitionServices;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
@@ -517,8 +517,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(entryType));
                 row.createCell(i++).setCellValue(valueOrEmpty(versioningCreator));
                 row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
-                row.createCell(i++).setCellValue(entryDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD));
-                row.createCell(i++).setCellValue(dueDate.toString(Constants.DATE_FORMAT_YYYY_MM_DD));
+                row.createCell(i++).setCellValue(entryDate.toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD));
+                row.createCell(i++).setCellValue(dueDate.toString(AcademicTreasuryConstants.DATE_FORMAT_YYYY_MM_DD));
                 row.createCell(i++).setCellValue(valueOrEmpty(customerId));
                 row.createCell(i++).setCellValue(valueOrEmpty(debtAccountId));
                 row.createCell(i++).setCellValue(valueOrEmpty(name));
@@ -607,8 +607,8 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                 row.createCell(i++).setCellValue(valueOrEmpty(entryType));
                 row.createCell(i++).setCellValue(valueOrEmpty(versioningCreator));
                 row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
-                row.createCell(i++).setCellValue(entryDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD));
-                row.createCell(i++).setCellValue(dueDate.toString(Constants.DATE_FORMAT_YYYY_MM_DD));
+                row.createCell(i++).setCellValue(entryDate.toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD));
+                row.createCell(i++).setCellValue(dueDate.toString(AcademicTreasuryConstants.DATE_FORMAT_YYYY_MM_DD));
                 row.createCell(i++).setCellValue(valueOrEmpty(customerId));
                 row.createCell(i++).setCellValue(valueOrEmpty(debtAccountId));
                 row.createCell(i++).setCellValue(valueOrEmpty(name));
@@ -689,7 +689,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return value.toString(Constants.DATE_FORMAT_YYYY_MM_DD);
+        return value.toString(AcademicTreasuryConstants.DATE_FORMAT_YYYY_MM_DD);
     }
 
     private String valueOrEmpty(final DateTime value) {
@@ -697,7 +697,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return value.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+        return value.toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
     }
 
     private String valueOrEmpty(final Boolean value) {

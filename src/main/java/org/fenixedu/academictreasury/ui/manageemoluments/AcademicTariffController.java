@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.ui.manageemoluments;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +16,7 @@ import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import pt.ist.fenixframework.FenixFramework;
 
 import org.fenixedu.bennu.core.domain.Bennu;

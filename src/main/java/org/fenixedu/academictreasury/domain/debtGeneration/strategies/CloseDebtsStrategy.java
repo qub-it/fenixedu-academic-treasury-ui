@@ -16,7 +16,7 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.services.AcademicTaxServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
@@ -164,7 +164,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
 
             final DebitNote debitNote = (DebitNote) grabbedDebitEntry.getFinantialDocument();
             
-            if(!Constants.isPositive(debitNote.getTotalAmount())) {
+            if(!AcademicTreasuryConstants.isPositive(debitNote.getTotalAmount())) {
                 continue;
             }
 

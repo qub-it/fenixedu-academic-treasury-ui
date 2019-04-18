@@ -25,7 +25,7 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.domain.Bennu;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
@@ -100,7 +100,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
 
     /* Tariff */
     private LocalDate beginDate = new LocalDate();
-    private LocalDate endDate = Constants.INFINITY_DATE.toLocalDate();
+    private LocalDate endDate = AcademicTreasuryConstants.INFINITY_DATE.toLocalDate();
     private DueDateCalculationType dueDateCalculationType;
     private LocalDate fixedDueDate = new LocalDate();
     private int numberOfDaysAfterCreationForDueDate;
@@ -303,7 +303,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
             errorMessages.add("error.TuitionPaymentPlan.totalEctsOrUnits.required");
         }
 
-        if (this.applyMaximumAmount && (this.maximumAmount == null || !Constants.isPositive(this.maximumAmount))) {
+        if (this.applyMaximumAmount && (this.maximumAmount == null || !AcademicTreasuryConstants.isPositive(this.maximumAmount))) {
             errorMessages.add("error.TuitionPaymentPlan.maximumAmount.required");
         }
 
@@ -419,7 +419,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
 
     public void resetInstallmentFields() {
         this.beginDate = this.executionYear.getBeginLocalDate();
-        this.endDate = Constants.INFINITY_DATE.toLocalDate();
+        this.endDate = AcademicTreasuryConstants.INFINITY_DATE.toLocalDate();
         this.dueDateCalculationType = DueDateCalculationType.DAYS_AFTER_CREATION;
         this.fixedDueDate = this.executionYear.getBeginLocalDate();
         this.numberOfDaysAfterCreationForDueDate = 0;
@@ -886,7 +886,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 .newArrayList(DegreeType.all().map((dt) -> new TreasuryTupleDataSourceBean(dt.getExternalId(), dt.getName().getContent()))
                         .collect(Collectors.toList()));
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -923,7 +923,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         final List<TreasuryTupleDataSourceBean> result = getExecutionYear().getExecutionPeriodsSet().stream()
                 .map((cs) -> new TreasuryTupleDataSourceBean(cs.getExternalId(), cs.getName())).collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -932,7 +932,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         final List<TreasuryTupleDataSourceBean> result = Bennu.getInstance().getCurricularYearsSet().stream()
                 .map((cy) -> new TreasuryTupleDataSourceBean(cy.getExternalId(), cy.getYear().toString())).collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -942,7 +942,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 .map((i) -> new TreasuryTupleDataSourceBean(i.getExternalId(), i.getDescription().getContent()))
                 .collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -952,7 +952,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 .map((rp) -> new TreasuryTupleDataSourceBean(rp.getExternalId(), rp.getDescription().getContent()))
                 .collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -961,7 +961,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         List<TreasuryTupleDataSourceBean> result = ((List<RegistrationRegimeType>) Arrays.asList(RegistrationRegimeType.values()))
                 .stream().map((t) -> new TreasuryTupleDataSourceBean(t.name(), t.getLocalizedName())).collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -971,7 +971,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 .map((it) -> new TreasuryTupleDataSourceBean(it.name(), it.getDescriptionI18N().getContent()))
                 .collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -981,7 +981,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 .map((ct) -> new TreasuryTupleDataSourceBean(ct.name(), ct.getDescriptionI18N().getContent()))
                 .collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -991,7 +991,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 .stream().map((ct) -> new TreasuryTupleDataSourceBean(ct.name(), ct.getDescriptionI18N().getContent()))
                 .collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -1010,7 +1010,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                     .collect(Collectors.toList());
         }
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -1019,7 +1019,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         final List<TreasuryTupleDataSourceBean> result = Bennu.getInstance().getStatuteTypesSet().stream()
                 .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName().getContent())).collect(Collectors.toList());
 
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -1031,7 +1031,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         final List<TreasuryTupleDataSourceBean> result = payorDebtAccountsSet.stream().map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(),
                 String.format("%s - %s", l.getCustomer().getUiFiscalNumber(), l.getCustomer().getName()))).collect(Collectors.toList());
         
-        result.add(Constants.SELECT_OPTION);
+        result.add(AcademicTreasuryConstants.SELECT_OPTION);
         
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
@@ -1041,7 +1041,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 .sorted(ExecutionYear.REVERSE_COMPARATOR_BY_YEAR).collect(Collectors.toList()).stream()
                 .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getQualifiedName())).collect(Collectors.toList());
 
-        result.add(0, Constants.SELECT_OPTION);
+        result.add(0, AcademicTreasuryConstants.SELECT_OPTION);
 
         return result;
     }

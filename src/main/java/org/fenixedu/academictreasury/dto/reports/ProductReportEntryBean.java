@@ -1,11 +1,11 @@
 package org.fenixedu.academictreasury.dto.reports;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.util.streaming.spreadsheet.IErrorsLog;
 
@@ -60,10 +60,10 @@ public class ProductReportEntryBean extends AbstractReportEntryBean {
             this.groupCode = p.getProductGroup() != null ? p.getProductGroup().getCode() : "";
             this.group = p.getProductGroup().getName().getContent();
             this.code = p.getCode();
-            this.descriptionPt = p.getName().getContent(Constants.DEFAULT_LANGUAGE);
-            this.descriptionEn = p.getName().getContent(Constants.ENGLISH_LANGUAGE);
-            this.unitOfMeasurePt = p.getUnitOfMeasure().getContent(Constants.DEFAULT_LANGUAGE);
-            this.unitOfMeasureEn = p.getUnitOfMeasure().getContent(Constants.ENGLISH_LANGUAGE);
+            this.descriptionPt = p.getName().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE);
+            this.descriptionEn = p.getName().getContent(AcademicTreasuryConstants.ENGLISH_LANGUAGE);
+            this.unitOfMeasurePt = p.getUnitOfMeasure().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE);
+            this.unitOfMeasureEn = p.getUnitOfMeasure().getContent(AcademicTreasuryConstants.ENGLISH_LANGUAGE);
             this.active = p.isActive();
             this.legacy = p.isLegacy();
             this.tuitionInstallmentOrder = p.getTuitionInstallmentOrder();

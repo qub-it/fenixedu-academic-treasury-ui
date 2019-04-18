@@ -26,7 +26,7 @@
  */
 package org.fenixedu.academictreasury.ui.tuitiondebtcreation.standalone;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;

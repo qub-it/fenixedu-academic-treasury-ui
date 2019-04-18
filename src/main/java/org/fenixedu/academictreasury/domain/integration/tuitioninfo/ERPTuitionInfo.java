@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.domain.integration.tuitioninfo;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import org.fenixedu.academictreasury.domain.integration.ERPTuitionInfoCreationRe
 import org.fenixedu.academictreasury.domain.integration.ERPTuitionInfoExportOperation;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.exceptions.ERPTuitionInfoNoDifferencesException;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.exceptions.ERPTuitionInfoPendingException;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
@@ -82,9 +82,9 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
         final Series series = ERPTuitionInfoSettings.getInstance().getSeries();
         DocumentNumberSeries documentNumberSeries = null;
 
-        if (Constants.isPositive(getTuitionDeltaAmount())) {
+        if (AcademicTreasuryConstants.isPositive(getTuitionDeltaAmount())) {
             documentNumberSeries = DocumentNumberSeries.find(FinantialDocumentType.findForDebitNote(), series);
-        } else if (Constants.isNegative(getTuitionDeltaAmount())) {
+        } else if (AcademicTreasuryConstants.isNegative(getTuitionDeltaAmount())) {
             documentNumberSeries = DocumentNumberSeries.find(FinantialDocumentType.findForCreditNote(), series);
         }
 
@@ -124,7 +124,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.tuitionTotalAmount.required");
         }
 
-        if (Constants.isNegative(getTuitionTotalAmount())) {
+        if (AcademicTreasuryConstants.isNegative(getTuitionTotalAmount())) {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.tuitionTotalAmount.negative");
         }
 
@@ -132,7 +132,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.tuitionDeltaAmount.required");
         }
 
-        if (Constants.isZero(getTuitionDeltaAmount())) {
+        if (AcademicTreasuryConstants.isZero(getTuitionDeltaAmount())) {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.tuitionDeltaAmount.cannot.be.zero");
         }
 
@@ -148,13 +148,13 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
             throw new AcademicTreasuryDomainException("error.ERPTuitionInfo.beginDate.after.endDate");
         }
 
-        if (Constants.isPositive(getTuitionDeltaAmount())
+        if (AcademicTreasuryConstants.isPositive(getTuitionDeltaAmount())
                 && !getDocumentNumberSeries().getFinantialDocumentType().getType().isDebitNote()) {
             throw new AcademicTreasuryDomainException(
                     "error.ERPTuitionInfo.tuitionDeltaAmount.positive.but.finantialDocument.not.debit.note");
         }
 
-        if (Constants.isNegative(getTuitionDeltaAmount())
+        if (AcademicTreasuryConstants.isNegative(getTuitionDeltaAmount())
                 && !getDocumentNumberSeries().getFinantialDocumentType().getType().isCreditNote()) {
             throw new AcademicTreasuryDomainException(
                     "error.ERPTuitionInfo.tuitionDeltaAmount.negative.but.finantialDocument.not.credit.note");
@@ -542,7 +542,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
 //
 //        }
 
-        if (org.fenixedu.academictreasury.util.Constants.isZero(deltaAmount)) {
+        if (org.fenixedu.academictreasury.util.AcademicTreasuryConstants.isZero(deltaAmount)) {
             throw new ERPTuitionInfoNoDifferencesException("error.ErpTuitionInfo.no.differences.from.last.successul.exportation");
         }
 
@@ -571,7 +571,7 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
                     final PersonCustomer c = FenixFramework.getDomainObject(customerId);
                     final ERPTuitionInfoType t = FenixFramework.getDomainObject(erpTuitionInfoTypeId);
 
-                    reportEntry.executionDate = DateTime.now().toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+                    reportEntry.executionDate = DateTime.now().toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
 
                     reportEntry.studentNumber = c.getAssociatedPerson().getStudent().getNumber().toString();
                     reportEntry.studentName = c.getName();
@@ -584,10 +584,10 @@ public class ERPTuitionInfo extends ERPTuitionInfo_Base {
                     final ERPTuitionInfo erpTuitionInfo = exportTuitionInformation(c, t);
 
                     reportEntry.erpTuitionInfoExternalId = erpTuitionInfo.getExternalId();
-                    reportEntry.erpTuitionInfoCreationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(erpTuitionInfo).toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+                    reportEntry.erpTuitionInfoCreationDate = TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(erpTuitionInfo).toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
                     
                     final DateTime versioningUpdateDate = TreasuryPlataformDependentServicesFactory.implementation().versioningUpdateDate(erpTuitionInfo);
-                    reportEntry.erpTuitionInfoUpdateDate = versioningUpdateDate != null ? versioningUpdateDate.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD) : "";
+                    reportEntry.erpTuitionInfoUpdateDate = versioningUpdateDate != null ? versioningUpdateDate.toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD) : "";
                     reportEntry.erpTuitionInfoDocumentNumber = erpTuitionInfo.getUiDocumentNumber();
 
                     reportEntry.totalAmount = erpTuitionInfo.getTuitionTotalAmount().toString();

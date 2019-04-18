@@ -15,7 +15,7 @@ import org.fenixedu.academictreasury.dto.reports.ReimbursementReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SettlementReportEntryBean;
 import org.fenixedu.academictreasury.dto.reports.SibsTransactionDetailEntryBean;
 import org.fenixedu.academictreasury.dto.reports.TreasuryExemptionReportEntryBean;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.treasury.domain.Product;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.CreditEntry;
@@ -32,28 +32,28 @@ public class DebtReportService {
 
     public static Stream<DebtReportEntryBean> debitEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return DebitEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(i)))
+                .filter(i -> AcademicTreasuryConstants.isDateBetween(request.getBeginDate(), request.getEndDate(), TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(i)))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.isAnnulled())
                 .map(i -> new DebtReportEntryBean(i, request, log));
     }
 
     public static Stream<DebtReportEntryBean> creditEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return CreditEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(i)))
+                .filter(i -> AcademicTreasuryConstants.isDateBetween(request.getBeginDate(), request.getEndDate(), TreasuryPlataformDependentServicesFactory.implementation().versioningCreationDate(i)))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.isAnnulled())
                 .map(i -> new DebtReportEntryBean(i, request, log));
     }
 
     public static Stream<SettlementReportEntryBean> settlementEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return SettlementEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getFinantialDocument().getDocumentDate()))
+                .filter(i -> AcademicTreasuryConstants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getFinantialDocument().getDocumentDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.isAnnulled())
                 .map(i -> new SettlementReportEntryBean(i, request, log));
     }
 
     public static Stream<PaymentReportEntryBean> paymentEntriesReport(final DebtReportRequest request, final ErrorsLog log) {
         return PaymentEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getSettlementNote().getDocumentDate()))
+                .filter(i -> AcademicTreasuryConstants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getSettlementNote().getDocumentDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.getSettlementNote().isAnnulled())
                 .map(i -> new PaymentReportEntryBean(i, request, log));
     }
@@ -61,7 +61,7 @@ public class DebtReportService {
     public static Stream<ReimbursementReportEntryBean> reimbursementEntriesReport(final DebtReportRequest request,
             final ErrorsLog log) {
         return ReimbursementEntry.findAll()
-                .filter(i -> Constants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getSettlementNote().getDocumentDate()))
+                .filter(i -> AcademicTreasuryConstants.isDateBetween(request.getBeginDate(), request.getEndDate(), i.getSettlementNote().getDocumentDate()))
                 .filter(i -> request.isIncludeAnnuledEntries() || !i.getSettlementNote().isAnnulled())
                 .map(i -> new ReimbursementReportEntryBean(i, request, log));
     }
@@ -92,7 +92,7 @@ public class DebtReportService {
     public static Stream<TreasuryExemptionReportEntryBean> treasuryExemptionReport(final DebtReportRequest request,
             final ErrorsLog log) {
         return TreasuryExemption.findAll()
-                .filter(i -> i.getDebitEntry() != null && Constants.isDateBetween(request.getBeginDate(), request.getEndDate(),
+                .filter(i -> i.getDebitEntry() != null && AcademicTreasuryConstants.isDateBetween(request.getBeginDate(), request.getEndDate(),
                         i.getDebitEntry().getEntryDateTime()))
                 .map(i -> new TreasuryExemptionReportEntryBean(i, request, log));
     }

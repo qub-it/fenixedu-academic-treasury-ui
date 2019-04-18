@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.domain.integration.tuitioninfo.exporter;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.io.PrintWriter;
@@ -595,9 +595,9 @@ public class ERPTuitionInfoExporterForSAP implements IERPTuitionInfoExporter {
         }
 
         metadataPropertiesMap.put("START_DATE", erpTuitionInfo.getBeginDate()
-                .toString(org.fenixedu.academictreasury.util.Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD));
+                .toString(org.fenixedu.academictreasury.util.AcademicTreasuryConstants.STANDARD_DATE_FORMAT_YYYY_MM_DD));
         metadataPropertiesMap.put("END_DATE", erpTuitionInfo.getEndDate()
-                .toString(org.fenixedu.academictreasury.util.Constants.STANDARD_DATE_FORMAT_YYYY_MM_DD));
+                .toString(org.fenixedu.academictreasury.util.AcademicTreasuryConstants.STANDARD_DATE_FORMAT_YYYY_MM_DD));
 
         final GsonBuilder builder = new GsonBuilder();
 

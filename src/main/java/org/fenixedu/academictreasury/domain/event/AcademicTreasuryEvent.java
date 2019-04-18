@@ -37,7 +37,7 @@ import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
@@ -303,7 +303,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public int getNumberOfUnits() {
         if (isForAcademicServiceRequest()) {
-            return Constants.getNumberOfUnits(getITreasuryServiceRequest());
+            return AcademicTreasuryConstants.getNumberOfUnits(getITreasuryServiceRequest());
         } else if (isForAcademicTax()) {
             return 0;
         } else if (isForImprovementTax()) {
@@ -921,7 +921,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
         public LocalizedString getDescriptionI18N() {
-            return BundleUtil.getLocalizedString(Constants.BUNDLE,
+            return AcademicTreasuryConstants.academicTreasuryBundleI18N(
                     "label." + AcademicTreasuryEventKeys.class.getSimpleName() + "." + name());
         }
 
@@ -932,8 +932,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
             // HACK Should retrieve with code and not with the description
             final LocalizedString descriptionI18N = key.getDescriptionI18N();
-            if (debitEntry.getPropertiesMap().containsKey(descriptionI18N.getContent(Constants.DEFAULT_LANGUAGE))) {
-                return debitEntry.getPropertiesMap().get(descriptionI18N.getContent(Constants.DEFAULT_LANGUAGE));
+            if (debitEntry.getPropertiesMap().containsKey(descriptionI18N.getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE))) {
+                return debitEntry.getPropertiesMap().get(descriptionI18N.getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
             }
 
             return null;
@@ -990,7 +990,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     private LocalizedString booleanLabel(final boolean detailed) {
-        return BundleUtil.getLocalizedString(Constants.BUNDLE, detailed ? "label.true" : "label.false");
+        return AcademicTreasuryConstants.academicTreasuryBundleI18N(detailed ? "label.true" : "label.false");
     }
 
     public static BigDecimal getEnrolledEctsUnits(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear) {
@@ -1152,7 +1152,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     @Override
     public String getExemptionTypeName() {
-        return TreasuryEventDefaultMethods.getExemptionTypeName(this, Constants.DEFAULT_LANGUAGE);
+        return TreasuryEventDefaultMethods.getExemptionTypeName(this, AcademicTreasuryConstants.DEFAULT_LANGUAGE);
     }
 
     @Override

@@ -16,7 +16,7 @@ import org.joda.time.LocalDate;
 
 import com.google.common.base.Strings;
 
-public class Constants {
+public class AcademicTreasuryConstants {
 
     private static final int SCALE = 20;
 
@@ -98,15 +98,15 @@ public class Constants {
     // @formatter: on
 
     public static String academicTreasuryBundle(final String key, final String... args) {
-        return BundleUtil.getString(Constants.BUNDLE, key, args);
+        return BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, key, args);
     }
     
     public static String academicTreasuryBundle(final Locale locale, final String key, final String... args) {
-        return BundleUtil.getString(Constants.BUNDLE, locale, key, args);
+        return BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, locale, key, args);
     }
 
     public static LocalizedString academicTreasuryBundleI18N(final String key, final String... args) {
-        return BundleUtil.getLocalizedString(Constants.BUNDLE, key, args);
+        return BundleUtil.getLocalizedString(AcademicTreasuryConstants.BUNDLE, key, args);
     }
     
     public static Set<Locale> supportedLocales() {

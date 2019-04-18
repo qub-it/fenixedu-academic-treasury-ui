@@ -26,7 +26,7 @@
  */
 package org.fenixedu.academictreasury.ui.managecoursefunctioncost;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.util.List;
 import java.util.stream.Collectors;

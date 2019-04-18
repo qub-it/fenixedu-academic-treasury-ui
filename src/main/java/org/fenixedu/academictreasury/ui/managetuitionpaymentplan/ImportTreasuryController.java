@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.util.stream.Collectors;
 
@@ -12,7 +12,7 @@ import org.fenixedu.academictreasury.domain.importation.TreasuryImportFile;
 import org.fenixedu.academictreasury.domain.importation.TreasuryImportType;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -26,7 +26,7 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplangroup;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.util.stream.Collectors;
 

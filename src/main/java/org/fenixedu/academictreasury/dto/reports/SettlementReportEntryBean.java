@@ -1,7 +1,7 @@
 package org.fenixedu.academictreasury.dto.reports;
 
 import static org.fenixedu.academictreasury.dto.reports.DebtReportEntryBean.personalEmail;
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.math.BigDecimal;
 
@@ -13,7 +13,7 @@ import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
 import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequest;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
@@ -374,7 +374,7 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return value.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+        return value.toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
     }
 
     private String valueOrEmpty(final Boolean value) {

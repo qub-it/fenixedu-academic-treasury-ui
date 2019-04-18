@@ -26,7 +26,7 @@
  */
 package org.fenixedu.academictreasury.ui.managetuitionpaymentplan.standalone;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -42,7 +42,7 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
@@ -282,7 +282,7 @@ public class TuitionPaymentPlanControllerStandalone extends AcademicTreasuryBase
 
             if (!errorMessages.isEmpty()) {
                 for (final String error : errorMessages) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error), model);
+                    addErrorMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, error), model);
                 }
 
                 return createdefinestudentconditions(finantialEntity, executionYear, bean, model);

@@ -16,7 +16,7 @@ import org.fenixedu.academictreasury.domain.debtGeneration.DebtGenerationRuleRes
 import org.fenixedu.academictreasury.domain.debtGeneration.IAcademicDebtGenerationRuleStrategy;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.Product;
@@ -147,7 +147,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, ITreasuryBe
                 .map(l -> new TreasuryTupleDataSourceBean(l.name(), l.getDescriptionI18N().getContent()))
                 .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
-        academicTaxDueDateAlignmentTypeDataSource.add(0, Constants.SELECT_OPTION);
+        academicTaxDueDateAlignmentTypeDataSource.add(0, AcademicTreasuryConstants.SELECT_OPTION);
 
         this.aggregateOnDebitNote = true;
         this.aggregateAllOrNothing = true;
@@ -163,7 +163,7 @@ public class AcademicDebtGenerationRuleBean implements Serializable, ITreasuryBe
                 DebtGenerationRuleRestriction.findAll().map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getName()))
                         .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
-        debtGenerationRuleRestrictionDataSource.add(0, Constants.SELECT_OPTION);
+        debtGenerationRuleRestrictionDataSource.add(0, AcademicTreasuryConstants.SELECT_OPTION);
     }
 
     public AcademicDebtGenerationRuleBean(final AcademicDebtGenerationRule rule) {

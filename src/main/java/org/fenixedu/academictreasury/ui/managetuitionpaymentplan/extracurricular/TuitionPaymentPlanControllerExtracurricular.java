@@ -40,7 +40,7 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.security.Authenticate;
@@ -161,7 +161,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
 
             tuitionPaymentPlan.delete();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.deletion.success"), model);
+            addInfoMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, "label.TuitionPaymentPlan.deletion.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -179,7 +179,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
             @PathVariable("executionYearId") final ExecutionYear executionYear, final Model model) {
 
         if (!TuitionPaymentPlanGroup.findUniqueDefaultGroupForExtracurricular().isPresent()) {
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE,
+            addInfoMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE,
                     "label.TuitionPaymentPlanGroup.defaultGroupForExtracurricular.required"), model);
             return chooseDegreeCurricularPlan(finantialEntity, executionYear, model);
         }
@@ -228,7 +228,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
             @RequestParam("bean") final TuitionPaymentPlanBean bean, final Model model) {
 
         if (bean.getDegreeType() == null || bean.getDegreeCurricularPlans().isEmpty()) {
-            addErrorMessage(BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
+            addErrorMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, "error.TuitionPaymentPlan.choose.degree.curricular.plans"),
                     model);
 
             return _createchoosedegreecurricularplans(finantialEntity, executionYear, model, bean);
@@ -268,7 +268,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
         try {
             if (bean.isCustomized() && Strings.isNullOrEmpty(bean.getName())) {
                 addErrorMessage(
-                        BundleUtil.getString(Constants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
+                        BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, "error.TuitionPaymentPlan.custom.payment.plan.name.required"),
                         model);
                 return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
             }
@@ -277,7 +277,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
 
             if (!errorMessages.isEmpty()) {
                 for (final String error : errorMessages) {
-                    addErrorMessage(BundleUtil.getString(Constants.BUNDLE, error), model);
+                    addErrorMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, error), model);
                 }
 
                 return createdefinestudentconditions(finantialEntity, executionYear, bean, model);
@@ -329,7 +329,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
 
             tuitionPaymentPlan.orderUp();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.order.up.success"), model);
+            addInfoMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, "label.TuitionPaymentPlan.order.up.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
@@ -353,7 +353,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
 
             tuitionPaymentPlan.orderDown();
 
-            addInfoMessage(BundleUtil.getString(Constants.BUNDLE, "label.TuitionPaymentPlan.order.down.success"), model);
+            addInfoMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, "label.TuitionPaymentPlan.order.down.success"), model);
         } catch (DomainException ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }

@@ -26,7 +26,7 @@
  */
 package org.fenixedu.academictreasury.ui.academicservicerequestdebtcreation;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
@@ -34,7 +34,7 @@ import org.fenixedu.academictreasury.domain.serviceRequests.ITreasuryServiceRequ
 import org.fenixedu.academictreasury.dto.academicservicerequest.AcademicServiceRequestDebtCreationBean;
 import org.fenixedu.academictreasury.services.EmolumentServices;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;

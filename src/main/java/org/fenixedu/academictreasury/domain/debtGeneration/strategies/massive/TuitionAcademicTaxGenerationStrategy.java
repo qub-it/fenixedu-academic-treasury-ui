@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.domain.debtGeneration.strategies.massive;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -20,7 +20,7 @@ import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlanGroup;
 import org.fenixedu.academictreasury.services.AcademicTaxServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.academictreasury.util.ExcelUtils;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.joda.time.DateTime;
@@ -303,13 +303,13 @@ public class TuitionAcademicTaxGenerationStrategy implements IMassiveDebtGenerat
             return academicTreasuryBundle("label.TuitionAcademicTaxGenerationStrategy.dataDescription.tuitionPaymentPlanGroup", 
                         file.getTuitionPaymentPlanGroup().getName().getContent(), 
                         file.getExecutionYear().getQualifiedName(), 
-                        file.getDebtDate().toString(org.fenixedu.academictreasury.util.Constants.DATE_FORMAT));
+                        file.getDebtDate().toString(org.fenixedu.academictreasury.util.AcademicTreasuryConstants.DATE_FORMAT));
             
         } else {
             return academicTreasuryBundle("label.TuitionAcademicTaxGenerationStrategy.dataDescription.academicTax", 
                     file.getAcademicTax().getProduct().getName().getContent(), 
                     file.getExecutionYear().getQualifiedName(), 
-                    file.getDebtDate().toString(org.fenixedu.academictreasury.util.Constants.DATE_FORMAT));
+                    file.getDebtDate().toString(org.fenixedu.academictreasury.util.AcademicTreasuryConstants.DATE_FORMAT));
             
         }
     }

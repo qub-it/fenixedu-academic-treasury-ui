@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.services;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.Collections;

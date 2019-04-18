@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.dto.reports;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.math.BigDecimal;
 
@@ -8,7 +8,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
 import org.fenixedu.academictreasury.domain.reports.ErrorsLog;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.document.Invoice;
@@ -225,7 +225,7 @@ public class ReimbursementReportEntryBean implements SpreadsheetRow {
             return "";
         }
 
-        return value.toString(Constants.DATE_TIME_FORMAT_YYYY_MM_DD);
+        return value.toString(AcademicTreasuryConstants.DATE_TIME_FORMAT_YYYY_MM_DD);
     }
 
     private String valueOrEmpty(final Boolean value) {

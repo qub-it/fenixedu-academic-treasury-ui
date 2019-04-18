@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.domain.tuition;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.math.BigDecimal;
 import java.util.Comparator;
@@ -26,7 +26,7 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.dto.tariff.TuitionPaymentPlanBean;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.academictreasury.util.LocalizedStringUtil;
 import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
@@ -194,7 +194,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
                     isCustomized() ? "label.TuitionPaymentPlan.paymentPlanName.customized" : "label.TuitionPaymentPlan.paymentPlanName";
 
             result = result.with(locale,
-                    Constants.academicTreasuryBundle(paymentPlanLabel,
+                    AcademicTreasuryConstants.academicTreasuryBundle(paymentPlanLabel,
                             "[" + getDegreeCurricularPlan().getDegree().getCode() + "] "
                                     + getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(locale) + " - "
                                     + getDegreeCurricularPlan().getName(),
@@ -750,7 +750,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     }
 
     private static boolean laboratorial(final Enrolment enrolment) {
-        return Constants.isPositive(new BigDecimal(
+        return AcademicTreasuryConstants.isPositive(new BigDecimal(
                 enrolment.getCurricularCourse().getCompetenceCourse().getLaboratorialHours(enrolment.getExecutionPeriod())));
     }
 

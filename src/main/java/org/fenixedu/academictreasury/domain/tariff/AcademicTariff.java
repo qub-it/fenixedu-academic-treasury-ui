@@ -19,7 +19,7 @@ import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.Academic
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Currency;
@@ -167,7 +167,7 @@ public class AcademicTariff extends AcademicTariff_Base {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.urgencyRate.negative");
         }
 
-        if (Constants.HUNDRED_PERCENT.compareTo(getUrgencyRate()) < 0) {
+        if (AcademicTreasuryConstants.HUNDRED_PERCENT.compareTo(getUrgencyRate()) < 0) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.urgencyRate.greater.than.hundred");
         }
 
@@ -179,7 +179,7 @@ public class AcademicTariff extends AcademicTariff_Base {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.languageTranslationRate.negative");
         }
 
-        if (Constants.HUNDRED_PERCENT.compareTo(getLanguageTranslationRate()) < 0) {
+        if (AcademicTreasuryConstants.HUNDRED_PERCENT.compareTo(getLanguageTranslationRate()) < 0) {
             throw new AcademicTreasuryDomainException("error.AcademicTariff.languageTranslationRate.greater.than.hundred");
         }
 
@@ -261,7 +261,7 @@ public class AcademicTariff extends AcademicTariff_Base {
     public BigDecimal amountForUrgencyRate(final AcademicTreasuryEvent academicTreasuryEvent) {
         BigDecimal amount = amountWithLanguageRate(academicTreasuryEvent);
 
-        return amount.multiply(getUrgencyRate().setScale(20, RoundingMode.HALF_EVEN).divide(Constants.HUNDRED_PERCENT).setScale(2,
+        return amount.multiply(getUrgencyRate().setScale(20, RoundingMode.HALF_EVEN).divide(AcademicTreasuryConstants.HUNDRED_PERCENT).setScale(2,
                 RoundingMode.HALF_EVEN));
     }
 
@@ -269,7 +269,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         final BigDecimal amount = amountToPayWithoutRates(academicTreasuryEvent);
 
         final BigDecimal result = amount.multiply(getLanguageTranslationRate().setScale(20, RoundingMode.HALF_EVEN)
-                .divide(Constants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN));
+                .divide(AcademicTreasuryConstants.HUNDRED_PERCENT).setScale(2, RoundingMode.HALF_EVEN));
 
         return isPositive(result) ? result : BigDecimal.ZERO;
     }
@@ -403,7 +403,7 @@ public class AcademicTariff extends AcademicTariff_Base {
                 fillPriceCommonPropertiesForAcademicServiceRequest(debtAccount, academicTreasuryEvent, when);
 
         return DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat, amount, dueDate,
-                fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), Constants.DEFAULT_QUANTITY,
+                fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), AcademicTreasuryConstants.DEFAULT_QUANTITY,
                 this.getInterestRate(), when.toDateTimeAtStartOfDay());
     }
 
@@ -431,7 +431,7 @@ public class AcademicTariff extends AcademicTariff_Base {
                 fillPricePropertiesForAcademicTax(debtAccount, academicTreasuryEvent, when);
 
         return DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat, amount, dueDate,
-                fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), Constants.DEFAULT_QUANTITY,
+                fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), AcademicTreasuryConstants.DEFAULT_QUANTITY,
                 this.getInterestRate(), when.toDateTimeAtStartOfDay());
     }
 
@@ -459,7 +459,7 @@ public class AcademicTariff extends AcademicTariff_Base {
         final Map<String, String> fillPriceProperties = fillPriceProperties(academicTreasuryEvent, enrolmentEvaluation);
 
         final DebitEntry debitEntry = DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat,
-                amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), Constants.DEFAULT_QUANTITY,
+                amount, dueDate, fillPriceProperties, getProduct(), debitEntryName.getContent(TreasuryConstants.DEFAULT_LANGUAGE), AcademicTreasuryConstants.DEFAULT_QUANTITY,
                 this.getInterestRate(), new DateTime());
 
         academicTreasuryEvent.associateEnrolmentEvaluation(debitEntry, enrolmentEvaluation);
@@ -586,7 +586,7 @@ public class AcademicTariff extends AcademicTariff_Base {
                 currency.getValueFor(amountToPay(academicTreasuryEvent)));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.USED_DATE.getDescriptionI18N().getContent(),
-                when.toString(Constants.DATE_FORMAT));
+                when.toString(AcademicTreasuryConstants.DATE_FORMAT));
 
         return propertiesMap;
     }
@@ -623,7 +623,7 @@ public class AcademicTariff extends AcademicTariff_Base {
     private BigDecimal amountWithLanguageRate(final AcademicTreasuryEvent academicTreasuryEvent) {
         BigDecimal amount = amountToPayWithoutRates(academicTreasuryEvent);
 
-        if (isApplyLanguageTranslationRate() && Constants.isForeignLanguage(academicTreasuryEvent.getLanguage())) {
+        if (isApplyLanguageTranslationRate() && AcademicTreasuryConstants.isForeignLanguage(academicTreasuryEvent.getLanguage())) {
             amount = amount.add(amountForLanguageTranslationRate(academicTreasuryEvent));
         }
 

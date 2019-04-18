@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.ui.integration.tuitioninfo;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -19,7 +19,7 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionIn
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.exceptions.ERPTuitionInfoPendingException;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import pt.ist.fenixframework.FenixFramework;
 
 import org.fenixedu.bennu.core.domain.Bennu;

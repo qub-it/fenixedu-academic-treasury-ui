@@ -14,7 +14,7 @@ import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.AcademicTreasuryEventKeys;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.core.util.CoreConfiguration;
@@ -92,7 +92,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
         this.setBlockAcademicActsOnDebt(bean.isBlockAcademicActsOnDebt());
 
         if (bean.isApplyMaximumAmount()) {
-            if (bean.getMaximumAmount() == null || !Constants.isPositive(bean.getMaximumAmount())) {
+            if (bean.getMaximumAmount() == null || !AcademicTreasuryConstants.isPositive(bean.getMaximumAmount())) {
                 throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.maximum.amount.required",
                         getTuitionPaymentPlan().getDegreeCurricularPlan().getPresentationName(),
                         getTuitionPaymentPlan().getConditionsDescription().getContent());
@@ -231,7 +231,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
                 TuitionPaymentPlan.findUniqueDefaultPaymentPlan(getTuitionPaymentPlan().getDegreeCurricularPlan(),
                         getTuitionPaymentPlan().getExecutionYear()).get();
 
-        return Constants.divide(Constants.defaultScale(defaultPaymentPlan.tuitionTotalAmount()).multiply(getFactor()),
+        return AcademicTreasuryConstants.divide(AcademicTreasuryConstants.defaultScale(defaultPaymentPlan.tuitionTotalAmount()).multiply(getFactor()),
                 getTotalEctsOrUnits());
     }
 
@@ -255,10 +255,10 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
                 TuitionPaymentPlan.findUniqueDefaultPaymentPlan(getTuitionPaymentPlan().getDegreeCurricularPlan(),
                         getTuitionPaymentPlan().getExecutionYear()).get();
 
-        return Constants
-                .divide(Constants.defaultScale(defaultPaymentPlan.tuitionTotalAmount()).multiply(getFactor()),
+        return AcademicTreasuryConstants
+                .divide(AcademicTreasuryConstants.defaultScale(defaultPaymentPlan.tuitionTotalAmount()).multiply(getFactor()),
                         getTotalEctsOrUnits())
-                .multiply(Constants.divide(cost.getFunctionCost(), BigDecimal.TEN).add(BigDecimal.ONE));
+                .multiply(AcademicTreasuryConstants.divide(cost.getFunctionCost(), BigDecimal.TEN).add(BigDecimal.ONE));
     }
 
     public BigDecimal amountToPay(final AcademicTreasuryEvent academicTreasuryEvent) {
@@ -286,7 +286,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.unknown.amountToPay");
         }
 
-        if (isApplyMaximumAmount() && Constants.isGreaterThan(amountToPay, getMaximumAmount())) {
+        if (isApplyMaximumAmount() && AcademicTreasuryConstants.isGreaterThan(amountToPay, getMaximumAmount())) {
             return getMaximumAmount();
         }
 
@@ -321,7 +321,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
             throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.unknown.amountToPay");
         }
 
-        if (isApplyMaximumAmount() && Constants.isGreaterThan(amountToPay, getMaximumAmount())) {
+        if (isApplyMaximumAmount() && AcademicTreasuryConstants.isGreaterThan(amountToPay, getMaximumAmount())) {
             return getMaximumAmount();
         }
 
@@ -344,8 +344,8 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
 
         final DebitEntry debitEntry = DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent,
                 vat(when), amount, dueDate, fillPriceProperties, getProduct(), 
-                installmentName().getContent(Constants.DEFAULT_LANGUAGE),
-                Constants.DEFAULT_QUANTITY, 
+                installmentName().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE),
+                AcademicTreasuryConstants.DEFAULT_QUANTITY, 
                 this.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         if (isAcademicalActBlockingOff()) {
@@ -384,8 +384,8 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
 
         final DebitEntry debitEntry =
                 DebitEntry.create(Optional.<DebitNote> empty(), debtAccount, academicTreasuryEvent, vat(when), amount, dueDate,
-                        fillPriceProperties, getProduct(), standaloneDebitEntryName(standaloneEnrolment).getContent(Constants.DEFAULT_LANGUAGE),
-                        Constants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
+                        fillPriceProperties, getProduct(), standaloneDebitEntryName(standaloneEnrolment).getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE),
+                        AcademicTreasuryConstants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, standaloneEnrolment);
 
@@ -412,8 +412,8 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
                 fillPricePropertiesForStandaloneOrExtracurricular(academicTreasuryEvent, extracurricularEnrolment, dueDate);
 
         final DebitEntry debitEntry = DebitEntry.create(Optional.empty(), debtAccount, academicTreasuryEvent, vat(when), amount,
-                dueDate, fillPriceProperties, getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(Constants.DEFAULT_LANGUAGE),
-                Constants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
+                dueDate, fillPriceProperties, getProduct(), extracurricularDebitEntryName(extracurricularEnrolment).getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE),
+                AcademicTreasuryConstants.DEFAULT_QUANTITY, this.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         academicTreasuryEvent.associateEnrolment(debitEntry, extracurricularEnrolment);
 
@@ -436,7 +436,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             result = result.with(locale,
-                    BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.standalone.debit.entry.name",
+                    AcademicTreasuryConstants.academicTreasuryBundle(locale, "label.TuitionPaymentPlan.standalone.debit.entry.name",
                             standaloneEnrolment.getName().getContent(locale),
                             standaloneEnrolment.getExecutionPeriod().getQualifiedName(),
                             new BigDecimal(standaloneEnrolment.getCurricularCourse().getEctsCredits()).toString()));
@@ -454,7 +454,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         LocalizedString result = new LocalizedString();
         for (final Locale locale : CoreConfiguration.supportedLocales()) {
             result = result.with(locale,
-                    BundleUtil.getString(Constants.BUNDLE, locale, "label.TuitionPaymentPlan.extracurricular.debit.entry.name",
+                    AcademicTreasuryConstants.academicTreasuryBundle(locale, "label.TuitionPaymentPlan.extracurricular.debit.entry.name",
                             extracurricularEnrolment.getName().getContent(locale),
                             extracurricularEnrolment.getExecutionPeriod().getQualifiedName(),
                             new BigDecimal(extracurricularEnrolment.getCurricularCourse().getEctsCredits()).toString()));
@@ -565,7 +565,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         }
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DUE_DATE.getDescriptionI18N().getContent(),
-                dueDate.toString(Constants.DATE_FORMAT));
+                dueDate.toString(AcademicTreasuryConstants.DATE_FORMAT));
 
         return propertiesMap;
     }
@@ -622,9 +622,9 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         }
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.USED_DATE.getDescriptionI18N().getContent(),
-                usedDate.toString(Constants.DATE_FORMAT));
+                usedDate.toString(AcademicTreasuryConstants.DATE_FORMAT));
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DUE_DATE.getDescriptionI18N().getContent(),
-                dueDate.toString(Constants.DATE_FORMAT));
+                dueDate.toString(AcademicTreasuryConstants.DATE_FORMAT));
 
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
                 academicTreasuryEvent.getRegistration().getDegree().getCode());
@@ -675,7 +675,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         super.setBlockAcademicActsOnDebt(bean.isBlockAcademicActsOnDebt());
 
         if (bean.isApplyMaximumAmount()) {
-            if (bean.getMaximumAmount() == null || !Constants.isPositive(bean.getMaximumAmount())) {
+            if (bean.getMaximumAmount() == null || !AcademicTreasuryConstants.isPositive(bean.getMaximumAmount())) {
                 throw new AcademicTreasuryDomainException("error.TuitionInstallmentTariff.maximum.amount.required",
                         getTuitionPaymentPlan().getDegreeCurricularPlan().getDescription(),
                         getTuitionPaymentPlan().getConditionsDescription().getContent());

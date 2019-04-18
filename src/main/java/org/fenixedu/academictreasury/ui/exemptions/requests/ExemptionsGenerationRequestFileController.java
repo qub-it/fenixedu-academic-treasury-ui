@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.ui.exemptions.requests;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.io.IOException;
 import java.util.stream.Collectors;
@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.fenixedu.academictreasury.domain.exemptions.requests.ExemptionsGenerationRequestFile;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;

@@ -1,7 +1,7 @@
 package org.fenixedu.academictreasury.domain.integration.tuitioninfo;
 
 import static java.lang.String.format;
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundleI18N;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundleI18N;
 
 import java.util.Locale;
 import java.util.Set;
@@ -14,7 +14,7 @@ import org.fenixedu.academic.domain.degree.DegreeType;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.Product;
@@ -319,7 +319,7 @@ public class ERPTuitionInfoTypeAcademicEntry extends ERPTuitionInfoTypeAcademicE
 
         if (isDefinedForDegree()) {
             LocalizedString result = new LocalizedString();
-            for (Locale locale : Constants.supportedLocales()) {
+            for (Locale locale : AcademicTreasuryConstants.supportedLocales()) {
                 result = result.with(locale, format("[%s] %s", getDegree().getCode(), getDegree().getPresentationNameI18N().getContent(locale)));
             }
 
@@ -328,7 +328,7 @@ public class ERPTuitionInfoTypeAcademicEntry extends ERPTuitionInfoTypeAcademicE
 
         if (isDefinedForDegreeCurricularPlan()) {
             LocalizedString result = new LocalizedString();
-            for (Locale locale : Constants.supportedLocales()) {
+            for (Locale locale : AcademicTreasuryConstants.supportedLocales()) {
                 result = result.with(locale, String.format("[%s] %s - %s", getDegree().getCode(),
                         getDegree().getPresentationNameI18N().getContent(locale), getDegreeCurricularPlan().getName()));
 

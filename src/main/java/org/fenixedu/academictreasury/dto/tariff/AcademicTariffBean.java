@@ -12,7 +12,7 @@ import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.domain.tuition.EctsCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionCalculationType;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.FinantialEntity;
@@ -285,15 +285,15 @@ public class AcademicTariffBean implements ITreasuryBean, Serializable {
     }
 
     public boolean isApplyUrgencyRate() {
-        return Constants.isPositive(getUrgencyRate());
+        return AcademicTreasuryConstants.isPositive(getUrgencyRate());
     }
 
     public boolean isApplyLanguageTranslationRate() {
-        return Constants.isPositive(getLanguageTranslationRate());
+        return AcademicTreasuryConstants.isPositive(getLanguageTranslationRate());
     }
 
     public boolean isApplyBaseAmount() {
-        return Constants.isPositive(getBaseAmount());
+        return AcademicTreasuryConstants.isPositive(getBaseAmount());
     }
 
     /*

@@ -1,6 +1,6 @@
 package org.fenixedu.academictreasury.ui.integration.tuitioninfo;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.util.List;
 import java.util.Set;
@@ -13,7 +13,7 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionIn
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoSettings;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoType;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfoTypeAcademicEntry;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.treasury.dto.ITreasuryBean;
 import org.fenixedu.treasury.dto.TreasuryTupleDataSourceBean;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -56,7 +56,7 @@ public class ERPTuitionInfoBean implements ITreasuryBean {
                 .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), l.getQualifiedName()))
                 .collect(Collectors.toList());
 
-        result.add(0, Constants.SELECT_OPTION);
+        result.add(0, AcademicTreasuryConstants.SELECT_OPTION);
 
         return result;
     }
@@ -73,7 +73,7 @@ public class ERPTuitionInfoBean implements ITreasuryBean {
                 .collect(Collectors.toList());
                 
 
-        result.add(0, Constants.SELECT_OPTION);
+        result.add(0, AcademicTreasuryConstants.SELECT_OPTION);
         
         return result;
     }

@@ -1,7 +1,7 @@
 package org.fenixedu.academictreasury.domain.debtGeneration.strategies.massive;
 
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundle;
-import static org.fenixedu.academictreasury.util.Constants.academicTreasuryBundleI18N;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
+import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundleI18N;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -13,7 +13,7 @@ import org.fenixedu.academictreasury.domain.debtGeneration.requests.MassiveDebtG
 import org.fenixedu.academictreasury.domain.debtGeneration.requests.MassiveDebtGenerationRequestFileBean;
 import org.fenixedu.academictreasury.domain.debtGeneration.requests.MassiveDebtGenerationRowResult;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
-import org.fenixedu.academictreasury.util.Constants;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.academictreasury.util.ExcelUtils;
 import org.fenixedu.commons.i18n.LocalizedString;
 import org.fenixedu.treasury.domain.document.DebitEntry;
