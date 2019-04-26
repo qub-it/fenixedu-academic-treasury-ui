@@ -719,10 +719,4 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         return new TuitionInstallmentTariff(finantialEntity, tuitionPaymentPlan, bean);
     }
 
-    @Override
-    public LocalizedString getUiTariffDescription() {
-        // TODO ANIL
-        return null;
-    }
-
 }

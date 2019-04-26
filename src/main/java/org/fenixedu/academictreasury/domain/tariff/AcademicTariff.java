@@ -910,15 +910,4 @@ public class AcademicTariff extends AcademicTariff_Base {
         }
     }
 
-    /* ----
-     * UTIL
-     * ----
-     */
-
-    @Override
-    public LocalizedString getUiTariffDescription() {
-        // TODO ANIL
-        return null;
-    }
-
 }
