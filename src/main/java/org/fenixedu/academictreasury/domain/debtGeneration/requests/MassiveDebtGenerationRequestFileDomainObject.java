@@ -147,6 +147,7 @@ public class MassiveDebtGenerationRequestFileDomainObject extends MassiveDebtGen
         result.setDebtDate(file.getDebtDate());
         result.setReason(file.getReason());
         result.setFinantialInstitution(file.getFinantialInstitution());
+        result.setWhenProcessed(file.getWhenProcessed());
 
         result.setTreasuryFile(file);
         result.setCreationDate(file.getCreationDate());
