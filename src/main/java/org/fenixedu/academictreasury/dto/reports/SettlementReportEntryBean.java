@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import org.apache.poi.ss.usermodel.Row;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.contacts.EmailAddress;
+import org.fenixedu.academic.domain.treasury.IAcademicTreasuryTarget;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.reports.DebtReportRequest;
@@ -33,6 +34,8 @@ import org.joda.time.LocalDate;
 import org.springframework.util.StringUtils;
 
 import com.google.common.base.Strings;
+
+import pt.ist.fenixframework.core.AbstractDomainObject;
 
 public class SettlementReportEntryBean implements SpreadsheetRow {
 
@@ -237,6 +240,24 @@ public class SettlementReportEntryBean implements SpreadsheetRow {
 
                     if (iTreasuryServiceRequest.hasExecutionYear()) {
                         this.executionYear = iTreasuryServiceRequest.getExecutionYear().getQualifiedName();
+                    }
+                } else if(academicTreasuryEvent.isForTreasuryEventTarget()) {
+                    IAcademicTreasuryTarget treasuryEventTarget = (IAcademicTreasuryTarget) academicTreasuryEvent.getTreasuryEventTarget();
+
+                    if(treasuryEventTarget.getAcademicTreasuryTargetRegistration() != null) {
+                        this.registrationNumber = treasuryEventTarget.getAcademicTreasuryTargetRegistration().getNumber();
+                        this.degreeType =
+                                treasuryEventTarget.getAcademicTreasuryTargetRegistration().getDegree().getDegreeType().getName().getContent();
+                        this.degreeCode = treasuryEventTarget.getAcademicTreasuryTargetRegistration().getDegree().getCode();
+                        this.degreeName = treasuryEventTarget.getAcademicTreasuryTargetRegistration().getDegree().getPresentationNameI18N();
+                    }
+                    
+                    if(treasuryEventTarget.getAcademicTreasuryTargetExecutionYear() != null) {
+                        this.executionYear = treasuryEventTarget.getAcademicTreasuryTargetExecutionYear().getQualifiedName();
+                    }
+                    
+                    if(treasuryEventTarget.getAcademicTreasuryTargetExecutionSemester() != null) {
+                        this.executionSemester = treasuryEventTarget.getAcademicTreasuryTargetExecutionSemester().getQualifiedName();
                     }
                 }
             } else if (debitEntry.getTreasuryEvent() != null) {

@@ -10,6 +10,7 @@ import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.contacts.EmailAddress;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.treasury.IAcademicTreasuryTarget;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent.AcademicTreasuryEventKeys;
@@ -445,7 +446,26 @@ public class DebtReportEntryBean implements SpreadsheetRow {
                         fillStudentConditionsInformation(iTreasuryServiceRequest.getRegistration(),
                                 iTreasuryServiceRequest.getExecutionYear());
                     }
+                } else if(academicTreasuryEvent.isForTreasuryEventTarget()) {
+                    final IAcademicTreasuryTarget treasuryEventTarget = (IAcademicTreasuryTarget) academicTreasuryEvent.getTreasuryEventTarget();
+
+                    if(treasuryEventTarget.getAcademicTreasuryTargetRegistration() != null) {
+                        this.registrationNumber = treasuryEventTarget.getAcademicTreasuryTargetRegistration().getNumber();
+                        this.degreeType =
+                                treasuryEventTarget.getAcademicTreasuryTargetRegistration().getDegree().getDegreeType().getName().getContent();
+                        this.degreeCode = treasuryEventTarget.getAcademicTreasuryTargetRegistration().getDegree().getCode();
+                        this.degreeName = treasuryEventTarget.getAcademicTreasuryTargetRegistration().getDegree().getPresentationNameI18N();
+                    }
+                    
+                    if(treasuryEventTarget.getAcademicTreasuryTargetExecutionYear() != null) {
+                        this.executionYear = treasuryEventTarget.getAcademicTreasuryTargetExecutionYear().getQualifiedName();
+                    }
+                    
+                    if(treasuryEventTarget.getAcademicTreasuryTargetExecutionSemester() != null) {
+                        this.executionSemester = treasuryEventTarget.getAcademicTreasuryTargetExecutionSemester().getQualifiedName();
+                    }
                 }
+                    
             } else if (debitEntry.getTreasuryEvent() != null) {
                 final TreasuryEvent treasuryEvent = debitEntry.getTreasuryEvent();
 
