@@ -1,3 +1,5 @@
+- Refactor: Rename treasury domain file entities to their original class name
+
 2.3.3 (08-07-2019)
 - Bug fix: Set academic information in report beans for target treasury event associated debts and payments
 
