@@ -3,6 +3,7 @@ package org.fenixedu.academictreasury.services;
 import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -35,6 +36,7 @@ import org.fenixedu.treasury.domain.document.DocumentNumberSeries;
 import org.fenixedu.treasury.domain.document.FinantialDocumentType;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -143,7 +145,8 @@ public class EmolumentServices {
         final AcademicTariff academicTariff = findTariffForAcademicServiceRequest(iTreasuryServiceRequest, debtDate);
 
         if (academicTariff == null) {
-            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", debtDate.toString(TreasuryConstants.DATE_FORMAT));
+            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found",
+                    debtDate.toString(TreasuryConstants.DATE_FORMAT));
         }
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
@@ -213,7 +216,8 @@ public class EmolumentServices {
         final AcademicTariff academicTariff = findTariffForAcademicServiceRequest(iTreasuryServiceRequest, when);
 
         if (academicTariff == null) {
-            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", when.toString(TreasuryConstants.DATE_FORMAT));
+            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found",
+                    when.toString(TreasuryConstants.DATE_FORMAT));
         }
 
         final FinantialEntity finantialEntity = academicTariff.getFinantialEntity();
@@ -273,12 +277,18 @@ public class EmolumentServices {
                 throw new AcademicTreasuryDomainException(
                         "error.EmolumentServices.academicServiceRequest.paymentCodePool.is.required");
             }
+
             final LocalDate dueDate = academicTresuryEvent.getDueDate();
             final LocalDate now = new LocalDate();
-            PaymentReferenceCode referenceCode = pool.getReferenceCodeGenerator().generateNewCodeFor(
-                    academicTresuryEvent.getRemainingAmountToPay(), now, dueDate.compareTo(now) > 0 ? dueDate : now, true);
 
-            referenceCode.createPaymentTargetTo(Sets.newHashSet(debitEntry), debitEntry.getOpenAmount());
+            final PaymentReferenceCodeBean referenceCodeBean = new PaymentReferenceCodeBean(pool, debitEntry.getDebtAccount());
+            referenceCodeBean.setBeginDate(now);
+            referenceCodeBean.setEndDate(dueDate.compareTo(now) > 0 ? dueDate : now);
+            referenceCodeBean.setSelectedDebitEntries(new ArrayList<DebitEntry>());
+            referenceCodeBean.getSelectedDebitEntries().add(debitEntry);
+
+            final PaymentReferenceCode referenceCode =
+                    PaymentReferenceCode.createPaymentReferenceCodeForMultipleDebitEntries(debitEntry.getDebtAccount(), referenceCodeBean);
         }
 
         return true;
@@ -323,12 +333,14 @@ public class EmolumentServices {
 
         final DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
         if (!debitEntry.isProcessedInDebitNote()) {
-            debitEntry.annulDebitEntry(academicTreasuryBundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"));
+            debitEntry
+                    .annulDebitEntry(academicTreasuryBundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"));
             debitEntry.delete();
 
             return true;
         } else if (debitEntry.getCreditEntriesSet().isEmpty()) {
-            debitNote.anullDebitNoteWithCreditNote(academicTreasuryBundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"), false);
+            debitNote.anullDebitNoteWithCreditNote(
+                    academicTreasuryBundle("label.EmolumentServices.removeDebitEntryForAcademicService.reason"), false);
 
             return true;
         }

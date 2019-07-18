@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.domain.treasury;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -46,6 +47,7 @@ import org.fenixedu.treasury.domain.document.SettlementEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentReferenceCode;
 import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.ui.accounting.managecustomer.CustomerController;
 import org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController;
 import org.fenixedu.treasury.util.FiscalCodeValidation;
@@ -302,12 +304,12 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     @Override
     public void anullDebtsForTarget(final IAcademicTreasuryTarget target, final String reason) {
         final IAcademicTreasuryEvent event = getAcademicTreasuryEventForTarget(target);
-        
-        if(event != null) {
+
+        if (event != null) {
             event.annulDebts(reason);
         }
     }
-    
+
     @Override
     //TODO: Anil passar número de unidades e utilizar o academictariff para calcular o valor final em conjunto com o ciclo e o curso
     public IAcademicTreasuryEvent createDebt(final ITreasuryEntity treasuryEntity, final ITreasuryProduct treasuryProduct,
@@ -342,8 +344,8 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         if (treasuryEvent == null) {
             treasuryEvent = AcademicTreasuryEvent.createForAcademicTreasuryEventTarget(product, target);
         }
-        
-        if(treasuryEvent.isCharged()) {
+
+        if (treasuryEvent.isCharged()) {
             return treasuryEvent;
         }
 
@@ -361,8 +363,8 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         final BigDecimal amount = academicTariff.amountToPay(numberOfUnits, numberOfPages);
         final DebitEntry debitEntry = DebitEntry.create(Optional.of(debitNote), debtAccount, treasuryEvent, vat, amount, dueDate,
                 target.getAcademicTreasuryTargetPropertiesMap(), product,
-                target.getAcademicTreasuryTargetDescription().getContent(TreasuryConstants.DEFAULT_LANGUAGE), BigDecimal.ONE, academicTariff.getInterestRate(),
-                when.toDateTimeAtStartOfDay());
+                target.getAcademicTreasuryTargetDescription().getContent(TreasuryConstants.DEFAULT_LANGUAGE), BigDecimal.ONE,
+                academicTariff.getInterestRate(), when.toDateTimeAtStartOfDay());
 
         if (createPaymentCode) {
             createPaymentReferenceCode(pool, debitEntry, when, dueDate);
@@ -406,7 +408,8 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         final DebitNote debitNote = DebitNote.create(debtAccount, documentNumberSeries, now);
         final DebitEntry debitEntry = DebitEntry.create(Optional.of(debitNote), debtAccount, treasuryEvent, vat, amount, dueDate,
                 target.getAcademicTreasuryTargetPropertiesMap(), product,
-                target.getAcademicTreasuryTargetDescription().getContent(TreasuryConstants.DEFAULT_LANGUAGE), BigDecimal.ONE, null, when.toDateTimeAtStartOfDay());
+                target.getAcademicTreasuryTargetDescription().getContent(TreasuryConstants.DEFAULT_LANGUAGE), BigDecimal.ONE,
+                null, when.toDateTimeAtStartOfDay());
 
         if (createPaymentCode) {
             createPaymentReferenceCode(pool, debitEntry, when, dueDate);
@@ -417,9 +420,16 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
 
     private PaymentReferenceCode createPaymentReferenceCode(final PaymentCodePool paymentCodePool, final DebitEntry debitEntry,
             final LocalDate when, final LocalDate dueDate) {
-        final PaymentReferenceCode paymentReferenceCode =
-                paymentCodePool.getReferenceCodeGenerator().generateNewCodeFor(debitEntry.getOpenAmount(), when, dueDate, true);
-        paymentReferenceCode.createPaymentTargetTo(Sets.newHashSet(debitEntry), debitEntry.getOpenAmount());
+
+        final PaymentReferenceCodeBean referenceCodeBean =
+                new PaymentReferenceCodeBean(paymentCodePool, debitEntry.getDebtAccount());
+        referenceCodeBean.setBeginDate(when);
+        referenceCodeBean.setEndDate(dueDate);
+        referenceCodeBean.setSelectedDebitEntries(new ArrayList<DebitEntry>());
+        referenceCodeBean.getSelectedDebitEntries().add(debitEntry);
+
+        final PaymentReferenceCode paymentReferenceCode = PaymentReferenceCode.createPaymentReferenceCodeForMultipleDebitEntries(
+                debitEntry.getDebtAccount(), referenceCodeBean);
 
         return paymentReferenceCode;
     }
