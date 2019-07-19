@@ -66,6 +66,7 @@ public class ServiceRequestMapEntry extends ServiceRequestMapEntry_Base {
 
         setServiceRequestType(null);
         setProduct(null);
+        setPaymentCodePool(null);
         setDomainRoot(null);
         super.deleteDomainObject();
     }

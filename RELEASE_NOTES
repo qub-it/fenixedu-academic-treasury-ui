@@ -1,4 +1,5 @@
 - Refactor: Update fenixedu-treasury dependency version
+- Bug Fix: Remove payment code pool association on delete service request mapping entry
 
 2.5.0 (18-07-2019)
 - Refactor: Changes in payment reference code generation API due to Online Payments Gateway integration in fenixedu-treasury module
