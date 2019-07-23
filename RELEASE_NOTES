@@ -1,3 +1,5 @@
+- Refactor: Delete AcademicTreasuryBootstrap, update dependency fenixedu-treasury version 
+
 2.5.1 (19-07-2019)
 - Refactor: Update fenixedu-treasury dependency version
 - Bug Fix: Remove payment code pool association on delete service request mapping entry
