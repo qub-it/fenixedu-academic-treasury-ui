@@ -1,3 +1,6 @@
+- Refactor: Save fiscal address from Person in Customer address fields
+- Refactor: Deprecate fiscal country, instead fiscal address country is used and saved in Customer
+
 2.5.3 (26-07-2019)
 - Refactor: Upgrade fenixedu-academic-core dependency
 
