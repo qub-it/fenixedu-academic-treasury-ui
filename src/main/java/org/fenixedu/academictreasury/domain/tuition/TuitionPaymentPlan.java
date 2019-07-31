@@ -238,16 +238,13 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (getCurricularYear() != null) {
-                description.append(academicTreasuryBundle(locale,
-                        "label.TuitionPaymentPlan.curricularYear.description", String.valueOf(getCurricularYear().getYear())))
-                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
+                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.curricularYear.description",
+                        String.valueOf(getCurricularYear().getYear()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getSemester() != null) {
-                description
-                        .append(academicTreasuryBundle(locale,
-                                "label.TuitionPaymentPlan.curricularSemester.description", String.valueOf(getSemester())))
-                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
+                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.curricularSemester.description",
+                        String.valueOf(getSemester()))).append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (getStatuteType() != null) {
@@ -260,14 +257,12 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
             }
 
             if (isCustomized()) {
-                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.customized"))
-                        .append(" [").append(getCustomizedName().getContent()).append("]")
-                        .append(CONDITIONS_DESCRIPTION_SEPARATOR);
+                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.customized")).append(" [")
+                        .append(getCustomizedName().getContent()).append("]").append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
             if (isWithLaboratorialClasses()) {
-                description.append(
-                        academicTreasuryBundle(locale, "label.TuitionPaymentPlan.withLaboratorialClasses"))
+                description.append(academicTreasuryBundle(locale, "label.TuitionPaymentPlan.withLaboratorialClasses"))
                         .append(CONDITIONS_DESCRIPTION_SEPARATOR);
             }
 
@@ -619,85 +614,86 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final DegreeCurricularPlan degreeCurricularPlan,
             final ExecutionYear executionYear, final InferTuitionStudentConditionsBean conditionsBean) {
-        
+
         final List<TuitionPaymentPlan> plans = TuitionPaymentPlan
                 .findSortedByPaymentPlanOrder(TuitionPaymentPlanGroup.findUniqueDefaultGroupForRegistration().get(),
                         degreeCurricularPlan, executionYear)
                 .collect(Collectors.toList());
-        
+
         final List<TuitionPaymentPlan> filtered = Lists.newArrayList();
         for (final TuitionPaymentPlan t : plans) {
-            
+
             if (t.getRegistrationRegimeType() != null && t.getRegistrationRegimeType() != conditionsBean.getRegimeType()) {
                 continue;
             }
-            
+
             if (t.getRegistrationProtocol() != null && t.getRegistrationProtocol() != conditionsBean.getRegistrationProtocol()) {
                 continue;
             }
-            
+
             if (t.getIngression() != null && t.getIngression() != conditionsBean.getIngression()) {
                 continue;
             }
-            
+
             if (t.getSemester() != null) {
                 if (conditionsBean.getSemestersWithEnrolments().size() != 1) {
                     continue;
                 }
-                
+
                 final Integer semester = conditionsBean.getSemestersWithEnrolments().iterator().next();
-                
+
                 if (!t.getSemester().equals(semester)) {
                     continue;
                 }
             }
-            
+
             if (t.getCurricularYear() != null && t.getCurricularYear() != conditionsBean.getCurricularYear()) {
                 continue;
             }
-            
+
             if (t.getStatuteType() != null && !conditionsBean.getStatutes().contains(t.getStatuteType())) {
                 continue;
             }
-            
+
             if (t.getFirstTimeStudent() && !conditionsBean.isFirstTimeStudent()) {
                 continue;
             }
-            
+
             if (t.isCustomized()) {
                 continue;
             }
-            
+
             filtered.add(t);
         }
-        
+
         return !filtered.isEmpty() ? filtered.get(0) : null;
-    }    
-    
+    }
+
     public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final Registration registration,
             final ExecutionYear executionYear, final InferTuitionStudentConditionsBean conditionsBean) {
         final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
-        
+
         if (studentCurricularPlan == null) {
             return null;
         }
-        
+
         final DegreeCurricularPlan degreeCurricularPlan = studentCurricularPlan.getDegreeCurricularPlan();
-        
+
         return inferTuitionPaymentPlanForRegistration(degreeCurricularPlan, executionYear, conditionsBean);
     }
-    
+
     public static TuitionPaymentPlan inferTuitionPaymentPlanForRegistration(final Registration registration,
             final ExecutionYear executionYear) {
 
         final StudentCurricularPlan studentCurricularPlan = registration.getStudentCurricularPlan(executionYear);
-        
+
         if (studentCurricularPlan == null) {
             return null;
         }
-        
-        final InferTuitionStudentConditionsBean conditionsBean = InferTuitionStudentConditionsBean.build(registration, executionYear);
-        
+
+        final InferTuitionStudentConditionsBean conditionsBean =
+                InferTuitionStudentConditionsBean.build(registration, executionYear);
+
         return inferTuitionPaymentPlanForRegistration(registration, executionYear, conditionsBean);
     }
 
@@ -751,7 +747,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
 
     private static boolean laboratorial(final Enrolment enrolment) {
         return AcademicTreasuryConstants.isPositive(new BigDecimal(
-                enrolment.getCurricularCourse().getCompetenceCourse().getLaboratorialHours(enrolment.getExecutionPeriod())));
+                enrolment.getCurricularCourse().getCompetenceCourse().getLaboratorialHours(enrolment.getExecutionInterval())));
     }
 
     public static boolean firstTimeStudent(final Registration registration, final ExecutionYear executionYear) {
@@ -763,7 +759,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
     }
 
     public static Set<Integer> semestersWithEnrolments(final Registration registration, final ExecutionYear executionYear) {
-        return registration.getEnrolments(executionYear).stream().map(e -> (Integer) e.getExecutionPeriod().getSemester())
+        return registration.getEnrolments(executionYear).stream().map(e -> (Integer) e.getExecutionInterval().getChildOrder())
                 .collect(Collectors.toSet());
     }
 

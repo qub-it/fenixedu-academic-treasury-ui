@@ -14,6 +14,7 @@ import org.apache.commons.lang.text.StrSubstitutor;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.EnrolmentEvaluation;
+import org.fenixedu.academic.domain.ExecutionSemester;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequest;
@@ -441,7 +442,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
         debitEntry.setCurricularCourse(enrolment.getCurricularCourse());
-        debitEntry.setExecutionSemester(enrolment.getExecutionPeriod());
+        debitEntry.setExecutionSemester(enrolment.getExecutionInterval().convert(ExecutionSemester.class));
     }
 
     public void associateEnrolmentEvaluation(final DebitEntry debitEntry, final EnrolmentEvaluation enrolmentEvaluation) {
@@ -454,10 +455,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
         debitEntry.setCurricularCourse(enrolmentEvaluation.getEnrolment().getCurricularCourse());
-        debitEntry.setExecutionSemester(enrolmentEvaluation.getEnrolment().getExecutionPeriod());
+        debitEntry.setExecutionSemester(enrolmentEvaluation.getEnrolment().getExecutionInterval().convert(ExecutionSemester.class));
 
         if (enrolmentEvaluation.getExecutionPeriod() != null) {
-            debitEntry.setExecutionSemester(enrolmentEvaluation.getExecutionPeriod());
+            debitEntry.setExecutionSemester(enrolmentEvaluation.getExecutionInterval().convert(ExecutionSemester.class));
         }
 
         debitEntry.setEvaluationSeason(enrolmentEvaluation.getEvaluationSeason());

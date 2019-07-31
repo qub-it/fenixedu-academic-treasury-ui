@@ -1,3 +1,5 @@
+- Refactor: Upgrade dependency of fenixedu-academic-core (changed domain relations from ExecutionSemester to ExecutionInterval)
+
 3.0.0 (29-07-2019)
 - Refactor: Save fiscal address from Person in Customer address fields
 - Refactor: Deprecate fiscal country, instead fiscal address country is used and saved in Customer
