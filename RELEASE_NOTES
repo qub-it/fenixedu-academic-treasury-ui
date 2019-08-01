@@ -4,6 +4,7 @@
 - Refactor: Academic fiscal number and country is provided by service plugged
 - Refactor: Support for custom academic debts
 - Refactor: Support in entity model for treasury debt report for degree and execution year and selection of type of debts
+- Refactor: Support for logs in automatic debt generation execution 
 
 3.0.1 (31-07-2019)
 - Refactor: Upgrade dependency of fenixedu-academic-core (changed domain relations from ExecutionSemester to ExecutionInterval)
