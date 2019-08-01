@@ -1,3 +1,10 @@
+- Refactor: Associate finantial entity to an unit, beside administrative office
+- Refactor: Use default locale academic entities methods to retrieve designation
+- Refactor: Academic entities queries (ex: all statutes) is provided by service
+- Refactor: Academic fiscal number and country is provided by service plugged
+- Refactor: Support for custom academic debts
+- Refactor: Support in entity model for treasury debt report for degree and execution year and selection of type of debts
+
 3.0.1 (31-07-2019)
 - Refactor: Upgrade dependency of fenixedu-academic-core (changed domain relations from ExecutionSemester to ExecutionInterval)
 

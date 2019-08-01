@@ -10,6 +10,7 @@ import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEventPayment;
 import org.fenixedu.academic.domain.treasury.IPaymentReferenceCode;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.event.TreasuryEvent;
@@ -88,12 +89,7 @@ public class TreasuryEventDefaultMethods {
     }
 
     public static String getDebtAccountURL(final TreasuryEvent treasuryEvent) {
-        if (DebitEntry.findActive(treasuryEvent).findFirst().isPresent()) {
-            return DebtAccountController.READ_URL
-                    + DebitEntry.findActive(treasuryEvent).findFirst().get().getDebtAccount().getExternalId();
-        }
-
-        return null;
+        return AcademicTreasurySettings.getInstance().getAcademicTreasuryAccountUrl().getDebtAccountURL(treasuryEvent);
     }
 
     public static String getExemptionReason(final TreasuryEvent treasuryEvent) {
