@@ -275,9 +275,9 @@ ${portal.toolkit()}
 	                            <c:when test="${tariff.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
 	                                <p>
 		                                <strong><spring:message code="label.AcademicTariff.dueDateCalculationType" />:</strong>
-	                                    <joda:format value="${tariff.fixedDueDate}" style="S-" />
+	                                    <joda:format var="fixedDueDate" value="${tariff.fixedDueDate}" style="S-" />
 	                                    <spring:message code="label.TuitionInstallmentTariff.bestOfFixedDateAndDaysAfterCreation"
-	                                        arguments="${tariff.numberOfDaysAfterCreationForDueDate}" />
+	                                        arguments="${fixedDueDate},${tariff.numberOfDaysAfterCreationForDueDate}" />
 	                                </p>
 	                            </c:when>
 	                        </c:choose>

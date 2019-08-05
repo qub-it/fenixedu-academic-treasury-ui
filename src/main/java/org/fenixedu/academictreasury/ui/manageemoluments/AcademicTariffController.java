@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
+import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
@@ -153,6 +154,11 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         try {
 
             bean.resetFields();
+            
+            if(bean.getAdministrativeOffice() == null) {
+                throw new AcademicTreasuryDomainException("error.AcademicTariff.administrativeOffice.required");
+            }
+            
             AcademicTariff academicTariff = AcademicTariff.create(finantialEntity, product, bean);
 
             return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",

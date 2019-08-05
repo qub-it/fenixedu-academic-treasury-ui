@@ -552,7 +552,7 @@ public class AcademicTariff extends AcademicTariff_Base {
 
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
                 academicTreasuryEvent.getITreasuryServiceRequest().getRegistration().getDegree()
-                        .getPresentationName(academicTreasuryEvent.getITreasuryServiceRequest().getExecutionYear()));
+                        .getPresentationNameI18N(academicTreasuryEvent.getITreasuryServiceRequest().getExecutionYear()).getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
         
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
                 academicTreasuryEvent.getITreasuryServiceRequest().getRegistration().getDegree().getCode());
@@ -575,7 +575,7 @@ public class AcademicTariff extends AcademicTariff_Base {
                 academicTreasuryEvent.getExecutionYear().getQualifiedName());
 
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), academicTreasuryEvent
-                .getRegistration().getDegree().getPresentationName(academicTreasuryEvent.getExecutionYear()));
+                .getRegistration().getDegree().getPresentationNameI18N(academicTreasuryEvent.getExecutionYear()).getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
                 academicTreasuryEvent.getRegistration().getDegreeCurricularPlanName());
 
@@ -655,13 +655,13 @@ public class AcademicTariff extends AcademicTariff_Base {
                 improvementEnrolmentEvaluation.getDegreeCurricularPlan().getName());
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
-                improvementEnrolmentEvaluation.getDegreeCurricularPlan().getDegree().getPresentationName());
+                improvementEnrolmentEvaluation.getDegreeCurricularPlan().getDegree().getPresentationNameI18N().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.EXECUTION_SEMESTER.getDescriptionI18N().getContent(),
                 improvementEnrolmentEvaluation.getExecutionPeriod().getQualifiedName());
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.EVALUATION_SEASON.getDescriptionI18N().getContent(),
-                improvementEnrolmentEvaluation.getEvaluationSeason().getName().getContent());
+                improvementEnrolmentEvaluation.getEvaluationSeason().getName().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
 
         return propertiesMap;
     }

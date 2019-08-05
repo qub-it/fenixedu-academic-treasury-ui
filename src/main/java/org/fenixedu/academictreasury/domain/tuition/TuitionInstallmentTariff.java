@@ -498,7 +498,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
                 enrolment.getCurricularCourse().getDegreeCurricularPlan().getName());
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
-                enrolment.getCurricularCourse().getDegree().getPresentationName());
+                enrolment.getCurricularCourse().getDegree().getPresentationNameI18N().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
                 enrolment.getCurricularCourse().getDegree().getCode());
 
@@ -594,12 +594,12 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
 
         propertiesMap.put(
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_CALCULATION_TYPE.getDescriptionI18N().getContent(),
-                getTuitionCalculationType().getDescriptionI18N().getContent());
+                getTuitionCalculationType().getDescriptionI18N().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN.getDescriptionI18N().getContent(),
-                getTuitionPaymentPlan().getName().getContent());
+                getTuitionPaymentPlan().getName().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
         propertiesMap.put(
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_PAYMENT_PLAN_CONDITIONS.getDescriptionI18N().getContent(),
-                getTuitionPaymentPlan().getConditionsDescription().getContent());
+                getTuitionPaymentPlan().getConditionsDescription().getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
 
         if(getTuitionPaymentPlan().getPayorDebtAccount() != null) {
             propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.TUITION_PAYOR_DEBT_ACCOUNT.getDescriptionI18N().getContent(), 
@@ -646,7 +646,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
                 event.getRegistration().getDegree().getCode());
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), event
-                .getRegistration().getDegree().getPresentationNameI18N(event.getExecutionYear()).getContent());
+                .getRegistration().getDegree().getPresentationNameI18N(event.getExecutionYear()).getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
         propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),
                 event.getRegistration().getDegreeCurricularPlanName());
 

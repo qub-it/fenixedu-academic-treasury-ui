@@ -308,8 +308,9 @@ angular.module('angularAppCopyTuitionPaymentPlan', ['ngSanitize', 'ui.select','b
 			</c:when>
 			<c:when test="${installment.dueDateCalculationType.bestOfFixedDateAndDaysAfterCreation}">
 				<p>
-					<joda:format value="${installment.fixedDueDate}" style="S-" />
-					<spring:message code="label.TuitionInstallmentTariff.bestOfFixedDateAndDaysAfterCreation" arguments="${installment.numberOfDaysAfterCreationForDueDate}" />
+					<joda:format var="fixedDueDate" value="${installment.fixedDueDate}" style="S-" />
+					<spring:message code="label.TuitionInstallmentTariff.bestOfFixedDateAndDaysAfterCreation" 
+						arguments="${fixedDueDate},${installment.numberOfDaysAfterCreationForDueDate}" />
 				</p>
 			</c:when>				
 		</c:choose>
