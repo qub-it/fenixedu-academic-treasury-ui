@@ -14,7 +14,7 @@ public class DefaultAcademicTreasuryAccountUrl implements IAcademicTreasuryAccou
 
     @Override
     public String getPersonAccountTreasuryManagementURL(Person person) {
-        final String countryCode = PersonCustomer.countryCode(person);
+        final String countryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
         return CustomerController.READ_URL
                 + PersonCustomer.findUnique(person, countryCode, fiscalNumber).get().getExternalId();
@@ -29,7 +29,7 @@ public class DefaultAcademicTreasuryAccountUrl implements IAcademicTreasuryAccou
         final FinantialInstitution inst =
                 registration.getDegree().getAdministrativeOffice().getFinantialEntity().getFinantialInstitution();
         final Person person = registration.getPerson();
-        final String countryCode = PersonCustomer.countryCode(person);
+        final String countryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
 
         final PersonCustomer customer = PersonCustomer.findUnique(person, countryCode, fiscalNumber).get();

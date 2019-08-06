@@ -37,6 +37,7 @@ import org.fenixedu.treasury.domain.Vat;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.DebitNote;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.LocalDate;
 
 import com.google.common.base.Strings;
@@ -463,11 +464,11 @@ public class TuitionServices {
 
         DebitNote debitNote = (DebitNote) debitEntry.getFinantialDocument();
         if (!debitEntry.isProcessedInDebitNote()) {
-            debitEntry.annulDebitEntry(academicTreasuryBundle("label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"));
+            debitEntry.annulDebitEntry(academicTreasuryBundle(TreasuryConstants.DEFAULT_LANGUAGE, "label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"));
 
         } else {
             debitNote.anullDebitNoteWithCreditNote(
-                    academicTreasuryBundle("label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"), false);
+                    academicTreasuryBundle(TreasuryConstants.DEFAULT_LANGUAGE, "label.TuitionServices.removeDebitEntryForStandaloneEnrolment.reason"), false);
 
         }
 

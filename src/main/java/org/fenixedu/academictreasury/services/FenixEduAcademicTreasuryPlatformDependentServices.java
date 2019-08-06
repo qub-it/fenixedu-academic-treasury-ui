@@ -87,7 +87,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
 
     @Override
     public String fiscalCountry(final Person person) {
-        return person.getFiscalCountry() != null ? person.getFiscalCountry().getCode() : null;
+        return person.getFiscalAddress() != null && person.getFiscalAddress().getCountryOfResidence() != null ? person.getFiscalAddress().getCountryOfResidence().getCode() : null;
     }
     
     @Override

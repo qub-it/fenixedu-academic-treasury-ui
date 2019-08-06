@@ -80,7 +80,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
 
     @Override
     public boolean isToAlignAcademicTaxesDueDate() {
-        return true;
+        return false;
     }
 
     @Override
@@ -171,7 +171,7 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
             }
         }
 
-        if (rule.getAcademicTaxDueDateAlignmentType() != null) {
+        if (isToAlignAcademicTaxesDueDate() && rule.getAcademicTaxDueDateAlignmentType() != null) {
             rule.getAcademicTaxDueDateAlignmentType().applyDueDate(rule, debitEntriesSetForAlignment);
         }
 

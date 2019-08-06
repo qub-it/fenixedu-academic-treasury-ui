@@ -322,19 +322,6 @@ ${portal.toolkit()}
 								</p>
 							</c:if>
 							
-							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToCloseDebitNote()}">
-								<p>
-									<span>
-										<strong>
-											<spring:message code="label.AcademicDebtGenerationRule.closeDebitNote" />:
-										</strong>
-									</span>
-									<span>
-											<spring:message code='label.${rule.isCloseDebitNote()}' />
-									</span>
-								</p>
-							</c:if>
-							
 							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToAlignAcademicTaxesDueDate()}">
 								<p>
 									<span>

@@ -492,7 +492,7 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
         final Map<String, String> propertiesMap = Maps.newHashMap();
 
         propertiesMap.put(AcademicTreasuryEvent.AcademicTreasuryEventKeys.ENROLMENT.getDescriptionI18N().getContent(),
-                academicTreasuryServices.localizedNameOfEnrolment(enrolment));
+                academicTreasuryServices.localizedNameOfEnrolment(enrolment, AcademicTreasuryConstants.DEFAULT_LANGUAGE));
 
         propertiesMap.put(
                 AcademicTreasuryEvent.AcademicTreasuryEventKeys.DEGREE_CURRICULAR_PLAN.getDescriptionI18N().getContent(),

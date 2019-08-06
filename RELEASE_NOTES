@@ -5,6 +5,11 @@
 - Refactor: Support for custom academic debts
 - Refactor: Support in entity model for treasury debt report for degree and execution year and selection of type of debts
 - Refactor: Support for logs in automatic debt generation execution 
+- Refactor: Disable alignment of due dates on close debts generation
+- Refactor: Use fiscal address country instead of deprecated fiscal country code
+- Bug fix: Save enrolment name in default locale in properties map of tuitiob debit entry
+- Bug fix: Get annulment message in default locale
+- Bug fix: Show creation date of debt generation request
 
 3.0.1 (31-07-2019)
 - Refactor: Upgrade dependency of fenixedu-academic-core (changed domain relations from ExecutionSemester to ExecutionInterval)
