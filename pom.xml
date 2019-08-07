@@ -11,7 +11,7 @@
 
     <groupId>org.fenixedu</groupId>
 	<artifactId>fenixedu-academic-treasury</artifactId>
-	<version>3.0.1</version>
+	<version>4.0.0</version>
 	<packaging>jar</packaging>
 
 	<name>Academic Treasury</name>

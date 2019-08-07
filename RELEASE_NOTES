@@ -1,3 +1,4 @@
+4.0.0 (07-08-2019)
 - Refactor: Associate finantial entity to an unit, beside administrative office
 - Refactor: Use default locale academic entities methods to retrieve designation
 - Refactor: Academic entities queries (ex: all statutes) is provided by service
