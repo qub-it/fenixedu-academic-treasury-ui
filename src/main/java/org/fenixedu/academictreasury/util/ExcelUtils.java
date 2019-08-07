@@ -52,10 +52,10 @@ public class ExcelUtils {
                     continue;
                 }
                 
-                if (Cell.CELL_TYPE_NUMERIC == cell.getCellType() && DateUtil.isCellDateFormatted(cell)) {
+                if (XSSFCell.CELL_TYPE_NUMERIC == cell.getCellType() && DateUtil.isCellDateFormatted(cell)) {
                     rowContent.add(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(cell.getDateCellValue()));
                 } else {
-                    cell.setCellType(Cell.CELL_TYPE_STRING);
+                    cell.setCellType(XSSFCell.CELL_TYPE_STRING);
                     String value = cell.getStringCellValue();
                     rowContent.add(value);
                 }
@@ -104,10 +104,10 @@ public class ExcelUtils {
                         continue;
                     }
                     
-                    if (Cell.CELL_TYPE_NUMERIC == cell.getCellType() && DateUtil.isCellDateFormatted(cell)) {
+                    if (XSSFCell.CELL_TYPE_NUMERIC == cell.getCellType() && DateUtil.isCellDateFormatted(cell)) {
                         rowContent.add(new SimpleDateFormat("dd/MM/yyyy HH:mm").format(cell.getDateCellValue()));
                     } else {
-                        cell.setCellType(Cell.CELL_TYPE_STRING);
+                        cell.setCellType(XSSFCell.CELL_TYPE_STRING);
                         String value = cell.getStringCellValue();
                         rowContent.add(value);
                     }
