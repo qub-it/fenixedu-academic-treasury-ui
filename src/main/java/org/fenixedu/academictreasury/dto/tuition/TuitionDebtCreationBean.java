@@ -131,10 +131,17 @@ public class TuitionDebtCreationBean implements Serializable, ITreasuryBean {
 
         registrationDataSource =
                 ((PersonCustomer) debtAccount.getCustomer()).getPerson().getStudent().getRegistrationsSet().stream()
-                        .map(r -> new TreasuryTupleDataSourceBean(r.getExternalId(),
-                                String.format("[%s] %s", r.getDegree().getCode(), 
-                                        r.getDegree().getPresentationName(getExecutionYear()))))
-                .collect(Collectors.toList());
+                        .map(r -> { 
+                            final String degreeCode = r.getDegree().getCode();
+                            final String degreePresentationName = r.getDegree().getPresentationName(getExecutionYear());
+                            final String registrationDate = r.getStartDate() != null ? r.getStartDate().toString("yyyy-MM-dd") : "";
+                            final String agreement = r.getRegistrationProtocol() != null ? r.getRegistrationProtocol().getDescription().getContent() : "";
+
+                            final TreasuryTupleDataSourceBean t = new TreasuryTupleDataSourceBean(r.getExternalId(),
+                                String.format("[%s] %s (%s %s)", degreeCode, degreePresentationName, registrationDate, agreement));
+                            
+                            return t; 
+                        }).collect(Collectors.toList());
 
         return registrationDataSource;
     }
