@@ -1,3 +1,4 @@
+4.0.3 (05-09-2019)
 - Bug Fix: In aligning due date in academic debt generation, do nothing if the best due date is not found instead of throwing an exception
 
 4.0.2 (04-09-2019)
