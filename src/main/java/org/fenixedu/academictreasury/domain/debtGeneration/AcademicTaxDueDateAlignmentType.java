@@ -39,6 +39,10 @@ public enum AcademicTaxDueDateAlignmentType {
     public void applyDueDate(final AcademicDebtGenerationRule rule, final Set<DebitEntry> debitEntriesSet) {
         final LocalDate dueDateToApply = dueDateToApply(debitEntriesSet);
 
+        if(dueDateToApply == null) {
+            return;
+        }
+        
         for (final DebitEntry debitEntry : debitEntriesSet) {
             if (!AcademicTax.findUnique(debitEntry.getProduct()).isPresent()) {
                 continue;
@@ -76,7 +80,7 @@ public enum AcademicTaxDueDateAlignmentType {
             throw new AcademicTreasuryDomainException("error.AcademicTaxDueDateAlignmentType.unknown.rule.to.apply");
         }
 
-        throw new AcademicTreasuryDomainException("error.AcademicTaxDueDateAlignmentType.no.due.date.to.apply");
+        return null;
     }
 
 }
