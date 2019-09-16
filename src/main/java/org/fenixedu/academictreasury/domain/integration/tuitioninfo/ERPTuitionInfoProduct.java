@@ -30,19 +30,19 @@ public class ERPTuitionInfoProduct extends ERPTuitionInfoProduct_Base {
 
     private void checkRules() {
         if (getDomainRoot() == null) {
-            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.bennu.required");
+            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoProduct.bennu.required");
         }
 
         if (isNullOrEmpty(getCode())) {
-            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.code.required");
+            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoProduct.code.required");
         }
 
         if (isNullOrEmpty(getName())) {
-            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.name.required");
+            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoProduct.name.required");
         }
 
         if (findByCode(getCode()).count() > 1) {
-            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoType.code.not.unique");
+            throw new AcademicTreasuryDomainException("error.ERPTuitionInfoProduct.code.not.unique");
         }
 
     }

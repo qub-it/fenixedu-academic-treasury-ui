@@ -11,6 +11,7 @@ import org.fenixedu.academic.domain.EnrolmentEvaluation;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.student.Registration;
+import org.fenixedu.academic.domain.student.RegistrationDataByExecutionYear;
 import org.fenixedu.academic.domain.treasury.IAcademicTreasuryEvent;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.emoluments.AcademicTax;
@@ -103,14 +104,25 @@ public class AcademicTaxServices {
     }
 
     @Atomic
-    public static boolean createAcademicTaxForCurrentDateAndDefaultFinantialEntity(final Registration registration,
+    public static boolean createAcademicTaxForEnrolmentDateAndDefaultFinantialEntity(final Registration registration,
             final ExecutionYear executionYear, final AcademicTax academicTax, final boolean forceCreation) {
         final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
                 AcademicTreasuryPlataformDependentServicesFactory.implementation();
-        final LocalDate now = new LocalDate();
+        final LocalDate enrolmentDate = possibleEnrolmentDate(registration, executionYear);
 
-        final FinantialEntity finantialEntity = academicTreasuryServices.finantialEntityOfDegree(registration.getDegree(), now);
-        return createAcademicTax(finantialEntity, registration, executionYear, academicTax, now, forceCreation);
+        final FinantialEntity finantialEntity = academicTreasuryServices.finantialEntityOfDegree(registration.getDegree(), enrolmentDate);
+        return createAcademicTax(finantialEntity, registration, executionYear, academicTax, enrolmentDate, forceCreation);
+    }
+
+    private static LocalDate possibleEnrolmentDate(Registration registration, ExecutionYear executionYear) {
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        final RegistrationDataByExecutionYear data = academicTreasuryServices.findRegistrationDataByExecutionYear(registration, executionYear);
+
+        if (data != null && data.getEnrolmentDate() != null) {
+            return data.getEnrolmentDate();
+        }
+
+        return executionYear.getBeginLocalDate();
     }
 
     @Atomic
