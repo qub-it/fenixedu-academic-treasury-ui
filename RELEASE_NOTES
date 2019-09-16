@@ -1,3 +1,4 @@
+4.0.4 (16-09-2019)
 - Bug Fix: Use enrolment date in execution year, instead of current date for entry date of academic tax debts
 - Improvement: Print error in creating debt account in log, in registration creation
 
