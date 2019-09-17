@@ -65,6 +65,10 @@ public class ERPTuitionInfoExportOperation extends ERPTuitionInfoExportOperation
             throw new TreasuryDomainException("error.ERPTuitionInfoExportOperation.finantialInstitution.required");
         }
     }
+    
+    public boolean isSuccess() {
+        return getSuccess();
+    }
 
     // @formatter:off
     /* ********
