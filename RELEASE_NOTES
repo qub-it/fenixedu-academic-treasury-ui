@@ -1,7 +1,8 @@
+- Refactor: Add isSuccess() to return getSuccess() of type boolean
+
 4.0.4 (16-09-2019)
 - Bug Fix: Use enrolment date in execution year, instead of current date for entry date of academic tax debts
 - Improvement: Print error in creating debt account in log, in registration creation
-- Refactor: Add isSuccess() to return getSuccess() of type boolean
 
 4.0.3 (05-09-2019)
 - Bug Fix: In aligning due date in academic debt generation, do nothing if the best due date is not found instead of throwing an exception
