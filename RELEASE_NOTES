@@ -1,3 +1,4 @@
+4.0.5 (18-09-2019)
 - Refactor: Add isSuccess() to return getSuccess() of type boolean
 
 4.0.4 (16-09-2019)
