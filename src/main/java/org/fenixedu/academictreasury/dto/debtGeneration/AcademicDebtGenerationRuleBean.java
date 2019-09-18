@@ -1,6 +1,7 @@
 package org.fenixedu.academictreasury.dto.debtGeneration;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,6 +113,9 @@ public class AcademicDebtGenerationRuleBean implements Serializable, ITreasuryBe
     private boolean toCreateDebitEntries;
     private boolean toAlignAcademicTaxesDueDate;
 
+    private boolean appliedMinimumAmountForPaymentCode;
+    private BigDecimal minimumAmountForPaymentCode;
+    
     public AcademicDebtGenerationRuleBean(final AcademicDebtGenerationRuleType type, final ExecutionYear executionYear) {
         this.type = type;
         this.executionYear = executionYear;
@@ -168,6 +172,9 @@ public class AcademicDebtGenerationRuleBean implements Serializable, ITreasuryBe
                         .sorted(TreasuryTupleDataSourceBean.COMPARE_BY_TEXT).collect(Collectors.toList());
 
         debtGenerationRuleRestrictionDataSource.add(0, AcademicTreasuryConstants.SELECT_OPTION);
+
+        this.appliedMinimumAmountForPaymentCode = false;
+        this.minimumAmountForPaymentCode = null;
     }
 
     public AcademicDebtGenerationRuleBean(final AcademicDebtGenerationRule rule) {
@@ -189,6 +196,9 @@ public class AcademicDebtGenerationRuleBean implements Serializable, ITreasuryBe
 
         Collections.sort(this.degreeCurricularPlans,
                 DegreeCurricularPlan.DEGREE_CURRICULAR_PLAN_COMPARATOR_BY_DEGREE_TYPE_AND_EXECUTION_DEGREE_AND_DEGREE_CODE);
+
+        this.appliedMinimumAmountForPaymentCode = rule.isAppliedMinimumAmountForPaymentCode();
+        this.minimumAmountForPaymentCode = rule.getMinimumAmountForPaymentCode();
     }
 
     public void chooseDegreeType() {
@@ -426,4 +436,20 @@ public class AcademicDebtGenerationRuleBean implements Serializable, ITreasuryBe
         this.debtGenerationRuleRestriction = debtGenerationRuleRestriction;
     }
 
+    public boolean isAppliedMinimumAmountForPaymentCode() {
+        return appliedMinimumAmountForPaymentCode;
+    }
+    
+    public void setAppliedMinimumAmountForPaymentCode(boolean appliedMinimumAmountForPaymentCode) {
+        this.appliedMinimumAmountForPaymentCode = appliedMinimumAmountForPaymentCode;
+    }
+    
+    public BigDecimal getMinimumAmountForPaymentCode() {
+        return minimumAmountForPaymentCode;
+    }
+    
+    public void setMinimumAmountForPaymentCode(BigDecimal minimumAmountForPaymentCode) {
+        this.minimumAmountForPaymentCode = minimumAmountForPaymentCode;
+    }
+    
 }

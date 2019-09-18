@@ -609,6 +609,7 @@ class debtGeneration.AcademicDebtGenerationRule {
 	int days;
 	int orderNumber;
 	AcademicTaxDueDateAlignmentType academicTaxDueDateAlignmentType;
+	BigDecimal minimumAmountForPaymentCode;
 }
 
 	relation AcademicDebtGenerationRuleGenerationRuleType {

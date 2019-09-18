@@ -351,6 +351,31 @@ ${portal.toolkit()}
 										<c:out value="${rule.paymentCodePool.name}" />
 									</span>
 								</p>
+								
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.appliedMinimumAmountForPaymentCode" />:
+										</strong>
+									</span>
+									<span>
+										<spring:message code="label.${rule.appliedMinimumAmountForPaymentCode}" />
+									</span>
+								</p>
+
+								<c:if test="${rule.appliedMinimumAmountForPaymentCode}">
+								<p>
+									<span>
+										<strong>
+											<spring:message code="label.AcademicDebtGenerationRule.minimumAmountForPaymentCode" />:
+										</strong>
+									</span>
+									<span>
+										<c:out value="${rule.minimumAmountForPaymentCode}" />
+									</span>
+								</p>
+								</c:if>
+								
 							</c:if>
 							
 							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToCloseDebitNote()}">

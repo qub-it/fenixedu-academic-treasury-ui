@@ -21,6 +21,7 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean.ProductEntry;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +105,12 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
         setDebtGenerationRuleRestriction(bean.getDebtGenerationRuleRestriction());
 
+        if(bean.isAppliedMinimumAmountForPaymentCode()) {
+            setMinimumAmountForPaymentCode(bean.getMinimumAmountForPaymentCode());
+        } else {
+            setMinimumAmountForPaymentCode(null);
+        }
+        
         checkRules();
     }
 
@@ -145,6 +152,16 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
                         degreeCurricularPlan.getName());
             }
         }
+        
+        if(getMinimumAmountForPaymentCode() != null && !TreasuryConstants.isPositive(getMinimumAmountForPaymentCode())) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.minimumAmountForPaymentCode.invalid",
+                    getMinimumAmountForPaymentCode().toString());
+        }
+        
+        if(getMinimumAmountForPaymentCode() != null && getMinimumAmountForPaymentCode().scale() > 2) {
+            throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.minimumAmountForPaymentCode.invalid",
+                    getMinimumAmountForPaymentCode().toString());
+        }
     }
 
     public List<AcademicDebtGenerationRuleEntry> getOrderedAcademicDebtGenerationRuleEntries() {
@@ -185,6 +202,10 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
         return super.getCreatePaymentReferenceCode();
     }
 
+    public boolean isAppliedMinimumAmountForPaymentCode() {
+        return getMinimumAmountForPaymentCode() != null;
+    }
+    
     private boolean isDeletable() {
         return true;
     }
@@ -385,6 +406,12 @@ public class AcademicDebtGenerationRule extends AcademicDebtGenerationRule_Base 
 
     @Atomic
     public static AcademicDebtGenerationRule create(final AcademicDebtGenerationRuleBean bean) {
+        if(bean.isAppliedMinimumAmountForPaymentCode()) {
+            if(bean.getMinimumAmountForPaymentCode() == null || !TreasuryConstants.isPositive(bean.getMinimumAmountForPaymentCode())) {
+                throw new AcademicTreasuryDomainException("error.AcademicDebtGenerationRule.create.appliedMinimumAmountForPaymentCode.but.minimumAmountForPaymentCode.not.valid");
+            }
+        }
+        
         return new AcademicDebtGenerationRule(bean);
     }
 

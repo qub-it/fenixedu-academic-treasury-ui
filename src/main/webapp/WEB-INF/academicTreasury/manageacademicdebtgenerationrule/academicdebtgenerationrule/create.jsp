@@ -251,6 +251,37 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 	                        </ui-select-choices>
                         </ui-select>
                     </div>
+
+                </div>
+
+                <div class="form-group row" ng-show="object.toCreatePaymentReferenceCodes === true">
+                    <div class="col-sm-2 control-label">
+                    	<spring:message code="label.AcademicDebtGenerationRule.appliedMinimumAmountForPaymentCode" />
+                    </div>
+                    
+                    <div class="col-sm-4">
+						<select id="academicDebtGenerationRule_appliedMinimumAmountForPaymentCode"
+							name="appliedMinimumAmountForPaymentCode" class=""
+							ng-model="object.appliedMinimumAmountForPaymentCode"
+							ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
+						</select>
+	                </div>
+                </div>
+
+                <div class="form-group row" ng-show="object.toCreatePaymentReferenceCodes === true && object.appliedMinimumAmountForPaymentCode === true">
+                    <div class="col-sm-2 control-label">
+                    	<spring:message code="label.AcademicDebtGenerationRule.minimumAmountForPaymentCode" />
+                    </div>
+                    
+                    <div class="col-sm-4">
+	                    <div class="input-group">
+	
+	                        <input id="academicDebtGenerationRule_minimumAmountForPaymentCode"
+	                            class="form-control" type="number"
+	                            name="minimumAmountForPaymentCode" pattern="[0-9]+(\.[0-9][0-9]?[0-9]?)?" min="0" step="0.01"
+	                            ng-model="object.minimumAmountForPaymentCode" />
+	                    </div>
+	                </div>
                 </div>
                 
                 <div class="form-group row" ng-show="object.toCloseDebitNote === true">
