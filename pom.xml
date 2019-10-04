@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury</artifactId>
-			<version>4.0.0</version>
+			<version>4.3.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
@@ -125,7 +125,7 @@
             <artifactId>poi</artifactId>
             <version>3.11</version>
         </dependency>
-		
+	
 	</dependencies>
 
 	 <pluginRepositories>
