@@ -410,6 +410,10 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         } else {
             academicTariff = AcademicTariff.findMatch(finantialEntity, product, administrativeOffice, when.toDateTimeAtStartOfDay());
         }
+        
+        if(academicTariff == null) {
+            throw new AcademicTreasuryDomainException("error.EmolumentServices.tariff.not.found", when.toString(TreasuryConstants.DATE_FORMAT_YYYY_MM_DD));
+        }
 
         final LocalDate dueDate = academicTariff.dueDate(when);
         final DebitNote debitNote = DebitNote.create(debtAccount, documentNumberSeries, now);
