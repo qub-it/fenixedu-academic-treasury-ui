@@ -79,7 +79,7 @@ public class TuitionPaymentPlan extends TuitionPaymentPlan_Base {
         setStatuteType(tuitionPaymentPlanBean.getStatuteType());
         setPayorDebtAccount(tuitionPaymentPlanBean.getPayorDebtAccount());
         setSemester(tuitionPaymentPlanBean.getExecutionSemester() != null ? tuitionPaymentPlanBean.getExecutionSemester()
-                .getSemester() : null);
+                .getChildOrder() : null);
         setFirstTimeStudent(tuitionPaymentPlanBean.isFirstTimeStudent());
         setCustomized(tuitionPaymentPlanBean.isCustomized());
         

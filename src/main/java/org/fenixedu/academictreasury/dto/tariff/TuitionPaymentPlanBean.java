@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import org.fenixedu.academic.domain.CurricularYear;
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
 import org.fenixedu.academic.domain.ExecutionDegree;
-import org.fenixedu.academic.domain.ExecutionSemester;
+import org.fenixedu.academic.domain.ExecutionInterval;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.degree.DegreeType;
@@ -63,7 +63,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     private RegistrationProtocol registrationProtocol;
     private IngressionType ingression;
     private CurricularYear curricularYear;
-    private ExecutionSemester executionSemester;
+    private ExecutionInterval executionSemester;
     private boolean firstTimeStudent;
     private boolean customized;
     private StatuteType statuteType;
@@ -543,11 +543,11 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         this.curricularYear = curricularYear;
     }
 
-    public ExecutionSemester getExecutionSemester() {
+    public ExecutionInterval getExecutionSemester() {
         return executionSemester;
     }
 
-    public void setExecutionSemester(ExecutionSemester executionSemester) {
+    public void setExecutionSemester(ExecutionInterval executionSemester) {
         this.executionSemester = executionSemester;
     }
 

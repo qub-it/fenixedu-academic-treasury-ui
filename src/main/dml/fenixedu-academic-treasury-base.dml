@@ -353,16 +353,6 @@ class tuition.TuitionPaymentPlan {
 		}
 	}
 	
-	relation TuitionPaymentPlanCurricularSemester {
-		.org.fenixedu.academic.domain.CurricularSemester playsRole curricularSemester {
-			multiplicity 0..1;
-		}
-		
-		tuition.TuitionPaymentPlan playsRole tuitionPaymentPlans {
-			multiplicity *;
-		}
-	}
-	
 	relation TuitionPaymentPlanFinantialEntity {
 	
 		.org.fenixedu.treasury.domain.FinantialEntity playsRole finantialEntity {
@@ -406,7 +396,7 @@ class tuition.TuitionPaymentPlan {
 	}
 	
 	relation DebitEntryExecutionPeriod {
-		.org.fenixedu.academic.domain.ExecutionSemester playsRole executionSemester {
+		.org.fenixedu.academic.domain.ExecutionInterval playsRole executionSemester {
 			multiplicity 0..1;
 		} 
 

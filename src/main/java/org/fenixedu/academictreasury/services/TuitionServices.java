@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Enrolment;
 import org.fenixedu.academic.domain.EnrolmentEvaluation;
-import org.fenixedu.academic.domain.ExecutionSemester;
+import org.fenixedu.academic.domain.ExecutionInterval;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.StudentCurricularPlan;
@@ -889,7 +889,7 @@ public class TuitionServices {
             return result;
         }
 
-        for (final ExecutionSemester executionSemester : executionYear.getExecutionPeriodsSet()) {
+        for (final ExecutionInterval executionSemester : executionYear.getExecutionPeriodsSet()) {
             result.addAll(studentCurricularPlan.getEnroledImprovements(executionSemester));
         }
 

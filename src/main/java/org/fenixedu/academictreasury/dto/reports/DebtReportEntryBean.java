@@ -369,7 +369,7 @@ public class DebtReportEntryBean implements SpreadsheetRow {
 
         if (debitEntry != null) {
 
-            // Degree && ExecutionYear && ExecutionSemester
+            // Degree && ExecutionYear && ExecutionInterval
             if (debitEntry.getTreasuryEvent() != null && debitEntry.getTreasuryEvent() instanceof AcademicTreasuryEvent) {
                 final AcademicTreasuryEvent academicTreasuryEvent = (AcademicTreasuryEvent) debitEntry.getTreasuryEvent();
 
