@@ -646,7 +646,7 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         data.setDistrictSubdivisionOfResidence("Desconhecido");
         data.setAreaCode("0000-000");
 
-        final PhysicalAddress physicalAddress = PhysicalAddress.createPhysicalAddress(person, data, PartyContactType.PERSONAL, true);
+        final PhysicalAddress physicalAddress = PhysicalAddress.createPhysicalAddress(person, data, PartyContactType.PERSONAL, false);
         physicalAddress.setValid();
         
         return physicalAddress;
