@@ -41,6 +41,7 @@ import org.fenixedu.academictreasury.services.AcademicTaxServices;
 import org.fenixedu.academictreasury.services.AcademicTreasuryPlataformDependentServicesFactory;
 import org.fenixedu.academictreasury.services.IAcademicTreasuryPlatformDependentServices;
 import org.fenixedu.academictreasury.services.PersonServices;
+import org.fenixedu.academictreasury.services.RegistrationServices;
 import org.fenixedu.academictreasury.services.TuitionServices;
 import org.fenixedu.bennu.core.signals.DomainObjectEvent;
 import org.fenixedu.treasury.domain.FinantialEntity;
@@ -64,13 +65,18 @@ import org.fenixedu.treasury.util.FiscalCodeValidation;
 import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 
 import pt.ist.fenixframework.FenixFramework;
 
 public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
+
+    private static final Logger logger = LoggerFactory.getLogger(AcademicTreasuryBridgeImpl.class);
 
     private static class AcademicProduct implements ITreasuryProduct {
 
@@ -595,6 +601,29 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     @Override
     public boolean updateCustomer(final Person person, final String fiscalCountryCode, final String fiscalNumber) {
         return PersonCustomer.switchCustomer(person, fiscalCountryCode, fiscalNumber);
+    }
+    
+    @Override
+    public boolean createCustomerIfMissing(final Person person) {
+        final String fiscalCountryCode = PersonCustomer.addressCountryCode(person);
+        final String fiscalNumber = PersonCustomer.fiscalNumber(person);
+
+        if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+            AcademicTreasuryDomainException exception = new AcademicTreasuryDomainException(
+                    "error.RegistrationServices.createPersonCustomer.fiscalInformation.required", person.getName());
+            logger.warn(exception.getLocalizedMessage());
+
+            throw exception;
+        }
+
+        final Optional<? extends PersonCustomer> findUnique = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber);
+        if (findUnique.isPresent()) {
+            return false;
+        }
+        
+        PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
+        
+        return true;
     }
 
     @Override

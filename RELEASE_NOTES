@@ -1,5 +1,6 @@
 - Bug Fix: Throw expcetion if academic tariff is not found when creating academic debt associated with tresury event target
 - Refactor: Replace ExecutionSemester by ExecutionInterval
+- Refactor: Service to ensure debt account for person is created
 
 4.2.0 (26-09-2019)
 - Refactor: upgraded fenixedu-academic-core
