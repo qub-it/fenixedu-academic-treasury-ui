@@ -1,4 +1,5 @@
 - Improvement: Create SAFT address as non default physical address
+- Refactor: Disable RegistrationService bennu signal handler
 
 4.3.0 (22-10-2019)
 - Bug Fix: Throw expcetion if academic tariff is not found when creating academic debt associated with tresury event target

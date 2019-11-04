@@ -38,7 +38,6 @@ public class RegistrationServices {
         return PersonCustomer.create(p, fiscalCountryCode, fiscalNumber);
     }
 
-    @Subscribe
     public void newRegistrationEvent(final DomainObjectEvent<Registration> event) {
         Registration reg = event.getInstance();
         if (reg.getStudent() != null) {

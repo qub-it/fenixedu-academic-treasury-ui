@@ -33,7 +33,6 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent arg0) {
-        registerNewRegistrationHandler();
         registerNewAcademicServiceRequestSituationHandler();
         registerAcademicServiceRequestCancelOrRejectHandler();
         registerStandaloneEnrolmentHandler();
