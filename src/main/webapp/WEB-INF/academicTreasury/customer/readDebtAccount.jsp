@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.academictreasury.ui.customer.mbwaypaymentrequest.CustomerAccountingMbwayPaymentRequestController"%>
+<%@page import="org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway"%>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
@@ -50,13 +52,24 @@ ${portal.angularToolkit()}
 			<spring:message code="label.event.accounting.manageCustomer.forwardPayment" />
 		</a>
 		
+	<% } %>
+ 		&nbsp;|&nbsp;
+	
+	<% if(SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) { %>
+		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;
+		<a class="" href="${pageContext.request.contextPath}<%= CustomerAccountingMbwayPaymentRequestController.CREATE_URL %>/${debtAccount.externalId}">
+			<spring:message code="label.event.accounting.manageCustomer.mbwayPaymentRequest" />
+		</a>
+	<% } %>
+
+	<% if(false) { %>
  		&nbsp;|&nbsp;
  		<span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;
  		<a target="_blank" href="${pageContext.request.contextPath}/academictreasury/customer/viewaccount/printpaymentreferences/${debtAccount.externalId}">
 	        <spring:message code="label.CustomerAccounting.printpaymentplan" />
     	</a> &nbsp;
-		
 	<% } %>
+	
 </div>
 
 <c:if test="${not empty infoMessages}">
