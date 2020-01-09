@@ -69,7 +69,7 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
         saveFiscalCountryOnPersons();
 
         // Fill fiscal country for adhoc customers
-        saveAddressCountryOnAdhocCustomers();
+        // saveAddressCountryOnAdhocCustomers();
 
         // For all finantial documents exported set close date and mark as erp legacy
         // saveCloseDateForFinantialDocumentsClosed();
@@ -227,7 +227,7 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
                 ipc.delete();
             }
 
-            if (Strings.isNullOrEmpty(PersonCustomer.countryCode(person))) {
+            if (Strings.isNullOrEmpty(PersonCustomer.addressCountryCode(person))) {
                 throw new RuntimeException("error");
             }
 
@@ -235,7 +235,7 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
                 throw new RuntimeException("error");
             }
 
-            personCustomer.setCountryCode(PersonCustomer.countryCode(person));
+            personCustomer.setAddressCountryCode(PersonCustomer.addressCountryCode(person));
             personCustomer.setFiscalNumber(PersonCustomer.fiscalNumber(person));
         }
 
@@ -293,6 +293,9 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
 //        }
 //    }
 //
+
+    /*
+    @Deprecated
     private void saveAddressCountryOnAdhocCustomers() {
         taskLog("saveAddressCountryOnAdhocCustomers");
 
@@ -311,6 +314,7 @@ public class PrepareTreasuryForSAPForCore extends CustomTask {
             customer.setAddressCountryCode(customer.getFiscalCountry());
         }
     }
+    */
 
     private void saveFiscalCountryOnPersons() {
         taskLog("saveFiscalCountryOnPersons");

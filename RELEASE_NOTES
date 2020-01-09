@@ -1,3 +1,5 @@
+- Refactor: Clean references for getCountryCode() method which is deprecated, replaced by getAddressCountryCode()
+
 4.4.1 (26-12-2019)
 - Refactor: removed ExecutionSemester reference in dml
 - Refactor: updated academic-core module dependency

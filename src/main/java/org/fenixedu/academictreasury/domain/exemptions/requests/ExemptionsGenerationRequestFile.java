@@ -259,20 +259,20 @@ public class ExemptionsGenerationRequestFile extends ExemptionsGenerationRequest
                 }
 
                 final Person person = registration.getPerson();
-                final String fiscalCountryCode = PersonCustomer.countryCode(person);
+                final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
                 final String fiscalNumber = PersonCustomer.fiscalNumber(person);
-                if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+                if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
                     throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
                 }
 
-                if (!PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).isPresent()) {
+                if (!PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).isPresent()) {
                     throw new AcademicTreasuryDomainException("error.ExemptionsGenerationRequestFile.student.has.no.debt.account",
                             String.valueOf(rowNum), studentNumberValue);
                 }
 
-                final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
+                final PersonCustomer personCustomer = PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get();
                 if (!personCustomer.isActive()) {
-                    throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", fiscalCountryCode, fiscalNumber);
+                    throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", addressFiscalCountryCode, fiscalNumber);
                 }
 
                 TreasuryEvent treasuryEvent = null;

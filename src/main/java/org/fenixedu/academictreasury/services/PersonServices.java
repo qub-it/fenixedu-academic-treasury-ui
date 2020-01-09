@@ -20,18 +20,18 @@ public class PersonServices {
 
     @Atomic
     public static PersonCustomer createPersonCustomer(final Person p) {
-        final String fiscalCountryCode = PersonCustomer.countryCode(p);
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(p);
         final String fiscalNumber = PersonCustomer.fiscalNumber(p);
-        if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+        if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
         }
 
-        final Optional<? extends PersonCustomer> findUnique = PersonCustomer.findUnique(p, fiscalCountryCode, fiscalNumber);
+        final Optional<? extends PersonCustomer> findUnique = PersonCustomer.findUnique(p, addressFiscalCountryCode, fiscalNumber);
         if (findUnique.isPresent()) {
             return findUnique.get();
         }
 
-        return PersonCustomer.create(p, fiscalCountryCode, fiscalNumber);
+        return PersonCustomer.create(p, addressFiscalCountryCode, fiscalNumber);
     }
 
     public static boolean isAcademicalActsBlocked(final Person person, final LocalDate when) {

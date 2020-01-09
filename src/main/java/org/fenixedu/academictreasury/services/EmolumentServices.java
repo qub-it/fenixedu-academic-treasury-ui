@@ -154,19 +154,19 @@ public class EmolumentServices {
         // Read person customer
 
         final Person person = iTreasuryServiceRequest.getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(person);
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
-        if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+        if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
         }
 
-        if (!PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).isPresent()) {
-            PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
+        if (!PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).isPresent()) {
+            PersonCustomer.create(person, addressFiscalCountryCode, fiscalNumber);
         }
 
-        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
+        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get();
         if (!personCustomer.isActive()) {
-            throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", fiscalCountryCode, fiscalNumber);
+            throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", addressFiscalCountryCode, fiscalNumber);
         }
 
         // Find tariff
@@ -234,17 +234,17 @@ public class EmolumentServices {
         // Read person customer
 
         final Person person = iTreasuryServiceRequest.getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(person);
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
-        if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+        if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
         }
 
-        if (!PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).isPresent()) {
-            PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
+        if (!PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).isPresent()) {
+            PersonCustomer.create(person, addressFiscalCountryCode, fiscalNumber);
         }
 
-        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
+        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get();
         if (!personCustomer.isActive()) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active");
         }
@@ -415,17 +415,17 @@ public class EmolumentServices {
             final int numberOfPages, boolean urgentRequest, final LocalDate when) {
         
         final Person person = registration.getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(person);
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
         
         // Read person customer
-        if (!PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).isPresent()) {
-            PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
+        if (!PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).isPresent()) {
+            PersonCustomer.create(person, addressFiscalCountryCode, fiscalNumber);
         }
 
-        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
+        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get();
         if (!personCustomer.isActive()) {
-            throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", fiscalCountryCode, fiscalNumber);
+            throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", addressFiscalCountryCode, fiscalNumber);
         }
 
         final DebtAccount debtAccount =

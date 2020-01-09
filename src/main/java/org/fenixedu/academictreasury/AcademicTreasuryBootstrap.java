@@ -52,9 +52,9 @@ public class AcademicTreasuryBootstrap {
                     continue;
                 }
 
-                final String fiscalCountryCode = PersonCustomer.countryCode(person);
+                final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
                 final String fiscalNumber = PersonCustomer.fiscalNumber(person);
-                if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+                if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
                     return;
                 }
                 
@@ -70,10 +70,10 @@ public class AcademicTreasuryBootstrap {
 
         @Atomic(mode = TxMode.WRITE)
         private void createMissingPersonCustomer(final Person person) {
-            final String fiscalCountryCode = PersonCustomer.countryCode(person);
+            final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
             final String fiscalNumber = PersonCustomer.fiscalNumber(person);
 
-            PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
+            PersonCustomer.create(person, addressFiscalCountryCode, fiscalNumber);
         }
 
     }

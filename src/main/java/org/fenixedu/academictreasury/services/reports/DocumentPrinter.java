@@ -50,13 +50,13 @@ public class DocumentPrinter {
     //https://github.com/qub-it/fenixedu-qubdocs-reports/blob/master/src/main/java/org/fenixedu/academic/util/report/DocumentPrinter.java
     public static byte[] printRegistrationTuititionPaymentPlan(Registration registration, String outputMimeType) {
         final Person p = registration.getStudent().getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(p);
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(p);
         final String fiscalNumber = PersonCustomer.fiscalNumber(p);
-        if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+        if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
         }
 
-        final PersonCustomer customer = PersonCustomer.findUnique(p, fiscalCountryCode, fiscalNumber).orElse(null);
+        final PersonCustomer customer = PersonCustomer.findUnique(p, addressFiscalCountryCode, fiscalNumber).orElse(null);
         final FinantialInstitution finst =
                 registration.getDegree().getAdministrativeOffice().getFinantialEntity().getFinantialInstitution();
         final DebtAccount account = DebtAccount.findUnique(finst, customer).orElse(null);

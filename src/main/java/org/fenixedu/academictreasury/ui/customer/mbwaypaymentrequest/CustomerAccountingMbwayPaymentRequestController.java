@@ -43,13 +43,13 @@ public class CustomerAccountingMbwayPaymentRequestController extends org.fenixed
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
         
         final Person person = User.findByUsername(loggedUsername).getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(person);
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
-        if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+        if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
         }
 
-        if (PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get() != debtAccount.getCustomer()) {
+        if (PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get() != debtAccount.getCustomer()) {
             addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.settlements"), model);
             throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.modify.settlements"));
         }

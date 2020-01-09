@@ -530,9 +530,9 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
 
     @Override
     public boolean isPersonAccountTreasuryManagementAvailable(Person person) {
-        final String countryCode = PersonCustomer.countryCode(person);
+        final String addressCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
-        return PersonCustomer.findUnique(person, countryCode, fiscalNumber).isPresent();
+        return PersonCustomer.findUnique(person, addressCountryCode, fiscalNumber).isPresent();
     }
 
     @Override
@@ -664,7 +664,9 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
     // TODO DECLARE IN INTERFACE ITreasuryBridgeAPI
     // @Override
     public ITreasuryCustomer getActiveCustomer(final Person person) {
-        PersonCustomer customer = PersonCustomer.findUnique(person, PersonCustomer.countryCode(person), PersonCustomer.fiscalNumber(person)).orElse(null);
+        PersonCustomer customer = PersonCustomer.findUnique(person, 
+                PersonCustomer.addressCountryCode(person), 
+                PersonCustomer.fiscalNumber(person)).orElse(null);
         
         if(customer == null) {
             return null;
@@ -685,9 +687,9 @@ public class AcademicTreasuryBridgeImpl implements ITreasuryBridgeAPI {
         final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
         final Person person = registration.getPerson();
         
-        String countryCode = PersonCustomer.countryCode(person);
+        String addressCountryCode = PersonCustomer.addressCountryCode(person);
         String fiscalNumber = PersonCustomer.fiscalNumber(person);
-        PersonCustomer customer = PersonCustomer.findUnique(person, countryCode, fiscalNumber).orElse(null);
+        PersonCustomer customer = PersonCustomer.findUnique(person, addressCountryCode, fiscalNumber).orElse(null);
         
         if(customer == null) {
             return null;

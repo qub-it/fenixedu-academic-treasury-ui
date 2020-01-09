@@ -57,11 +57,10 @@ public class PersonCustomer extends PersonCustomer_Base {
         setPerson(person);
         setCustomerType(getDefaultCustomerType(this));
 
-        super.setCountryCode(fiscalAddressCountryCode);
         super.setAddressCountryCode(fiscalAddressCountryCode);
         super.setFiscalNumber(fiscalNumber);
 
-        if (!FiscalCodeValidation.isValidFiscalNumber(getCountryCode(), getFiscalNumber())) {
+        if (!FiscalCodeValidation.isValidFiscalNumber(getAddressCountryCode(), getFiscalNumber())) {
             throw new AcademicTreasuryDomainException("error.Customer.fiscal.information.invalid");
         }
 
@@ -84,7 +83,7 @@ public class PersonCustomer extends PersonCustomer_Base {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.person.required");
         }
 
-        if (Strings.isNullOrEmpty(getCountryCode())) {
+        if (Strings.isNullOrEmpty(getAddressCountryCode())) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.countryCode");
         }
 
@@ -316,6 +315,7 @@ public class PersonCustomer extends PersonCustomer_Base {
         return physicalAddress.getCountryOfResidence().getCode();
     }
 
+    /*
     @Deprecated
     public static String countryCode(final Person person) {
         final IAcademicTreasuryPlatformDependentServices services = AcademicTreasuryPlataformDependentServicesFactory.implementation();
@@ -335,6 +335,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
         return personBean.getFiscalCountry().getCode();
     }
+    */
 
     public static boolean isValidFiscalNumber(final Person person) {
         return person.getFiscalAddress() != null && FiscalCodeValidation.isValidFiscalNumber(addressCountryCode(person), fiscalNumber(person));
@@ -363,9 +364,8 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     @Override
-    @Deprecated
     public String getFiscalCountry() {
-        return getCountryCode();
+        return getAddressCountryCode();
     }
 
     @Override
@@ -400,7 +400,7 @@ public class PersonCustomer extends PersonCustomer_Base {
 
         final Person person = getPersonForInactivePersonCustomer();
         final Optional<? extends PersonCustomer> activeCustomer =
-                PersonCustomer.findUnique(person, countryCode(person), fiscalNumber(person));
+                PersonCustomer.findUnique(person, addressCountryCode(person), fiscalNumber(person));
 
         if (!activeCustomer.isPresent()) {
             return null;
@@ -579,7 +579,6 @@ public class PersonCustomer extends PersonCustomer_Base {
             }
 
             setAddressCountryCode(addressCountryCode);
-            setCountryCode(addressCountryCode);
             setFiscalNumber(fiscalNumber);
             if(getPerson().getFiscalAddress() != null) {
                 getPerson().getFiscalAddress().setFiscalAddress(false);
@@ -594,7 +593,6 @@ public class PersonCustomer extends PersonCustomer_Base {
             }
 
             setAddressCountryCode(addressCountryCode);
-            setCountryCode(addressCountryCode);
             setFiscalNumber(fiscalNumber);
             
             saveFiscalAddressFieldsInCustomer(fiscalAddress);
@@ -634,7 +632,7 @@ public class PersonCustomer extends PersonCustomer_Base {
     }
 
     public static String uiPersonFiscalNumber(final Person person) {
-        final String fiscalCountry = !Strings.isNullOrEmpty(countryCode(person)) ? countryCode(person) : "";
+        final String fiscalCountry = !Strings.isNullOrEmpty(addressCountryCode(person)) ? addressCountryCode(person) : "";
         final String fiscalNumber = !Strings.isNullOrEmpty(fiscalNumber(person)) ? fiscalNumber(person) : "";
         return fiscalCountry + " " + fiscalNumber;
     }
@@ -664,12 +662,6 @@ public class PersonCustomer extends PersonCustomer_Base {
     @Override
     public String getIban() {
         return getAssociatedPerson().getIban();
-    }
-    
-    @Override
-    @Deprecated
-    public String getCountryCode() {
-        return super.getCountryCode();
     }
     
     public void saveFiscalAddressFieldsFromPersonInCustomer() {

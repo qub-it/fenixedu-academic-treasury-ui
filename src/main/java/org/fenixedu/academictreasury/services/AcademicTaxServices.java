@@ -154,22 +154,22 @@ public class AcademicTaxServices {
         }
 
         final Person person = registration.getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(person);
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
         if (findAcademicTreasuryEvent(registration, executionYear, academicTax) == null) {
 
-            if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+            if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
                 throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
             }
 
             // Read person customer
-            if (!PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).isPresent()) {
-                PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
+            if (!PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).isPresent()) {
+                PersonCustomer.create(person, addressFiscalCountryCode, fiscalNumber);
             }
 
-            final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
+            final PersonCustomer personCustomer = PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get();
             if (!personCustomer.isActive()) {
-                throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", fiscalCountryCode, fiscalNumber);
+                throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", addressFiscalCountryCode, fiscalNumber);
             }
 
             if (!DebtAccount.findUnique(finantialEntity.getFinantialInstitution(), personCustomer).isPresent()) {
@@ -186,7 +186,7 @@ public class AcademicTaxServices {
             return false;
         }
 
-        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
+        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get();
         final DebtAccount debtAccount = DebtAccount.findUnique(finantialEntity.getFinantialInstitution(), personCustomer).get();
 
         academicTariff.createDebitEntryForAcademicTax(debtAccount, academicTreasuryEvent, when);
@@ -339,22 +339,22 @@ public class AcademicTaxServices {
         }
 
         final Person person = registration.getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(person);
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
 
         if (findAcademicTreasuryEventForImprovementTax(registration, executionYear) == null) {
-            if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+            if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
                 throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
             }
 
             // Read person customer
-            if (!PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).isPresent()) {
-                PersonCustomer.create(person, fiscalCountryCode, fiscalNumber);
+            if (!PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).isPresent()) {
+                PersonCustomer.create(person, addressFiscalCountryCode, fiscalNumber);
             }
 
-            final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
+            final PersonCustomer personCustomer = PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get();
             if (!personCustomer.isActive()) {
-                throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", fiscalCountryCode, fiscalNumber);
+                throw new AcademicTreasuryDomainException("error.PersonCustomer.not.active", addressFiscalCountryCode, fiscalNumber);
             }
 
             AcademicTreasuryEvent.createForImprovementTuition(registration, executionYear);
@@ -367,7 +367,7 @@ public class AcademicTaxServices {
             return false;
         }
 
-        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, fiscalCountryCode, fiscalNumber).get();
+        final PersonCustomer personCustomer = PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get();
         final DebtAccount debtAccount = DebtAccount.findUnique(finantialEntity.getFinantialInstitution(), personCustomer).get();
 
         final DebitEntry debitEntry =

@@ -70,7 +70,6 @@ external class .org.fenixedu.academic.domain.organizationalStructure.Unit;
  * --------------*/
 
 class customer.PersonCustomer extends .org.fenixedu.treasury.domain.Customer {
-	String countryCode;
 	String fiscalNumber;
 	boolean fromPersonMerge;
 }

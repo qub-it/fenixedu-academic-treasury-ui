@@ -46,7 +46,7 @@ public class CustomerAccountingForwardPaymentController
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
         
         final Person person = User.findByUsername(loggedUsername).getPerson();
-        final String fiscalCountryCode = PersonCustomer.countryCode(person);
+        final String fiscalCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
         if (Strings.isNullOrEmpty(fiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
             throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
