@@ -1,3 +1,4 @@
+4.4.3 (14-01-2020)
 - Refactor: API for debt creation for IAcademicTreasuryTarget along with treasury domain entities instead of interfaces
 
 4.4.2 (09-01-2020)
