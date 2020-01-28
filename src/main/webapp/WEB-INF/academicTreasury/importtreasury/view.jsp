@@ -193,7 +193,7 @@ ${portal.toolkit()}
 								<c:if test="${tuitionPaymentPlanBean.getExecutionSemester() != null}">
 									<tr>
 										<th scope="row" class="col-xs-3"><spring:message code="label.TuitionPaymentPlan.curricularSemester" /></th>
-										<td><c:out value="${tuitionPaymentPlanBean.executionSemester.semester}" /></td>
+										<td><c:out value="${tuitionPaymentPlanBean.executionSemester.childOrder}" /></td>
 									</tr>
 								</c:if>
 				
