@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.text.StrSubstitutor;
 import org.fenixedu.academic.domain.Degree;
 import org.fenixedu.academic.domain.Enrolment;
@@ -67,7 +68,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     public AcademicTreasuryEvent() {
         super();
-        setCustomAcademicDebt(false);        
+        setCustomAcademicDebt(false);
     }
 
     protected AcademicTreasuryEvent(final ITreasuryServiceRequest iTreasuryServiceRequest) {
@@ -129,22 +130,36 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         final ITreasuryPlatformDependentServices treasuryServices = TreasuryPlataformDependentServicesFactory.implementation();
         LocalizedString result = new LocalizedString();
 
+        final ServiceRequestMapEntry serviceRequestMapEntry = ServiceRequestMapEntry.findMatch(iTreasuryServiceRequest);
+
         for (final Locale locale : treasuryServices.availableLocales()) {
             final ExecutionYear executionYear = iTreasuryServiceRequest.getExecutionYear();
             if (executionYear != null) {
-                result = result
-                        .with(locale,
-                                format("%s [%s - %s] (%s)", 
-                                        product.getName().getContent(locale),
-                                        iTreasuryServiceRequest.getRegistration().getDegree().getPresentationName(executionYear, locale),
-                                        executionYear.getQualifiedName(),
-                                        iTreasuryServiceRequest.getServiceRequestNumberYear()));
+                String text = format("%s [%s - %s] (%s)", product.getName().getContent(locale),
+                        iTreasuryServiceRequest.getRegistration().getDegree().getPresentationName(executionYear, locale),
+                        executionYear.getQualifiedName(), iTreasuryServiceRequest.getServiceRequestNumberYear());
+
+                if (!StringUtils.isEmpty(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat())) {
+                    final StrSubstitutor str = new StrSubstitutor(iTreasuryServiceRequest.getPropertyValuesMap());
+
+                    final String extString = str.replace(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat());
+                    text += " " + extString;
+                }
+
+                result = result.with(locale, text);
             } else {
-                result = result.with(locale,
-                        format("%s [%s] (%s)", 
-                                product.getName().getContent(locale),
-                                iTreasuryServiceRequest.getRegistration().getDegree().getPresentationName(null, locale),
-                                iTreasuryServiceRequest.getServiceRequestNumberYear()));
+                String text = format("%s [%s] (%s)", product.getName().getContent(locale),
+                        iTreasuryServiceRequest.getRegistration().getDegree().getPresentationName(null, locale),
+                        iTreasuryServiceRequest.getServiceRequestNumberYear());
+                
+                if (!StringUtils.isEmpty(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat())) {
+                    final StrSubstitutor str = new StrSubstitutor(iTreasuryServiceRequest.getPropertyValuesMap());
+
+                    final String extString = str.replace(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat());
+                    text += " " + extString;
+                }
+                
+                result = result.with(locale, text);
             }
         }
 
@@ -170,10 +185,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         LocalizedString result = new LocalizedString();
 
         for (final Locale locale : treasuryServices.availableLocales()) {
-            final String name = String.format("%s [%s - %s]", 
-                    product.getName().getContent(locale),
-                    registration.getDegree().getPresentationName(executionYear, locale), 
-                    executionYear.getQualifiedName());
+            final String name = String.format("%s [%s - %s]", product.getName().getContent(locale),
+                    registration.getDegree().getPresentationName(executionYear, locale), executionYear.getQualifiedName());
 
             result = result.with(locale, name);
         }
@@ -201,13 +214,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         for (final Locale locale : treasuryServices.availableLocales()) {
             String name = null;
             if (academicTax.isAppliedOnRegistration()) {
-                name = String.format("%s [%s - %s]", 
-                        academicTax.getProduct().getName().getContent(locale),
-                        registration.getDegree().getPresentationName(executionYear, locale), 
-                        executionYear.getQualifiedName());
+                name = String.format("%s [%s - %s]", academicTax.getProduct().getName().getContent(locale),
+                        registration.getDegree().getPresentationName(executionYear, locale), executionYear.getQualifiedName());
             } else {
-                name = String.format("%s [%s]", 
-                        academicTax.getProduct().getName().getContent(locale),
+                name = String.format("%s [%s]", academicTax.getProduct().getName().getContent(locale),
                         executionYear.getQualifiedName());
             }
 
@@ -250,10 +260,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         LocalizedString result = new LocalizedString();
         for (final Locale locale : treasuryServices.availableLocales()) {
-            final String name = String.format("%s [%s - %s]", 
-                    product.getName().getContent(),
-                    registration.getDegree().getPresentationName(executionYear, locale), 
-                    executionYear.getQualifiedName());
+            final String name = String.format("%s [%s - %s]", product.getName().getContent(),
+                    registration.getDegree().getPresentationName(executionYear, locale), executionYear.getQualifiedName());
 
             result = result.with(locale, name);
         }
@@ -373,7 +381,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public boolean isForLegacy() {
         return isLegacy();
     }
-    
+
     public boolean isCustomAcademicDebtUrgent() {
         return getCustomAcademicDebtUrgent();
     }
@@ -389,7 +397,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     public boolean isForAcademicTax() {
         return getAcademicTax() != null && !isImprovementTax();
     }
-    
+
     public static int numberOfUnits(final ITreasuryServiceRequest iTreasuryServiceRequest) {
         return AcademicTreasuryConstants.getNumberOfUnits(iTreasuryServiceRequest);
     }
@@ -404,10 +412,10 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         } else if (isForCustomAcademicDebt()) {
             return getCustomAcademicDebtNumberOfUnits();
         }
-        
+
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.numberOfUnits.not.applied");
     }
-    
+
     public static int numberOfPages(final ITreasuryServiceRequest iTreasuryServiceRequest) {
         return iTreasuryServiceRequest.hasNumberOfPages() ? iTreasuryServiceRequest.getNumberOfPages() : 0;
     }
@@ -425,11 +433,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.numberOfPages.not.applied");
     }
-    
+
     public static boolean urgentRequest(final ITreasuryServiceRequest iTreasuryServiceRequest) {
         return iTreasuryServiceRequest.isUrgent();
     }
-    
+
     public boolean isUrgentRequest() {
         if (isForAcademicServiceRequest()) {
             return urgentRequest(getITreasuryServiceRequest());
@@ -445,23 +453,26 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     }
 
     public LocalDate getRequestDate() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
-        
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
+
         if (isForAcademicServiceRequest()) {
             return getITreasuryServiceRequest().getRequestDate().toLocalDate();
         } else if (isForAcademicTax() && !isForImprovementTax()) {
-            final RegistrationDataByExecutionYear registrationDataByExecutionYear = academicTreasuryServices.findRegistrationDataByExecutionYear(getRegistration(), getExecutionYear());
+            final RegistrationDataByExecutionYear registrationDataByExecutionYear =
+                    academicTreasuryServices.findRegistrationDataByExecutionYear(getRegistration(), getExecutionYear());
 
             return registrationDataByExecutionYear != null ? registrationDataByExecutionYear.getEnrolmentDate() : new LocalDate();
         } else if (isForImprovementTax()) {
-            final RegistrationDataByExecutionYear registrationDataByExecutionYear = academicTreasuryServices.findRegistrationDataByExecutionYear(getRegistration(), getExecutionYear());
+            final RegistrationDataByExecutionYear registrationDataByExecutionYear =
+                    academicTreasuryServices.findRegistrationDataByExecutionYear(getRegistration(), getExecutionYear());
 
             return registrationDataByExecutionYear != null ? registrationDataByExecutionYear.getEnrolmentDate() : new LocalDate();
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.requestDate.not.applied");
     }
-    
+
     public static Locale language(final ITreasuryServiceRequest iTreasuryServiceRequest) {
         return iTreasuryServiceRequest.getLanguage();
     }
@@ -508,14 +519,16 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
     @Override
     @Atomic
     public LocalDate getTreasuryEventDate() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
-        
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
+
         if (isForAcademicServiceRequest()) {
             return getITreasuryServiceRequest().getRequestDate().toLocalDate();
         } else if (isForImprovementTax() || isForAcademicTax() || isForRegistrationTuition() || isForExtracurricularTuition()
                 || isForStandaloneTuition()) {
 
-            final RegistrationDataByExecutionYear data = academicTreasuryServices.findRegistrationDataByExecutionYear(getRegistration(), getExecutionYear());
+            final RegistrationDataByExecutionYear data =
+                    academicTreasuryServices.findRegistrationDataByExecutionYear(getRegistration(), getExecutionYear());
 
             if (data != null && data.getEnrolmentDate() != null) {
                 return data.getEnrolmentDate();
@@ -598,7 +611,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
     private LocalizedString descriptionForAcademicServiceRequest() {
         final ITreasuryPlatformDependentServices treasuryServices = TreasuryPlataformDependentServicesFactory.implementation();
-        
+
         final ServiceRequestMapEntry serviceRequestMapEntry = ServiceRequestMapEntry.findMatch(getITreasuryServiceRequest());
 
         LocalizedString result = new LocalizedString();
@@ -607,7 +620,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             String text =
                     getProduct().getName().getContent(locale) + ": " + getITreasuryServiceRequest().getServiceRequestNumberYear();
 
-            if (!Strings.isNullOrEmpty(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat())) {
+            if (!StringUtils.isEmpty(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat())) {
                 final StrSubstitutor str = new StrSubstitutor(getITreasuryServiceRequest().getPropertyValuesMap());
 
                 final String extString = str.replace(serviceRequestMapEntry.getDebitEntryDescriptionExtensionFormat());
@@ -745,7 +758,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
     }
-    
+
     @Override
     public void copyDebitEntryInformation(final DebitEntry sourceDebitEntry, final DebitEntry copyDebitEntry) {
         copyDebitEntry.setCurricularCourse(sourceDebitEntry.getCurricularCourse());
@@ -903,7 +916,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         final Set<AcademicTreasuryEvent> result = Sets.newHashSet();
 
         for (final AcademicTax academicTax : AcademicTax.findAll().collect(Collectors.toSet())) {
-            result.addAll(findForAcademicTax(registration, executionYear, academicTax).collect(Collectors.<AcademicTreasuryEvent> toSet()));
+            result.addAll(findForAcademicTax(registration, executionYear, academicTax)
+                    .collect(Collectors.<AcademicTreasuryEvent> toSet()));
         }
 
         return result.stream();
@@ -1044,9 +1058,9 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         USED_DATE("41"),
 
         TUITION_PAYOR_DEBT_ACCOUNT("42"),
-        
+
         EFFECTIVE_TUITION_PAYMENT_PLAN("43");
-        
+
         private String code;
 
         private AcademicTreasuryEventKeys(final String code) {
@@ -1054,8 +1068,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         }
 
         public LocalizedString getDescriptionI18N() {
-            return AcademicTreasuryConstants.academicTreasuryBundleI18N(
-                    "label." + AcademicTreasuryEventKeys.class.getSimpleName() + "." + name());
+            return AcademicTreasuryConstants
+                    .academicTreasuryBundleI18N("label." + AcademicTreasuryEventKeys.class.getSimpleName() + "." + name());
         }
 
         public static String valueFor(final DebitEntry debitEntry, final AcademicTreasuryEventKeys key) {
@@ -1065,7 +1079,8 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
             // HACK Should retrieve with code and not with the description
             final LocalizedString descriptionI18N = key.getDescriptionI18N();
-            if (debitEntry.getPropertiesMap().containsKey(descriptionI18N.getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE))) {
+            if (debitEntry.getPropertiesMap()
+                    .containsKey(descriptionI18N.getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE))) {
                 return debitEntry.getPropertiesMap().get(descriptionI18N.getContent(AcademicTreasuryConstants.DEFAULT_LANGUAGE));
             }
 
@@ -1089,10 +1104,9 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
             propertiesMap.put(AcademicTreasuryEventKeys.ACADEMIC_SERVICE_REQUEST_NUMBER_YEAR.getDescriptionI18N().getContent(),
                     getITreasuryServiceRequest().getServiceRequestNumberYear());
 
-            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(),
-                    getITreasuryServiceRequest().getRegistration().getDegree()
-                            .getPresentationName(getITreasuryServiceRequest().getExecutionYear()));
-            
+            propertiesMap.put(AcademicTreasuryEventKeys.DEGREE.getDescriptionI18N().getContent(), getITreasuryServiceRequest()
+                    .getRegistration().getDegree().getPresentationName(getITreasuryServiceRequest().getExecutionYear()));
+
             propertiesMap.put(AcademicTreasuryEventKeys.DEGREE_CODE.getDescriptionI18N().getContent(),
                     getITreasuryServiceRequest().getRegistration().getDegree().getCode());
 
@@ -1127,38 +1141,34 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
         return AcademicTreasuryConstants.academicTreasuryBundleI18N(detailed ? "label.true" : "label.false");
     }
 
-    public static BigDecimal getEnrolledEctsUnits(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, 
+    public static BigDecimal getEnrolledEctsUnits(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
             final Registration registration, final ExecutionYear executionYear) {
-        
+
         if (tuitionPaymentPlanGroup.isForRegistration()) {
 
             return TuitionServices.normalEnrolmentsWithoutAnnuled(registration, executionYear).stream()
-                    .map(e -> new BigDecimal(e.getEctsCredits()))
-                    .reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
-            
+                    .map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, b) -> a.add(b)).orElse(BigDecimal.ZERO);
+
         } else if (tuitionPaymentPlanGroup.isForStandalone()) {
 
             return TuitionServices.standaloneEnrolmentsWithoutAnnuled(registration, executionYear).stream()
-                    .map(e -> new BigDecimal(e.getEctsCredits()))
-                    .reduce((a, c) -> a.add(c))
-                    .orElse(BigDecimal.ZERO);
-            
+                    .map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
+
         } else if (tuitionPaymentPlanGroup.isForExtracurricular()) {
 
             return TuitionServices.extracurricularEnrolmentsWithoutAnnuled(registration, executionYear).stream()
-                    .map(e -> new BigDecimal(e.getEctsCredits()))
-                    .reduce((a, c) -> a.add(c))
-                    .orElse(BigDecimal.ZERO);
+                    .map(e -> new BigDecimal(e.getEctsCredits())).reduce((a, c) -> a.add(c)).orElse(BigDecimal.ZERO);
         }
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
     }
-    
+
     public BigDecimal getEnrolledEctsUnits() {
         return getEnrolledEctsUnits(getTuitionPaymentPlanGroup(), getRegistration(), getExecutionYear());
     }
 
-    public static BigDecimal getEnrolledCoursesCount(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup, final Registration registration, final ExecutionYear executionYear) {
+    public static BigDecimal getEnrolledCoursesCount(final TuitionPaymentPlanGroup tuitionPaymentPlanGroup,
+            final Registration registration, final ExecutionYear executionYear) {
         if (tuitionPaymentPlanGroup.isForRegistration()) {
             return new BigDecimal(TuitionServices.normalEnrolmentsWithoutAnnuled(registration, executionYear).size());
         } else if (tuitionPaymentPlanGroup.isForStandalone()) {
@@ -1169,7 +1179,7 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
 
         throw new AcademicTreasuryDomainException("error.AcademicTreasuryEvent.unknown.tuition.group");
     }
-    
+
     public BigDecimal getEnrolledCoursesCount() {
         return getEnrolledCoursesCount(getTuitionPaymentPlanGroup(), getRegistration(), getExecutionYear());
     }
@@ -1621,11 +1631,11 @@ public class AcademicTreasuryEvent extends AcademicTreasuryEvent_Base implements
      */
 
     public String getPersonName() {
-        if(getPerson() != null) {
+        if (getPerson() != null) {
             return getPerson().getName();
         }
-        
+
         return null;
     }
-    
+
 }

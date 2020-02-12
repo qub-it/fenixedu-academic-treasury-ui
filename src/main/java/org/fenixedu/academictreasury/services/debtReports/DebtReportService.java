@@ -93,6 +93,10 @@ public class DebtReportService {
     public static Stream<SibsTransactionDetailEntryBean> sibsTransactionDetailReport(final DebtReportRequest request,
             final ErrorsLog log) {
         return SibsTransactionDetail.findAll()
+                .filter(i -> request.getBeginDate() == null || (i.getWhenRegistered() != null && 
+                    !request.getBeginDate().toDateTimeAtStartOfDay().isAfter(i.getWhenRegistered())))
+                .filter(i -> request.getEndDate() == null || (i.getWhenRegistered() != null && 
+                    !request.getEndDate().toDateTimeAtStartOfDay().plusDays(1).minusSeconds(1).isBefore(i.getWhenRegistered())))
                 .map(i -> new SibsTransactionDetailEntryBean(i, request, log));
     }
 

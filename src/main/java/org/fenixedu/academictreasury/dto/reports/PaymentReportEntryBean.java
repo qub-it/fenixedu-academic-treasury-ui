@@ -35,6 +35,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
         academicTreasuryBundle("label.PaymentReportEntryBean.header.responsible"),
         academicTreasuryBundle("label.PaymentReportEntryBean.header.settlementNoteNumber"),
         academicTreasuryBundle("label.PaymentReportEntryBean.header.settlementNoteDocumentDate"),
+        academicTreasuryBundle("label.PaymentReportEntryBean.header.settlementOriginDocumentNumber"),
         academicTreasuryBundle("label.PaymentReportEntryBean.header.paymentDate"),
         academicTreasuryBundle("label.PaymentReportEntryBean.header.settlementNoteAnnuled"),
         academicTreasuryBundle("label.PaymentReportEntryBean.header.documentExportationPending"),
@@ -61,6 +62,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
     private String responsible;
     private String settlementNoteNumber;
     private DateTime settlementNoteDocumentDate;
+    private String settlementOriginDocumentNumber;
     private DateTime paymentDate;
     private Boolean settlementNoteAnnuled;
     private Boolean documentExportationPending;
@@ -104,6 +106,7 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             this.responsible = treasuryServices.versioningCreatorUsername(entry);
             this.settlementNoteNumber = settlementNote.getUiDocumentNumber();
             this.settlementNoteDocumentDate = settlementNote.getDocumentDate();
+            this.settlementOriginDocumentNumber = settlementNote.getOriginDocumentNumber();
             this.paymentDate = settlementNote.getPaymentDate();
             this.settlementNoteAnnuled = settlementNote.isAnnulled();
             this.documentExportationPending = settlementNote.isDocumentToExport();
@@ -188,14 +191,15 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
             
             int i = 1;
             
-            row.createCell(i++).setCellValue(valueOrEmpty(creationDate));
-            row.createCell(i++).setCellValue(valueOrEmpty(responsible));
-            row.createCell(i++).setCellValue(valueOrEmpty(settlementNoteNumber));
-            row.createCell(i++).setCellValue(valueOrEmpty(settlementNoteDocumentDate));
-            row.createCell(i++).setCellValue(valueOrEmpty(paymentDate));
-            row.createCell(i++).setCellValue(valueOrEmpty(settlementNoteAnnuled));
-            row.createCell(i++).setCellValue(valueOrEmpty(documentExportationPending));
-            row.createCell(i++).setCellValue(valueOrEmpty(paymentMethod));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.creationDate));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.responsible));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.settlementNoteNumber));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.settlementNoteDocumentDate));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.settlementOriginDocumentNumber));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.paymentDate));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.settlementNoteAnnuled));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.documentExportationPending));
+            row.createCell(i++).setCellValue(valueOrEmpty(this.paymentMethod));
 
             {
                 String value = amount != null ? amount.toString() : "";
@@ -329,6 +333,14 @@ public class PaymentReportEntryBean implements SpreadsheetRow {
 
     public void setSettlementNoteDocumentDate(DateTime settlementNoteDocumentDate) {
         this.settlementNoteDocumentDate = settlementNoteDocumentDate;
+    }
+    
+    public String getSettlementOriginDocumentNumber() {
+        return settlementOriginDocumentNumber;
+    }
+    
+    public void setSettlementOriginDocumentNumber(String settlementOriginDocumentNumber) {
+        this.settlementOriginDocumentNumber = settlementOriginDocumentNumber;
     }
 
     public DateTime getPaymentDate() {
