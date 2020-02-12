@@ -1,3 +1,4 @@
+4.4.6 (12-02-2020)
 - Bug Fix: Consider academic service request service mapping entry additional description in debit entry creation
 - Improvement: Add settlement origin document number in reports
 - Improvement: Filter sibs transaction details by date interval in report
