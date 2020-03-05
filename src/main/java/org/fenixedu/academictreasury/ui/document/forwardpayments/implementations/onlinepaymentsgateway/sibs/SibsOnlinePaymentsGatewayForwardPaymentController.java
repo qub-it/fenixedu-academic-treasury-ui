@@ -44,7 +44,9 @@ import pt.ist.fenixframework.FenixFramework;
 @RequestMapping(SibsOnlinePaymentsGatewayForwardPaymentController.CONTROLLER_URL)
 public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicTreasuryBaseController
         implements IForwardPaymentController {
+
     private static final String DEFAULT_ZIP_CODE = "0000-000";
+    private static final String DEFAULT_ADDRESS = "Desconhecido";
 
     public static final String CONTROLLER_URL = "/treasury/document/forwardpayments/sibsonlinepaymentsgateway";
     private static final String JSP_PATH =
@@ -99,6 +101,7 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
 
     private static final String _CONTINUE_PROCESS_FORWARD_PAYMENT_URI = "/continueProcessForwardPayment";
     public static final String CONTINUE_PROCESS_FORWARD_PAYMENT_URL = CONTROLLER_URL + _CONTINUE_PROCESS_FORWARD_PAYMENT_URI;
+
     
     @RequestMapping(value = _CONTINUE_PROCESS_FORWARD_PAYMENT_URI + "/{forwardPaymentId}")
     public String continueProcessForwardPayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, 
@@ -147,6 +150,14 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
             
             if(StringUtils.isEmpty(billingAddressBean.getZipCode())) {
                 billingAddressBean.setZipCode(DEFAULT_ZIP_CODE);
+            }
+            
+            if(StringUtils.isEmpty(billingAddressBean.getAddress())) {
+                billingAddressBean.setAddress(DEFAULT_ADDRESS);
+            }
+            
+            if(StringUtils.isEmpty(billingAddressBean.getCity())) {
+                billingAddressBean.setCity(DEFAULT_ADDRESS);
             }
             
             final ForwardPaymentStatusBean bean = impl.prepareCheckout(forwardPayment, billingAddressBean);
