@@ -175,7 +175,7 @@ ${portal.angularToolkit()}
                         code="label.TuitionDebtCreationBean.registration" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <ui-select id="tuitionDebtCreationBean_registration"
                         name="registration"
@@ -196,7 +196,7 @@ ${portal.angularToolkit()}
                         code="label.TuitionDebtCreationBean.executionYear" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <ui-select
                         id="tuitionDebtCreationBean_executionYear"
@@ -220,7 +220,7 @@ ${portal.angularToolkit()}
                             code="label.TuitionDebtCreationBean.enrolment" />
                     </div>
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-10">
                         <ui-select
                             id="tuitionDebtCreationBean_enrolments"
                             name="enrolments"
@@ -244,7 +244,7 @@ ${portal.angularToolkit()}
                             code="label.TuitionDebtCreationBean.enrolment" />
                     </div>
 
-                    <div class="col-sm-6">
+                    <div class="col-sm-10">
                         <ui-select
                             id="tuitionDebtCreationBean_enrolments"
                             name="enrolments"
@@ -279,7 +279,7 @@ ${portal.angularToolkit()}
                         code="label.TuitionDebtCreationBean.tuitionPaymentPlan" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <ui-select
                         id="tuitionDebtCreationBean_tuitionPaymentPlans"
@@ -296,7 +296,7 @@ ${portal.angularToolkit()}
             </div>
             <div class="form-group row">
                 <div class="col-sm-2 control-label"></div>
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <p>
                         <em class="label label-warning">{{object.errorMessage}}</em>
                     </p>

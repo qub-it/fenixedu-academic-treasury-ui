@@ -141,11 +141,14 @@ ${portal.angularToolkit()}
                     <spring:message code="label.AcademicDebtGenerationRegistration.registration" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="academicDebtGenerationRegistration_registration" name="registrationId">
                     <c:forEach var="registration" items="${AcademicDebtGenerationRegistration_registration_options}">
-                        <option value="${registration.externalId}"><c:out value="${registration.degree.presentationNameI18N.content}" /></option>
+                        <option value="${registration.externalId}">
+                        	<c:out value="${registration.degree.presentationNameI18N.content}" />
+                        	(<c:out value='${registration.startDate.toString("yyyy-MM-dd")}' /> <c:out value='${registration.registrationProtocol.description.content}' />)
+                        </option>
                     </c:forEach>
                     </select>
                 </div>
@@ -155,7 +158,7 @@ ${portal.angularToolkit()}
                     <spring:message code="label.AcademicDebtGenerationRegistration.executionYear" />
                 </div>
 
-                <div class="col-sm-6">
+                <div class="col-sm-10">
                     <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="academicDebtGenerationRegistration_executionYear" name="executionYearId">
                     <c:forEach var="executionYear" items="${AcademicDebtGenerationRegistration_executionYear_options}">
