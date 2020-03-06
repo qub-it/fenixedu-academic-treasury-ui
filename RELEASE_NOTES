@@ -1,4 +1,5 @@
 - Improvement: SIBS OPPWA: default address fields
+- Bug Fix: In Person delete listener, delete the active person customer if defined
 
 4.4.7 (27-02-2020)
 - Improvement: In payment with credit card with SIBS OPPWA, select one of the registered addresses to send to SIBS

@@ -54,6 +54,10 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
 
     private void addDeletionListeners() {
         FenixFramework.getDomainModel().registerDeletionListener(Person.class, p -> {
+            if(p.getPersonCustomer() != null) {
+                p.getPersonCustomer().delete(); 
+            }
+            
             p.getInactivePersonCustomersSet().forEach(ipc -> ipc.delete());
         });
     }
