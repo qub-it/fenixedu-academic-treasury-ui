@@ -65,59 +65,72 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
         final DebtAccount debtAccount = forwardPayment.getDebtAccount();
         final String debtAccountUrl = (String) session.getAttribute("debtAccountUrl");
 
-        if(debtAccount.getCustomer().isAdhocCustomer()) {
-            return String.format("redirect:%s/%s", CONTINUE_PROCESS_FORWARD_PAYMENT_URL, forwardPayment.getExternalId());
+        if (debtAccount.getCustomer().isAdhocCustomer()) {
+            continueProcessForwardPayment(forwardPayment, model, response, session);
         }
-        
+
         final Person person = ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson();
-        
+
         model.addAttribute("debtAccountUrl", debtAccountUrl);
         model.addAttribute("forwardPayment", forwardPayment);
         model.addAttribute("forwardPaymentConfiguration", forwardPayment.getForwardPaymentConfiguration());
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("logosPage", forwardPayment.getForwardPaymentConfiguration().getLogosJspPageFile());
-        model.addAttribute("physicalAddresses", 
-                person.getValidAddressesForFiscalData().stream()
-                .collect(Collectors.toList()));
+        model.addAttribute("physicalAddresses", person.getValidAddressesForFiscalData().stream().collect(Collectors.toList()));
 
         return jspPage(_SELECT_PHYSICAL_ADDRESS_URI);
     }
 
     @RequestMapping(value = _SELECT_PHYSICAL_ADDRESS_URI + "/{forwardPaymentId}", method = RequestMethod.POST)
-    public String selectphysicaladdress(
-            @PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
-            @RequestParam("physicalAddressId") final PhysicalAddress physicalAddress, 
-            final Model model,
+    public String selectphysicaladdress(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
+            @RequestParam("physicalAddressId") final PhysicalAddress physicalAddress, final Model model,
             final HttpServletResponse response, final HttpSession session, final RedirectAttributes redirectAttributes) {
 
         if (physicalAddress == null) {
-            addErrorMessage(AcademicTreasuryConstants.academicTreasuryBundle("error.SibsOnlinePaymentsGatewayForwardPaymentController.select.address"), model);
+            addErrorMessage(AcademicTreasuryConstants
+                    .academicTreasuryBundle("error.SibsOnlinePaymentsGatewayForwardPaymentController.select.address"), model);
             return processforwardpayment(forwardPayment, model, response, session);
         }
-        
-        return String.format("redirect:%s/%s/%s", CONTINUE_PROCESS_FORWARD_PAYMENT_URL, 
-                forwardPayment.getExternalId(), physicalAddress.getExternalId());
+
+        return continueProcessForwardPayment(forwardPayment, physicalAddress, model, response, session);
     }
 
     private static final String _CONTINUE_PROCESS_FORWARD_PAYMENT_URI = "/continueProcessForwardPayment";
     public static final String CONTINUE_PROCESS_FORWARD_PAYMENT_URL = CONTROLLER_URL + _CONTINUE_PROCESS_FORWARD_PAYMENT_URI;
 
-    
     @RequestMapping(value = _CONTINUE_PROCESS_FORWARD_PAYMENT_URI + "/{forwardPaymentId}")
-    public String continueProcessForwardPayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, 
+    public String continueProcessForwardPayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
             final Model model, final HttpServletResponse response, final HttpSession session) {
         return continueProcessForwardPayment(forwardPayment, null, model, response, session);
     }
-    
+
     @RequestMapping(value = _CONTINUE_PROCESS_FORWARD_PAYMENT_URI + "/{forwardPaymentId}/{physicalAddressId}")
-    public String continueProcessForwardPayment(
-            @PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, 
-            @PathVariable("physicalAddressId") final PhysicalAddress physicalAddress, 
-            final Model model, final HttpServletResponse response, final HttpSession session) {
+    public String continueProcessForwardPayment(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
+            @PathVariable("physicalAddressId") final PhysicalAddress physicalAddress, final Model model,
+            final HttpServletResponse response, final HttpSession session) {
 
         checkPermissions(forwardPayment, physicalAddress);
-        
+
         try {
+            if (!forwardPayment.isInCreatedState()) {
+                AcademicTreasuryDomainException e = new AcademicTreasuryDomainException(
+                        "error.SibsOnlinePaymentsGatewayForwardPaymentController.invalid.state.restart.process.again.01");
+                
+                FenixFramework.atomic(() -> {
+                    forwardPayment.reject("", e.getLocalizedMessage(), "", "");
+                });
+                throw e;
+            }
+
+            if (!StringUtils.isEmpty(forwardPayment.getSibsMerchantTransactionId())) {
+                AcademicTreasuryDomainException e = new AcademicTreasuryDomainException(
+                        "error.SibsOnlinePaymentsGatewayForwardPaymentController.invalid.state.restart.process.again.02");
+                FenixFramework.atomic(() -> {
+                    forwardPayment.reject("", e.getLocalizedMessage(), "", "");
+                });
+                throw e;
+            }
+
             final String debtAccountUrl = (String) session.getAttribute("debtAccountUrl");
 
             if (forwardPayment.getCurrentState() != null && forwardPayment.getCurrentState().isRejected()) {
@@ -133,33 +146,34 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
                             .implementation();
 
             final SibsBillingAddressBean billingAddressBean = new SibsBillingAddressBean();
-            
-            if(forwardPayment.getDebtAccount().getCustomer().isAdhocCustomer()) {
+
+            if (forwardPayment.getDebtAccount().getCustomer().isAdhocCustomer()) {
                 billingAddressBean.setAddressCountryCode(forwardPayment.getDebtAccount().getCustomer().getAddressCountryCode());
                 billingAddressBean.setCity(billingCity((AdhocCustomer) forwardPayment.getDebtAccount().getCustomer()));
                 billingAddressBean.setAddress(forwardPayment.getDebtAccount().getCustomer().getAddress());
                 billingAddressBean.setZipCode(forwardPayment.getDebtAccount().getCustomer().getZipCode());
-            } else if(physicalAddress != null) {
+            } else if (physicalAddress != null) {
                 billingAddressBean.setAddressCountryCode(PersonCustomer.addressCountryCode(physicalAddress));
                 billingAddressBean.setCity(billingCity(physicalAddress));
                 billingAddressBean.setAddress(PersonCustomer.address(physicalAddress));
                 billingAddressBean.setZipCode(PersonCustomer.zipCode(physicalAddress));
             } else {
-                throw new AcademicTreasuryDomainException("error.SibsOnlinePaymentsGatewayForwardPaymentController.missing.physical.address");
+                throw new AcademicTreasuryDomainException(
+                        "error.SibsOnlinePaymentsGatewayForwardPaymentController.missing.physical.address");
             }
-            
-            if(StringUtils.isEmpty(billingAddressBean.getZipCode())) {
+
+            if (StringUtils.isEmpty(billingAddressBean.getZipCode())) {
                 billingAddressBean.setZipCode(DEFAULT_ZIP_CODE);
             }
-            
-            if(StringUtils.isEmpty(billingAddressBean.getAddress())) {
+
+            if (StringUtils.isEmpty(billingAddressBean.getAddress())) {
                 billingAddressBean.setAddress(DEFAULT_ADDRESS);
             }
-            
-            if(StringUtils.isEmpty(billingAddressBean.getCity())) {
+
+            if (StringUtils.isEmpty(billingAddressBean.getCity())) {
                 billingAddressBean.setCity(DEFAULT_ADDRESS);
             }
-            
+
             final ForwardPaymentStatusBean bean = impl.prepareCheckout(forwardPayment, billingAddressBean);
 
             if (!bean.isInvocationSuccess()) {
@@ -185,27 +199,27 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
     }
 
     private void checkPermissions(final ForwardPayment forwardPayment, final PhysicalAddress physicalAddress) {
-        if(forwardPayment.getDebtAccount().getCustomer().isPersonCustomer()) {
+        if (forwardPayment.getDebtAccount().getCustomer().isPersonCustomer()) {
             PersonCustomer personCustomer = (PersonCustomer) forwardPayment.getDebtAccount().getCustomer();
-            if(personCustomer.getAssociatedPerson() != physicalAddress.getParty()) {
+            if (personCustomer.getAssociatedPerson() != physicalAddress.getParty()) {
                 throw new SecurityException("not authorized");
             }
         }
     }
 
     private String billingCity(AdhocCustomer customer) {
-        if(!StringUtils.isEmpty(customer.getDistrictSubdivision())) {
+        if (!StringUtils.isEmpty(customer.getDistrictSubdivision())) {
             return customer.getDistrictSubdivision();
         }
-        
+
         return customer.getRegion();
     }
 
     private String billingCity(PhysicalAddress physicalAddress) {
-        if(!StringUtils.isEmpty(PersonCustomer.districtSubdivision(physicalAddress))) {
+        if (!StringUtils.isEmpty(PersonCustomer.districtSubdivision(physicalAddress))) {
             return PersonCustomer.districtSubdivision(physicalAddress);
         }
-        
+
         return PersonCustomer.region(physicalAddress);
     }
 

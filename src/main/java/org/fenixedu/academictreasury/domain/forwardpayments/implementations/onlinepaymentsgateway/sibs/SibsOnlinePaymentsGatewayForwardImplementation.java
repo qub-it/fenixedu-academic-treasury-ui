@@ -73,6 +73,10 @@ public class SibsOnlinePaymentsGatewayForwardImplementation implements IForwardP
         final String merchantTransactionId = gateway.generateNewMerchantTransactionId();
 
         FenixFramework.atomic(() -> {
+            if(!StringUtils.isEmpty(forwardPayment.getSibsMerchantTransactionId())) {
+                throw new RuntimeException("error.SibsOnlinePaymentsGatewayForwardImplementation.sibsMerchantTransactionId.already.filled");
+            }
+            
             forwardPayment.setSibsMerchantTransactionId(merchantTransactionId);
         });
 
