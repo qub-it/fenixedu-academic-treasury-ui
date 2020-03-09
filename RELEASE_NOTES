@@ -1,3 +1,4 @@
+4.4.8 (09-03-2020)
 - Improvement: SIBS OPPWA: default address fields
 - Bug Fix: In Person delete listener, delete the active person customer if defined
 - Improvement: Show registration ingression date and registration protocol in automatic debt creation interface 
