@@ -1,8 +1,6 @@
 package org.fenixedu.academictreasury.ui.document.forwardpayments.implementations.onlinepaymentsgateway.sibs;
 
 import static java.lang.String.format;
-import static org.fenixedu.treasury.util.TreasuryConstants.isSameCountryCode;
-import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.util.stream.Collectors;
 
@@ -22,10 +20,10 @@ import org.fenixedu.treasury.domain.AdhocCustomer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.exceptions.TreasuryDomainException;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.forwardpayments.implementations.IForwardPaymentController;
 import org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsBillingAddressBean;
 import org.fenixedu.treasury.dto.forwardpayments.ForwardPaymentStatusBean;
 import org.fenixedu.treasury.ui.TreasuryController;
-import org.fenixedu.treasury.ui.document.forwardpayments.IForwardPaymentController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ui.Model;
@@ -34,8 +32,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import com.google.common.base.Strings;
 
 import pt.ist.fenixframework.FenixFramework;
 

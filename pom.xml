@@ -62,7 +62,7 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury</artifactId>
-			<version>4.6.8</version>
+			<version>4.6.11</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
