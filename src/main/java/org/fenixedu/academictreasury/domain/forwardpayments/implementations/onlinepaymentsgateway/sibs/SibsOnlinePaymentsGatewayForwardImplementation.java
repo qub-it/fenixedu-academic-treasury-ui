@@ -35,8 +35,8 @@ public class SibsOnlinePaymentsGatewayForwardImplementation implements IForwardP
     public static final String ONLINE_PAYMENTS_GATEWAY = "ONLINE-PAYMENTS-GATEWAY";
 
     @Override
-    public IForwardPaymentController getForwardPaymentController(ForwardPayment forwardPayment) {
-        return new SibsOnlinePaymentsGatewayForwardPaymentController();
+    public IForwardPaymentController getForwardPaymentController(final ForwardPayment forwardPayment) {
+        return IForwardPaymentController.getForwardPaymentController(forwardPayment);
     }
 
     @Override

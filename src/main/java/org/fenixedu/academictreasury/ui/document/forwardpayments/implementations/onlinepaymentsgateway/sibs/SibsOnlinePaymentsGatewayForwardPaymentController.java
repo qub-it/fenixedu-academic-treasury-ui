@@ -267,4 +267,7 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
         return JSP_PATH + page;
     }
 
+    public static IForwardPaymentController getForwardPaymentController(final ForwardPayment forwardPayment) {
+        return new SibsOnlinePaymentsGatewayForwardPaymentController();
+    }
 }

@@ -1,4 +1,5 @@
 - Refactor: To split fenixedu-treasury module in domain and ui module, change IForwardPaymentController package
+- Refactor: Get IForwardPaymentController by class registration by online payments implementation
 
 4.4.9 (17-03-2020)
 - Refactor: Upgrade parent artifact id version
