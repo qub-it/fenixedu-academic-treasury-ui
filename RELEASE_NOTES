@@ -1,3 +1,5 @@
+- Refactor: Upgraded dependency of fenixedu-academic-core (removal of organizational Units subclasses)
+
 4.5.0 (26-03-2020)
 - Refactor: To split fenixedu-treasury module in domain and ui module, change IForwardPaymentController package
 - Refactor: Get IForwardPaymentController by class registration by online payments implementation

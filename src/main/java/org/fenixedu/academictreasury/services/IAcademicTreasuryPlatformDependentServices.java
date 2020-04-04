@@ -76,7 +76,7 @@ public interface IAcademicTreasuryPlatformDependentServices {
     }
     
 	default public Set<Person> readAllPersonsSet() { 
-    	return Party.getPartysSet(Person.class);
+    	return Party.readAllPersons();
     }
 	
 	/* Fiscal Information */
