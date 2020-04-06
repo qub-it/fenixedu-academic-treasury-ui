@@ -69,7 +69,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
             final DateTime endDate, final DueDateCalculationType dueDateCalculationType, final LocalDate fixedDueDate,
             final int numberOfDaysAfterCreationForDueDate, final boolean applyInterests, final InterestType interestType,
             final int numberOfDaysAfterDueDate, final boolean applyInFirstWorkday, final int maximumDaysToApplyPenalty,
-            final int maximumMonthsToApplyPenalty, final BigDecimal interestFixedAmount, final BigDecimal rate) {
+            final BigDecimal interestFixedAmount, final BigDecimal rate) {
         throw new RuntimeException("wrong call");
     }
 
@@ -84,7 +84,7 @@ public class TuitionInstallmentTariff extends TuitionInstallmentTariff_Base {
                 bean.getEndDate() != null ? bean.getEndDate().toDateTimeAtStartOfDay() : null, bean.getDueDateCalculationType(),
                 bean.getFixedDueDate(), bean.getNumberOfDaysAfterCreationForDueDate(), bean.isApplyInterests(),
                 bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
-                bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
+                bean.getMaximumDaysToApplyPenalty(), bean.getInterestFixedAmount(),
                 bean.getRate());
 
         super.setTuitionPaymentPlan(tuitionPaymentPlan);
@@ -664,12 +664,12 @@ if (!TuitionPaymentPlan.isDefaultPaymentPlanDefined(getTuitionPaymentPlan().getD
             setInterestRate(
                     InterestRate.createForTariff(this, bean.getInterestType(), bean.getNumberOfDaysAfterCreationForDueDate(),
                             bean.isApplyInFirstWorkday(), bean.getMaximumDaysToApplyPenalty(),
-                            bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(), bean.getRate()));
+                            bean.getInterestFixedAmount(), bean.getRate()));
         } else if (getInterestRate() != null && !bean.isApplyInterests()) {
             getInterestRate().delete();
         } else if (getInterestRate() != null && bean.isApplyInterests()) {
             getInterestRate().edit(bean.getInterestType(), bean.getNumberOfDaysAfterDueDate(), bean.isApplyInFirstWorkday(),
-                    bean.getMaximumDaysToApplyPenalty(), bean.getMaximumMonthsToApplyPenalty(), bean.getInterestFixedAmount(),
+                    bean.getMaximumDaysToApplyPenalty(), bean.getInterestFixedAmount(),
                     bean.getRate());
         }
 

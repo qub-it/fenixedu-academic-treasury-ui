@@ -438,19 +438,6 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 						value='<c:out value='${bean.maximumDaysToApplyPenalty}'/>' ng-required="object.applyInterests && object.interestType == 'DAILY'" pattern="\d+" />
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.applyInterests && object.interestType == 'MONTHLY'">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.TuitionInstallmentTariff.maximumMonthsToApplyPenalty" />
-				</div>
-	
-				<div class="col-sm-10">
-					<input id="tuitionInstallmentTariff_maximumMonthsToApplyPenalty"
-						class="form-control" type="text"
-						ng-model="object.maximumMonthsToApplyPenalty"
-						name="maximummonthstoapplypenalty"
-						value='<c:out value='${bean.maximumMonthsToApplyPenalty}'/>' />
-				</div>
-			</div>
 			<div class="form-group row" ng-show="object.applyInterests && object.interestType == 'FIXED_AMOUNT'">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.interestFixedAmount" />
@@ -468,7 +455,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 					</div>
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.applyInterests && (object.interestType == 'DAILY' || object.interestType == 'MONTHLY')">
+			<div class="form-group row" ng-show="object.applyInterests && object.interestType == 'DAILY'">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.rate" />
 				</div>
@@ -476,7 +463,7 @@ angular.module('angularAppTuitionPaymentPlan', ['ngSanitize', 'ui.select','bennu
 				<div class="col-sm-10">
 					<input id="tuitionInstallmentTariff_rate" class="form-control"
 						type="text" ng-model="object.rate" name="rate"
-						value='<c:out value='${bean.rate}'/>' ng-required="object.applyInterests && (object.interestType == 'DAILY' || object.interestType == 'MONTHLY')"   pattern="\d+(\.\d{4})?" min="0" max="100" />
+						value='<c:out value='${bean.rate}'/>' ng-required="object.applyInterests && object.interestType == 'DAILY'"   pattern="\d+(\.\d{4})?" min="0" max="100" />
 				</div>
 			</div>
 		</div>

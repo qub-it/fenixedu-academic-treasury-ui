@@ -303,29 +303,6 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 							<c:out value="${installment.rate}" />&nbsp;&#37;
 						</p>
 					</c:when>
-					<c:when test="${installment.interestType.monthly}">
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:&nbsp;</strong>
-							<c:if test="${installment.applyInFirstWorkday}">
-								<spring:message code="label.true" />
-							</c:if>
-							<c:if test="${not installment.applyInFirstWorkday}">
-								<spring:message code="label.false" />
-							</c:if>
-						</p>
-	
-						<c:if test="${installment.maximumMonthsToApplyPenaltyApplied}">
-							<p>
-								<strong><spring:message code="label.TuitionInstallmentTariff.maximumMonthsToApplyPenalty" />:&nbsp;</strong>
-								<c:out value="${installment.maximumMonthsToApplyPenalty}" />
-							</p>
-						</c:if>
-	
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.rate" />:&nbsp;</strong>
-							<c:out value="${installment.rate}" />&nbsp;&#37;
-						</p>
-					</c:when>
 					
 					<c:when test="${installment.interestType.fixedAmount}">
 						<p>
@@ -655,19 +632,6 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						value='<c:out value='${bean.maximumDaysToApplyPenalty}'/>' ng-required="object.applyInterests && object.interestType == 'DAILY'" pattern="\d+" />
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.applyInterests && object.interestType == 'MONTHLY'">
-				<div class="col-sm-2 control-label">
-					<spring:message code="label.TuitionInstallmentTariff.maximumMonthsToApplyPenalty" />
-				</div>
-
-				<div class="col-sm-4">
-					<input id="tuitionInstallmentTariff_maximumMonthsToApplyPenalty"
-						class="form-control" type="number"  pattern="[0-9]?" min="0" step="1"
-						ng-model="object.maximumMonthsToApplyPenalty"
-						name="maximummonthstoapplypenalty"
-						value='<c:out value='${bean.maximumMonthsToApplyPenalty}'/>' />
-				</div>
-			</div>
 			<div class="form-group row" ng-show="object.applyInterests && object.interestType == 'FIXED_AMOUNT'">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.interestFixedAmount" />
@@ -679,7 +643,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
 						value='<c:out value='${bean.interestFixedAmount}'/>' ng-required="object.applyInterests && object.interestType == 'FIXED_AMOUNT'"  pattern="\d+(\.\d{2})?" />
 				</div>
 			</div>
-			<div class="form-group row" ng-show="object.applyInterests && (object.interestType == 'DAILY' || object.interestType == 'MONTHLY')">
+			<div class="form-group row" ng-show="object.applyInterests && object.interestType == 'DAILY'">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.TuitionInstallmentTariff.rate" />
 				</div>
@@ -691,7 +655,7 @@ angular.module('angularAppTuitionInstallmentTariff', ['ngSanitize', 'ui.select',
                 		<input id="tuitionInstallmentTariff_rate" class="form-control"
                 			type="number" ng-model="object.rate" name="rate" pattern="\d+(\.\d{4})?" min="0"
                                     max="100" step="0.01"
-                			value='<c:out value='${bean.rate}'/>' ng-required="object.applyInterests && (object.interestType == 'DAILY' || object.interestType == 'MONTHLY')"   pattern="\d+(\.\d{4})?" min="0" max="100" />
+                			value='<c:out value='${bean.rate}'/>' ng-required="object.applyInterests && object.interestType == 'DAILY'"   pattern="\d+(\.\d{4})?" min="0" max="100" />
                     </div>
                 </div>
             </div>

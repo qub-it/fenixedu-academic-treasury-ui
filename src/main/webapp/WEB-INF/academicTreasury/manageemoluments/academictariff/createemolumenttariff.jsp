@@ -576,23 +576,6 @@ function registerJqueryReadyClosure(func) {
                         </div>
                     </div>
                 </c:if>
-                <c:if test="${academicTariffBean.interestType.monthly}">
-                    <div class="form-group row">
-                        <div class="col-sm-2 control-label">
-                            <spring:message
-                                code="label.AcademicTariff.maximumMonthsToApplyPenalty" />
-                        </div>
-
-                        <div class="col-sm-10">
-                            <input
-                                id="academicTariff_maximumMonthsToApplyPenalty"
-                                class="form-control" type="text"
-                                name="maximumMonthsToApplyPenalty"
-                                value='<c:out value='${not empty academicTariffBean.maximumMonthsToApplyPenalty ? academicTariffBean.maximumMonthsToApplyPenalty : "" }'/>'
-                                ng-model="object.maximumMonthsToApplyPenalty" />
-                        </div>
-                    </div>
-                </c:if>
                 <c:if
                     test="${academicTariffBean.interestType.fixedAmount}">
                     <div class="form-group row">

@@ -112,7 +112,6 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     private int numberOfDaysAfterDueDate;
     private boolean applyInFirstWorkday;
     private int maximumDaysToApplyPenalty;
-    private int maximumMonthsToApplyPenalty;
     private BigDecimal interestFixedAmount;
     private BigDecimal rate;
 
@@ -141,7 +140,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
 
     // Named in tuition importation
     private String sheetName;
-    
+
     public TuitionPaymentPlanBean() {
     }
 
@@ -162,7 +161,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 tuitionPaymentPlan.getFinantialEntity(), tuitionPaymentPlan.getExecutionYear());
 
         this.degreeType = tuitionPaymentPlan.getDegreeCurricularPlan().getDegreeType();
-        
+
         this.copiedExecutionYear = tuitionPaymentPlan.getExecutionYear();
 
         this.curricularYear = tuitionPaymentPlan.getCurricularYear();
@@ -181,7 +180,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         this.statuteType = tuitionPaymentPlan.getStatuteType();
         this.withLaboratorialClasses = tuitionPaymentPlan.isWithLaboratorialClasses();
         this.payorDebtAccount = tuitionPaymentPlan.getPayorDebtAccount();
-        
+
         fillWithInstallments(tuitionPaymentPlan);
     }
 
@@ -200,7 +199,6 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
                 this.numberOfDaysAfterDueDate = tuitionInstallmentTariff.getNumberOfDaysAfterCreationForDueDate();
                 this.applyInFirstWorkday = tuitionInstallmentTariff.getInterestRate().isApplyInFirstWorkday();
                 this.maximumDaysToApplyPenalty = tuitionInstallmentTariff.getInterestRate().getMaximumDaysToApplyPenalty();
-                this.maximumMonthsToApplyPenalty = tuitionInstallmentTariff.getInterestRate().getMaximumMonthsToApplyPenalty();
                 this.interestFixedAmount = tuitionInstallmentTariff.getInterestRate().getInterestFixedAmount();
                 this.rate = tuitionInstallmentTariff.getInterestRate().getRate();
             }
@@ -266,7 +264,8 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     public static List<TreasuryTupleDataSourceBean> dueDateCalculationTypeDataSource() {
         return ((List<DueDateCalculationType>) Arrays.asList(DueDateCalculationType.values())).stream()
                 .filter(t -> !t.isNoDueDate() && !t.isFixedDate())
-                .map(t -> new TreasuryTupleDataSourceBean(t.name(), t.getDescriptionI18N().getContent())).collect(Collectors.toList());
+                .map(t -> new TreasuryTupleDataSourceBean(t.name(), t.getDescriptionI18N().getContent()))
+                .collect(Collectors.toList());
     }
 
     public List<String> addInstallment() {
@@ -309,7 +308,8 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
             errorMessages.add("error.TuitionPaymentPlan.totalEctsOrUnits.required");
         }
 
-        if (this.applyMaximumAmount && (this.maximumAmount == null || !AcademicTreasuryConstants.isPositive(this.maximumAmount))) {
+        if (this.applyMaximumAmount
+                && (this.maximumAmount == null || !AcademicTreasuryConstants.isPositive(this.maximumAmount))) {
             errorMessages.add("error.TuitionPaymentPlan.maximumAmount.required");
         }
 
@@ -334,8 +334,7 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
             errorMessages.add("error.TuitionPaymentPlan.interestFixedAmount.required");
         }
 
-        if (this.applyInterests && this.interestType != null && (this.interestType.isDaily() || this.interestType.isMonthly())
-                && this.rate == null) {
+        if (this.applyInterests && this.interestType != null && this.interestType.isDaily() && this.rate == null) {
             errorMessages.add("error.TuitionPaymentPlan.interestRate.required");
         }
 
@@ -350,8 +349,8 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
             errorMessages.add(
                     "error.TuitionInstallmentTariff.defaultPaymentPlanCourseFunctionCostIndexed.not.supported.for.registrationTuition");
         }
-        
-        if(!isAcademicalActBlockingOn() && isBlockAcademicActsOnDebt()) {
+
+        if (!isAcademicalActBlockingOn() && isBlockAcademicActsOnDebt()) {
             errorMessages.add("error.TuitionPaymentPlanBean.cannot.suspend.and.also.block.academical.acts.on.debt");
         }
 
@@ -370,7 +369,6 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         installmentBean.setNumberOfDaysAfterDueDate(this.numberOfDaysAfterDueDate);
         installmentBean.setApplyInFirstWorkday(this.applyInFirstWorkday);
         installmentBean.setMaximumDaysToApplyPenalty(this.maximumDaysToApplyPenalty);
-        installmentBean.setMaximumMonthsToApplyPenalty(this.maximumMonthsToApplyPenalty);
         installmentBean.setInterestFixedAmount(this.interestFixedAmount);
         installmentBean.setRate(this.rate);
 
@@ -435,7 +433,6 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         this.numberOfDaysAfterDueDate = 1;
         this.applyInFirstWorkday = false;
         this.maximumDaysToApplyPenalty = 0;
-        this.maximumMonthsToApplyPenalty = 0;
         this.interestFixedAmount = null;
         this.rate = null;
 
@@ -729,14 +726,6 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         this.maximumDaysToApplyPenalty = maximumDaysToApplyPenalty;
     }
 
-    public int getMaximumMonthsToApplyPenalty() {
-        return maximumMonthsToApplyPenalty;
-    }
-
-    public void setMaximumMonthsToApplyPenalty(int maximumMonthsToApplyPenalty) {
-        this.maximumMonthsToApplyPenalty = maximumMonthsToApplyPenalty;
-    }
-
     public BigDecimal getInterestFixedAmount() {
         return interestFixedAmount;
     }
@@ -866,33 +855,35 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     public void setShowAllDcps(final boolean degreeCurricularPlansShownFilteredByExecutions) {
         this.showAllDcps = degreeCurricularPlansShownFilteredByExecutions;
     }
-    
+
     /*
      * -------------
      * Other Methods
      * -------------
      */
 
-    public static final Comparator<TreasuryTupleDataSourceBean> COMPARE_BY_ID_AND_TEXT = new Comparator<TreasuryTupleDataSourceBean>() {
+    public static final Comparator<TreasuryTupleDataSourceBean> COMPARE_BY_ID_AND_TEXT =
+            new Comparator<TreasuryTupleDataSourceBean>() {
 
-        @Override
-        public int compare(final TreasuryTupleDataSourceBean o1, final TreasuryTupleDataSourceBean o2) {
-            if (o1.getId() == "") {
-                return -1;
-            } else if (o2.getId() == "") {
-                return 1;
-            }
+                @Override
+                public int compare(final TreasuryTupleDataSourceBean o1, final TreasuryTupleDataSourceBean o2) {
+                    if (o1.getId() == "") {
+                        return -1;
+                    } else if (o2.getId() == "") {
+                        return 1;
+                    }
 
-            return TreasuryTupleDataSourceBean.COMPARE_BY_TEXT.compare(o1, o2);
-        }
-    };
+                    return TreasuryTupleDataSourceBean.COMPARE_BY_TEXT.compare(o1, o2);
+                }
+            };
 
     private List<TreasuryTupleDataSourceBean> degreeTypeDataSource() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
-        
-        final List<TreasuryTupleDataSourceBean> result = Lists
-                .newArrayList(DegreeType.all().map((dt) -> new TreasuryTupleDataSourceBean(dt.getExternalId(), academicTreasuryServices.localizedNameOfDegreeType(dt)))
-                        .collect(Collectors.toList()));
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
+
+        final List<TreasuryTupleDataSourceBean> result =
+                Lists.newArrayList(DegreeType.all().map((dt) -> new TreasuryTupleDataSourceBean(dt.getExternalId(),
+                        academicTreasuryServices.localizedNameOfDegreeType(dt))).collect(Collectors.toList()));
 
         result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
@@ -900,7 +891,8 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     private List<TreasuryTupleDataSourceBean> degreeCurricularPlanDataSource() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
 
         if (getExecutionYear() == null) {
             return Collections.<TreasuryTupleDataSourceBean> emptyList();
@@ -911,32 +903,35 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         }
 
         final List<TreasuryTupleDataSourceBean> result = Lists.newArrayList();
-        
-        if(isShowAllDcps())  {
+
+        if (isShowAllDcps()) {
             result.addAll(academicTreasuryServices.readAllDegreeCurricularPlansSet().stream()
                     .filter(dcp -> dcp.getDegreeType() == getDegreeType())
                     .map((dcp) -> new TreasuryTupleDataSourceBean(dcp.getExternalId(),
                             "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
                     .collect(Collectors.toList()));
         } else {
-            result.addAll(academicTreasuryServices.readDegreeCurricularPlansWithExecutionDegree(getExecutionYear(), getDegreeType()).stream()
+            result.addAll(academicTreasuryServices
+                    .readDegreeCurricularPlansWithExecutionDegree(getExecutionYear(), getDegreeType()).stream()
                     .map((dcp) -> new TreasuryTupleDataSourceBean(dcp.getExternalId(),
                             "[" + dcp.getDegree().getCode() + "] " + dcp.getPresentationName(getExecutionYear())))
                     .collect(Collectors.toList()));
         }
-        
+
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 
     private List<TreasuryTupleDataSourceBean> semesterDataSource() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
 
-        if(getExecutionYear() == null) {
+        if (getExecutionYear() == null) {
             return Lists.newArrayList();
         }
-        
+
         final List<TreasuryTupleDataSourceBean> result = getExecutionYear().getExecutionPeriodsSet().stream()
-                .map((cs) -> new TreasuryTupleDataSourceBean(cs.getExternalId(), cs.getQualifiedName())).collect(Collectors.toList());
+                .map((cs) -> new TreasuryTupleDataSourceBean(cs.getExternalId(), cs.getQualifiedName()))
+                .collect(Collectors.toList());
 
         result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
@@ -944,10 +939,12 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     private List<TreasuryTupleDataSourceBean> curricularYearDataSource() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
 
         final List<TreasuryTupleDataSourceBean> result = academicTreasuryServices.readAllCurricularYearsSet().stream()
-                .map((cy) -> new TreasuryTupleDataSourceBean(cy.getExternalId(), cy.getYear().toString())).collect(Collectors.toList());
+                .map((cy) -> new TreasuryTupleDataSourceBean(cy.getExternalId(), cy.getYear().toString()))
+                .collect(Collectors.toList());
 
         result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
@@ -955,7 +952,8 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     private List<TreasuryTupleDataSourceBean> ingressionDataSource() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
 
         final List<TreasuryTupleDataSourceBean> result = academicTreasuryServices.readAllIngressionTypesSet().stream()
                 .map((i) -> new TreasuryTupleDataSourceBean(i.getExternalId(), i.getDescription().getContent()))
@@ -967,7 +965,8 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     private List<TreasuryTupleDataSourceBean> registrationProtocolDataSource() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
 
         final List<TreasuryTupleDataSourceBean> result = academicTreasuryServices.readAllRegistrationProtocol().stream()
                 .map((rp) -> new TreasuryTupleDataSourceBean(rp.getExternalId(), rp.getDescription().getContent()))
@@ -979,8 +978,9 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     private List<TreasuryTupleDataSourceBean> registrationRegimeTypeDataSource() {
-        List<TreasuryTupleDataSourceBean> result = ((List<RegistrationRegimeType>) Arrays.asList(RegistrationRegimeType.values()))
-                .stream().map((t) -> new TreasuryTupleDataSourceBean(t.name(), t.getLocalizedName())).collect(Collectors.toList());
+        List<TreasuryTupleDataSourceBean> result =
+                ((List<RegistrationRegimeType>) Arrays.asList(RegistrationRegimeType.values())).stream()
+                        .map((t) -> new TreasuryTupleDataSourceBean(t.name(), t.getLocalizedName())).collect(Collectors.toList());
 
         result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
@@ -998,8 +998,8 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     public static List<TreasuryTupleDataSourceBean> ectsCalculationTypeDataSource() {
-        List<TreasuryTupleDataSourceBean> result = ((List<EctsCalculationType>) Arrays.asList(EctsCalculationType.values())).stream()
-                .map((ct) -> new TreasuryTupleDataSourceBean(ct.name(), ct.getDescriptionI18N().getContent()))
+        List<TreasuryTupleDataSourceBean> result = ((List<EctsCalculationType>) Arrays.asList(EctsCalculationType.values()))
+                .stream().map((ct) -> new TreasuryTupleDataSourceBean(ct.name(), ct.getDescriptionI18N().getContent()))
                 .collect(Collectors.toList());
 
         result.add(AcademicTreasuryConstants.SELECT_OPTION);
@@ -1024,10 +1024,12 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
         if (tuitionPaymentPlanGroup != null && tuitionPaymentPlanGroup.isForRegistration()) {
             result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet().stream()
                     .filter(p -> p.isActive() && p.getTuitionInstallmentOrder() == desiredTuitionInstallmentOrder)
-                    .map(p -> new TreasuryTupleDataSourceBean(p.getExternalId(), p.getName().getContent())).collect(Collectors.toList());
+                    .map(p -> new TreasuryTupleDataSourceBean(p.getExternalId(), p.getName().getContent()))
+                    .collect(Collectors.toList());
         } else {
             result = AcademicTreasurySettings.getInstance().getTuitionProductGroup().getProductsSet().stream()
-                    .filter(p -> p.isActive()).map(p -> new TreasuryTupleDataSourceBean(p.getExternalId(), p.getName().getContent()))
+                    .filter(p -> p.isActive())
+                    .map(p -> new TreasuryTupleDataSourceBean(p.getExternalId(), p.getName().getContent()))
                     .collect(Collectors.toList());
         }
 
@@ -1037,10 +1039,12 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     private List<TreasuryTupleDataSourceBean> statuteTypeDataSource() {
-        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+        final IAcademicTreasuryPlatformDependentServices academicTreasuryServices =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
 
-        final List<TreasuryTupleDataSourceBean> result = academicTreasuryServices.readAllStatuteTypesSet().stream()
-                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(), academicTreasuryServices.localizedNameOfStatuteType(l))).collect(Collectors.toList());
+        final List<TreasuryTupleDataSourceBean> result = academicTreasuryServices.readAllStatuteTypesSet().stream().map(
+                l -> new TreasuryTupleDataSourceBean(l.getExternalId(), academicTreasuryServices.localizedNameOfStatuteType(l)))
+                .collect(Collectors.toList());
 
         result.add(AcademicTreasuryConstants.SELECT_OPTION);
 
@@ -1048,18 +1052,20 @@ public class TuitionPaymentPlanBean implements Serializable, ITreasuryBean {
     }
 
     private List<TreasuryTupleDataSourceBean> payorDebtAccountDataSource() {
-        if(finantialEntity == null) {
+        if (finantialEntity == null) {
             return Lists.newArrayList();
         }
-        
+
         final SortedSet<DebtAccount> payorDebtAccountsSet =
                 DebtAccount.findActiveAdhocDebtAccountsSortedByCustomerName(finantialEntity.getFinantialInstitution());
 
-        final List<TreasuryTupleDataSourceBean> result = payorDebtAccountsSet.stream().map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(),
-                String.format("%s - %s", l.getCustomer().getUiFiscalNumber(), l.getCustomer().getName()))).collect(Collectors.toList());
-        
+        final List<TreasuryTupleDataSourceBean> result = payorDebtAccountsSet.stream()
+                .map(l -> new TreasuryTupleDataSourceBean(l.getExternalId(),
+                        String.format("%s - %s", l.getCustomer().getUiFiscalNumber(), l.getCustomer().getName())))
+                .collect(Collectors.toList());
+
         result.add(AcademicTreasuryConstants.SELECT_OPTION);
-        
+
         return result.stream().sorted(COMPARE_BY_ID_AND_TEXT).collect(Collectors.toList());
     }
 

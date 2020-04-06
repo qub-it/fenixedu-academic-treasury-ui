@@ -391,30 +391,6 @@ ${portal.toolkit()}
                                         &nbsp;&#37;
                                     </p>
                                 </c:when>
-                                <c:when test="${installment.interestRate.interestType.monthly}">
-                                    <p>
-                                        <strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:&nbsp;</strong>
-                                        <c:if test="${installment.interestRate.applyInFirstWorkday}">
-                                            <spring:message code="label.true" />
-                                        </c:if>
-                                        <c:if test="${not installment.interestRate.applyInFirstWorkday}">
-                                            <spring:message code="label.false" />
-                                        </c:if>
-                                    </p>
-
-                                    <c:if test="${installment.interestRate.maximumMonthsToApplyPenaltyApplied}">
-                                        <p>
-                                            <strong><spring:message code="label.TuitionInstallmentTariff.maximumMonthsToApplyPenalty" />:&nbsp;</strong>
-                                            <c:out value="${installment.interestRate.maximumMonthsToApplyPenalty}" />
-                                        </p>
-                                    </c:if>
-
-                                    <p>
-                                        <strong><spring:message code="label.TuitionInstallmentTariff.rate" />:&nbsp;</strong>
-                                        <c:out value="${installment.interestRate.rate}" />
-                                        &nbsp;&#37;
-                                    </p>
-                                </c:when>
 
                                 <c:when test="${installment.interestRate.interestType.fixedAmount}">
                                     <p>

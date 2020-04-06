@@ -314,20 +314,6 @@ ${portal.toolkit()}
                                         </p>
                                     </c:if>
                                     <c:if
-                                        test="${tariff.interestRate.interestType.monthly}">
-                                        <p>
-                                            <strong><spring:message
-                                                    code="label.AcademicTariff.rate" />:</strong>
-                                            <span>${tariff.interestRate.rate}
-                                                %</span>
-                                        </p>
-                                        <p>
-                                            <strong><spring:message
-                                                    code="label.AcademicTariff.maximumMonthsToApplyPenalty" />:</strong>
-                                            <span>${tariff.interestRate.maximumMonthsToApplyPenalty}</span>
-                                        </p>
-                                    </c:if>
-                                    <c:if
                                         test="${tariff.interestRate.interestType.fixedAmount}">
                                         <p>
                                             <strong><spring:message

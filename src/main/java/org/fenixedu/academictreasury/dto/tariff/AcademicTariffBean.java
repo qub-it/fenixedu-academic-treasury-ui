@@ -38,7 +38,6 @@ public class AcademicTariffBean implements ITreasuryBean, Serializable {
     private int numberOfDaysAfterDueDate;
     private boolean applyInFirstWorkday;
     private int maximumDaysToApplyPenalty;
-    private int maximumMonthsToApplyPenalty;
     private BigDecimal interestFixedAmount;
     private BigDecimal rate;
 
@@ -99,7 +98,6 @@ public class AcademicTariffBean implements ITreasuryBean, Serializable {
         setNumberOfDaysAfterDueDate(0);
         setApplyInFirstWorkday(false);
         setMaximumDaysToApplyPenalty(0);
-        setMaximumMonthsToApplyPenalty(0);
         setInterestFixedAmount(BigDecimal.ZERO);
         setRate(BigDecimal.ZERO);
 
@@ -142,8 +140,6 @@ public class AcademicTariffBean implements ITreasuryBean, Serializable {
                 academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getApplyInFirstWorkday() : false);
         setMaximumDaysToApplyPenalty(
                 academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getMaximumDaysToApplyPenalty() : 0);
-        setMaximumMonthsToApplyPenalty(
-                academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getMaximumMonthsToApplyPenalty() : 0);
         setInterestFixedAmount(
                 academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getInterestFixedAmount() : null);
         setRate(academicTariff.isApplyInterests() ? academicTariff.getInterestRate().getRate() : null);
@@ -185,8 +181,6 @@ public class AcademicTariffBean implements ITreasuryBean, Serializable {
                 .getApplyInFirstWorkday() : false);
         this.setMaximumDaysToApplyPenalty(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
                 .getMaximumDaysToApplyPenalty() : 0);
-        this.setMaximumMonthsToApplyPenalty(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff
-                .getInterestRate().getMaximumMonthsToApplyPenalty() : 0);
         this.setInterestFixedAmount(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate()
                 .getInterestFixedAmount() : null);
         this.setRate(tuitionInstallmentTariff.isApplyInterests() ? tuitionInstallmentTariff.getInterestRate().getRate() : null);
@@ -231,10 +225,6 @@ public class AcademicTariffBean implements ITreasuryBean, Serializable {
 
         if (getInterestType() == null || !getInterestType().isDaily()) {
             setMaximumDaysToApplyPenalty(0);
-        }
-
-        if (getInterestType() == null || !getInterestType().isMonthly()) {
-            setMaximumMonthsToApplyPenalty(0);
         }
 
         if (getInterestType() == null || !getInterestType().isFixedAmount()) {
@@ -283,10 +273,6 @@ public class AcademicTariffBean implements ITreasuryBean, Serializable {
 
     public boolean isMaximumDaysToApplyPenaltyApplied() {
         return getMaximumDaysToApplyPenalty() > 0;
-    }
-
-    public boolean isMaximumMonthsToApplyPenaltyApplied() {
-        return getMaximumMonthsToApplyPenalty() > 0;
     }
 
     public boolean isApplyUrgencyRate() {
@@ -499,14 +485,6 @@ public class AcademicTariffBean implements ITreasuryBean, Serializable {
 
     public void setMaximumDaysToApplyPenalty(int maximumDaysToApplyPenalty) {
         this.maximumDaysToApplyPenalty = maximumDaysToApplyPenalty;
-    }
-
-    public int getMaximumMonthsToApplyPenalty() {
-        return maximumMonthsToApplyPenalty;
-    }
-
-    public void setMaximumMonthsToApplyPenalty(int maximumMonthsToApplyPenalty) {
-        this.maximumMonthsToApplyPenalty = maximumMonthsToApplyPenalty;
     }
 
     public BigDecimal getInterestFixedAmount() {
