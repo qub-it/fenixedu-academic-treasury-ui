@@ -191,9 +191,6 @@ public class CloseDebtsStrategy implements IAcademicDebtGenerationRuleStrategy {
                 continue;
             }
 
-            final LocalDate maxDebitEntryDueDate = maxDebitEntryDueDate(debitNote);
-            debitNote.setDocumentDueDate(maxDebitEntryDueDate);
-
             debitNote.closeDocument();
         }
     }
