@@ -3,7 +3,7 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-fragment_3_0.xsd"
 	version="3.0">
-	<name>fenixedu-academic-treasury</name>
+	<name>fenixedu-academic-treasury-ui</name>
 	<filter>
 		<filter-name>dandelionFilter</filter-name>
 		<filter-class>com.github.dandelion.core.web.DandelionFilter</filter-class>
