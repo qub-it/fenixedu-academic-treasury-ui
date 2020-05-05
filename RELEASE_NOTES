@@ -1,3 +1,5 @@
+- Improvement: Before adding a product to AcademicDebtGenerationRule with forceCreation=true, ask user to confirm
+
 5.0.0 (24-04-2020)
 - Refactor: Remove domain classes, webservice and ERP integration related code leaving UI related source code and bennu specific domain classes
 

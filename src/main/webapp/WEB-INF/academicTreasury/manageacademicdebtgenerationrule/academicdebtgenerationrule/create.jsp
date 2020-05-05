@@ -455,7 +455,8 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 
 				<div class="col-sm-2">
 					<select id="academicDebtGenerationRule_forceCreation"
-						name="forcecreation" class=""
+						name="forcecreation"
+						class=""
 						ng-model="object.forceCreation" 
 						ng-options="bvalue.value as bvalue.name for bvalue in booleanvalues">
 					</select>
@@ -492,7 +493,14 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
             </div>            
 			<div class="form-group row">
 				<div class="col-sm-8">
-	                <input style="float:right;" type="submit" class="btn btn-default" role="button" value="<spring:message code="label.add" />" />
+	                <input 
+	                	style="float:right;" 
+	                	type="submit" 
+	                	class="btn btn-default" 
+	                	role="button" 
+	                	value="<spring:message code="label.add" />" 
+	                	onclick="return confirmAddProduct();"
+	                	/>
                 </div>
             </div>
           </div>
@@ -628,3 +636,15 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
 </c:if>
 
 </div>
+
+<script>
+	function confirmAddProduct() {
+		let forceCreation = document.getElementById('academicDebtGenerationRule_forceCreation').value;
+		if(forceCreation !== '0') {
+			return confirm(
+					'<spring:message code="label.AcademicDebtGenerationRuleEntry.forceDebtCreationEvenIfNotEnrolledInCourseUnits" />');
+		} else {
+			return true;
+		}
+	}
+</script>
