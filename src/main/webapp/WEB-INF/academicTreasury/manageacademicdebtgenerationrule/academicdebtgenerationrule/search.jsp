@@ -237,10 +237,10 @@ ${portal.toolkit()}
 							
 							<p>&nbsp;</p>							
 
-							<c:if test="${not empty rule.debtGenerationRuleRestriction}">
-								<p><span class="label label-info"><strong><c:out value="${rule.debtGenerationRuleRestriction.name}" /></strong></span></p>
-							</c:if>
-							
+							<c:forEach var="r" items="${rule.academicDebtGenerationRuleRestrictionsSet}">
+								<p><span class="label label-info"><strong><c:out value="${r.name.content}" /></strong></span></p>
+							</c:forEach>
+
 							<p>&nbsp;</p>							
 							<p>
 								<%

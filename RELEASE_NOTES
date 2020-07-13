@@ -1,3 +1,6 @@
+- Refactor: Deprecate debt generation rule restriction
+- Bug Fix: Fix setting rule property 'Limit apply force creation for 1st time students" in creation
+
 5.0.1 (05-05-2020)
 - Improvement: Before adding a product to AcademicDebtGenerationRule with forceCreation=true, ask user to confirm
 

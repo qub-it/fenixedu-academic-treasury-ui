@@ -32,17 +32,16 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.stream.Collectors;
 
-import org.codehaus.jackson.map.util.Comparators;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRuleType;
+import org.fenixedu.academictreasury.domain.debtGeneration.restrictions.DebtsWithNoPaymentCodeReferences;
+import org.fenixedu.academictreasury.domain.debtGeneration.restrictions.EnrolmentRenewalRestriction;
+import org.fenixedu.academictreasury.domain.debtGeneration.restrictions.FirstTimeFirstYearRestriction;
 import org.fenixedu.academictreasury.dto.debtGeneration.AcademicDebtGenerationRuleBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
-import pt.ist.fenixframework.FenixFramework;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.ui.administration.base.managelog.TreasuryOperationLogController;
 import org.springframework.ui.Model;
@@ -53,6 +52,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.google.common.collect.Sets;
+
+import pt.ist.fenixframework.Atomic;
+import pt.ist.fenixframework.FenixFramework;
 
 //@Component("org.fenixedu.academictreasury.ui.manageacademicdebtgenerationrule") <-- Use for duplicate controller name disambiguation
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageacademicdebtgenerationrule",
@@ -349,7 +351,7 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
             RedirectAttributes redirectAttributes) {
         try {
 
-            final AcademicDebtGenerationRule academicDebtGenerationRule = AcademicDebtGenerationRule.create(bean);
+            final AcademicDebtGenerationRule academicDebtGenerationRule = createRule(bean);
 
             //Success Validation
             //Add the bean to be used in the View
@@ -362,6 +364,26 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
 
             return _create(bean, type, executionYear, model);
         }
+    }
+
+    @Atomic
+    private AcademicDebtGenerationRule createRule(AcademicDebtGenerationRuleBean bean) {
+        AcademicDebtGenerationRule rule = AcademicDebtGenerationRule.create(bean);
+        
+        if(bean.getDebtGenerationRuleRestriction() != null) {
+            if (bean.getDebtGenerationRuleRestriction().getStrategyImplementation()
+                    .equals(EnrolmentRenewalRestriction.class.getName())) {
+                org.fenixedu.academictreasury.domain.debtGeneration.EnrolmentRenewalRestriction.create(rule, false);
+            } else if (bean.getDebtGenerationRuleRestriction().getStrategyImplementation()
+                    .equals(FirstTimeFirstYearRestriction.class.getName())) {
+                org.fenixedu.academictreasury.domain.debtGeneration.FirstTimeFirstYearRestriction.create(rule, false);
+            } else if (bean.getDebtGenerationRuleRestriction().getStrategyImplementation()
+                    .equals(DebtsWithNoPaymentCodeReferences.class.getName())) {
+                org.fenixedu.academictreasury.domain.debtGeneration.DebtsWithNoPaymentCodeReferencesRestriction.create(rule, false);
+            }
+        }
+        
+        return rule;
     }
 
     private static final String _TOGGLE_BACKGROUND_EXECUTION_URI = "/togglebackgroundexecution";
