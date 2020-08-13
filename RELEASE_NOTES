@@ -1,3 +1,5 @@
+- New Fixture: Digital Payment Platform
+
 6.1.1 (25-03-2021)
 - Improvement: Segregate information included in debt report request, based in type chosen by user
 

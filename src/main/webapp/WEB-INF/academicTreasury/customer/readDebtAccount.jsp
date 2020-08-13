@@ -1,10 +1,8 @@
 <%@page import="org.fenixedu.academictreasury.ui.customer.paymentreferencecode.CustomerAccountingPaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.mbwaypaymentrequest.CustomerAccountingMbwayPaymentRequestController"%>
-<%@page import="org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway"%>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
-<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.CustomerAccountingController"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -48,21 +46,21 @@ ${portal.angularToolkit()}
 </div>
 <%-- NAVIGATION --%>
 <div class="well well-sm" style="display: inline-block">
-	<% if(ForwardPaymentConfiguration.isActive(debtAccount.getFinantialInstitution())) { %>
+	<c:if test="${not empty forwardPaymentService}">
 		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;
-		<a class="" href="${pageContext.request.contextPath}${fowardPaymentUrl}">
+		<a class="" href="${pageContext.request.contextPath}${fowardPaymentUrl}/">
 			<spring:message code="label.event.accounting.manageCustomer.forwardPayment" />
 		</a>
-		
-	<% } %>
+	</c:if>
+
+	<c:if test="${not empty mbwayService}">
  		&nbsp;|&nbsp;
 	
-	<% if(SibsOnlinePaymentsGateway.isMbwayServiceActive(debtAccount.getFinantialInstitution())) { %>
 		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;
 		<a class="" href="${pageContext.request.contextPath}<%= CustomerAccountingMbwayPaymentRequestController.CREATE_URL %>/${debtAccount.externalId}">
 			<spring:message code="label.event.accounting.manageCustomer.mbwayPaymentRequest" />
 		</a>
-	<% } %>
+	</c:if>
 
 	<% if(PaymentCodePool.isReferenceCodesActiveForStudentPortal(debtAccount.getFinantialInstitution())) { %>
 		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;
@@ -184,7 +182,6 @@ ${portal.angularToolkit()}
                                 <spring:message code="label.DebitNote.dueDate" />
                             </datatables:columnHead>
 							<c:out value='${pendingEntry.dueDate.toString("YYYY-MM-dd")}' />
-                            <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%>
                         </datatables:column>
                         <datatables:column cssStyle="width:80px">
                             <datatables:columnHead>
@@ -264,8 +261,6 @@ ${portal.angularToolkit()}
                                 <c:if test="${not empty pendingEntry.finantialDocument }">
                                     <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.finantialDocument.openAmountWithInterests)}" />
                                 </c:if>
-                                <%--                                 <c:if test="${not (pendingEntry.getOpenAmountWithInterests().compareTo(pendingEntry.getOpenAmount()) == 0) }">(*)</c:if> --%>
-                                <%--                                 <c:out value="${pendingEntry.debtAccount.finantialInstitution.currency.getValueFor(pendingEntry.openAmount)}" /> --%>
                             </div>
                         </datatables:column>
                     </datatables:table>
@@ -365,15 +360,6 @@ ${portal.angularToolkit()}
             <c:choose>
                 <c:when test="${not empty allDocumentsDataSet}">
                     <datatables:table id="allDocuments" row="entry" data="${allDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
-                        <%--
-                        <datatables:column cssStyle="width:80px">
-                            <datatables:columnHead>
-                                <spring:message code="label.InvoiceEntry.date" />
-                            </datatables:columnHead>
-                            <c:out value='${entry.entryDateTime.toString("YYYY-MM-dd")}' />
-                            <%--                             <joda:format value="${entry.entryDateTime}" style="S-" /> --%-->
-                        </datatables:column>
-                        --%>
                         <datatables:column cssStyle="width:80px;align:right">
                             <datatables:columnHead>
                                 <spring:message code="label.DebitNote.dueDate" />
@@ -587,24 +573,14 @@ ${portal.angularToolkit()}
 	                            <spring:message code="label.InvoiceEntry.description" />
 	                    	</datatables:columnHead>
 	
-                        	<c:if test="${target.finantialDocumentPaymentCode}">
-								<ul>
-									<c:forEach items="${target.finantialDocument.finantialDocumentEntriesSet}" var="entry">
-										<li><c:out value="${entry.description}" /></li>
-									</c:forEach>
-								</ul>
-                        	</c:if>
-                        	
-                        	<c:if test="${target.multipleEntriesPaymentCode}">
-								<ul>
-									<c:forEach items="${target.orderedInvoiceEntries}" var="invoiceEntry">
-										<li><c:out value="${invoiceEntry.description}" /></li>
-									</c:forEach>
-									<c:forEach items="${target.installmentsSet}" var="installment">
+							<ul>
+								<c:forEach items="${target.orderedDebitEntries}" var="invoiceEntry">
+									<li><c:out value="${invoiceEntry.description}" /></li>
+								</c:forEach>
+								<c:forEach items="${target.installmentsSet}" var="installment">
 										<li><c:out value="${installment.description.content}" />
 									</c:forEach>									
 								</ul>
-                        	</c:if>
                         </datatables:column>
 
                         <datatables:column cssStyle="width:30%">
@@ -614,11 +590,11 @@ ${portal.angularToolkit()}
                         	
                              <div>
                                  <strong><spring:message code="label.customer.PaymentReferenceCode.entity" />: </strong>
-                                 <c:out value="[${target.paymentReferenceCode.paymentCodePool.entityReferenceCode}]" />
+                                 <c:out value="[${target.digitalPaymentPlatform.entityReferenceCode}]" />
                                  </br> <strong><spring:message code="label.customer.PaymentReferenceCode.reference" />: </strong>
-                                 <c:out value="${target.paymentReferenceCode.formattedCode}" />
+                                 <c:out value="${target.formattedCode}" />
                                  </br> <strong><spring:message code="label.customer.PaymentReferenceCode.amount" />: </strong>
-                                 <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(target.paymentReferenceCode.payableAmount)}" />
+                                 <c:out value="${debtAccount.finantialInstitution.currency.getValueFor(target.payableAmount)}" />
 
                              </div>
 
