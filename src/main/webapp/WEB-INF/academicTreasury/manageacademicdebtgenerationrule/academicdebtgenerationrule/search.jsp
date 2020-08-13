@@ -348,7 +348,7 @@ ${portal.toolkit()}
 										</strong>
 									</span>
 									<span>
-										<c:out value="${rule.paymentCodePool.name}" />
+										<c:out value="${rule.digitalPaymentPlatform.name}" />
 									</span>
 								</p>
 								

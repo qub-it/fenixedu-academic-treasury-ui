@@ -5,6 +5,7 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,15 +22,15 @@ import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
-import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
-import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
-import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
+import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.joda.time.DateTime;
@@ -66,8 +67,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
     @Autowired
     private HttpServletResponse response;
-    
-    
+
     public String getReadCustomerUrl() {
         return CustomerAccountingController.READ_CUSTOMER_URL;
     }
@@ -76,18 +76,18 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         return CustomerAccountingController.READ_ACCOUNT_URL;
     }
 
-    protected String getForwardPaymentUrl(final DebtAccount debtAccount) {
-        return FORWARD_PAYMENT_URL(debtAccount);
+    protected String getForwardPaymentUrl(DebtAccount debtAccount, DigitalPaymentPlatform digitalPaymentPlatform) {
+        return FORWARD_PAYMENT_URL(debtAccount, digitalPaymentPlatform);
     }
 
-    public static String FORWARD_PAYMENT_URL(final DebtAccount debtAccount) {
-        return String.format(CONTROLLER_URL + "/read/%s/forwardpayment", debtAccount.getExternalId());
+    public static String FORWARD_PAYMENT_URL(DebtAccount debtAccount, DigitalPaymentPlatform digitalPaymentPlatform) {
+        return String.format(CONTROLLER_URL + "/read/%s/forwardpayment/%s", debtAccount.getExternalId(), digitalPaymentPlatform.getExternalId());
     }
 
     protected String getPrintSettlementNote() {
         return PRINT_SETTLEMENT_NOTE_URL;
     }
-    
+
     protected String getDownloadCertifiedDocumentPrintUrl() {
         return DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL;
     }
@@ -103,7 +103,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("readAccountUrl", getReadAccountUrl());
 
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         Customer customer = User.findByUsername(loggedUsername).getPerson().getPersonCustomer();
         model.addAttribute("customer", customer);
 
@@ -126,16 +126,16 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     }
 
     @RequestMapping(value = READ_ACCOUNT_URI + "{oid}")
-    public String readAccount(@PathVariable(value = "oid") final DebtAccount debtAccount, final Model model, final RedirectAttributes redirectAttributes) {
+    public String readAccount(@PathVariable(value = "oid") final DebtAccount debtAccount, final Model model,
+            final RedirectAttributes redirectAttributes) {
         if (Authenticate.getUser().getPerson() != ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson()) {
             Authenticate.logout(request, response);
             return redirect("/", model, redirectAttributes);
         }
-        
+
         checkPermissions(debtAccount, model);
-        
+
         model.addAttribute("debtAccount", debtAccount);
-        model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount));
         model.addAttribute("printSettlementNoteUrl", getPrintSettlementNote());
         model.addAttribute("downloadCertifiedDocumentPrintUrl", getDownloadCertifiedDocumentPrintUrl());
 
@@ -169,13 +169,11 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                     continue;
                 }
 
-                paymentEntries
-                        .addAll(SettlementNote
-                                .findByDebtAccount(
-                                        inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()))
-                                .filter(x -> x.isClosed() || x.isPreparing())
-                                .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
-                                .collect(Collectors.toList()));
+                paymentEntries.addAll(SettlementNote
+                        .findByDebtAccount(inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()))
+                        .filter(x -> x.isClosed() || x.isPreparing())
+                        .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
+                        .collect(Collectors.toList()));
 
             }
         }
@@ -236,20 +234,13 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("paymentsDataSet", paymentEntries);
         model.addAttribute("exemptionDataSet", exemptionEntries);
 
-        final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
+        final Set<SibsPaymentRequest> usedPaymentCodeTargets = Sets.newHashSet();
         for (final InvoiceEntry invoiceEntry : debtAccount.getPendingInvoiceEntriesSet()) {
             if (!invoiceEntry.isDebitNoteEntry()) {
                 continue;
             }
 
-            usedPaymentCodeTargets.addAll(
-                    MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
-
-            if (invoiceEntry.getFinantialDocument() != null) {
-                usedPaymentCodeTargets
-                        .addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument())
-                                .collect(Collectors.<PaymentCodeTarget> toSet()));
-            }
+            SibsPaymentRequest.findRequestedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
         }
 
         for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
@@ -269,15 +260,20 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                     continue;
                 }
 
-                usedPaymentCodeTargets.addAll(
-                        MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
-
-                if (invoiceEntry.getFinantialDocument() != null) {
-                    usedPaymentCodeTargets
-                            .addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument())
-                                    .collect(Collectors.<PaymentCodeTarget> toSet()));
-                }
+                SibsPaymentRequest.findRequestedByDebitEntry((DebitEntry) invoiceEntry)
+                    .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
             }
+        }
+
+        if (findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).isPresent()) {
+            DigitalPaymentPlatform digitalPaymentPlatform =
+                    findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).get();
+            model.addAttribute("forwardPaymentService", digitalPaymentPlatform);
+            model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount, digitalPaymentPlatform));
+        }
+
+        if (findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).isPresent()) {
+            model.addAttribute("mbwayService", findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).get());
         }
 
         model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
@@ -285,10 +281,12 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         return jspPage("readDebtAccount");
     }
 
-    @RequestMapping(value = "/read/{oid}/forwardpayment")
-    public String processReadToForwardPayment(@PathVariable("oid") DebtAccount debtAccount, final Model model,
-            final RedirectAttributes redirectAttributes) {
-        return redirect(CustomerAccountingForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId(),
+    @RequestMapping(value = "/read/{oid}/forwardpayment/{digitalPaymentPlatformId}")
+    public String processReadToForwardPayment(
+            @PathVariable("oid") DebtAccount debtAccount, 
+            @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform,
+            final Model model, final RedirectAttributes redirectAttributes) {
+        return redirect(CustomerAccountingForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/" + digitalPaymentPlatform.getExternalId(),
                 model, redirectAttributes);
     }
 
@@ -312,13 +310,14 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public Object printsettlementnote(@PathVariable("settlementNoteId") final SettlementNote settlementNote, final Model model,
             final RedirectAttributes redirectAttributes) {
 
-        if (Authenticate.getUser().getPerson() != ((PersonCustomer) settlementNote.getDebtAccount().getCustomer()).getAssociatedPerson()) {
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) settlementNote.getDebtAccount().getCustomer())
+                .getAssociatedPerson()) {
             Authenticate.logout(request, response);
             return redirect("/", model, redirectAttributes);
         }
-        
+
         checkPermissions(settlementNote.getDebtAccount(), model);
-        
+
         try {
             byte[] report = org.fenixedu.treasury.services.reports.DocumentPrinter.printFinantialDocument(settlementNote,
                     DocumentPrinter.PDF);
@@ -347,9 +346,9 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             Authenticate.logout(request, response);
             return redirect("/", model, redirectAttributes);
         }
-        
+
         checkPermissions(debtAccount, model);
-        
+
         try {
             response.addHeader("Content-Disposition",
                     "attachment; filename=referencias_" + new DateTime().toString("yyyyMMddHHmmss") + ".pdf");
@@ -371,13 +370,14 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public String downloadcertifieddocumentprint(@PathVariable("oid") final FinantialDocument finantialDocument,
             final Model model, final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
 
-        if (Authenticate.getUser().getPerson() != ((PersonCustomer) finantialDocument.getDebtAccount().getCustomer()).getAssociatedPerson()) {
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) finantialDocument.getDebtAccount().getCustomer())
+                .getAssociatedPerson()) {
             Authenticate.logout(request, response);
             return redirect("/", model, redirectAttributes);
         }
-        
+
         checkPermissions(finantialDocument.getDebtAccount(), model);
-        
+
         try {
             final byte[] contents = ERPExporterManager.downloadCertifiedDocumentPrint(finantialDocument);
 
@@ -405,8 +405,22 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         }
     }
 
-    
     public String jspPage(final String page) {
         return JSP_PATH + page;
+    }
+
+    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForForwardPaymentService(
+            FinantialInstitution finantialInstitution) {
+        return DigitalPaymentPlatform.findForForwardPaymentService(finantialInstitution, true)
+                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
+                .findFirst();
+    }
+
+    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForMbwayService(
+            FinantialInstitution finantialInstitution) {
+        return DigitalPaymentPlatform.find(finantialInstitution).filter(DigitalPaymentPlatform::isActive)
+                .filter(d -> d.isMbwayServiceSupported())
+                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
+                .findFirst();
     }
 }
