@@ -6,6 +6,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -22,6 +23,7 @@ import org.fenixedu.bennu.core.security.Authenticate;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.commons.StringNormalizer;
 import org.fenixedu.treasury.domain.Customer;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.DebitEntry;
 import org.fenixedu.treasury.domain.document.FinantialDocument;
@@ -32,6 +34,8 @@ import org.fenixedu.treasury.domain.paymentPlan.Installment;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
+import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.joda.time.DateTime;
@@ -77,12 +81,12 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         return CustomerAccountingController.READ_ACCOUNT_URL;
     }
 
-    protected String getForwardPaymentUrl(final DebtAccount debtAccount) {
-        return FORWARD_PAYMENT_URL(debtAccount);
+    protected String getForwardPaymentUrl(DebtAccount debtAccount, DigitalPaymentPlatform digitalPaymentPlatform) {
+        return FORWARD_PAYMENT_URL(debtAccount, digitalPaymentPlatform);
     }
 
-    public static String FORWARD_PAYMENT_URL(final DebtAccount debtAccount) {
-        return String.format(CONTROLLER_URL + "/read/%s/forwardpayment", debtAccount.getExternalId());
+    public static String FORWARD_PAYMENT_URL(DebtAccount debtAccount, DigitalPaymentPlatform digitalPaymentPlatform) {
+        return String.format(CONTROLLER_URL + "/read/%s/forwardpayment/%s", debtAccount.getExternalId(), digitalPaymentPlatform.getExternalId());
     }
 
     protected String getPrintSettlementNote() {
@@ -137,7 +141,6 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         checkPermissions(debtAccount, model);
 
         model.addAttribute("debtAccount", debtAccount);
-        model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount));
         model.addAttribute("printSettlementNoteUrl", getPrintSettlementNote());
         model.addAttribute("downloadCertifiedDocumentPrintUrl", getDownloadCertifiedDocumentPrintUrl());
 
@@ -249,20 +252,13 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("exemptionDataSet", exemptionEntries);
         model.addAttribute("openPaymentPlanInstallmentsDataSet", openPaymentPlanInstallmentsDataSet);
 
-        final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
+        final Set<SibsPaymentRequest> usedPaymentCodeTargets = Sets.newHashSet();
         for (final InvoiceEntry invoiceEntry : debtAccount.getPendingInvoiceEntriesSet()) {
             if (!invoiceEntry.isDebitNoteEntry()) {
                 continue;
             }
 
-            usedPaymentCodeTargets.addAll(
-                    MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
-
-            if (invoiceEntry.getFinantialDocument() != null) {
-                usedPaymentCodeTargets
-                        .addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument())
-                                .collect(Collectors.<PaymentCodeTarget> toSet()));
-            }
+            SibsPaymentRequest.findRequestedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
         }
 
         for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
@@ -282,15 +278,20 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                     continue;
                 }
 
-                usedPaymentCodeTargets.addAll(
-                        MultipleEntriesPaymentCode.findUsedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toSet()));
-
-                if (invoiceEntry.getFinantialDocument() != null) {
-                    usedPaymentCodeTargets
-                            .addAll(FinantialDocumentPaymentCode.findUsedByFinantialDocument(invoiceEntry.getFinantialDocument())
-                                    .collect(Collectors.<PaymentCodeTarget> toSet()));
-                }
+                SibsPaymentRequest.findRequestedByDebitEntry((DebitEntry) invoiceEntry)
+                    .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
             }
+        }
+
+        if (findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).isPresent()) {
+            DigitalPaymentPlatform digitalPaymentPlatform =
+                    findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).get();
+            model.addAttribute("forwardPaymentService", digitalPaymentPlatform);
+            model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount, digitalPaymentPlatform));
+        }
+
+        if (findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).isPresent()) {
+            model.addAttribute("mbwayService", findUniqueActiveForMbwayService(debtAccount.getFinantialInstitution()).get());
         }
 
         model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
@@ -298,10 +299,12 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         return jspPage("readDebtAccount");
     }
 
-    @RequestMapping(value = "/read/{oid}/forwardpayment")
-    public String processReadToForwardPayment(@PathVariable("oid") DebtAccount debtAccount, final Model model,
-            final RedirectAttributes redirectAttributes) {
-        return redirect(CustomerAccountingForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId(),
+    @RequestMapping(value = "/read/{oid}/forwardpayment/{digitalPaymentPlatformId}")
+    public String processReadToForwardPayment(
+            @PathVariable("oid") DebtAccount debtAccount, 
+            @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform,
+            final Model model, final RedirectAttributes redirectAttributes) {
+        return redirect(CustomerAccountingForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/" + digitalPaymentPlatform.getExternalId(),
                 model, redirectAttributes);
     }
 
@@ -422,5 +425,20 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
     public String jspPage(final String page) {
         return JSP_PATH + page;
+    }
+
+    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForForwardPaymentService(
+            FinantialInstitution finantialInstitution) {
+        return DigitalPaymentPlatform.findForForwardPaymentService(finantialInstitution, true)
+                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
+                .findFirst();
+    }
+
+    public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForMbwayService(
+            FinantialInstitution finantialInstitution) {
+        return DigitalPaymentPlatform.find(finantialInstitution).filter(DigitalPaymentPlatform::isActive)
+                .filter(d -> d.isMbwayServiceSupported())
+                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
+                .findFirst();
     }
 }
