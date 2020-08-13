@@ -200,7 +200,7 @@ ${portal.toolkit()}
                                 <spring:message code="label.no" />
                             </c:if>
                         </td>
-                        <td>${searchResult.paymentCodePool.name }</td>
+                        <td>${searchResult.digitalPaymentPlatform.name }</td>
                         <td><a class="btn btn-xs btn-warning"
                             href="#"
                             onClick="javascript:processDelete('${searchResult.externalId}')">

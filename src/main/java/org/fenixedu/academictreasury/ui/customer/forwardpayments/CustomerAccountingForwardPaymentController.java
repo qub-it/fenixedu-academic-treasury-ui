@@ -12,7 +12,9 @@ import org.fenixedu.academictreasury.ui.customer.CustomerAccountingController;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.forwardpayments.ForwardPayment;
+import org.fenixedu.treasury.domain.document.SettlementNote;
+import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.springframework.ui.Model;
@@ -43,7 +45,7 @@ public class CustomerAccountingForwardPaymentController
     @Override
     protected void checkPermissions(DebtAccount debtAccount, Model model) {
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         final Person person = User.findByUsername(loggedUsername).getPerson();
         final String fiscalCountryCode = PersonCustomer.addressCountryCode(person);
         final String fiscalNumber = PersonCustomer.fiscalNumber(person);
@@ -58,24 +60,29 @@ public class CustomerAccountingForwardPaymentController
     }
 
     @Override
-    protected String redirectToDebtAccountUrl(final DebtAccount debtAccount, final Model model, final RedirectAttributes redirectAttributes) {
+    protected String redirectToDebtAccountUrl(final DebtAccount debtAccount, final Model model,
+            final RedirectAttributes redirectAttributes) {
         return redirect(readDebtAccountUrl() + activeDebtAccount(debtAccount).getExternalId(), model, redirectAttributes);
     }
 
     private DebtAccount activeDebtAccount(final DebtAccount debtAccount) {
-        return DebtAccount.findUnique(debtAccount.getFinantialInstitution(), ((PersonCustomer) debtAccount.getCustomer()).getActiveCustomer()).get();
+        return DebtAccount.findUnique(debtAccount.getFinantialInstitution(),
+                ((PersonCustomer) debtAccount.getCustomer()).getActiveCustomer()).get();
     }
 
-    @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}")
+    @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}/{digitalPaymentPlatformId}")
     @Override
     public String chooseInvoiceEntries(@PathVariable(value = "debtAccountId") DebtAccount debtAccount,
-            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model, final RedirectAttributes redirectAttributes) {
-        return super.chooseInvoiceEntries(debtAccount, bean, model, redirectAttributes);
+            @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform,
+            @RequestParam(value = "bean", required = false) SettlementNoteBean bean, Model model,
+            final RedirectAttributes redirectAttributes) {
+        return super.chooseInvoiceEntries(debtAccount, digitalPaymentPlatform, bean, model, redirectAttributes);
     }
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI, method = RequestMethod.POST)
     @Override
-    public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true)   SettlementNoteBean bean, Model model, final RedirectAttributes redirectAttributes) {
+    public String chooseInvoiceEntries(@RequestParam(value = "bean", required = true) SettlementNoteBean bean, Model model,
+            final RedirectAttributes redirectAttributes) {
         return super.chooseInvoiceEntries(bean, model, redirectAttributes);
     }
 
@@ -104,8 +111,8 @@ public class CustomerAccountingForwardPaymentController
 
     @RequestMapping(value = PROCESS_FORWARD_PAYMENT_URI + "/{forwardPayment}", method = RequestMethod.GET)
     @Override
-    public String processforwardpayment(@PathVariable("forwardPayment") final ForwardPayment forwardPayment, final Model model,
-            final HttpServletResponse response, final HttpSession session) {
+    public String processforwardpayment(@PathVariable("forwardPayment") ForwardPaymentRequest forwardPayment, Model model,
+            HttpServletResponse response, HttpSession session) {
         return super.processforwardpayment(forwardPayment, model, response, session);
     }
 
@@ -115,12 +122,12 @@ public class CustomerAccountingForwardPaymentController
     }
 
     @Override
-    protected String forwardPaymentInsuccessUrl(final ForwardPayment forwardPayment) {
+    protected String forwardPaymentInsuccessUrl(ForwardPaymentRequest forwardPayment) {
         return FORWARD_PAYMENT_INSUCCESS_URL + "/" + forwardPayment.getExternalId();
     }
 
     @Override
-    protected String forwardPaymentSuccessUrl(final ForwardPayment forwardPayment) {
+    protected String forwardPaymentSuccessUrl(ForwardPaymentRequest forwardPayment) {
         return FORWARD_PAYMENT_SUCCESS_URL + "/" + forwardPayment.getExternalId();
     }
 
@@ -128,8 +135,7 @@ public class CustomerAccountingForwardPaymentController
     public static final String FORWARD_PAYMENT_SUCCESS_URL = CONTROLLER_URL + FORWARD_PAYMENT_SUCCESS_URI;
 
     @RequestMapping(value = FORWARD_PAYMENT_SUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
-    public String forwardpaymentsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
-            final Model model) {
+    public String forwardpaymentsuccess(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment, Model model) {
         return super.forwardpaymentsuccess(forwardPayment, model);
     }
 
@@ -137,8 +143,7 @@ public class CustomerAccountingForwardPaymentController
     public static final String FORWARD_PAYMENT_INSUCCESS_URL = CONTROLLER_URL + FORWARD_PAYMENT_INSUCCESS_URI;
 
     @RequestMapping(value = FORWARD_PAYMENT_INSUCCESS_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
-    public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment,
-            final Model model) {
+    public String forwardpaymentinsuccess(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment, Model model) {
         return super.forwardpaymentinsuccess(forwardPayment, model);
     }
 
@@ -150,12 +155,12 @@ public class CustomerAccountingForwardPaymentController
         return PRINT_SETTLEMENT_NOTE_URL;
     }
 
-    @RequestMapping(value = PRINT_SETTLEMENT_NOTE_URI + "/{forwardPaymentId}", produces = "application/pdf")
+    @RequestMapping(value = PRINT_SETTLEMENT_NOTE_URI + "/{settlementNoteId}", produces = "application/pdf")
     @ResponseBody
     @Override
-    public Object printsettlementnote(@PathVariable("forwardPaymentId") final ForwardPayment forwardPayment, final Model model,
-            final RedirectAttributes redirectAttributes) {
-        return super.printsettlementnote(forwardPayment, model, redirectAttributes);
+    public Object printsettlementnote(@PathVariable("settlementNoteId") SettlementNote settlementNote, Model model,
+            RedirectAttributes redirectAttributes) {
+        return super.printsettlementnote(settlementNote, model, redirectAttributes);
     }
 
 }

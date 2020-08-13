@@ -28,6 +28,7 @@ package org.fenixedu.academictreasury.ui.manageservicerequestmapentry;
 
 import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
@@ -35,12 +36,10 @@ import org.fenixedu.academic.domain.serviceRequests.ServiceRequestType;
 import org.fenixedu.academictreasury.domain.emoluments.ServiceRequestMapEntry;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
-import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -70,7 +69,8 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
     public String processSearchToDeleteAction(
             @PathVariable("serviceRequestMapEntryId") final ServiceRequestMapEntry serviceRequestMapEntry, Model model,
             RedirectAttributes redirectAttributes) {
-        setServiceRequestMapEntry(serviceRequestMapEntry, model);
+        model.addAttribute("serviceRequestMapEntry", serviceRequestMapEntry);
+
         try {
             serviceRequestMapEntry.delete();
 
@@ -90,23 +90,26 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
 
         model.addAttribute("ServiceRequestMapEntry_product_options", Product.findAllActive().collect(Collectors.toList()));
         model.addAttribute("ServiceRequestMapEntry_situationType_options", AcademicServiceRequestSituationType.values());
-        model.addAttribute("ServiceRequestMapEntry_paymentPool_options",
-                PaymentCodePool.findAll().filter(pool -> Boolean.TRUE.equals(pool.getActive())).collect(Collectors.toList()));
+
+        List<? extends DigitalPaymentPlatform> digitalPaymentPlatforms = DigitalPaymentPlatform.findAll()
+            .filter(p -> p.isSibsPaymentCodeServiceSupported())
+            .filter(DigitalPaymentPlatform::isActive).collect(Collectors.toList());
+        
+        model.addAttribute("ServiceRequestMapEntry_paymentPool_options", digitalPaymentPlatforms);
 
         return "academicTreasury/manageservicerequestmapentry/servicerequestmapentry/create";
     }
 
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public String create(
-            @RequestParam(value = "servicerequesttype", required = false) final ServiceRequestType serviceRequestType,
-            @RequestParam(value = "product", required = false) final Product product,
+    public String create(@RequestParam(value = "servicerequesttype", required = false) ServiceRequestType serviceRequestType,
+            @RequestParam(value = "product", required = false) Product product,
             @RequestParam(value = "createEventOnSituation",
-                    required = true) final AcademicServiceRequestSituationType createEventOnSituationType,
-            @RequestParam(value = "generatePaymentCode", required = true) final boolean generatePaymentCode,
-            @RequestParam(value = "paymentCodePool", required = true) final PaymentCodePool paymentCodePool, 
-            @RequestParam(value = "debitEntryDescriptionExtensionFormat", required = false) final String debitEntryDescriptionExtensionFormat,
-            Model model,
-            RedirectAttributes redirectAttributes) {
+                    required = true) AcademicServiceRequestSituationType createEventOnSituationType,
+            @RequestParam(value = "generatePaymentCode", required = true) boolean generatePaymentCode,
+            @RequestParam(value = "paymentCodePool", required = true) DigitalPaymentPlatform paymentCodePool,
+            @RequestParam(value = "debitEntryDescriptionExtensionFormat",
+                    required = false) String debitEntryDescriptionExtensionFormat,
+            Model model, RedirectAttributes redirectAttributes) {
 
         try {
 
@@ -122,9 +125,4 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
             return create(model);
         }
     }
-
-    private void setServiceRequestMapEntry(ServiceRequestMapEntry serviceRequestMapEntry, Model model) {
-        model.addAttribute("serviceRequestMapEntry", serviceRequestMapEntry);
-    }
-
 }

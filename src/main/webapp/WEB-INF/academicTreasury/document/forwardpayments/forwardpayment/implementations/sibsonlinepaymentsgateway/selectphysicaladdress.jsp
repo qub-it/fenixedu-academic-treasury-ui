@@ -1,7 +1,6 @@
 <%@page import="org.fenixedu.academic.domain.contacts.PhysicalAddress"%>
 <%@page import="org.fenixedu.academictreasury.domain.customer.PersonCustomer"%>
 <%@page import="org.fenixedu.academictreasury.ui.document.forwardpayments.implementations.onlinepaymentsgateway.sibs.SibsOnlinePaymentsGatewayForwardPaymentController"%>
-<%@page import="org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentConfiguration"%>
 <%@page import="org.fenixedu.treasury.ui.document.forwardpayments.ForwardPaymentController"%>
 <%@page import="org.fenixedu.treasury.ui.accounting.managecustomer.DebtAccountController"%>
 <%@page import="org.fenixedu.treasury.ui.document.managepayments.SettlementNoteController"%>
@@ -19,7 +18,6 @@
 <spring:url var="datatablesI18NUrl" value="/javaScript/dataTables/media/i18n/${portal.locale.language}.json" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/CSS/dataTables/dataTables.bootstrap.min.css" />
 
-<!-- Choose ONLY ONE:  bennuToolkit OR bennuAngularToolkit -->
 ${portal.angularToolkit()}
 
 
@@ -218,10 +216,8 @@ ${portal.angularToolkit()}
                 			</c:choose>
                 		</c:forEach>
                 	</select>
-
                 </div>
             </div>
-
         </div>
         <div class="panel-footer">
 			<button type="submit" class="btn btn-primary">
@@ -236,18 +232,7 @@ ${portal.angularToolkit()}
 	<jsp:include page="${logosPage}" />
 </c:if>
 
-<c:if test="${forwardPaymentConfiguration.isReimbursementPolicyTextDefined()}">
-	<jsp:include page="${forwardPaymentConfiguration.reimbursementPolicyJspFile}" />
-</c:if>
-
-<c:if test="${forwardPaymentConfiguration.isPrivacyPolicyTextDefined()}">
-	<jsp:include page="${forwardPaymentConfiguration.privacyPolicyJspFile}" />
-</c:if>
-
 <script>
-	$(document).ready(function() {
-		// Put here the initializing code for page
-	});
+	$(document).ready(function() {});
 </script>
 	
-</form>
