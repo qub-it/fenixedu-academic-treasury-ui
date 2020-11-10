@@ -79,7 +79,7 @@ ${portal.angularToolkit()}
 
 angular.module('angularAppCourseFunctionCost', ['ngSanitize', 'ui.select']).controller('CourseFunctionCostController', ['$scope', function($scope) {
 
- 	$scope.object=angular.fromJson('${courseFunctionCostBeanJson}');
+ 	$scope.object=${courseFunctionCostBeanJson};
 	$scope.postBack = createAngularPostbackFunction($scope); 
 
 	//Begin here of Custom Screen business JS - code

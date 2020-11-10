@@ -104,7 +104,7 @@ ${portal.angularToolkit()}
 
 angular.module('angularAppTuitionDebtCreationBean', ['ngSanitize', 'ui.select','bennuToolkit']).controller('TuitionDebtCreationBeanController', ['$scope', function($scope) {
 
- 	$scope.object=angular.fromJson('${tuitionDebtCreationBeanJson}');
+ 	$scope.object=${tuitionDebtCreationBeanJson};
 	$scope.postBack = createAngularPostbackFunction($scope); 
 
 }]);

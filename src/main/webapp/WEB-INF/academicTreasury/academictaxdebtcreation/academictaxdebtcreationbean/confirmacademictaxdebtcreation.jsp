@@ -104,7 +104,7 @@ ${portal.angularToolkit()}
 
 angular.module('angularAppAcademicTaxDebtCreationBean', ['ngSanitize', 'ui.select','bennuToolkit']).controller('AcademicTaxDebtCreationBeanController', ['$scope', function($scope) {
 
- 	$scope.object=angular.fromJson('${academicTaxDebtCreationBeanJson}');
+ 	$scope.object=${academicTaxDebtCreationBeanJson};
 	$scope.postBack = createAngularPostbackFunction($scope); 
 
 }]);

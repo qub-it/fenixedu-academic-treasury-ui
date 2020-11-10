@@ -1,3 +1,5 @@
+- Bug Fix: JSON parse in jsp angular controllers
+
 5.0.2 (14-07-2020)
 - Refactor: Deprecate debt generation rule restriction
 - Bug Fix: Fix setting rule property 'Limit apply force creation for 1st time students" in creation

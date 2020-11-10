@@ -123,7 +123,7 @@ ${portal.angularToolkit()}
 							         value : true
 							     } ];
 								
-								$scope.object = angular.fromJson('${debtReportRequestBeanJson}');
+								$scope.object = ${debtReportRequestBeanJson};
 								$scope.postBack = createAngularPostbackFunction($scope);
 
 								//Begin here of Custom Screen business JS - code

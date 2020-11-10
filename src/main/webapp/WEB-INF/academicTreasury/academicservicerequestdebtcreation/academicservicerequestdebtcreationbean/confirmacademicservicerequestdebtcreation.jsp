@@ -105,7 +105,7 @@ ${portal.angularToolkit()}
 
 angular.module('angularAppAcademicServiceRequestDebtCreationBean', ['ngSanitize', 'ui.select','bennuToolkit']).controller('AcademicServiceRequestDebtCreationBeanController', ['$scope', function($scope) {
 
- 	$scope.object=angular.fromJson('${academicServiceRequestDebtCreationBeanJson}');
+ 	$scope.object=${academicServiceRequestDebtCreationBeanJson};
 	$scope.postBack = createAngularPostbackFunction($scope); 
 
 }]);
