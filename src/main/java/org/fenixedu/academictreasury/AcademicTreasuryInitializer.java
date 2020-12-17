@@ -81,6 +81,10 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         Signal.register(ITreasuryBridgeAPI.STANDALONE_ENROLMENT, new StandaloneEnrolmentHandler());
     }
 
+//    private static void registerStandaloneUnEnrolmentHandler() {
+//        Signal.register(ITreasuryBridgeAPI.STANDALONE_UNENROLMENT, new StandaloneUnEnrolmentHandler());
+//    }
+
     private static void registerExtracurricularEnrolmentHandler() {
         Signal.register(ITreasuryBridgeAPI.EXTRACURRICULAR_ENROLMENT, new ExtracurricularEnrolmentHandler());
     }
