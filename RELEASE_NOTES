@@ -1,3 +1,5 @@
+- Improvement: Show 3D Secure address details selection, with text length
+
 5.0.3 (10-11-2020)
 - Bug Fix: JSON parse in jsp angular controllers
 

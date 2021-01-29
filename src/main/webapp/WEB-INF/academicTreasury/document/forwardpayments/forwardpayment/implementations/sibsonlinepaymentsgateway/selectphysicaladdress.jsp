@@ -163,6 +163,8 @@ ${portal.angularToolkit()}
 			<div class="alert alert-info" role="alert">
 				<p><span class="glyphicon glyphicon glyphicon-info-sign" aria-hidden="true"></span></p>
 				<p><spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.selectPhysicalAddress.text" /></p>
+				<p><spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.selectPhysicalAddress.text3" /></p>
+				<p><spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.selectPhysicalAddress.text6" /></p>
 				<p><spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.selectPhysicalAddress.text2" /></p>
 			</div>
 			
@@ -173,7 +175,7 @@ ${portal.angularToolkit()}
 
                 <div class="col-sm-10">
                 	<select name="physicalAddressId" class="form-control">
-                		<option value="" onchange="changeAddressPresentation(e)">
+                		<option value="" data-address-country-code="" data-address="" data-city="" data-zip-code="">
                 			<spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.select.address" />
                 		</option>
                 		<c:forEach items="${physicalAddresses}" var="address">
@@ -202,7 +204,7 @@ ${portal.angularToolkit()}
 			                			data-address-country-code="${billingCountryCode}"
 			                			data-address="${billingAddress}"
 			                			data-city="${billingCity}"
-			                			data-zip-code="${billingZipCode}" selected="selected" onselect="changeAddressPresentation(e)">
+			                			data-zip-code="${billingZipCode}" selected="selected" >
 			                			<c:out value="${address.uiFiscalPresentationValue}" />
 			                		</option>
                 				</c:when>
@@ -211,7 +213,7 @@ ${portal.angularToolkit()}
 			                			data-address-country-code="${billingCountryCode}"
 			                			data-address="${billingAddress}"
 			                			data-city="${billingCity}"
-			                			data-zip-code="${billingZipCode}" onselect="changeAddressPresentation(e)">
+			                			data-zip-code="${billingZipCode}" >
 			                			<c:out value="${address.uiFiscalPresentationValue}" />
 			                		</option>
                 				</c:otherwise>
@@ -221,6 +223,46 @@ ${portal.angularToolkit()}
 
                 </div>
             </div>
+            
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.address" />
+                </div>
+
+                <div class="col-sm-3" id="address-details-address">
+				</div>
+				
+                <div class="col-sm-3">
+                	<em><span id="address-details-address-size"></span> characters (max. 50 characters)</em>
+				</div>
+			</div>            
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.city" />
+                </div>
+
+                <div class="col-sm-3" id="address-details-city">
+                	
+				</div>
+				
+                <div class="col-sm-3" >
+                	<em><span id="address-details-city-size"></span> characters (max. 50 characters)</em>
+				</div>
+			</div>            
+
+            <div class="form-group row">
+                <div class="col-sm-2 control-label">
+                    <spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.zipCode" />
+                </div>
+
+                <div class="col-sm-3" id="address-details-zip-code">
+				</div>
+				
+                <div class="col-sm-3" >
+                	<em><span id="address-details-zip-code-size"></span> characters (max. 16 characters)</em>
+				</div>
+			</div>            
 
         </div>
         <div class="panel-footer">
@@ -246,7 +288,29 @@ ${portal.angularToolkit()}
 
 <script>
 	$(document).ready(function() {
-		// Put here the initializing code for page
+
+		$('select[name=physicalAddressId]').change(function() {
+			$('select[name=physicalAddressId] option:selected').each(function() {
+				$('#address-details-address').text($(this).data('address'));
+				$('#address-details-city').text($(this).data('city'));
+				$('#address-details-zip-code').text($(this).data('zip-code'));
+				
+				$('#address-details-address-size').text($(this).data('address').length);
+				$('#address-details-city-size').text($(this).data('city').length);
+				$('#address-details-zip-code-size').text($(this).data('zip-code').length);
+				
+			});
+		});
+		
+		$('select[name=physicalAddressId] option:selected').each(function() {
+			$('#address-details-address').text($(this).data('address'));
+			$('#address-details-city').text($(this).data('city'));
+			$('#address-details-zip-code').text($(this).data('zip-code'));
+
+			$('#address-details-address-size').text($(this).data('address').length);
+			$('#address-details-city-size').text($(this).data('city').length);
+			$('#address-details-zip-code-size').text($(this).data('zip-code').length);
+		});
 	});
 </script>
 	

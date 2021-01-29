@@ -136,6 +136,12 @@ ${portal.angularToolkit()}
 	</p>
 </div>
 
+<div class="alert alert-info" role="alert">
+	<p><span class="glyphicon glyphicon glyphicon-info-sign" aria-hidden="true"></span></p>
+	<p><spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.selectPhysicalAddress.text4" /></p>
+	<p><spring:message code="label.SibsOnlinePaymentsGatewayForwardPaymentController.selectPhysicalAddress.text5" /></p>
+</div>         
+
 <script>
     var wpwlOptions = {
         style: "card",
