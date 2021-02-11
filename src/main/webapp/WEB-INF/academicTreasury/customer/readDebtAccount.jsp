@@ -166,8 +166,9 @@ ${portal.angularToolkit()}
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 
         <li class="active"><a href="#pending" data-toggle="tab"><spring:message code="label.DebtAccount.pendingDocumentEntries" /></a></li>
+        <li><a href="#pendingPaymentPlans" data-toggle="tab"><spring:message code="label.DebtAccount.payment.plans.pending" /></a>
         <li><a href="#details" data-toggle="tab"><spring:message code="label.DebtAccount.allDocumentEntries" /></a></li>
-        <li><a href="#payments" data-toggle="tab"><spring:message code="label.DebtAccount.payments" /></a></li>
+        <li><a href="#payments" data-toggle="tab"><spring:message code="label.DebtAccount.payment.plans.pending" /></a></li>
         <li><a href="#paymentReferenceCodes" data-toggle="tab"><spring:message code="label.DebtAccount.paymentReferenceCodes" /></a></li>
     </ul>
     <div id="my-tab-content" class="tab-content">
@@ -178,20 +179,6 @@ ${portal.angularToolkit()}
                 <c:when test="${not empty pendingDocumentsDataSet}">
                     <datatables:table id="pendingDocuments" row="pendingEntry" data="${pendingDocumentsDataSet}" cssClass="table table-bordered table-hover" cdn="false"
                         cellspacing="2">
-                        <%-- 
-                        <datatables:column cssStyle="width:80px;align:right">
-                            <datatables:columnHead>
-                                <spring:message code="label.InvoiceEntry.date" />
-                            </datatables:columnHead>
-                            <c:if test="${empty pendingEntry.finantialDocument }">
-                                <c:out value='${pendingEntry.entryDateTime.toString("YYYY-MM-dd")}' />
-                            </c:if>
-                            <c:if test="${not empty pendingEntry.finantialDocument }">
-                                <c:out value='${pendingEntry.finantialDocument.documentDate.toString("YYYY-MM-dd")}' />
-                            </c:if>
-                            <%--                             <joda:format value="${pendingEntry.entryDateTime}" style="S-" /> --%-->
-                        </datatables:column>
-                        --%>
                         <datatables:column cssStyle="width:80px;align:right">
                             <datatables:columnHead>
                                 <spring:message code="label.DebitNote.dueDate" />
@@ -305,6 +292,72 @@ ${portal.angularToolkit()}
                 </c:otherwise>
             </c:choose>
         </div>
+        
+        <div class="tab-pane" id="pendingPaymentPlans">
+            <!--             <h3>Planos de Pagamento Pendentes</h3> -->
+            <c:choose>
+                <c:when test="${not empty openPaymentPlanInstallmentsDataSet}">
+                    <datatables:table id="openPaymentPlanInstallmentsDataSet" row="installment" data="${openPaymentPlanInstallmentsDataSet}" cssClass="table table-bordered table-hover" cdn="false" cellspacing="2">
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message code="label.Installment.dueDate" />
+                            </datatables:columnHead>
+                            <c:out value='${installment.dueDate.toString("YYYY-MM-dd")}' />
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message code="label.Installment.description" />
+                            </datatables:columnHead>
+                            <c:out value='${installment.description}' />
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message code="label.Installment.debit.entries" />
+                            </datatables:columnHead>
+                            <ul>
+                                <c:forEach var="installmentEntry" items="${installment.installmentEntriesSet}">
+									<li><c:out value="[ ${installmentEntry.installment.paymentPlan.debtAccount.finantialInstitution.currency.getValueFor(installmentEntry.amount)} ] ${installmentEntry.debitEntry.description}" /></li>
+								</c:forEach>
+                            </ul>
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message code="label.Installment.totalAmount" />
+                            </datatables:columnHead>
+                            <c:out value='${installment.paymentPlan.debtAccount.finantialInstitution.currency.getValueFor(installment.totalAmount)}' />
+                        </datatables:column>
+                        <datatables:column>
+                            <datatables:columnHead>
+                                <spring:message code="label.Installment.openAmount" />
+                            </datatables:columnHead>
+                            <c:out value='${installment.paymentPlan.debtAccount.finantialInstitution.currency.getValueFor(installment.openAmount)}' />
+                        </datatables:column>
+                    </datatables:table>
+                    <script>
+						createDataTables(
+								'openPaymentPlanInstallmentsDataSet',
+								false,
+								false,
+								false,
+								"${pageContext.request.contextPath}",
+								"${datatablesI18NUrl}");
+					</script>
+                </c:when>
+                <c:otherwise>
+                    <div class="alert alert-warning" role="alert">
+
+                        <p>
+                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+                            <spring:message code="label.noResultsFound" />
+                        </p>
+
+                    </div>
+
+                </c:otherwise>
+            </c:choose>
+            
+            
+		</div>        
         
         <div class="tab-pane" id="details">
             <!--             <h3>Extracto</h3> -->
