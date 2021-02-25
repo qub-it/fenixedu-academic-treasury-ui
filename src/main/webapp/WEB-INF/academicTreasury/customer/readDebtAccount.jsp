@@ -168,7 +168,7 @@ ${portal.angularToolkit()}
         <li class="active"><a href="#pending" data-toggle="tab"><spring:message code="label.DebtAccount.pendingDocumentEntries" /></a></li>
         <li><a href="#pendingPaymentPlans" data-toggle="tab"><spring:message code="label.DebtAccount.payment.plans.pending" /></a>
         <li><a href="#details" data-toggle="tab"><spring:message code="label.DebtAccount.allDocumentEntries" /></a></li>
-        <li><a href="#payments" data-toggle="tab"><spring:message code="label.DebtAccount.payment.plans.pending" /></a></li>
+        <li><a href="#payments" data-toggle="tab"><spring:message code="label.DebtAccount.payments" /></a></li>
         <li><a href="#paymentReferenceCodes" data-toggle="tab"><spring:message code="label.DebtAccount.paymentReferenceCodes" /></a></li>
     </ul>
     <div id="my-tab-content" class="tab-content">
