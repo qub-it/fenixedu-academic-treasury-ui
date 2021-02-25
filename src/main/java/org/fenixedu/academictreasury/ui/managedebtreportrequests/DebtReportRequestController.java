@@ -149,7 +149,7 @@ public class DebtReportRequestController extends AcademicTreasuryBaseController 
     @RequestMapping(value = _DOWNLOAD_URI + "/{debtReportRequestResultFileId}", method = RequestMethod.GET)
     public String download(final @PathVariable("debtReportRequestResultFileId") DebtReportRequestResultFile resultFile,
             final Model model, final HttpServletResponse response) {
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setContentType("application/octet-stream");
         response.setHeader("Content-disposition", "attachment; filename=" + resultFile.getFilename());
         response.setContentLength((int) resultFile.getSize());
         

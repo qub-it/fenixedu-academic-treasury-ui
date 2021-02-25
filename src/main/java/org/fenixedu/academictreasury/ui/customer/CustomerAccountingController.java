@@ -4,6 +4,7 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import org.fenixedu.treasury.domain.document.FinantialDocument;
 import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
+import org.fenixedu.treasury.domain.paymentPlan.Installment;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
@@ -66,8 +68,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
     @Autowired
     private HttpServletResponse response;
-    
-    
+
     public String getReadCustomerUrl() {
         return CustomerAccountingController.READ_CUSTOMER_URL;
     }
@@ -87,7 +88,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     protected String getPrintSettlementNote() {
         return PRINT_SETTLEMENT_NOTE_URL;
     }
-    
+
     protected String getDownloadCertifiedDocumentPrintUrl() {
         return DOWNLOAD_CERTIFIED_DOCUMENT_PRINT_URL;
     }
@@ -103,7 +104,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("readAccountUrl", getReadAccountUrl());
 
         final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-        
+
         Customer customer = User.findByUsername(loggedUsername).getPerson().getPersonCustomer();
         model.addAttribute("customer", customer);
 
@@ -126,14 +127,15 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     }
 
     @RequestMapping(value = READ_ACCOUNT_URI + "{oid}")
-    public String readAccount(@PathVariable(value = "oid") final DebtAccount debtAccount, final Model model, final RedirectAttributes redirectAttributes) {
+    public String readAccount(@PathVariable(value = "oid") final DebtAccount debtAccount, final Model model,
+            final RedirectAttributes redirectAttributes) {
         if (Authenticate.getUser().getPerson() != ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson()) {
             Authenticate.logout(request, response);
             return redirect("/", model, redirectAttributes);
         }
-        
+
         checkPermissions(debtAccount, model);
-        
+
         model.addAttribute("debtAccount", debtAccount);
         model.addAttribute("fowardPaymentUrl", getForwardPaymentUrl(debtAccount));
         model.addAttribute("printSettlementNoteUrl", getPrintSettlementNote());
@@ -169,13 +171,11 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                     continue;
                 }
 
-                paymentEntries
-                        .addAll(SettlementNote
-                                .findByDebtAccount(
-                                        inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()))
-                                .filter(x -> x.isClosed() || x.isPreparing())
-                                .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
-                                .collect(Collectors.toList()));
+                paymentEntries.addAll(SettlementNote
+                        .findByDebtAccount(inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()))
+                        .filter(x -> x.isClosed() || x.isPreparing())
+                        .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
+                        .collect(Collectors.toList()));
 
             }
         }
@@ -231,10 +231,21 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             }
         }
 
+        List<Installment> openPaymentPlanInstallmentsDataSet = new ArrayList<>();
+        debtAccount.getCustomer().getAllCustomers().forEach(c -> {
+            DebtAccount d = c.getDebtAccountFor(debtAccount.getFinantialInstitution());
+
+            d.getActivePaymentPlansSet().stream().flatMap(p -> p.getSortedInstallments().stream())
+                    .collect(Collectors.toCollection(() -> openPaymentPlanInstallmentsDataSet));
+        });
+        
+        Collections.sort(openPaymentPlanInstallmentsDataSet, Installment.COMPARE_BY_DUEDATE);
+
         model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
         model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
         model.addAttribute("paymentsDataSet", paymentEntries);
         model.addAttribute("exemptionDataSet", exemptionEntries);
+        model.addAttribute("openPaymentPlanInstallmentsDataSet", openPaymentPlanInstallmentsDataSet);
 
         final Set<PaymentCodeTarget> usedPaymentCodeTargets = Sets.newHashSet();
         for (final InvoiceEntry invoiceEntry : debtAccount.getPendingInvoiceEntriesSet()) {
@@ -312,13 +323,14 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public Object printsettlementnote(@PathVariable("settlementNoteId") final SettlementNote settlementNote, final Model model,
             final RedirectAttributes redirectAttributes) {
 
-        if (Authenticate.getUser().getPerson() != ((PersonCustomer) settlementNote.getDebtAccount().getCustomer()).getAssociatedPerson()) {
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) settlementNote.getDebtAccount().getCustomer())
+                .getAssociatedPerson()) {
             Authenticate.logout(request, response);
             return redirect("/", model, redirectAttributes);
         }
-        
+
         checkPermissions(settlementNote.getDebtAccount(), model);
-        
+
         try {
             byte[] report = org.fenixedu.treasury.services.reports.DocumentPrinter.printFinantialDocument(settlementNote,
                     DocumentPrinter.PDF);
@@ -347,9 +359,9 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             Authenticate.logout(request, response);
             return redirect("/", model, redirectAttributes);
         }
-        
+
         checkPermissions(debtAccount, model);
-        
+
         try {
             response.addHeader("Content-Disposition",
                     "attachment; filename=referencias_" + new DateTime().toString("yyyyMMddHHmmss") + ".pdf");
@@ -371,13 +383,14 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     public String downloadcertifieddocumentprint(@PathVariable("oid") final FinantialDocument finantialDocument,
             final Model model, final RedirectAttributes redirectAttributes, final HttpServletResponse response) {
 
-        if (Authenticate.getUser().getPerson() != ((PersonCustomer) finantialDocument.getDebtAccount().getCustomer()).getAssociatedPerson()) {
+        if (Authenticate.getUser().getPerson() != ((PersonCustomer) finantialDocument.getDebtAccount().getCustomer())
+                .getAssociatedPerson()) {
             Authenticate.logout(request, response);
             return redirect("/", model, redirectAttributes);
         }
-        
+
         checkPermissions(finantialDocument.getDebtAccount(), model);
-        
+
         try {
             final byte[] contents = ERPExporterManager.downloadCertifiedDocumentPrint(finantialDocument);
 
@@ -405,7 +418,6 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         }
     }
 
-    
     public String jspPage(final String page) {
         return JSP_PATH + page;
     }
