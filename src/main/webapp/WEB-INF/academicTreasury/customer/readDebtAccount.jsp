@@ -308,7 +308,7 @@ ${portal.angularToolkit()}
                             <datatables:columnHead>
                                 <spring:message code="label.Installment.description" />
                             </datatables:columnHead>
-                            <c:out value='${installment.description}' />
+                            <c:out value='${installment.description.content}' />
                         </datatables:column>
                         <datatables:column>
                             <datatables:columnHead>

@@ -1,3 +1,5 @@
+- Bug Fix: Fix LocalizedString content display in jsp file
+
 6.0.0 (01-03-2021)
 - New Fixture: Payment plans for debit entries
 
