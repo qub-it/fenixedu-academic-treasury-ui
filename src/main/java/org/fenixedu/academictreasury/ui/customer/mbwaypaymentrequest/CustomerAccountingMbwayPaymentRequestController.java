@@ -9,7 +9,7 @@ import org.fenixedu.academictreasury.ui.customer.CustomerAccountingController;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
-import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayPaymentRequest;
+import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.springframework.http.ResponseEntity;
@@ -50,6 +50,7 @@ public class CustomerAccountingMbwayPaymentRequestController
     private static final String _CREATE_URI = "/create";
     public static final String CREATE_URL = CONTROLLER_URL + _CREATE_URI;
 
+    @Override
     @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.GET)
     public String create(@PathVariable("debtAccountId") DebtAccount debtAccount, Model model) {
         return super.create(debtAccount, model);
@@ -58,6 +59,7 @@ public class CustomerAccountingMbwayPaymentRequestController
     private static final String _CREATEPOSTBACK_URI = "/createpostback";
     public static final String CREATEPOSTBACK_URL = CONTROLLER_URL + _CREATEPOSTBACK_URI;
 
+    @Override
     @RequestMapping(value = _CREATEPOSTBACK_URI + "/{debtAccountId}", method = RequestMethod.POST,
             produces = "application/json;charset=UTF-8")
     @ResponseBody
@@ -66,6 +68,7 @@ public class CustomerAccountingMbwayPaymentRequestController
         return super.createpostback(debtAccount, bean, model);
     }
 
+    @Override
     @RequestMapping(value = _CREATE_URI + "/{debtAccountId}", method = RequestMethod.POST)
     public String createpost(@PathVariable("debtAccountId") DebtAccount debtAccount,
             @RequestParam("bean") PaymentReferenceCodeBean bean, Model model, RedirectAttributes redirectAttributes) {
@@ -77,7 +80,7 @@ public class CustomerAccountingMbwayPaymentRequestController
 
     @RequestMapping(value = _SHOW_MBWAY_PAYMENT_REQUEST_URI + "/{debtAccountId}/{mbwayPaymentRequestId}")
     public String showmbwaypaymentrequest(@PathVariable("debtAccountId") DebtAccount debtAccount,
-            @PathVariable("mbwayPaymentRequestId") MbwayPaymentRequest mbwayPaymentRequest, Model model) {
+            @PathVariable("mbwayPaymentRequestId") MbwayRequest mbwayPaymentRequest, Model model) {
         return super.showmbwaypaymentrequest(debtAccount, mbwayPaymentRequest, model);
     }
 
