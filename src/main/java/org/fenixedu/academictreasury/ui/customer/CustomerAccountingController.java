@@ -235,8 +235,10 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         debtAccount.getCustomer().getAllCustomers().forEach(c -> {
             DebtAccount d = c.getDebtAccountFor(debtAccount.getFinantialInstitution());
 
-            d.getActivePaymentPlansSet().stream().flatMap(p -> p.getSortedInstallments().stream())
-                    .collect(Collectors.toCollection(() -> openPaymentPlanInstallmentsDataSet));
+            if(d != null) {
+                d.getActivePaymentPlansSet().stream().flatMap(p -> p.getSortedInstallments().stream())
+                .collect(Collectors.toCollection(() -> openPaymentPlanInstallmentsDataSet));
+            }
         });
         
         Collections.sort(openPaymentPlanInstallmentsDataSet, Installment.COMPARE_BY_DUEDATE);
