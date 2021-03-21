@@ -1,3 +1,5 @@
+<%@page import="org.fenixedu.academictreasury.ui.customer.paymentreferencecode.CustomerAccountingPaymentReferenceCodeController"%>
+<%@page import="org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.mbwaypaymentrequest.CustomerAccountingMbwayPaymentRequestController"%>
 <%@page import="org.fenixedu.treasury.domain.sibsonlinepaymentsgateway.SibsOnlinePaymentsGateway"%>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
@@ -62,14 +64,12 @@ ${portal.angularToolkit()}
 		</a>
 	<% } %>
 
-	<% if(false) { %>
- 		&nbsp;|&nbsp;
- 		<span class="glyphicon glyphicon-print" aria-hidden="true"></span>&nbsp;
- 		<a target="_blank" href="${pageContext.request.contextPath}/academictreasury/customer/viewaccount/printpaymentreferences/${debtAccount.externalId}">
-	        <spring:message code="label.CustomerAccounting.printpaymentplan" />
-    	</a> &nbsp;
-	<% } %>
-	
+	<% if(PaymentCodePool.isReferenceCodesActiveForStudentPortal(debtAccount.getFinantialInstitution())) { %>
+		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;
+		<a class="" href="${pageContext.request.contextPath}<%= CustomerAccountingPaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}">
+			<spring:message code="label.event.accounting.manageCustomer.paymentReferenceCode" />
+		</a>
+	<% } %>	
 </div>
 
 <c:if test="${not empty infoMessages}">
@@ -598,8 +598,11 @@ ${portal.angularToolkit()}
                         	<c:if test="${target.multipleEntriesPaymentCode}">
 								<ul>
 									<c:forEach items="${target.orderedInvoiceEntries}" var="invoiceEntry">
-									<li><c:out value="${invoiceEntry.description}" /></li>
+										<li><c:out value="${invoiceEntry.description}" /></li>
 									</c:forEach>
+									<c:forEach items="${target.installmentsSet}" var="installment">
+										<li><c:out value="${installment.description.content}" />
+									</c:forEach>									
 								</ul>
                         	</c:if>
                         </datatables:column>

@@ -29,6 +29,7 @@ import org.fenixedu.treasury.domain.document.InvoiceEntry;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.exemption.TreasuryExemption;
 import org.fenixedu.treasury.domain.paymentPlan.Installment;
+import org.fenixedu.treasury.domain.paymentPlan.PaymentPlan;
 import org.fenixedu.treasury.domain.paymentcodes.FinantialDocumentPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
@@ -235,12 +236,12 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         debtAccount.getCustomer().getAllCustomers().forEach(c -> {
             DebtAccount d = c.getDebtAccountFor(debtAccount.getFinantialInstitution());
 
-            if(d != null) {
+            if (d != null) {
                 d.getActivePaymentPlansSet().stream().flatMap(p -> p.getSortedInstallments().stream())
-                .collect(Collectors.toCollection(() -> openPaymentPlanInstallmentsDataSet));
+                        .collect(Collectors.toCollection(() -> openPaymentPlanInstallmentsDataSet));
             }
         });
-        
+
         Collections.sort(openPaymentPlanInstallmentsDataSet, Installment.COMPARE_BY_DUEDATE);
 
         model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
@@ -265,9 +266,17 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             }
         }
 
+        for (PaymentPlan paymentPlan : debtAccount.getActivePaymentPlansSet()) {
+            for (Installment installment : paymentPlan.getInstallmentsSet()) {
+                usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByInstallment(installment)
+                        .collect(Collectors.toSet()));
+            }
+        }
+
         for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
                 .getInactivePersonCustomersSet()) {
-            if (inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()) == null) {
+            DebtAccount inactiveDebtAccount = inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution());
+            if (inactiveDebtAccount == null) {
                 continue;
             }
 
@@ -276,8 +285,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                 continue;
             }
 
-            for (InvoiceEntry invoiceEntry : inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution())
-                    .getPendingInvoiceEntriesSet()) {
+            for (InvoiceEntry invoiceEntry : inactiveDebtAccount.getPendingInvoiceEntriesSet()) {
                 if (!invoiceEntry.isDebitNoteEntry()) {
                     continue;
                 }
@@ -291,6 +299,14 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                                     .collect(Collectors.<PaymentCodeTarget> toSet()));
                 }
             }
+
+            for (PaymentPlan paymentPlan : inactiveDebtAccount.getActivePaymentPlansSet()) {
+                for (Installment installment : paymentPlan.getInstallmentsSet()) {
+                    usedPaymentCodeTargets.addAll(MultipleEntriesPaymentCode.findUsedByInstallment(installment)
+                            .collect(Collectors.toSet()));
+                }
+            }
+            
         }
 
         model.addAttribute("usedPaymentCodeTargets", usedPaymentCodeTargets);
