@@ -131,6 +131,13 @@ ${portal.angularToolkit()}
 							} ]);
 </script>
 
+<div class="alert alert-warning" role="alert">
+	<p>
+		<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true">&nbsp;</span>
+		<spring:message code="label.DebtReportRequest.zip.file.warning.message" />
+	</p>
+</div>
+
 <form name='form' method="post" class="form-horizontal"
 	ng-app="angularAppDebtReportRequest"
 	ng-controller="DebtReportRequestController"
@@ -144,6 +151,20 @@ ${portal.angularToolkit()}
 	<div class="panel panel-default">
 	
 		<div class="panel-body">
+			<div class="form-group row">
+				<div class="col-sm-2 control-label"><spring:message code="label.DebtReportRequest.type"/></div> 
+				
+				<div class="col-sm-4">
+					<%-- Relation to side 1 drop down rendered in input --%>
+					<ui-select id="debtReportRequest_type" name="type" ng-model="$parent.object.type" theme="bootstrap" >
+						<ui-select-match >{{$select.selected.text}}</ui-select-match>
+						<ui-select-choices repeat="debtReportRequestType.id as debtReportRequestType in object.debtReportRequestTypeDataSource | filter: $select.search">
+							<span ng-bind-html="debtReportRequestType.text | highlight: $select.search"></span>
+						</ui-select-choices>
+					</ui-select>				
+				</div>
+			</div>		
+
 			<div class="form-group row">
 				<div class="col-sm-2 control-label">
 					<spring:message code="label.DebtReportRequest.beginDate" />

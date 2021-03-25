@@ -1,3 +1,5 @@
+- Improvement: Segregate information included in debt report request, based in type chosen by user
+
 6.1.0 (21-03-2021)
 - New Fixture: Creation of reference codes in student portal
 

@@ -166,6 +166,9 @@ ${portal.angularToolkit()}
 				</c:forEach>
 				
 				<% } %>
+				<p>
+					<span class="label label-primary"><c:out value="${row.type.descriptionI18N.content}" /></span>
+				</p>
 			</datatables:column>
 
 			<datatables:column cssStyle="width:80px;align:center">
