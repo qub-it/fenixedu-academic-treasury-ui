@@ -153,7 +153,7 @@ ${portal.angularToolkit()}
 				</p>
 				<c:forEach var="result" items="${row.debtReportRequestResultFiles}">
 					<p><a href="${pageContext.request.contextPath}<%= DebtReportRequestController.DOWNLOAD_URL %>/${result.externalId}">
-						<c:out value="${result.getFilename()}" /> (<em><c:out value="${result.filesizeMb}" /> Mb</em>)
+						<c:out value="${result.getFilename()}" /> (<em><c:out value="${result.fileSizeWithUnitDescription}" /></em>)
 					</a></p>
 				</c:forEach>
 				
