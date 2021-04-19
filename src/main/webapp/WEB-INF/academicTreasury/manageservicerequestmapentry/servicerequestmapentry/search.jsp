@@ -168,9 +168,7 @@ ${portal.toolkit()}
                     <th><spring:message
                             code="label.ServiceRequestMapEntry.createEventOnSituation" /></th>
                     <th><spring:message
-                            code="label.ServiceRequestMapEntry.generatePaymentCode" /></th>
-                    <th><spring:message
-                            code="label.ServiceRequestMapEntry.paymentCodePool" /></th>                            
+                            code="label.ServiceRequestMapEntry.generatePaymentCode" /></th>                       
                     <%-- Operations Column --%>
                     <th></th>
                 </tr>
@@ -200,7 +198,6 @@ ${portal.toolkit()}
                                 <spring:message code="label.no" />
                             </c:if>
                         </td>
-                        <td>${searchResult.digitalPaymentPlatform.name }</td>
                         <td><a class="btn btn-xs btn-warning"
                             href="#"
                             onClick="javascript:processDelete('${searchResult.externalId}')">

@@ -1,6 +1,6 @@
 /**
- * This file was created by Quorum Born IT <http://www.qub-it.com/> and its 
- * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa 
+ * This file was created by Quorum Born IT <http://www.qub-it.com/> and its
+ * copyright terms are bind to the legal agreement regulating the FenixEdu@ULisboa
  * software development project between Quorum Born IT and ServiÃ§os Partilhados da
  * Universidade de Lisboa:
  *  - Copyright Â© 2015 Quorum Born IT (until any Go-Live phase)
@@ -8,7 +8,7 @@
  *
  * Contributors: ricardo.pedro@qub-it.com, anil.mamede@qub-it.com
  *
- * 
+ *
  * This file is part of FenixEdu AcademicTreasury.
  *
  * FenixEdu AcademicTreasury is free software: you can redistribute it and/or modify
@@ -28,7 +28,6 @@ package org.fenixedu.academictreasury.ui.manageservicerequestmapentry;
 
 import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.academicTreasuryBundle;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.serviceRequests.AcademicServiceRequestSituationType;
@@ -39,7 +38,6 @@ import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.core.domain.exceptions.DomainException;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.Product;
-import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -90,13 +88,6 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
 
         model.addAttribute("ServiceRequestMapEntry_product_options", Product.findAllActive().collect(Collectors.toList()));
         model.addAttribute("ServiceRequestMapEntry_situationType_options", AcademicServiceRequestSituationType.values());
-
-        List<? extends DigitalPaymentPlatform> digitalPaymentPlatforms = DigitalPaymentPlatform.findAll()
-            .filter(p -> p.isSibsPaymentCodeServiceSupported())
-            .filter(DigitalPaymentPlatform::isActive).collect(Collectors.toList());
-        
-        model.addAttribute("ServiceRequestMapEntry_paymentPool_options", digitalPaymentPlatforms);
-
         return "academicTreasury/manageservicerequestmapentry/servicerequestmapentry/create";
     }
 
@@ -106,7 +97,6 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
             @RequestParam(value = "createEventOnSituation",
                     required = true) AcademicServiceRequestSituationType createEventOnSituationType,
             @RequestParam(value = "generatePaymentCode", required = true) boolean generatePaymentCode,
-            @RequestParam(value = "paymentCodePool", required = true) DigitalPaymentPlatform paymentCodePool,
             @RequestParam(value = "debitEntryDescriptionExtensionFormat",
                     required = false) String debitEntryDescriptionExtensionFormat,
             Model model, RedirectAttributes redirectAttributes) {
@@ -114,7 +104,7 @@ public class ServiceRequestMapEntryController extends AcademicTreasuryBaseContro
         try {
 
             ServiceRequestMapEntry.create(product, serviceRequestType, createEventOnSituationType, generatePaymentCode,
-                    paymentCodePool, debitEntryDescriptionExtensionFormat);
+                    debitEntryDescriptionExtensionFormat);
 
             addInfoMessage(academicTreasuryBundle("label.ServiceRequestMapEntry.create.success"), model);
 

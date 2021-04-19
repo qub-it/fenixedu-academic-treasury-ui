@@ -232,27 +232,6 @@ angular.module('angularAppAcademicDebtGenerationRule', ['ngSanitize', 'ui.select
                         </ui-select>
                     </div>
                 </div>
-				
-                <div class="form-group row" ng-show="object.toCreatePaymentReferenceCodes === true">
-                    <div class="col-sm-2 control-label">
-                        <spring:message code="label.AcademicDebtGenerationRule.paymentCodePool" />
-                    </div>
-
-                    <div class="col-sm-4">
-                        <%-- Relation to side 1 drop down rendered in input --%>
-                        <ui-select
-                            id="academicDebtGenerationRule_digitalPaymentPlatform"
-                            class="" name="digitalpaymentplatform"
-                            ng-model="$parent.object.digitalPaymentPlatform"
-                            theme="bootstrap" ng-disabled="disabled">
-	                        <ui-select-match>{{$select.selected.text}}</ui-select-match>
-	                        <ui-select-choices repeat="digitalPaymentPlatform.id as digitalPaymentPlatform in object.digitalPaymentPlatformDataSource | filter: $select.search">
-		                        <span ng-bind-html="digitalPaymentPlatform.text | highlight: $select.search"></span>
-	                        </ui-select-choices>
-                        </ui-select>
-                    </div>
-
-                </div>
 
                 <div class="form-group row" ng-show="object.toCreatePaymentReferenceCodes === true">
                     <div class="col-sm-2 control-label">
