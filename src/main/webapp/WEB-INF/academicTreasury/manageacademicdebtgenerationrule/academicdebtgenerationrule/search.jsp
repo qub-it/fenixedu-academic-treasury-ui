@@ -340,18 +340,7 @@ ${portal.toolkit()}
 								</p>
 							</c:if>
 							
-							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToCreatePaymentReferenceCodes()}">
-								<p>
-									<span>
-										<strong>
-											<spring:message code="label.AcademicDebtGenerationRule.paymentCodePool" />:
-										</strong>
-									</span>
-									<span>
-										<c:out value="${rule.digitalPaymentPlatform.name}" />
-									</span>
-								</p>
-								
+							<c:if test="${rule.academicDebtGenerationRuleType.strategyImplementation().isToCreatePaymentReferenceCodes()}">	
 								<p>
 									<span>
 										<strong>

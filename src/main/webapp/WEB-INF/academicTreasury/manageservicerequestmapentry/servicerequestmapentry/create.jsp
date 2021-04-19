@@ -123,16 +123,6 @@ ${portal.toolkit()}
                     </script>
                 </div>
             </div>
-            <div class="form-group row">
-                <div class="col-sm-2 control-label"><spring:message code="label.ServiceRequestMapEntry.paymentCodePool"/></div> 
-                
-                <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="serviceRequestMapEntry_paymentCodePool" class="js-example-basic-single" name="paymentCodePool">
-                        <option value=""></option>
-                    </select>
-                </div>
-            </div>
             
             <div class="form-group row">
                 <div class="col-sm-2 control-label"><spring:message code="label.ServiceRequestMapEntry.debitEntryDescriptionExtensionFormat"/></div> 
@@ -207,26 +197,6 @@ $(document).ready(function() {
 	    
 	    
 		<%-- End block for providing product options --%>
-	
-		<%-- Block for providing paymentCodePool options --%>
-	        paymentCodePool_options = [
-	            <c:forEach items="${ServiceRequestMapEntry_paymentPool_options}" var="element"> 
-	                {
-	                    text : "<c:out value='${element.name}'/>",  
-	                    id : "<c:out value='${element.externalId}'/>"
-	                },
-	            </c:forEach>
-	        ];
-	        
-	        $("#serviceRequestMapEntry_paymentCodePool").select2(
-	            {
-	                data : paymentCodePool_options,
-	            }     
-	        );
-	        
-	        $("#serviceRequestMapEntry_paymentCodePool").select2().select2('val', '<c:out value='${param.paymentCodePool}'/>');
-	    
-	        <%-- End block for providing paymentCodePool options --%>
 		
 	
 	});
