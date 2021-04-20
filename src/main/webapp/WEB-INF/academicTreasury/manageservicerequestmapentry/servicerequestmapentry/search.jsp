@@ -236,7 +236,7 @@ ${portal.toolkit()}
 											//74
 											{
 												"width" : "74px",
-												"targets" : 5
+												"targets" : 4
 											} ],
 											//Documentation: https://datatables.net/reference/option/dom
 											//"dom" : '<"col-sm-6"l><"col-sm-3"f><"col-sm-3"T>rtip', //FilterBox = YES && ExportOptions = YES
