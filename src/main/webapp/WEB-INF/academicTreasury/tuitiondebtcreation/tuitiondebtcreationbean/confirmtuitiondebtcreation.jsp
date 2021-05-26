@@ -146,9 +146,7 @@ function backToCreate() {
                     <tr>
                         <th scope="row" class="col-xs-3"><spring:message code="label.TuitionDebtCreationBean.tuitionPaymentPlan" /></th>
                         <td>
-                        	<c:out value='${tuitionPaymentPlan.name.content}' />
-                        	&nbsp;
-                        	(<c:out value='${tuitionPaymentPlan.conditionsDescription.content}' />)
+                        	<c:out value='${tuitionPaymentPlan.conditionsDescription}' />
                         </td>
                     </tr>
                     <tr>
