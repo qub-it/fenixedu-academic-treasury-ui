@@ -61,6 +61,7 @@ import com.google.common.base.Strings;
 //or
 @BennuSpringController(value = FinantialEntityController.class)
 @RequestMapping(TuitionPaymentPlanController.CONTROLLER_URL)
+@Deprecated
 public class TuitionPaymentPlanController extends AcademicTreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/academictreasury/managetuitionpaymentplan/tuitionpaymentplan";
@@ -376,7 +377,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             final RedirectAttributes redirectAttributes) {
         try {
 
-            tuitionPaymentPlan.orderUp();
+//            tuitionPaymentPlan.orderUp();
 
             addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.order.up.success"), model);
         } catch (DomainException ex) {
@@ -400,7 +401,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             final RedirectAttributes redirectAttributes) {
         try {
 
-            tuitionPaymentPlan.orderDown();
+//            tuitionPaymentPlan.orderDown();
 
             addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.order.down.success"), model);
         } catch (DomainException ex) {

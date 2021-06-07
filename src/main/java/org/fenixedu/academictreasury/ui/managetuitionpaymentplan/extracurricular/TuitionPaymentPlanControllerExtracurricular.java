@@ -66,6 +66,7 @@ import edu.emory.mathcs.backport.java.util.Collections;
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.manageTuitionPaymentPlanExtracurricular",
         accessGroup = "treasuryBackOffice")
 @RequestMapping(TuitionPaymentPlanControllerExtracurricular.CONTROLLER_URL)
+@Deprecated
 public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasuryBaseController {
 
     public static final String CONTROLLER_URL = "/academictreasury/tuitionpaymentplanextracurricular";
@@ -327,7 +328,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
             final RedirectAttributes redirectAttributes) {
         try {
 
-            tuitionPaymentPlan.orderUp();
+//            tuitionPaymentPlan.orderUp();
 
             addInfoMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, "label.TuitionPaymentPlan.order.up.success"), model);
         } catch (DomainException ex) {
@@ -351,7 +352,7 @@ public class TuitionPaymentPlanControllerExtracurricular extends AcademicTreasur
             final RedirectAttributes redirectAttributes) {
         try {
 
-            tuitionPaymentPlan.orderDown();
+//            tuitionPaymentPlan.orderDown();
 
             addInfoMessage(BundleUtil.getString(AcademicTreasuryConstants.BUNDLE, "label.TuitionPaymentPlan.order.down.success"), model);
         } catch (DomainException ex) {
