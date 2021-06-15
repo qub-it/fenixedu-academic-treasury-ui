@@ -139,7 +139,7 @@ ${portal.toolkit()}
 				<datatables:columnHead>
 					<spring:message code="label.MassiveDebtGenerationRequestFile.tuitionPaymentPlan" />
 				</datatables:columnHead>
-				<c:out value='${r.tuitionPaymentPlan.conditionsDescription.content}' />
+				<c:out value='${r.tuitionPaymentPlan.conditionsDescription}' />
 			</datatables:column>
 
 		</datatables:table>

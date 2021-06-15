@@ -1,3 +1,5 @@
+- Bug Fix: TuitionPaymentPlan.conditionsDescription is now String type instead of LocalizedString, so remove the "content" property in JSP
+
 7.0.2 (07-06-2021)
 - Refactor: Remove reference to TuitionPaymentPlan.name in JSP
 - Improvement: Use default payment platform to Automatic rules and Academic services
