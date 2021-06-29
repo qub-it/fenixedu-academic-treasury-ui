@@ -28,7 +28,7 @@ import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
 import pt.ist.fenixframework.FenixFramework;
 
 @WebListener
-public class AcademicTreasuryInitializer implements ServletContextListener {
+public class AcademicTreasuryUiInitializer implements ServletContextListener {
 
     @Override
     public void contextDestroyed(final ServletContextEvent arg0) {
@@ -43,32 +43,6 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         registerStandaloneEnrolmentHandler();
         registerExtracurricularEnrolmentHandler();
         registerImprovementEnrolmentHandler();
-
-        TreasuryAccessControlAPI.registerExtension(new AcademicTreasuryAccessControlExtension());
-        DebitEntryDeletionListener.attach();
-        ProductDeletionListener.attach();
-        FinantialEntityListener.attach();
-
-        final AcademicTreasuryBridgeImpl impl = new AcademicTreasuryBridgeImpl();
-
-        TreasuryBridgeAPIFactory.registerImplementation(impl);
-        BennuSignalsServices.registerSettlementEventHandler(impl);
-
-        addDeletionListeners();
-    }
-
-    private void addDeletionListeners() {
-        FenixFramework.getDomainModel().registerDeletionListener(Person.class, p -> {
-            if(p.getPersonCustomer() != null) {
-                p.getPersonCustomer().delete(); 
-            }
-            
-            p.getInactivePersonCustomersSet().forEach(ipc -> ipc.delete());
-        });
-    }
-
-    private static void registerNewRegistrationHandler() {
-        Signal.register(Registration.REGISTRATION_CREATE_SIGNAL, new RegistrationServices());
     }
 
     private static void registerNewAcademicServiceRequestSituationHandler() {
