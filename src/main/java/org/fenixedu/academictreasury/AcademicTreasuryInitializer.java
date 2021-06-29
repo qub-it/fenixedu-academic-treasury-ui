@@ -9,9 +9,12 @@ import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.treasury.ITreasuryBridgeAPI;
 import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
 import org.fenixedu.academictreasury.domain.listeners.DebitEntryDeletionListener;
+import org.fenixedu.academictreasury.domain.listeners.FinantialEntityListener;
 import org.fenixedu.academictreasury.domain.listeners.ProductDeletionListener;
 import org.fenixedu.academictreasury.domain.treasury.AcademicTreasuryBridgeImpl;
+import org.fenixedu.academictreasury.services.AcademicTreasuryPlataformDependentServicesFactory;
 import org.fenixedu.academictreasury.services.EmolumentServices;
+import org.fenixedu.academictreasury.services.FenixEduAcademicTreasuryPlatformDependentServices;
 import org.fenixedu.academictreasury.services.RegistrationServices;
 import org.fenixedu.academictreasury.services.accesscontrol.spi.AcademicTreasuryAccessControlExtension;
 import org.fenixedu.academictreasury.services.signals.AcademicServiceRequestCancelOrRejectHandler;
@@ -33,6 +36,8 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent arg0) {
+        AcademicTreasuryPlataformDependentServicesFactory.registerImplementation(new FenixEduAcademicTreasuryPlatformDependentServices());
+        
         registerNewAcademicServiceRequestSituationHandler();
         registerAcademicServiceRequestCancelOrRejectHandler();
         registerStandaloneEnrolmentHandler();
@@ -40,9 +45,9 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         registerImprovementEnrolmentHandler();
 
         TreasuryAccessControlAPI.registerExtension(new AcademicTreasuryAccessControlExtension());
-
         DebitEntryDeletionListener.attach();
         ProductDeletionListener.attach();
+        FinantialEntityListener.attach();
 
         final AcademicTreasuryBridgeImpl impl = new AcademicTreasuryBridgeImpl();
 

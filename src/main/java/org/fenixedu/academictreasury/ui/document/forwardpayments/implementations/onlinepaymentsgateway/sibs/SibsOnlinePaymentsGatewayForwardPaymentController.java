@@ -58,24 +58,26 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
     public static final String SELECT_PHYSICAL_ADDRESS_URL = CONTROLLER_URL + _SELECT_PHYSICAL_ADDRESS_URI;
 
     @Override
+    // TODO Check code Refactor/20210624-MergeWithISCTE
+    // Change model arg type to java.lang.Object
     public String processforwardpayment(ForwardPaymentRequest forwardPayment, Model model, HttpServletResponse response,
             HttpSession session) {
         final DebtAccount debtAccount = forwardPayment.getDebtAccount();
         final String debtAccountUrl = (String) session.getAttribute("debtAccountUrl");
 
         if (debtAccount.getCustomer().isAdhocCustomer()) {
-            continueProcessForwardPayment(forwardPayment, model, response, session);
+            continueProcessForwardPayment(forwardPayment, (Model) model, response, session);
         }
 
         final Person person = ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson();
         SibsPaymentsGateway gateway = (SibsPaymentsGateway) forwardPayment.getDigitalPaymentPlatform();
 
-        model.addAttribute("debtAccountUrl", debtAccountUrl);
-        model.addAttribute("forwardPayment", forwardPayment);
-        model.addAttribute("forwardPaymentConfiguration", gateway);
-        model.addAttribute("debtAccount", debtAccount);
-        model.addAttribute("logosPage", gateway.getLogosJspPage());
-        model.addAttribute("physicalAddresses", person.getValidAddressesForFiscalData().stream().collect(Collectors.toList()));
+        ((Model) model).addAttribute("debtAccountUrl", debtAccountUrl);
+        ((Model) model).addAttribute("forwardPayment", forwardPayment);
+        ((Model) model).addAttribute("forwardPaymentConfiguration", gateway);
+        ((Model) model).addAttribute("debtAccount", debtAccount);
+        ((Model) model).addAttribute("logosPage", gateway.getLogosJspPage());
+        ((Model) model).addAttribute("physicalAddresses", person.getValidAddressesForFiscalData().stream().collect(Collectors.toList()));
 
         return jspPage(_SELECT_PHYSICAL_ADDRESS_URI);
     }
