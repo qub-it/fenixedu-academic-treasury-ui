@@ -60,7 +60,7 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
     @Override
     // TODO Check code Refactor/20210624-MergeWithISCTE
     // Change model arg type to java.lang.Object
-    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Model model, HttpServletResponse response,
+    public String processforwardpayment(ForwardPaymentRequest forwardPayment, Object model, HttpServletResponse response,
             HttpSession session) {
         final DebtAccount debtAccount = forwardPayment.getDebtAccount();
         final String debtAccountUrl = (String) session.getAttribute("debtAccountUrl");
@@ -77,7 +77,8 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
         ((Model) model).addAttribute("forwardPaymentConfiguration", gateway);
         ((Model) model).addAttribute("debtAccount", debtAccount);
         ((Model) model).addAttribute("logosPage", gateway.getLogosJspPage());
-        ((Model) model).addAttribute("physicalAddresses", person.getValidAddressesForFiscalData().stream().collect(Collectors.toList()));
+        ((Model) model).addAttribute("physicalAddresses",
+                person.getValidAddressesForFiscalData().stream().collect(Collectors.toList()));
 
         return jspPage(_SELECT_PHYSICAL_ADDRESS_URI);
     }
@@ -246,9 +247,9 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
 
             if (bean.isInPayedState()) {
                 FenixFramework.atomic(() -> {
-                    SibsPaymentsGatewayLog log = (SibsPaymentsGatewayLog) forwardPayment.advanceToPaidState(bean.getStatusCode(), bean.getStatusMessage(),
-                            bean.getPayedAmount(), bean.getTransactionDate(), bean.getTransactionId(), null,
-                            bean.getRequestBody(), bean.getResponseBody(), "");
+                    SibsPaymentsGatewayLog log = (SibsPaymentsGatewayLog) forwardPayment.advanceToPaidState(bean.getStatusCode(),
+                            bean.getStatusMessage(), bean.getPayedAmount(), bean.getTransactionDate(), bean.getTransactionId(),
+                            null, bean.getRequestBody(), bean.getResponseBody(), "");
 
                     log.setRequestSendDate(requestSendDate);
                     log.setRequestReceiveDate(requestReceiveDate);
@@ -258,8 +259,8 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
                 return String.format("redirect:%s", forwardPayment.getForwardPaymentSuccessUrl());
             } else {
                 FenixFramework.atomic(() -> {
-                    SibsPaymentsGatewayLog log = (SibsPaymentsGatewayLog) forwardPayment.reject("returnforwardpayment", bean.getStatusCode(), bean.getStatusMessage(), bean.getRequestBody(),
-                            bean.getResponseBody());
+                    SibsPaymentsGatewayLog log = (SibsPaymentsGatewayLog) forwardPayment.reject("returnforwardpayment",
+                            bean.getStatusCode(), bean.getStatusMessage(), bean.getRequestBody(), bean.getResponseBody());
 
                     log.setRequestSendDate(requestSendDate);
                     log.setRequestReceiveDate(requestReceiveDate);
