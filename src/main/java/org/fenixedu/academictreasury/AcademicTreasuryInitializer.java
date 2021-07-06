@@ -5,7 +5,6 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 import org.fenixedu.academic.domain.Person;
-import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.treasury.ITreasuryBridgeAPI;
 import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
 import org.fenixedu.academictreasury.domain.listeners.DebitEntryDeletionListener;
@@ -15,7 +14,6 @@ import org.fenixedu.academictreasury.domain.treasury.AcademicTreasuryBridgeImpl;
 import org.fenixedu.academictreasury.services.AcademicTreasuryPlataformDependentServicesFactory;
 import org.fenixedu.academictreasury.services.EmolumentServices;
 import org.fenixedu.academictreasury.services.FenixEduAcademicTreasuryPlatformDependentServices;
-import org.fenixedu.academictreasury.services.RegistrationServices;
 import org.fenixedu.academictreasury.services.accesscontrol.spi.AcademicTreasuryAccessControlExtension;
 import org.fenixedu.academictreasury.services.signals.AcademicServiceRequestCancelOrRejectHandler;
 import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHandler;
@@ -65,10 +63,6 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
 
             p.getInactivePersonCustomersSet().forEach(ipc -> ipc.delete());
         });
-    }
-
-    private static void registerNewRegistrationHandler() {
-        Signal.register(Registration.REGISTRATION_CREATE_SIGNAL, new RegistrationServices());
     }
 
     private static void registerNewAcademicServiceRequestSituationHandler() {

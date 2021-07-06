@@ -4,28 +4,15 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import org.fenixedu.academic.domain.Person;
-import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academic.domain.treasury.ITreasuryBridgeAPI;
-import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
-import org.fenixedu.academictreasury.domain.listeners.DebitEntryDeletionListener;
-import org.fenixedu.academictreasury.domain.listeners.FinantialEntityListener;
-import org.fenixedu.academictreasury.domain.listeners.ProductDeletionListener;
-import org.fenixedu.academictreasury.domain.treasury.AcademicTreasuryBridgeImpl;
 import org.fenixedu.academictreasury.services.AcademicTreasuryPlataformDependentServicesFactory;
 import org.fenixedu.academictreasury.services.EmolumentServices;
 import org.fenixedu.academictreasury.services.FenixEduAcademicTreasuryPlatformDependentServices;
-import org.fenixedu.academictreasury.services.RegistrationServices;
-import org.fenixedu.academictreasury.services.accesscontrol.spi.AcademicTreasuryAccessControlExtension;
 import org.fenixedu.academictreasury.services.signals.AcademicServiceRequestCancelOrRejectHandler;
 import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.ImprovementEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.StandaloneEnrolmentHandler;
 import org.fenixedu.bennu.core.signals.Signal;
-import org.fenixedu.treasury.domain.bennu.signals.BennuSignalsServices;
-import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
-
-import pt.ist.fenixframework.FenixFramework;
 
 @WebListener
 public class AcademicTreasuryUiInitializer implements ServletContextListener {
@@ -36,8 +23,9 @@ public class AcademicTreasuryUiInitializer implements ServletContextListener {
 
     @Override
     public void contextInitialized(final ServletContextEvent arg0) {
-        AcademicTreasuryPlataformDependentServicesFactory.registerImplementation(new FenixEduAcademicTreasuryPlatformDependentServices());
-        
+        AcademicTreasuryPlataformDependentServicesFactory
+                .registerImplementation(new FenixEduAcademicTreasuryPlatformDependentServices());
+
         registerNewAcademicServiceRequestSituationHandler();
         registerAcademicServiceRequestCancelOrRejectHandler();
         registerStandaloneEnrolmentHandler();

@@ -89,7 +89,7 @@ import com.google.common.collect.Sets;
 public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcademicTreasuryPlatformDependentServices {
 
     /* **************
-     * Read data sets 
+     * Read data sets
      * ************** */
 
     @Override
@@ -146,7 +146,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     }
 
     /* *************
-     * Registrations 
+     * Registrations
      * ************* */
 
     @Override
@@ -160,7 +160,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     }
 
     /* ***********************
-     * Person & PersonCustomer 
+     * Person & PersonCustomer
      * *********************** */
 
     @Override
@@ -277,7 +277,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     }
 
     /* ******************
-     * Fiscal Information 
+     * Fiscal Information
      * ****************** */
 
     @Override
@@ -292,7 +292,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     }
 
     /* ***********
-     * Permissions 
+     * Permissions
      * *********** */
 
     @Override
@@ -358,7 +358,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     public Optional<FinantialEntity> finantialEntity(Unit unit) {
         return Optional.ofNullable(unit.getFinantialEntity());
     }
-    
+
     @Override
     @Deprecated
     // This should be in some TreasuryAccessControl extension
@@ -380,7 +380,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     }
 
     /* ***************
-     * Localized names 
+     * Localized names
      * *************** */
 
     @Override
@@ -398,6 +398,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
         return statuteType.getName().getContent();
     }
 
+    @Override
     public String localizedNameOfStatuteType(StatuteType statuteType, Locale locale) {
         return statuteType.getName().getContent(locale);
     }
@@ -423,7 +424,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     }
 
     /* **********************
-     * Student & Registration 
+     * Student & Registration
      * ********************** */
 
     @Override
@@ -442,11 +443,12 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     public RegistrationProtocol registrationProtocol(Registration registration) {
         return registration.getRegistrationProtocol();
     }
-    
+
     @Override
     public RegistrationRegimeType registrationRegimeType(Registration registration, ExecutionYear executionYear) {
         return registration.getRegimeType(executionYear);
     }
+
     @Override
     public Set<StatuteType> statutesTypesValidOnAnyExecutionSemesterFor(Registration registration,
             ExecutionInterval executionInterval) {
@@ -498,29 +500,34 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     public Stream<AdministrativeOffice> findAdministrativeOfficesByPredicate(Predicate<AdministrativeOffice> predicate) {
         return Bennu.getInstance().getAdministrativeOfficesSet().stream().filter(predicate);
     }
-    
+
     /* *******************
-     * Execution Intervals 
+     * Execution Intervals
      * ******************* */
-    
+
     @Override
     public ExecutionInterval executionSemester(Enrolment enrolment) {
         return enrolment.getExecutionInterval();
     }
-    
+
     @Override
     public ExecutionInterval executionSemester(EnrolmentEvaluation enrolmentEvaluation) {
         return enrolmentEvaluation.getExecutionInterval();
     }
-    
+
     @Override
     public ExecutionYear executionYearOfExecutionSemester(ExecutionInterval executionInterval) {
         return executionInterval.getExecutionYear();
     }
-    
+
     @Override
     public Integer executionIntervalChildOrder(ExecutionInterval executionInterval) {
         return executionInterval.getChildOrder();
+    }
+
+    @Override
+    public ExecutionInterval getExecutionIntervalByName(String s) {
+        return ExecutionInterval.getExecutionInterval(s);
     }
 
 }
