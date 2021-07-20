@@ -28,6 +28,23 @@ public class CustomerAccountingPaymentReferenceCodeController extends PaymentRef
 
     public static final String CONTROLLER_URL = "/academictreasury/customer/paymentreferencecode";
 
+    @Override
+    protected void checkPermissions(DebtAccount debtAccount, Model model) {
+        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+
+        final Person person = User.findByUsername(loggedUsername).getPerson();
+        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
+        final String fiscalNumber = PersonCustomer.fiscalNumber(person);
+        if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
+            throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
+        }
+
+        if (PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get() != debtAccount.getCustomer()) {
+            addErrorMessage(TreasuryConstants.treasuryBundle("error.authorization.not.allow.to.modify.settlements"), model);
+            throw new SecurityException(TreasuryConstants.treasuryBundle("error.authorization.not.allow.to.modify.settlements"));
+        }
+    }
+
     private static final String _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI = "/createpaymentcodeforseveraldebitentries";
     public static final String CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL =
             CONTROLLER_URL + _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI;
@@ -68,23 +85,6 @@ public class CustomerAccountingPaymentReferenceCodeController extends PaymentRef
     }
 
     @Override
-    protected void checkPermissions(DebtAccount debtAccount, Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
-
-        final Person person = User.findByUsername(loggedUsername).getPerson();
-        final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
-        final String fiscalNumber = PersonCustomer.fiscalNumber(person);
-        if (Strings.isNullOrEmpty(addressFiscalCountryCode) || Strings.isNullOrEmpty(fiscalNumber)) {
-            throw new AcademicTreasuryDomainException("error.PersonCustomer.fiscalInformation.required");
-        }
-
-        if (PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get() != debtAccount.getCustomer()) {
-            addErrorMessage(TreasuryConstants.treasuryBundle("error.authorization.not.allow.to.modify.settlements"), model);
-            throw new SecurityException(TreasuryConstants.treasuryBundle("error.authorization.not.allow.to.modify.settlements"));
-        }
-    }
-
-    @Override
     protected String readDebtAccountUrl(final DebtAccount debtAccount) {
         return String.format("%s/%s", CustomerAccountingController.READ_ACCOUNT_URL, debtAccount.getExternalId());
     }
@@ -98,5 +98,5 @@ public class CustomerAccountingPaymentReferenceCodeController extends PaymentRef
     protected String getCreatePostbackUrl(DebtAccount debtAccount) {
         return CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL + "/" + debtAccount.getExternalId();
     }
-
+    
 }

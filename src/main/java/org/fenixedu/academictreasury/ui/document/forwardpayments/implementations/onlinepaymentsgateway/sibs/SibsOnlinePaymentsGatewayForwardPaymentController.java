@@ -58,8 +58,6 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
     public static final String SELECT_PHYSICAL_ADDRESS_URL = CONTROLLER_URL + _SELECT_PHYSICAL_ADDRESS_URI;
 
     @Override
-    // TODO Check code Refactor/20210624-MergeWithISCTE
-    // Change model arg type to java.lang.Object
     public String processforwardpayment(ForwardPaymentRequest forwardPayment, Object model, HttpServletResponse response,
             HttpSession session) {
         final DebtAccount debtAccount = forwardPayment.getDebtAccount();
