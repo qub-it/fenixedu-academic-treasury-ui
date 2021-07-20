@@ -1,7 +1,5 @@
 package org.fenixedu.academictreasury.ui.customer.paymentreferencecode;
 
-import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
-
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -12,6 +10,7 @@ import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.accounting.managecustomer.PaymentReferenceCodeController;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,8 +40,8 @@ public class CustomerAccountingPaymentReferenceCodeController extends PaymentRef
         }
 
         if (PersonCustomer.findUnique(person, addressFiscalCountryCode, fiscalNumber).get() != debtAccount.getCustomer()) {
-            addErrorMessage(treasuryBundle("error.authorization.not.allow.to.modify.settlements"), model);
-            throw new SecurityException(treasuryBundle("error.authorization.not.allow.to.modify.settlements"));
+            addErrorMessage(TreasuryConstants.treasuryBundle("error.authorization.not.allow.to.modify.settlements"), model);
+            throw new SecurityException(TreasuryConstants.treasuryBundle("error.authorization.not.allow.to.modify.settlements"));
         }
     }
 
@@ -77,15 +76,14 @@ public class CustomerAccountingPaymentReferenceCodeController extends PaymentRef
             Model model) {
         return super.createPaymentCodeForSeveralDebitEntriesPostback(debtAccount, bean, model);
     }
-    
+
     @Override
     @RequestMapping(value = _CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URI + "/{debtAccountId}", method = RequestMethod.POST)
     public String createPaymentCodeForSeveralDebitEntries(@PathVariable("debtAccountId") DebtAccount debtAccount,
-            @RequestParam("bean") PaymentReferenceCodeBean bean, Model model,
-            RedirectAttributes redirectAttributes) {
+            @RequestParam("bean") PaymentReferenceCodeBean bean, Model model, RedirectAttributes redirectAttributes) {
         return super.createPaymentCodeForSeveralDebitEntries(debtAccount, bean, model, redirectAttributes);
-    }    
-    
+    }
+
     @Override
     protected String readDebtAccountUrl(final DebtAccount debtAccount) {
         return String.format("%s/%s", CustomerAccountingController.READ_ACCOUNT_URL, debtAccount.getExternalId());

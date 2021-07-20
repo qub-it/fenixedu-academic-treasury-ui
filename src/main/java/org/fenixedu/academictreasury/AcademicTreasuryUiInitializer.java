@@ -4,28 +4,18 @@ import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
-import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.treasury.ITreasuryBridgeAPI;
-import org.fenixedu.academic.domain.treasury.TreasuryBridgeAPIFactory;
-import org.fenixedu.academictreasury.domain.listeners.DebitEntryDeletionListener;
-import org.fenixedu.academictreasury.domain.listeners.FinantialEntityListener;
-import org.fenixedu.academictreasury.domain.listeners.ProductDeletionListener;
-import org.fenixedu.academictreasury.domain.treasury.AcademicTreasuryBridgeImpl;
 import org.fenixedu.academictreasury.services.AcademicTreasuryPlataformDependentServicesFactory;
 import org.fenixedu.academictreasury.services.EmolumentServices;
 import org.fenixedu.academictreasury.services.FenixEduAcademicTreasuryPlatformDependentServices;
-import org.fenixedu.academictreasury.services.accesscontrol.spi.AcademicTreasuryAccessControlExtension;
 import org.fenixedu.academictreasury.services.signals.AcademicServiceRequestCancelOrRejectHandler;
 import org.fenixedu.academictreasury.services.signals.ExtracurricularEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.ImprovementEnrolmentHandler;
 import org.fenixedu.academictreasury.services.signals.StandaloneEnrolmentHandler;
 import org.fenixedu.bennu.core.signals.Signal;
-import org.fenixedu.treasury.services.accesscontrol.TreasuryAccessControlAPI;
-
-import pt.ist.fenixframework.FenixFramework;
 
 @WebListener
-public class AcademicTreasuryInitializer implements ServletContextListener {
+public class AcademicTreasuryUiInitializer implements ServletContextListener {
 
     @Override
     public void contextDestroyed(final ServletContextEvent arg0) {
@@ -41,28 +31,6 @@ public class AcademicTreasuryInitializer implements ServletContextListener {
         registerStandaloneEnrolmentHandler();
         registerExtracurricularEnrolmentHandler();
         registerImprovementEnrolmentHandler();
-
-        TreasuryAccessControlAPI.registerExtension(new AcademicTreasuryAccessControlExtension());
-        DebitEntryDeletionListener.attach();
-        ProductDeletionListener.attach();
-        FinantialEntityListener.attach();
-
-        final AcademicTreasuryBridgeImpl impl = new AcademicTreasuryBridgeImpl();
-
-        TreasuryBridgeAPIFactory.registerImplementation(impl);
-//        BennuSignalsServices.registerSettlementEventHandler(impl);
-
-        addDeletionListeners();
-    }
-
-    private void addDeletionListeners() {
-        FenixFramework.getDomainModel().registerDeletionListener(Person.class, p -> {
-            if (p.getPersonCustomer() != null) {
-                p.getPersonCustomer().delete();
-            }
-
-            p.getInactivePersonCustomersSet().forEach(ipc -> ipc.delete());
-        });
     }
 
     private static void registerNewAcademicServiceRequestSituationHandler() {

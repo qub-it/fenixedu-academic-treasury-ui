@@ -373,13 +373,13 @@ public class AcademicDebtGenerationRuleController extends AcademicTreasuryBaseCo
         if(bean.getDebtGenerationRuleRestriction() != null) {
             if (bean.getDebtGenerationRuleRestriction().getStrategyImplementation()
                     .equals(EnrolmentRenewalRestriction.class.getName())) {
-                org.fenixedu.academictreasury.domain.debtGeneration.EnrolmentRenewalRestriction.create(rule, false);
+                org.fenixedu.academictreasury.domain.debtGeneration.EnrolmentRenewalRestriction.create(rule);
             } else if (bean.getDebtGenerationRuleRestriction().getStrategyImplementation()
                     .equals(FirstTimeFirstYearRestriction.class.getName())) {
-                org.fenixedu.academictreasury.domain.debtGeneration.FirstTimeFirstYearRestriction.create(rule, false);
+                org.fenixedu.academictreasury.domain.debtGeneration.FirstTimeFirstYearRestriction.create(rule);
             } else if (bean.getDebtGenerationRuleRestriction().getStrategyImplementation()
                     .equals(DebtsWithNoPaymentCodeReferences.class.getName())) {
-                org.fenixedu.academictreasury.domain.debtGeneration.DebtsWithNoPaymentCodeReferencesRestriction.create(rule, false);
+                org.fenixedu.academictreasury.domain.debtGeneration.DebtsWithNoPaymentCodeReferencesRestriction.create(rule);
             }
         }
         

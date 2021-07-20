@@ -1,3 +1,5 @@
+- Refactor: Receive Bennu specific service implementations from fenixedu-academic-treasury-ui
+
 7.0.3 (15-06-2021)
 - Bug Fix: TuitionPaymentPlan.conditionsDescription is now String type instead of LocalizedString, so remove the "content" property in JSP
 
