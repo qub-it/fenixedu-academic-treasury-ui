@@ -297,42 +297,26 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
 
     @Override
     @Deprecated
-    // This should be in some TreasuryAccessControl extension
     public boolean isFrontOfficeMember(String username, FinantialEntity finantialEntity) {
-        final User user = User.findByUsername(username);
-
-        return AcademicAccessRule.isMember(user, AcademicOperationType.MANAGE_STUDENT_PAYMENTS, emptySet(),
-                singleton(finantialEntity.getAdministrativeOffice()));
+        throw new RuntimeException("deprecated");
     }
 
     @Override
     @Deprecated
-    // This should be in some TreasuryAccessControl extension
     public boolean isBackOfficeMember(String username, FinantialEntity finantialEntity) {
-        final User user = User.findByUsername(username);
-
-        return AcademicAccessRule.isMember(user, AcademicOperationType.MANAGE_STUDENT_PAYMENTS_ADV, emptySet(),
-                singleton(finantialEntity.getAdministrativeOffice()));
+        throw new RuntimeException("deprecated");
     }
 
     @Override
     @Deprecated
-    // This should be in some TreasuryAccessControl extension
     public boolean isAllowToModifySettlements(String username, FinantialEntity finantialEntity) {
-        final User user = User.findByUsername(username);
-
-        return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_SETTLEMENTS, emptySet(),
-                singleton(finantialEntity.getAdministrativeOffice()));
+        throw new RuntimeException("deprecated");
     }
 
     @Override
     @Deprecated
-    // This should be in some TreasuryAccessControl extension
     public boolean isAllowToModifyInvoices(String username, FinantialEntity finantialEntity) {
-        final User user = User.findByUsername(username);
-
-        return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_INVOICES, emptySet(),
-                singleton(finantialEntity.getAdministrativeOffice()));
+        throw new RuntimeException("deprecated");
     }
 
     @Override
@@ -361,22 +345,14 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
 
     @Override
     @Deprecated
-    // This should be in some TreasuryAccessControl extension
     public Set<String> getFrontOfficeMemberUsernames(final FinantialEntity finantialEntity) {
-        return AcademicAccessRule
-                .getMembers(AcademicOperationType.MANAGE_STUDENT_PAYMENTS, emptySet(),
-                        singleton(finantialEntity.getAdministrativeOffice()))
-                .filter(u -> !isNullOrEmpty(u.getUsername())).map(u -> u.getUsername()).collect(Collectors.toSet());
+        throw new RuntimeException("deprecated");
     }
 
     @Override
     @Deprecated
-    // This should be in some TreasuryAccessControl extension
     public Set<String> getBackOfficeMemberUsernames(final FinantialEntity finantialEntity) {
-        return AcademicAccessRule
-                .getMembers(AcademicOperationType.MANAGE_STUDENT_PAYMENTS_ADV, emptySet(),
-                        singleton(finantialEntity.getAdministrativeOffice()))
-                .filter(u -> !isNullOrEmpty(u.getUsername())).map(u -> u.getUsername()).collect(Collectors.toSet());
+        throw new RuntimeException("deprecated");
     }
 
     /* ***************
