@@ -1,3 +1,5 @@
+- Bug Fix: Fix bug in hiding MBWay link in readDebtAccount.jsp
+
 8.0.0 (26-07-2021)
 - Refactor: Receive Bennu specific service implementations from fenixedu-academic-treasury-ui
 

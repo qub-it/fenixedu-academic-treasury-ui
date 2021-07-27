@@ -37,6 +37,8 @@ import org.fenixedu.treasury.domain.paymentcodes.MultipleEntriesPaymentCode;
 import org.fenixedu.treasury.domain.paymentcodes.PaymentCodeTarget;
 import org.fenixedu.treasury.domain.paymentcodes.SibsPaymentRequest;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatformPaymentMode;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
 import org.joda.time.DateTime;
@@ -458,9 +460,15 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
     public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForMbwayService(
             FinantialInstitution finantialInstitution) {
-        return DigitalPaymentPlatform.find(finantialInstitution).filter(DigitalPaymentPlatform::isActive)
-                .filter(d -> d.isMbwayServiceSupported())
-                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
-                .findFirst();
+        if(TreasurySettings.getInstance().getMbWayPaymentMethod() == null) {
+            return Optional.empty();
+        }
+        
+        return DigitalPaymentPlatformPaymentMode.findAll()
+                    .filter(m -> m.isActive() && m.getDigitalPaymentPlatform().isActive())
+                    .filter(m -> m.getPaymentMethod() == TreasurySettings.getInstance().getMbWayPaymentMethod())
+                    .map(m -> m.getDigitalPaymentPlatform())
+                    .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
+                    .findFirst();
     }
 }

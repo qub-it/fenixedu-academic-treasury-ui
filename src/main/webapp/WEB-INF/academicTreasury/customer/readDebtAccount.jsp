@@ -63,6 +63,8 @@ ${portal.angularToolkit()}
 	</c:if>
 
 	<% if(PaymentCodePool.isReferenceCodesActiveForStudentPortal(debtAccount.getFinantialInstitution())) { %>
+ 		&nbsp;|&nbsp;
+ 		
 		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;
 		<a class="" href="${pageContext.request.contextPath}<%= CustomerAccountingPaymentReferenceCodeController.CREATEPAYMENTCODEFORSEVERALDEBITENTRIES_URL %>/${debtAccount.externalId}">
 			<spring:message code="label.event.accounting.manageCustomer.paymentReferenceCode" />
