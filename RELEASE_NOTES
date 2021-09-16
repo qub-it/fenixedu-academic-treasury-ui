@@ -1,3 +1,5 @@
+- Refactor: Change TuitionPaymentPlanGroup.edit() invocation
+
 8.0.1 (27-07-2021)
 - Bug Fix: Fix bug in hiding MBWay link in readDebtAccount.jsp
 
