@@ -274,7 +274,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             }
         }
 
-        for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
+        for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getAssociatedPerson()
                 .getInactivePersonCustomersSet()) {
             DebtAccount inactiveDebtAccount = inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution());
             if (inactiveDebtAccount == null) {
