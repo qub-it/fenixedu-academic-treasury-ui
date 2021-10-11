@@ -1,3 +1,4 @@
+8.0.3 (11-10-2021)
 - Bug Fix: Read customer's associated person, instead of getPerson()
 
 8.0.2 (16-09-2021)
