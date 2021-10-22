@@ -1,3 +1,5 @@
+- Improvement: Make compatible forward payment request notification handle by webhook and by customer controller, in order to avoid errors due to race conditions arised by handling payment by both ways
+
 8.0.3 (11-10-2021)
 - Bug Fix: Read customer's associated person, instead of getPerson()
 

@@ -223,11 +223,16 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
 
     private static final String RETURN_FORWARD_PAYMENT_URI = "/returnforwardpayment";
     public static final String RETURN_FORWARD_PAYMENT_URL = CONTROLLER_URL + RETURN_FORWARD_PAYMENT_URI;
+    private static final long SLEEP_TIME_TO_PROCESS_WEBHOOK = 5000; // 5 seconds
 
     @RequestMapping(value = RETURN_FORWARD_PAYMENT_URI + "/{forwardPaymentId}", method = RequestMethod.GET)
     public String returnforwardpayment(@PathVariable("forwardPaymentId") ForwardPaymentRequest forwardPayment,
             @RequestParam("id") String sibsCheckoutId, Model model, HttpServletResponse response, HttpSession session) {
         try {
+
+            // Delay this request in order for webhook to process the notification
+            Thread.sleep(SLEEP_TIME_TO_PROCESS_WEBHOOK);
+
             session.setAttribute("debtAccountUrl", null);
 
             SibsPaymentsGateway impl = (SibsPaymentsGateway) forwardPayment.getDigitalPaymentPlatform();
@@ -240,11 +245,19 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
 
             // First of all save sibsTransactionId
             FenixFramework.atomic(() -> {
-                forwardPayment.setTransactionId(bean.getTransactionId());
+                if (StringUtils.isEmpty(forwardPayment.getTransactionId())) {
+                    // Not set by webhook
+                    forwardPayment.setTransactionId(bean.getTransactionId());
+                }
             });
 
             if (bean.isInPayedState()) {
                 FenixFramework.atomic(() -> {
+                    if (forwardPayment.isInPaidState()) {
+                        // Processed by webhook
+                        return;
+                    }
+
                     SibsPaymentsGatewayLog log = (SibsPaymentsGatewayLog) forwardPayment.advanceToPaidState(bean.getStatusCode(),
                             bean.getStatusMessage(), bean.getPayedAmount(), bean.getTransactionDate(), bean.getTransactionId(),
                             null, bean.getRequestBody(), bean.getResponseBody(), "");
@@ -257,6 +270,11 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
                 return String.format("redirect:%s", forwardPayment.getForwardPaymentSuccessUrl());
             } else {
                 FenixFramework.atomic(() -> {
+                    if (forwardPayment.isInRejectedState()) {
+                        // Processed by webhook
+                        return;
+                    }
+
                     SibsPaymentsGatewayLog log = (SibsPaymentsGatewayLog) forwardPayment.reject("returnforwardpayment",
                             bean.getStatusCode(), bean.getStatusMessage(), bean.getRequestBody(), bean.getResponseBody());
 
