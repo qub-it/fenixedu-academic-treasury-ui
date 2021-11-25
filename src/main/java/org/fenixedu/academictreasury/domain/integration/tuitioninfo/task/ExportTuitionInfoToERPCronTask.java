@@ -42,6 +42,7 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionIn
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 
+@Deprecated
 @Task(englishTitle = "Export tuition information to ERP", readOnly = true)
 public class ExportTuitionInfoToERPCronTask extends CronTask {
 

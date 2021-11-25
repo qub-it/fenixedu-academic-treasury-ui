@@ -41,6 +41,7 @@ import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGeneratio
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 
+@Deprecated
 @Task(englishTitle = "Create academic debts for pending registrations", readOnly = true)
 public class AcademicDebtGenerationRuleCronTask extends CronTask {
 

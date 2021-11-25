@@ -43,6 +43,7 @@ import org.fenixedu.bennu.scheduler.annotation.Task;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.joda.time.LocalDate;
 
+@Deprecated
 @Task(englishTitle = "Register debt report request to generate report", readOnly = true)
 public class RegisterDebtReportRequestTask extends CronTask {
 

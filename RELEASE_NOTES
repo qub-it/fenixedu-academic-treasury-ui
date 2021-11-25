@@ -1,3 +1,5 @@
+- Refactor: Change treasury from CronTask to RuntimeTaskExecutors
+
 8.0.4 (25-10-2021)
 - Improvement: Make compatible forward payment request notification handle by webhook and by customer controller, in order to avoid errors due to race conditions arised by handling payment by both ways
 

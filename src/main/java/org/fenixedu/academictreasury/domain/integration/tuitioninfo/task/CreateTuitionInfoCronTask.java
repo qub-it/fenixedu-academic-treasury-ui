@@ -41,6 +41,7 @@ import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionIn
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 
+@Deprecated
 @Task(englishTitle = "Create tuition information for ERP", readOnly = true)
 public class CreateTuitionInfoCronTask extends CronTask {
 
