@@ -56,12 +56,12 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-academic-treasury-base</artifactId>
-			<version>8.1.0</version>
+			<version>8.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury-ui</artifactId>
-			<version>8.1.2</version>
+			<version>8.2.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
