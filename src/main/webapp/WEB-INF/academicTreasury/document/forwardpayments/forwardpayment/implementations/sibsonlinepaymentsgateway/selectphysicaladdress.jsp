@@ -42,30 +42,37 @@ ${portal.angularToolkit()}
 	
 	<div>
 		<div class="well well-sm">
-			<p>
-				<strong><spring:message code="label.DebtAccount.finantialInstitution" />:</strong>
-				<c:out value="${debtAccount.finantialInstitution.name}" />
-			</p>
-			<p>
-				<strong><spring:message code="label.FinantialInstitution.fiscalNumber" />:</strong>
-				<c:out value="${debtAccount.finantialInstitution.fiscalNumber}" />
-			</p>
-			<p>
-				<strong><spring:message code="label.DebtAccount.finantialInstitution.address" />:</strong>
-				<c:out value="${debtAccount.finantialInstitution.address}" />,&nbsp;
-				<c:out value="${debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
-				<c:out value="${debtAccount.finantialInstitution.locality}" />,&nbsp;
-				<pf:placeName place="${debtAccount.finantialInstitution.country}" />
-			</p>
-			<p>
-				<strong><spring:message code="label.FinantialInstitution.telephoneContact" />:</strong>
-				<c:out value="${debtAccount.finantialInstitution.telephoneContact}" />
-			</p>
-			<p>
-				<strong><spring:message code="label.FinantialInstitution.email" />:</strong>
-				<c:out value="${debtAccount.finantialInstitution.email}" />
-			</p>
-			
+			<c:choose>
+				<c:when test="${Boolean.TRUE.equals(forwardPaymentConfiguration.getOverrideFinantialInstitutionInfoHeader())}">
+					<c:out value="${forwardPaymentConfiguration.finantialInstitutionInfoHeader.content}" escapeXml="false" />
+				</c:when>
+				<c:otherwise>
+					<p>
+						<strong><spring:message code="label.DebtAccount.finantialInstitution" />:</strong>
+						<c:out value="${debtAccount.finantialInstitution.name}" />
+					</p>
+					<p>
+						<strong><spring:message code="label.FinantialInstitution.fiscalNumber" />:</strong>
+						<c:out value="${debtAccount.finantialInstitution.fiscalNumber}" />
+					</p>
+					<p>
+						<strong><spring:message code="label.DebtAccount.finantialInstitution.address" />:</strong>
+						<c:out value="${debtAccount.finantialInstitution.address}" />,&nbsp;
+						<c:out value="${debtAccount.finantialInstitution.zipCode}" />&nbsp;-&nbsp;
+						<c:out value="${debtAccount.finantialInstitution.locality}" />,&nbsp;
+						<pf:placeName place="${debtAccount.finantialInstitution.country}" />
+					</p>
+					<p>
+						<strong><spring:message code="label.FinantialInstitution.telephoneContact" />:</strong>
+						<c:out value="${debtAccount.finantialInstitution.telephoneContact}" />
+					</p>
+					<p>
+						<strong><spring:message code="label.FinantialInstitution.email" />:</strong>
+						<c:out value="${debtAccount.finantialInstitution.email}" />
+					</p>
+				</c:otherwise>
+			</c:choose>
+					
             <p>&nbsp;</p>
 			<p>
 				<strong><spring:message code="label.DebtAccount.customer" />:</strong>
