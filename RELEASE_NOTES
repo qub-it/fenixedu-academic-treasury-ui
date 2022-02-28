@@ -1,3 +1,4 @@
+8.0.5 (28-02-2022)
 - Refactor: Change treasury from CronTask to RuntimeTaskExecutors
 - Improvement: Override information of finantial institution info header in online payments
 
