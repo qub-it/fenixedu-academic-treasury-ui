@@ -121,7 +121,7 @@ ${portal.toolkit()}
 		
 							<p>
 								<strong><spring:message code="label.ExemptionsGenerationRequestFile.amountToExempt" />:</strong>
-								<c:out value='${r.amountToExempt}' />&nbsp; &euro;	
+								<c:out value='${r.netAmountToExempt}' />&nbsp; &euro;	
 							</p>
 		
 							<p>
