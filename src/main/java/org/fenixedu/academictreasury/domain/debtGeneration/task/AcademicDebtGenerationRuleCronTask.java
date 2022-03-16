@@ -38,6 +38,7 @@
 package org.fenixedu.academictreasury.domain.debtGeneration.task;
 
 import org.fenixedu.academictreasury.domain.debtGeneration.AcademicDebtGenerationRule;
+import org.fenixedu.academictreasury.domain.settings.AcademicTreasurySettings;
 import org.fenixedu.bennu.scheduler.CronTask;
 import org.fenixedu.bennu.scheduler.annotation.Task;
 
@@ -47,6 +48,10 @@ public class AcademicDebtGenerationRuleCronTask extends CronTask {
 
     @Override
     public void runTask() throws Exception {
+        if (!AcademicTreasurySettings.getInstance().isDebtGenerationRulesPeriodicExecutionActive()) {
+            taskLog("Periodic execution inactive. Exiting...");
+            return;
+        }
         
         AcademicDebtGenerationRule.runAllActive(true);
     }

@@ -1,4 +1,5 @@
 - Refactor: Mark ExemptionsGenerationRowResult::exemptedAmount as deprecated and replace with ExemptionsGenerationRowResult::netExemptedAmount
+- Improvement: Control periodic execution of academic debt generation rules
 
 8.0.5 (28-02-2022)
 - Refactor: Change treasury from CronTask to RuntimeTaskExecutors
