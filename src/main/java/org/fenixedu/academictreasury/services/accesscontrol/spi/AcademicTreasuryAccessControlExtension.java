@@ -116,6 +116,10 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
             final Degree degree = (Degree) context;
             final FinantialEntity finantialEntity = services.finantialEntityOfDegree(degree, new LocalDate());
             
+            if(finantialEntity == null) {
+                return false;
+            }
+            
             return isBackOfficeMember(username, finantialEntity);
         }
 
