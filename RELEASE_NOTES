@@ -1,3 +1,4 @@
+8.0.7 (22-04-2022)
 - Bug Fix: Return false in evaluation of permission, if degree has no associated finantial entity
 
 8.0.6 (16-03-2022)
