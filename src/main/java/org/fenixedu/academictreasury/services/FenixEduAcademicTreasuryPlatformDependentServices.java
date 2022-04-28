@@ -35,16 +35,13 @@
  */
 package org.fenixedu.academictreasury.services;
 
-import static com.google.common.base.Strings.isNullOrEmpty;
-import static java.util.Collections.emptySet;
-import static java.util.Collections.singleton;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -61,8 +58,6 @@ import org.fenixedu.academic.domain.ExecutionDegree;
 import org.fenixedu.academic.domain.ExecutionInterval;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.Person;
-import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicAccessRule;
-import org.fenixedu.academic.domain.accessControl.academicAdministration.AcademicOperationType;
 import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.candidacy.IngressionType;
 import org.fenixedu.academic.domain.contacts.PartyContact;
@@ -79,7 +74,6 @@ import org.fenixedu.academic.domain.student.StatuteType;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.event.AcademicTreasuryEvent;
 import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.commons.i18n.I18N;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.joda.time.LocalDate;
@@ -323,14 +317,64 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     public Set<Degree> readDegrees(FinantialEntity finantialEntity) {
         if (finantialEntity.getAdministrativeOffice() != null) {
             return finantialEntity.getAdministrativeOffice().getAdministratedDegrees();
+        } else if (finantialEntity.getUnit() != null) {
+            return finantialEntity.getUnit().getAllSubUnits().stream().filter(u -> u.isDegreeUnit()).map(u -> u.getDegree())
+                    .collect(Collectors.toSet());
         }
 
         return Collections.emptySet();
     }
 
     @Override
+    /*
+     * This method returns the Finantial Entity responsible for the degree.
+     * 
+     * This method is used to get the academic tariffs associated with the Finantial Entity.
+     * Also it is used to get the finantial institution, in order to know the debt account associated
+     * with the customer.
+     * 
+     * For tuitions it is different, in the sense that the TuitionPaymentPlan is obtained with
+     * DegreeCurricularPlan. With the TuitionPaymentPlan we get the FinantialEntity.
+     * 
+     */
     public FinantialEntity finantialEntityOfDegree(Degree degree, LocalDate when) {
-        return degree.getAdministrativeOffice() != null ? degree.getAdministrativeOffice().getFinantialEntity() : null;
+        if (degree.getAdministrativeOffice() != null) {
+            return degree.getAdministrativeOffice().getFinantialEntity();
+        } else {
+            // Look at the organizational structure
+            Unit degreeUnit = degree.getUnit();
+
+            if (degreeUnit == null) {
+                return null;
+            }
+
+            List<FinantialEntity> candidateFinantialEntities = degreeUnit.getAllParentUnits().stream()
+                    .map(parent -> parent.getFinantialEntity())
+                    .filter(Objects::nonNull)
+                    .sorted(FinantialEntity.COMPARE_BY_NAME)
+                    .collect(Collectors.toList());
+
+            if(candidateFinantialEntities.size() == 1) {
+                // There is no ambiguity. The degree descendent of one unit
+                // associated with the finantial entity
+                
+                return candidateFinantialEntities.iterator().next();
+            } else if(candidateFinantialEntities.size() > 1) {
+                // The degree is descendent of more than one unit
+                // associated with the finantial entity
+                //
+                // We need to untie and find which finantial entity
+                // is responsible for finantial entity
+                
+                // TODO: Find with a specific accountability type?
+                // It is not desirable to return the first ordered
+                // alphabetically
+                
+                return candidateFinantialEntities.iterator().next();
+            }
+        }
+        
+        return null;
     }
 
     @Override

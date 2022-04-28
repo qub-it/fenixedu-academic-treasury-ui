@@ -1,3 +1,6 @@
+- Improvement: If the access control configuration is disabled, for using academic authorizations as access control, then return false in all query methods for treasury access control
+- Improvement: Support query degrees for finantial entity, and finantial entity for some degree, using Units beside AdministrativeOffice
+
 8.0.7 (22-04-2022)
 - Bug Fix: Return false in evaluation of permission, if degree has no associated finantial entity
 

@@ -50,27 +50,40 @@ import org.fenixedu.academictreasury.services.IAcademicTreasuryPlatformDependent
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
+import org.fenixedu.treasury.domain.accesscontrol.TreasuryAccessControlConfiguration;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.services.accesscontrol.spi.ITreasuryAccessControlExtension;
 import org.joda.time.LocalDate;
 
 import com.google.common.collect.Sets;
 
-// TODO: Replace by the new access control system based in permissions, but all instances must be configured properly
+// TODO: Until all users are fully registered in permission based access control, this class must be registered
 public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessControlExtension<Object> {
 
     @Override
     public boolean isFrontOfficeMember(final String username) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return FinantialInstitution.findAll().map(l -> isFrontOfficeMember(username, l)).reduce((a, b) -> a || b).orElse(false);
     }
 
     @Override
     public boolean isFrontOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return FinantialEntity.find(finantialInstitution).map(l -> isFrontOfficeMember(username, l)).reduce((a, b) -> a || b)
                 .orElse(false);
     }
 
     private boolean isFrontOfficeMember(final String username, final FinantialEntity finantialEntity) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return AcademicAccessRule.isMember(user, AcademicOperationType.MANAGE_STUDENT_PAYMENTS, emptySet(),
@@ -79,6 +92,10 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isFrontOfficeMemberWithinContext(final String username, final Object context) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         final IAcademicTreasuryPlatformDependentServices services = AcademicTreasuryPlataformDependentServicesFactory.implementation();
         if (context instanceof Degree) {
             final Degree degree = (Degree) context;
@@ -92,17 +109,29 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
     
     @Override
     public boolean isBackOfficeMember(final String username) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return FinantialInstitution.findAll().map(l -> isBackOfficeMember(username, l)).reduce((a, b) -> a || b).orElse(false);
     }
 
     @Override
     public boolean isBackOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return FinantialEntity.find(finantialInstitution).map(l -> isBackOfficeMember(username, l)).reduce((a, b) -> a || b)
                 .orElse(false);
     }
 
     @Override
     public boolean isBackOfficeMember(final String username, final FinantialEntity finantialEntity) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return AcademicAccessRule.isMember(user, AcademicOperationType.MANAGE_STUDENT_PAYMENTS_ADV, emptySet(),
@@ -111,6 +140,10 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isBackOfficeMemberWithinContext(String username, Object context) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         final IAcademicTreasuryPlatformDependentServices services = AcademicTreasuryPlataformDependentServicesFactory.implementation();
         if (context instanceof Degree) {
             final Degree degree = (Degree) context;
@@ -137,16 +170,28 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isManager(final String username) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return false;
     }
 
     @Override
     public boolean isAllowToModifySettlements(final String username, final FinantialInstitution finantialInstitution) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return FinantialEntity.find(finantialInstitution).map(l -> isAllowToModifySettlements(username, l))
                 .reduce((a, b) -> a || b).orElse(false);
     }
 
     private boolean isAllowToModifySettlements(final String username, final FinantialEntity finantialEntity) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_SETTLEMENTS, emptySet(),
@@ -155,11 +200,19 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isAllowToModifyInvoices(final String username, final FinantialInstitution finantialInstitution) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return FinantialEntity.find(finantialInstitution).map(l -> isAllowToModifyInvoices(username, l)).reduce((a, b) -> a || b)
                 .orElse(false);
     }
 
     private boolean isAllowToModifyInvoices(final String username, final FinantialEntity finantialEntity) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         final User user = User.findByUsername(username);
 
         return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_INVOICES, emptySet(),
@@ -168,11 +221,19 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isAllowToConditionallyAnnulSettlementNote(final String username, final SettlementNote settlementNote) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return false;
     }
 
     @Override
     public boolean isAllowToAnnulSettlementNoteWithoutAnyRestriction(final String username, final SettlementNote settlementNote) {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return false;
+        }
+        
         return false;
     }
 
@@ -180,6 +241,11 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
     public Set<String> getFrontOfficeMemberUsernames() {
         final Set<String> result = Sets.newHashSet();
 
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return result;
+        }
+        
+        
         FinantialEntity.findAll().forEach(entity -> {
             result.addAll(AcademicAccessRule
                     .getMembers(AcademicOperationType.MANAGE_STUDENT_PAYMENTS, emptySet(),
@@ -194,6 +260,10 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
     public Set<String> getBackOfficeMemberUsernames() {
         final Set<String> result = Sets.newHashSet();
 
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return result;
+        }
+        
         FinantialEntity.findAll().forEach(entity -> {
             result.addAll(AcademicAccessRule
                     .getMembers(AcademicOperationType.MANAGE_STUDENT_PAYMENTS_ADV, emptySet(),
@@ -206,6 +276,10 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public Set<String> getTreasuryManagerMemberUsernames() {
+        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+            return Sets.newHashSet();
+        }
+        
         return Sets.newHashSet();
     }
 
