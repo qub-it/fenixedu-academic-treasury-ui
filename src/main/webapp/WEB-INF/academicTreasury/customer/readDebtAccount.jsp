@@ -1,5 +1,6 @@
 <%@page import="org.fenixedu.academictreasury.ui.customer.paymentreferencecode.CustomerAccountingPaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.mbwaypaymentrequest.CustomerAccountingMbwayPaymentRequestController"%>
+<%@page import="org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool"  %>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.CustomerAccountingController"%>
@@ -219,8 +220,8 @@ ${portal.angularToolkit()}
                                     <li>
                                     	<c:out value="${pendingEntry.description}" />
                                     	
-                                    	<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingDebitEntry)}">
-                                    		<c:forEach var="msg" items="TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingDebitEntry)">
+                                    	<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
+                                    		<c:forEach var="msg" items="${TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
                                     			<p><em><c:out value="${msg.content}" /></em></p>
                                     		</c:forEach>
                                     	</c:if>
@@ -232,6 +233,12 @@ ${portal.angularToolkit()}
                                     <c:forEach var="docEntry" items="${pendingEntry.finantialDocument.finantialDocumentEntriesSet }">
                                         <li>
                                         	<c:out value="${docEntry.description}" />
+                                    	
+	                                    	<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
+	                                    		<c:forEach var="msg" items="${TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
+	                                    			<p><em><c:out value="${msg.content}" /></em></p>
+	                                    		</c:forEach>
+	                                    	</c:if>
                                         </li>
                                     </c:forEach>
                                 </ul>
