@@ -1,9 +1,10 @@
 <%@page import="org.fenixedu.academictreasury.ui.customer.paymentreferencecode.CustomerAccountingPaymentReferenceCodeController"%>
-<%@page import="org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.mbwaypaymentrequest.CustomerAccountingMbwayPaymentRequestController"%>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.CustomerAccountingController"%>
+<%@page import="org.fenixedu.treasury.domain.treasurydebtprocess.TreasuryDebtProcessMainService" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -215,7 +216,15 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <c:if test="${empty pendingEntry.finantialDocument }">
                                 <ul>
-                                    <li><c:out value="${pendingEntry.description}" /></li>
+                                    <li>
+                                    	<c:out value="${pendingEntry.description}" />
+                                    	
+                                    	<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingDebitEntry)}">
+                                    		<c:forEach var="msg" items="TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingDebitEntry)">
+                                    			<p><em><c:out value="${msg.content}" /></em></p>
+                                    		</c:forEach>
+                                    	</c:if>
+                                    </li>
                                 </ul>
                             </c:if>
                             <c:if test="${not empty pendingEntry.finantialDocument }">
