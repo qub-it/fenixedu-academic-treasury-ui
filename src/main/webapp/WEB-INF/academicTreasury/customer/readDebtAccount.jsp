@@ -164,6 +164,14 @@ ${portal.angularToolkit()}
 	<span class="label label-warning"><spring:message code="label.CustomerAccounting.ensure.vat.number.valid" /></span>
 </h4>
 
+<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(debtAccount)}">
+	<c:forEach var="msg" items="${TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(debtAccount)}">
+		<h4 style="margin-bottom: 30px; margin-top: 30px;">
+			<span class="label label-warning"><c:out value="${msg.content}" /></span>
+		</h4>
+	</c:forEach>
+</c:if>
+
 <div id="content">
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 
@@ -222,7 +230,7 @@ ${portal.angularToolkit()}
                                     	
                                     	<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
                                     		<c:forEach var="msg" items="${TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
-                                    			<p><em><c:out value="${msg.content}" /></em></p>
+                                    			<p><strong><em class="label label-info"><c:out value="${msg.content}" /></em></strong></p>
                                     		</c:forEach>
                                     	</c:if>
                                     </li>
@@ -236,7 +244,7 @@ ${portal.angularToolkit()}
                                     	
 	                                    	<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
 	                                    		<c:forEach var="msg" items="${TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
-	                                    			<p><em><c:out value="${msg.content}" /></em></p>
+	                                    			<p><strong><em class="label label-info"><c:out value="${msg.content}" /></em></strong></p>
 	                                    		</c:forEach>
 	                                    	</c:if>
                                         </li>
