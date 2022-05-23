@@ -1,9 +1,11 @@
 <%@page import="org.fenixedu.academictreasury.ui.customer.paymentreferencecode.CustomerAccountingPaymentReferenceCodeController"%>
-<%@page import="org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.mbwaypaymentrequest.CustomerAccountingMbwayPaymentRequestController"%>
+<%@page import="org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool"  %>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.CustomerAccountingController"%>
+<%@page import="org.fenixedu.treasury.domain.treasurydebtprocess.TreasuryDebtProcessMainService" %>
+
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jstl/fmt"%>
@@ -162,6 +164,14 @@ ${portal.angularToolkit()}
 	<span class="label label-warning"><spring:message code="label.CustomerAccounting.ensure.vat.number.valid" /></span>
 </h4>
 
+<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(debtAccount)}">
+	<c:forEach var="msg" items="${TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(debtAccount)}">
+		<h4 style="margin-bottom: 30px; margin-top: 30px;">
+			<span class="label label-warning"><c:out value="${msg.content}" /></span>
+		</h4>
+	</c:forEach>
+</c:if>
+
 <div id="content">
     <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
 
@@ -215,7 +225,15 @@ ${portal.angularToolkit()}
                             </datatables:columnHead>
                             <c:if test="${empty pendingEntry.finantialDocument }">
                                 <ul>
-                                    <li><c:out value="${pendingEntry.description}" /></li>
+                                    <li>
+                                    	<c:out value="${pendingEntry.description}" />
+                                    	
+                                    	<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
+                                    		<c:forEach var="msg" items="${TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
+                                    			<p><strong><em class="label label-info"><c:out value="${msg.content}" /></em></strong></p>
+                                    		</c:forEach>
+                                    	</c:if>
+                                    </li>
                                 </ul>
                             </c:if>
                             <c:if test="${not empty pendingEntry.finantialDocument }">
@@ -223,6 +241,12 @@ ${portal.angularToolkit()}
                                     <c:forEach var="docEntry" items="${pendingEntry.finantialDocument.finantialDocumentEntriesSet }">
                                         <li>
                                         	<c:out value="${docEntry.description}" />
+                                    	
+	                                    	<c:if test="${not empty TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
+	                                    		<c:forEach var="msg" items="${TreasuryDebtProcessMainService.getBlockingPaymentReasonsForFrontend(pendingEntry)}">
+	                                    			<p><strong><em class="label label-info"><c:out value="${msg.content}" /></em></strong></p>
+	                                    		</c:forEach>
+	                                    	</c:if>
                                         </li>
                                     </c:forEach>
                                 </ul>

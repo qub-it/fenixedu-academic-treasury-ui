@@ -1,3 +1,5 @@
+- Refactor: Present messages like information or warnings, given by some treasury debt process
+
 8.1.0 (02-05-2022)
 - Improvement: If the access control configuration is disabled, for using academic authorizations as access control, then return false in all query methods for treasury access control
 - Improvement: Support query degrees for finantial entity, and finantial entity for some degree, using Units beside AdministrativeOffice
