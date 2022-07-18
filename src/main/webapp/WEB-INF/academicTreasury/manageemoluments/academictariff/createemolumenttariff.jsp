@@ -133,22 +133,6 @@ function registerJqueryReadyClosure(func) {
 
     <div class="panel panel-default">
         <div class="panel-body">
-            <div class="form-group row">
-                <div class="col-sm-2 control-label">
-                    <spring:message
-                        code="label.AcademicTariff.administrativeOffice" />
-                </div>
-                <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
-                    <select id="academicTariff_administrativeOffice"
-                        class="js-example-basic-single"
-                        name="administrativeoffice"
-                        ng-model="object.administrativeOffice">
-                        <option value=""></option>
-                        <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
-                    </select>
-                </div>
-            </div>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
@@ -616,24 +600,6 @@ function registerJqueryReadyClosure(func) {
 <script>
 
 registerJqueryReadyClosure(function() {
-	<%-- Block for providing administrativeOffice options --%>
-	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
-	administrativeOffice_options = [
-		<c:forEach items="${AcademicTariff_administrativeOffice_options}" var="element"> 
-			{
-				text : "<c:out value='${element.name.content}'/>",  
-				id : "<c:out value='${element.externalId}'/>"
-			},
-		</c:forEach>
-	];
-	
-	$("#academicTariff_administrativeOffice").select2(
-			{
-			data : administrativeOffice_options,
-		}	  
-    );
-    
-    $("#academicTariff_administrativeOffice").select2().select2('val', '<c:out value='${not empty academicTariffBean.administrativeOffice ? academicTariffBean.administrativeOffice.externalId : ""}'/>');
 
 	<%-- End block for providing administrativeOffice options --%>
 	<%-- Block for providing degreeType options --%>

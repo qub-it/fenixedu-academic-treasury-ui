@@ -11,18 +11,10 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.Degree;
-import org.fenixedu.academic.domain.administrativeOffice.AdministrativeOffice;
 import org.fenixedu.academic.domain.degree.DegreeType;
-import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
 import org.fenixedu.academictreasury.domain.tariff.AcademicTariff;
 import org.fenixedu.academictreasury.dto.tariff.AcademicTariffBean;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
-import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
-import pt.ist.fenixframework.FenixFramework;
-
-import org.fenixedu.bennu.core.domain.Bennu;
-import org.fenixedu.bennu.core.domain.exceptions.DomainException;
-import org.fenixedu.bennu.core.i18n.BundleUtil;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
@@ -75,7 +67,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             academicTariff.delete();
 
             addInfoMessage(academicTreasuryBundle("label.AcademicTariff.delete.success"), model);
-        } catch (DomainException ex) {
+        } catch (Exception ex) {
             addErrorMessage(ex.getLocalizedMessage(), model);
         }
 
@@ -111,16 +103,6 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         model.addAttribute("academicTariffBean", academicTariffBean);
         model.addAttribute("academicTariffBeanJson", getBeanJson(academicTariffBean));
 
-        model.addAttribute("AcademicTariff_administrativeOffice_options", Bennu.getInstance().getAdministrativeOfficesSet()
-                .stream().sorted(new Comparator<AdministrativeOffice>() {
-
-                    @Override
-                    public int compare(AdministrativeOffice o1, AdministrativeOffice o2) {
-                        int c = o1.getName().getContent().compareTo(o2.getName().getContent());
-                        return c != 0 ? c : o1.getExternalId().compareTo(o2.getExternalId());
-                    }
-                }).collect(Collectors.toList()));
-
         model.addAttribute("AcademicTariff_degreeType_options", DegreeType.all().sorted(new Comparator<DegreeType>() {
 
             @Override
@@ -155,16 +137,12 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
 
             bean.resetFields();
             
-            if(bean.getAdministrativeOffice() == null) {
-                throw new AcademicTreasuryDomainException("error.AcademicTariff.administrativeOffice.required");
-            }
-            
             AcademicTariff academicTariff = AcademicTariff.create(finantialEntity, product, bean);
 
             return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
                     finantialEntity.getExternalId(), product.getExternalId(), academicTariff.getExternalId());
 
-        } catch (DomainException de) {
+        } catch (Exception de) {
             addErrorMessage(de.getLocalizedMessage(), model);
             return _createemolumenttariff(finantialEntity, product, bean, model);
         }
@@ -217,7 +195,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
                     finantialEntity.getExternalId(), product.getExternalId(), academicTariff.getExternalId());
 
-        } catch (DomainException de) {
+        } catch (Exception de) {
             addErrorMessage(de.getLocalizedMessage(), model);
 
             return _updateemolumenttariff(finantialEntity, product, academicTariff, academicTariffBean, model);
