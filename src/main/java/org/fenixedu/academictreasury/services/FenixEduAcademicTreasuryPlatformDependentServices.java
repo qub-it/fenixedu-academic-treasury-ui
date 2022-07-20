@@ -318,8 +318,11 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
         if (finantialEntity.getAdministrativeOffice() != null) {
             return finantialEntity.getAdministrativeOffice().getAdministratedDegrees();
         } else if (finantialEntity.getUnit() != null) {
-            return finantialEntity.getUnit().getAllSubUnits().stream().filter(u -> u.isDegreeUnit()).map(u -> u.getDegree())
-                    .collect(Collectors.toSet());
+            return finantialEntity.getUnit().getAllSubUnits().stream() //
+                    .filter(u -> u.isDegreeUnit()) //
+                    .filter(u -> u.getDegree() != null) //
+                    .map(u -> u.getDegree()) //
+                    .collect(Collectors.toSet()); //
         }
 
         return Collections.emptySet();
