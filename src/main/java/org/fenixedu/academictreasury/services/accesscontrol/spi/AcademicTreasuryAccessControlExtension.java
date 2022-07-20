@@ -199,6 +199,7 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
     }
 
     @Override
+    @Deprecated
     public boolean isAllowToModifyInvoices(final String username, final FinantialInstitution finantialInstitution) {
         if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
@@ -208,6 +209,7 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
                 .orElse(false);
     }
 
+    @Deprecated
     private boolean isAllowToModifyInvoices(final String username, final FinantialEntity finantialEntity) {
         if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
