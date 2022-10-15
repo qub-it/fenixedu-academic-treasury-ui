@@ -325,33 +325,6 @@ angular.module('angularAppCopyTuitionPaymentPlan', ['ngSanitize', 'ui.select','b
 			<p><strong>[<c:out value="${installment.interestType.descriptionI18N.content}" />]</strong></p>
 			
 			<c:choose>
-				<c:when test="${installment.interestType.daily}">
-					<p>
-						<strong><spring:message code="label.TuitionInstallmentTariff.numberOfDaysAfterCreationForDueDate"  />:&nbsp;</strong>
-						<c:out value="${installment.numberOfDaysAfterDueDate}" />
-					</p>
-					<p>
-						<strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:&nbsp;</strong>
-						<c:if test="${installment.applyInFirstWorkday}">
-							<spring:message code="label.true" />
-						</c:if>
-						<c:if test="${not installment.applyInFirstWorkday}">
-							<spring:message code="label.false" />
-						</c:if>
-					</p>
-					
-					<c:if test="${installment.maximumDaysToApplyPenaltyApplied}">
-						<p>
-							<strong><spring:message code="label.TuitionInstallmentTariff.maximumDaysToApplyPenalty" />:&nbsp;</strong>
-							<c:out value="${installment.maximumDaysToApplyPenalty}" />
-						</p>
-					</c:if>
-					
-					<p>
-						<strong><spring:message code="label.TuitionInstallmentTariff.rate" />:&nbsp;</strong>
-						<c:out value="${installment.rate}" />&nbsp;&#37;
-					</p>
-				</c:when>
 				
 				<c:when test="${installment.interestType.fixedAmount}">
 					<p>

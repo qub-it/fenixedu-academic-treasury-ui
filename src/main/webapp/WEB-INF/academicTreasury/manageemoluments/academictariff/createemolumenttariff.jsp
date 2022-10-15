@@ -501,65 +501,6 @@ function registerJqueryReadyClosure(func) {
                     </div>
                 </div>
 
-                <c:if test="${academicTariffBean.interestType.daily}">
-                    <div class="form-group row">
-                        <div class="col-sm-2 control-label">
-                            <spring:message
-                                code="label.AcademicTariff.numberOfDaysAfterDueDate" />
-                        </div>
-
-                        <div class="col-sm-10">
-                            <input
-                                id="academicTariff_numberOfDaysAfterDueDate"
-                                class="form-control" type="text"
-                                name="numberOfDaysAfterDueDate"
-                                value='<c:out value='${not empty academicTariffBean.numberOfDaysAfterDueDate ? academicTariffBean.numberOfDaysAfterDueDate : "" }'/>'
-                                ng-model="object.numberOfDaysAfterDueDate" />
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <div class="col-sm-2 control-label">
-                            <spring:message
-                                code="label.AcademicTariff.applyInFirstWorkday" />
-                        </div>
-
-                        <div class="col-sm-4">
-                            <select
-                                id="academicTariff_applyInFirstWorkday"
-                                class="form-control"
-                                name="applyInFirstWorkday"
-                                ng-model="object.applyInFirstWorkday">
-                                <option value="true"><spring:message
-                                        code="label.yes" /></option>
-                                <option value="false"><spring:message
-                                        code="label.no" /></option>
-                            </select>
-                        </div>
-                    </div>
-                    <script type="text/javascript">
-					registerJqueryReadyClosure(function() {
-						$("#academicTariff_applyInFirstWorkday").select2().select2('val', '${academicTariffBean.applyInFirstWorkday}');
-					});
-				</script>
-
-
-                    <div class="form-group row">
-                        <div class="col-sm-2 control-label">
-                            <spring:message
-                                code="label.AcademicTariff.maximumDaysToApplyPenalty" />
-                        </div>
-
-                        <div class="col-sm-10">
-                            <input
-                                id="academicTariff_maximumDaysToApplyPenalty"
-                                class="form-control" type="text"
-                                name="maximumDaysToApplyPenalty"
-                                value='<c:out value='${not empty academicTariffBean.maximumDaysToApplyPenalty ? academicTariffBean.maximumDaysToApplyPenalty : "" }'/>'
-                                ng-model="object.maximumDaysToApplyPenalty" />
-                        </div>
-                    </div>
-                </c:if>
                 <c:if
                     test="${academicTariffBean.interestType.fixedAmount}">
                     <div class="form-group row">

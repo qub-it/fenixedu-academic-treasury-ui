@@ -294,26 +294,6 @@ ${portal.toolkit()}
                                     <strong>[${tariff.interestRate.interestType.descriptionI18N.content}]</strong>
 
                                     <c:if
-                                        test="${tariff.interestRate.interestType.daily}">
-                                        <p>
-                                            <strong><spring:message
-                                                    code="label.AcademicTariff.rate" />:</strong>
-                                            <span>${tariff.interestRate.rate}
-                                                %</span>
-                                        </p>
-                                        <p>
-                                            <strong><spring:message
-                                                    code="label.AcademicTariff.numberOfDaysAfterDueDate" />:</strong>
-                                            <span>${tariff.interestRate.numberOfDaysAfterDueDate}</span>
-                                            <c:if
-                                                test="${tariff.interestRate.applyInFirstWorkday}">
-                                                <span><em>(<spring:message
-                                                            code="label.AcademicTariff.applyInFirstWorkday.view" />)
-                                                </em></span>
-                                            </c:if>
-                                        </p>
-                                    </c:if>
-                                    <c:if
                                         test="${tariff.interestRate.interestType.fixedAmount}">
                                         <p>
                                             <strong><spring:message

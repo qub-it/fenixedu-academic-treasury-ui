@@ -364,34 +364,6 @@ ${portal.toolkit()}
                             </p>
 
                             <c:choose>
-                                <c:when test="${installment.interestRate.interestType.daily}">
-                                    <p>
-                                        <strong><spring:message code="label.TuitionInstallmentTariff.numberOfDaysAfterCreationForDueDate" />:&nbsp;</strong>
-                                        <c:out value="${installment.interestRate.numberOfDaysAfterDueDate}" />
-                                    </p>
-                                    <p>
-                                        <strong><spring:message code="label.TuitionInstallmentTariff.applyInFirstWorkday" />:&nbsp;</strong>
-                                        <c:if test="${installment.interestRate.applyInFirstWorkday}">
-                                            <spring:message code="label.true" />
-                                        </c:if>
-                                        <c:if test="${not installment.interestRate.applyInFirstWorkday}">
-                                            <spring:message code="label.false" />
-                                        </c:if>
-                                    </p>
-
-                                    <c:if test="${installment.interestRate.maximumDaysToApplyPenaltyApplied}">
-                                        <p>
-                                            <strong><spring:message code="label.TuitionInstallmentTariff.maximumDaysToApplyPenalty" />:&nbsp;</strong>
-                                            <c:out value="${installment.interestRate.maximumDaysToApplyPenalty}" />
-                                        </p>
-                                    </c:if>
-
-                                    <p>
-                                        <strong><spring:message code="label.TuitionInstallmentTariff.rate" />:&nbsp;</strong>
-                                        <c:out value="${installment.interestRate.rate}" />
-                                        &nbsp;&#37;
-                                    </p>
-                                </c:when>
 
                                 <c:when test="${installment.interestRate.interestType.fixedAmount}">
                                     <p>
