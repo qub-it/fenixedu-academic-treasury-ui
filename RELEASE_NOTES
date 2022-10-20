@@ -1,6 +1,7 @@
 - Refactor: Delete old finantial entity management UI
 - Refactor: Remove deprecated InterestType.DAILY
 - Refactor: Remove references of AdministrativeOffice in AcademicTariff and FinantialEntity
+- Refactor: Remove references for method PartyContact::isToBeValidated
 
 8.1.4 (20-07-2022)
 - Bug Fix: In retrieving the degrees associated with finantial entity by parent unit, filter the units which does not have the degree set

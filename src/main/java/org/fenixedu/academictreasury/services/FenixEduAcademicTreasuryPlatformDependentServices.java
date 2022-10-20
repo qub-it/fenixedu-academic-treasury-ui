@@ -206,17 +206,11 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
                 return 1;
             }
 
-            if (o1.isToBeValidated() && !o2.isToBeValidated()) {
-                return -1;
-            } else if (!o1.isToBeValidated() && o2.isToBeValidated()) {
-                return 1;
-            }
-
             return 10 * PhysicalAddress.COMPARATOR_BY_ADDRESS.compare(o1, o2) + o1.getExternalId().compareTo(o2.getExternalId());
         };
 
         return person.getAllPartyContacts(PhysicalAddress.class).stream().map(PhysicalAddress.class::cast)
-                .filter(pc -> pc.isToBeValidated() || pc.isValid()).sorted(comparator).collect(Collectors.toList());
+                .filter(pc -> pc.isValid()).sorted(comparator).collect(Collectors.toList());
     }
 
     @Override
@@ -226,12 +220,6 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
             if (o1.isValid() && !o2.isValid()) {
                 return -1;
             } else if (!o1.isValid() && o2.isValid()) {
-                return 1;
-            }
-
-            if (o1.isToBeValidated() && !o2.isToBeValidated()) {
-                return -1;
-            } else if (!o1.isToBeValidated() && o2.isToBeValidated()) {
                 return 1;
             }
 
