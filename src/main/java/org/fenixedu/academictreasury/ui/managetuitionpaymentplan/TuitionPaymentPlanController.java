@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.fenixedu.academic.domain.DegreeCurricularPlan;
+import org.fenixedu.academic.domain.ExecutionInterval;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academictreasury.domain.tuition.TuitionInstallmentTariff;
 import org.fenixedu.academictreasury.domain.tuition.TuitionPaymentPlan;
@@ -576,7 +577,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
         model.addAttribute("academicTariffBeanJson", getBeanJson(academicTariffBean));
 
         final FinantialEntity finantialEntity = tuitionInstallmentTariff.getFinantialEntity();
-        final ExecutionYear executionYear = tuitionInstallmentTariff.getTuitionPaymentPlan().getExecutionYear();
+        final ExecutionInterval executionYear = tuitionInstallmentTariff.getTuitionPaymentPlan().getExecutionYear();
         final DegreeCurricularPlan degreeCurricularPlan =
                 tuitionInstallmentTariff.getTuitionPaymentPlan().getDegreeCurricularPlan();
         
@@ -600,7 +601,7 @@ public class TuitionPaymentPlanController extends AcademicTreasuryBaseController
             addInfoMessage(academicTreasuryBundle("label.TuitionPaymentPlan.edit.success"), model);
 
             final FinantialEntity finantialEntity = tuitionInstallmentTariff.getFinantialEntity();
-            final ExecutionYear executionYear = tuitionInstallmentTariff.getTuitionPaymentPlan().getExecutionYear();
+            final ExecutionInterval executionYear = tuitionInstallmentTariff.getTuitionPaymentPlan().getExecutionYear();
             final DegreeCurricularPlan degreeCurricularPlan =
                     tuitionInstallmentTariff.getTuitionPaymentPlan().getDegreeCurricularPlan();
 

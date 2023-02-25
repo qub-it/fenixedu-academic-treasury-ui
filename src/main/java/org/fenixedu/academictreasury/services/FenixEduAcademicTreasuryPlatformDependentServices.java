@@ -98,9 +98,9 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     }
 
     @Override
-    public Set<DegreeCurricularPlan> readDegreeCurricularPlansWithExecutionDegree(final ExecutionYear executionYear,
+    public Set<DegreeCurricularPlan> readDegreeCurricularPlansWithExecutionDegree(final ExecutionInterval executionYear,
             final DegreeType degreeType) {
-        return ExecutionDegree.getAllByExecutionYearAndDegreeType(executionYear, degreeType).stream()
+        return ExecutionDegree.getAllByExecutionYearAndDegreeType(executionYear.getExecutionYear(), degreeType).stream()
                 .map(e -> e.getDegreeCurricularPlan()).collect(Collectors.toSet());
     }
 
@@ -445,7 +445,7 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
 
     @Override
     public RegistrationDataByExecutionYear findRegistrationDataByExecutionYear(Registration registration,
-            ExecutionYear executionYear) {
+            ExecutionInterval executionYear) {
         return registration.getRegistrationDataByExecutionYearSet().stream().filter(rd -> rd.getExecutionYear() == executionYear)
                 .findAny().orElse(null);
     }
@@ -461,8 +461,8 @@ public class FenixEduAcademicTreasuryPlatformDependentServices implements IAcade
     }
 
     @Override
-    public RegistrationRegimeType registrationRegimeType(Registration registration, ExecutionYear executionYear) {
-        return registration.getRegimeType(executionYear);
+    public RegistrationRegimeType registrationRegimeType(Registration registration, ExecutionInterval executionYear) {
+        return registration.getRegimeType(executionYear.getExecutionYear());
     }
 
     @Override

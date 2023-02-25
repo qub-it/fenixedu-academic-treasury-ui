@@ -28,6 +28,7 @@ package org.fenixedu.academictreasury.ui.academicdebtgenerationregistration;
 
 import java.util.stream.Collectors;
 
+import org.fenixedu.academic.domain.ExecutionInterval;
 import org.fenixedu.academic.domain.ExecutionYear;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
@@ -73,7 +74,7 @@ public class AcademicDebtGenerationRegistrationController extends AcademicTreasu
 
         model.addAttribute("AcademicDebtGenerationRegistration_executionYear_options",
                 AcademicDebtGenerationRule.findActive().map(r -> r.getExecutionYear()).collect(Collectors.toSet()).stream()
-                        .sorted(ExecutionYear.COMPARATOR_BY_YEAR).collect(Collectors.toList()));
+                        .sorted(ExecutionInterval.COMPARATOR_BY_BEGIN_DATE).collect(Collectors.toList()));
 
         model.addAttribute("debtAccount", debtAccount);
 
