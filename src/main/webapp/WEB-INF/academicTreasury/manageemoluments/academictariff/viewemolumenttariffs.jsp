@@ -291,10 +291,10 @@ ${portal.toolkit()}
                                 </p>
                             </c:if> <c:if test="${tariff.applyInterests}">
                                 <p align="center">
-                                    <strong>[${tariff.interestRate.interestType.descriptionI18N.content}]</strong>
+                                    <strong>[${tariff.interestRate.interestRateType.description.content}]</strong>
 
                                     <c:if
-                                        test="${tariff.interestRate.interestType.fixedAmount}">
+                                        test="${tariff.interestRate.interestRateType.requiresInterestFixedAmount}">
                                         <p>
                                             <strong><spring:message
                                                     code="label.AcademicTariff.interestFixedAmount" />:</strong>

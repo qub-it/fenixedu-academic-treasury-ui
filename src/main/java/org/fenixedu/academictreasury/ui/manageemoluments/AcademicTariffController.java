@@ -18,8 +18,9 @@ import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.Product;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.domain.tariff.DueDateCalculationType;
-import org.fenixedu.treasury.domain.tariff.InterestType;
+import org.fenixedu.treasury.domain.tariff.InterestRateType;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,8 +44,8 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
 
     private List<AcademicTariff> getSearchUniverseViewEmolumentTariffsDataSet(final FinantialEntity finantialEntity,
             final Product product) {
-        return new ArrayList<AcademicTariff>(AcademicTariff.find(finantialEntity, product).collect(
-                Collectors.<AcademicTariff> toSet()));
+        return new ArrayList<AcademicTariff>(
+                AcademicTariff.find(finantialEntity, product).collect(Collectors.<AcademicTariff> toSet()));
     }
 
     private List<AcademicTariff> filterViewEmolumentTariffs(final FinantialEntity finantialEntity, final Product product) {
@@ -114,8 +115,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
 
         }).collect(Collectors.<DegreeType> toList()));
 
-        model.addAttribute(
-                "AcademicTariff_degree_options",
+        model.addAttribute("AcademicTariff_degree_options",
                 Degree.readAllMatching(Predicate.<DegreeType> isEqual(academicTariffBean.getDegreeType())).stream()
                         .sorted(Degree.COMPARATOR_BY_NAME).collect(Collectors.toList()));
 
@@ -123,7 +123,9 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 .getDegreeType().getCycleTypes() : Collections.emptyList());
 
         model.addAttribute("AcademicTariff_dueDateCalculationType_options", Arrays.asList(DueDateCalculationType.values()));
-        model.addAttribute("AcademicTariff_interestType_options", InterestType.findAll());
+        model.addAttribute("AcademicTariff_interestType_options",
+                TreasurySettings.getInstance().getAvailableInterestRateTypesSet().stream()
+                        .sorted(InterestRateType.COMPARE_BY_NAME).collect(Collectors.toList()));
 
         return "academicTreasury/manageemoluments/academictariff/createemolumenttariff";
     }
@@ -136,7 +138,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         try {
 
             bean.resetFields();
-            
+
             AcademicTariff academicTariff = AcademicTariff.create(finantialEntity, product, bean);
 
             return String.format("redirect:/academictreasury/manageemoluments/academictariff/viewemolumenttariffs/%s/%s",
@@ -167,7 +169,8 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         model.addAttribute("academicTariffBean", bean);
         model.addAttribute("academicTariffBeanJson", getBeanJson(bean));
 
-        model.addAttribute("AcademicTariff_interestType_options", InterestType.findAll());
+        model.addAttribute("AcademicTariff_interestType_options", TreasurySettings.getInstance().getAvailableInterestRateTypesSet().stream()
+                .sorted(InterestRateType.COMPARE_BY_NAME).collect(Collectors.toList()));
 
         return "academicTreasury/manageemoluments/academictariff/updateemolumenttariff";
     }
@@ -176,8 +179,8 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             method = RequestMethod.POST)
     public String updateemolumenttariffpostback(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("productId") final Product product,
-            @PathVariable("academicTariffId") final AcademicTariff academicTariff, @RequestParam(value = "academicTariffBean",
-                    required = false) final AcademicTariffBean bean, final Model model) {
+            @PathVariable("academicTariffId") final AcademicTariff academicTariff,
+            @RequestParam(value = "academicTariffBean", required = false) final AcademicTariffBean bean, final Model model) {
 
         return _updateemolumenttariff(finantialEntity, product, academicTariff, bean, model);
     }
@@ -186,8 +189,9 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
             method = RequestMethod.POST)
     public String updateemolumenttariff(@PathVariable("finantialEntityId") final FinantialEntity finantialEntity,
             @PathVariable("productId") final Product product,
-            @PathVariable("academicTariffId") final AcademicTariff academicTariff, @RequestParam(value = "academicTariffBean",
-                    required = false) final AcademicTariffBean academicTariffBean, final Model model) {
+            @PathVariable("academicTariffId") final AcademicTariff academicTariff,
+            @RequestParam(value = "academicTariffBean", required = false) final AcademicTariffBean academicTariffBean,
+            final Model model) {
 
         try {
             academicTariff.edit(academicTariffBean);
