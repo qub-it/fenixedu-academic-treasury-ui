@@ -123,9 +123,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
                 .getDegreeType().getCycleTypes() : Collections.emptyList());
 
         model.addAttribute("AcademicTariff_dueDateCalculationType_options", Arrays.asList(DueDateCalculationType.values()));
-        model.addAttribute("AcademicTariff_interestType_options",
-                TreasurySettings.getInstance().getAvailableInterestRateTypesSet().stream()
-                        .sorted(InterestRateType.COMPARE_BY_NAME).collect(Collectors.toList()));
+        model.addAttribute("AcademicTariff_interestType_options", InterestRateType.getAvailableInterestRateTypesSortedByName());
 
         return "academicTreasury/manageemoluments/academictariff/createemolumenttariff";
     }
@@ -169,8 +167,7 @@ public class AcademicTariffController extends AcademicTreasuryBaseController {
         model.addAttribute("academicTariffBean", bean);
         model.addAttribute("academicTariffBeanJson", getBeanJson(bean));
 
-        model.addAttribute("AcademicTariff_interestType_options", TreasurySettings.getInstance().getAvailableInterestRateTypesSet().stream()
-                .sorted(InterestRateType.COMPARE_BY_NAME).collect(Collectors.toList()));
+        model.addAttribute("AcademicTariff_interestType_options", InterestRateType.getAvailableInterestRateTypesSortedByName());
 
         return "academicTreasury/manageemoluments/academictariff/updateemolumenttariff";
     }
