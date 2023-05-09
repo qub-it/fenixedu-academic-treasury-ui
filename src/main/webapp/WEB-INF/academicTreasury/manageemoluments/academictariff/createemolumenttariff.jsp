@@ -620,14 +620,14 @@ registerJqueryReadyClosure(function() {
 		interestType_options = [
 	    		<c:forEach items="${AcademicTariff_interestType_options}" var="element"> 
 	    				{
-	    					text : "${element.descriptionI18N.content}",
-	    					id : "${element}"
+	    					text : "${element.description.content}",
+	    					id : "${element.externalId}"
 	    				},
 	    			</c:forEach>
 	    		];
 	
 		$("#academicTariff_interestType").select2({ data : interestType_options } );
-		$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestRateType ? academicTariffBean.interestRateType : ""}');
+		$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestRateType ? academicTariffBean.interestRateType.externalId : ""}');
 	}
 
 });
