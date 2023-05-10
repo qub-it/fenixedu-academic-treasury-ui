@@ -493,8 +493,8 @@ function registerJqueryReadyClosure(func) {
                     <div class="col-sm-4">
                         <select id="academicTariff_interestType"
                             class="form-control" name="interestype"
-                            ng-model="object.interestType"
-                            ng-change="change(object.interestType, '{{ object.interestType }}')">
+                            ng-model="object.interestRateType"
+                            ng-change="change(object.interestRateType, '{{ object.interestRateType }}')">
                             <option value=""></option>
                             <%-- empty option remove it if you don't want to have it or give it a label CHANGE_ME --%>
                         </select>
@@ -502,7 +502,7 @@ function registerJqueryReadyClosure(func) {
                 </div>
 
                 <c:if
-                    test="${academicTariffBean.interestType.fixedAmount}">
+                    test="${academicTariffBean.interestRateType.requiresInterestFixedAmount}">
                     <div class="form-group row">
                         <div class="col-sm-2 control-label">
                             <spring:message
@@ -620,14 +620,14 @@ registerJqueryReadyClosure(function() {
 		interestType_options = [
 	    		<c:forEach items="${AcademicTariff_interestType_options}" var="element"> 
 	    				{
-	    					text : "${element.descriptionI18N.content}",
-	    					id : "${element}"
+	    					text : "${element.description.content}",
+	    					id : "${element.externalId}"
 	    				},
 	    			</c:forEach>
 	    		];
 	
 		$("#academicTariff_interestType").select2({ data : interestType_options } );
-		$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestType ? academicTariffBean.interestType : ""}');
+		$("#academicTariff_interestType").select2().select2('val', '${not empty academicTariffBean.interestRateType ? academicTariffBean.interestRateType.externalId : ""}');
 	}
 
 });
