@@ -261,7 +261,8 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                 continue;
             }
 
-            SibsPaymentRequest.findRequestedByDebitEntry((DebitEntry) invoiceEntry).collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
+            ((DebitEntry) invoiceEntry).getActiveSibsPaymentRequestsOfPendingDebitEntries().stream()
+                .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
         }
 
         for (PaymentPlan paymentPlan : debtAccount.getActivePaymentPlansSet()) {
@@ -270,7 +271,8 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                     continue;
                 }
                 
-                SibsPaymentRequest.findRequestedByInstallment(installment).collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
+                installment.getActiveSibsPaymentRequestsOfPendingInstallments().stream()
+                    .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
             }
         }
 
