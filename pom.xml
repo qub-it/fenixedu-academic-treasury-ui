@@ -56,7 +56,7 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury-base</artifactId>
-			<version>11.0.0</version>
+			<version>11.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
@@ -66,7 +66,7 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury-ui</artifactId>
-			<version>9.0.0</version>
+			<version>9.0.1</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
