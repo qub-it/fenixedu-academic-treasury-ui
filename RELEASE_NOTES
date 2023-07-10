@@ -1,3 +1,5 @@
+- Refactor: Remove management interfaces for tuition payment plan groups
+
 9.0.1 (05-06-2023)
 - Improvement: Present active sibs payment requests if expiration date is not set or it is not expired
 
