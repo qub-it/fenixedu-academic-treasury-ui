@@ -1,4 +1,5 @@
 - Refactor: Remove management screens and controller for academic debt generation rule
+- Improvement: Remove reading treasuryExemptions in customer debt account read screen, to avoid  TreasuryExemption::find(DebtAccount) which was doing a readAll
 
 9.1.0 (10-07-2023)
 - Refactor: Remove management interfaces for tuition payment plan groups

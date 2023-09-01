@@ -149,7 +149,6 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
         List<InvoiceEntry> allInvoiceEntries = new ArrayList<InvoiceEntry>();
         List<SettlementNote> paymentEntries = new ArrayList<SettlementNote>();
-        List<TreasuryExemption> exemptionEntries = new ArrayList<TreasuryExemption>();
         List<InvoiceEntry> pendingInvoiceEntries = new ArrayList<InvoiceEntry>();
 
         allInvoiceEntries.addAll(debtAccount.getActiveInvoiceEntries().collect(Collectors.toList()));
@@ -183,21 +182,6 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                         .filter(x -> !x.getPaymentEntriesSet().isEmpty() || !x.getReimbursementEntriesSet().isEmpty())
                         .collect(Collectors.toList()));
 
-            }
-        }
-
-        exemptionEntries.addAll(TreasuryExemption.findByDebtAccount(debtAccount).collect(Collectors.toList()));
-
-        if (debtAccount.getCustomer().isActive() && debtAccount.getCustomer().isPersonCustomer()) {
-            for (final PersonCustomer inactivePersonCustomer : ((PersonCustomer) debtAccount.getCustomer()).getPerson()
-                    .getInactivePersonCustomersSet()) {
-                if (inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()) == null) {
-                    continue;
-                }
-
-                exemptionEntries.addAll(TreasuryExemption
-                        .findByDebtAccount(inactivePersonCustomer.getDebtAccountFor(debtAccount.getFinantialInstitution()))
-                        .collect(Collectors.toList()));
             }
         }
 
@@ -252,7 +236,6 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("pendingDocumentsDataSet", pendingInvoiceEntries);
         model.addAttribute("allDocumentsDataSet", allInvoiceEntries);
         model.addAttribute("paymentsDataSet", paymentEntries);
-        model.addAttribute("exemptionDataSet", exemptionEntries);
         model.addAttribute("openPaymentPlanInstallmentsDataSet", openPaymentPlanInstallmentsDataSet);
 
         final Set<SibsPaymentRequest> usedPaymentCodeTargets = Sets.newHashSet();
