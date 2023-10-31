@@ -174,7 +174,7 @@ public class SibsOnlinePaymentsGatewayForwardPaymentController extends AcademicT
 
             final ForwardPaymentStatusBean bean = impl.prepareCheckout(forwardPayment, billingAddressBean);
 
-            if (!bean.isInvocationSuccess()) {
+            if (!bean.isOperationSuccess()) {
                 return format("redirect:%s", forwardPayment.getForwardPaymentInsuccessUrl());
             }
 
