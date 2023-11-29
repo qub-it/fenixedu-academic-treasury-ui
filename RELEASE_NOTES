@@ -1,3 +1,4 @@
+9.2.2 (29-11-2023)
 - Refactor: Change visibility of AcademicTreasuryAccessControlExtension#isFrontOfficeMember(String, FinantialEntity) to public, to conform with superclass [#qubIT-Fenix-4596]
 
 9.2.1 (31-10-2023)
