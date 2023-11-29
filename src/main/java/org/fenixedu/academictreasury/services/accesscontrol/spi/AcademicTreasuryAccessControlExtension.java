@@ -62,28 +62,29 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isFrontOfficeMember(final String username) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return FinantialInstitution.findAll().map(l -> isFrontOfficeMember(username, l)).reduce((a, b) -> a || b).orElse(false);
     }
 
     @Override
     public boolean isFrontOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return FinantialEntity.find(finantialInstitution).map(l -> isFrontOfficeMember(username, l)).reduce((a, b) -> a || b)
                 .orElse(false);
     }
 
-    private boolean isFrontOfficeMember(final String username, final FinantialEntity finantialEntity) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+    @Override
+    public boolean isFrontOfficeMember(final String username, final FinantialEntity finantialEntity) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         final User user = User.findByUsername(username);
 
         return AcademicAccessRule.isMember(user, AcademicOperationType.MANAGE_STUDENT_PAYMENTS, emptySet(),
@@ -92,46 +93,47 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isFrontOfficeMemberWithinContext(final String username, final Object context) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
-        final IAcademicTreasuryPlatformDependentServices services = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+
+        final IAcademicTreasuryPlatformDependentServices services =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
         if (context instanceof Degree) {
             final Degree degree = (Degree) context;
             final FinantialEntity finantialEntity = services.finantialEntityOfDegree(degree, new LocalDate());
-            
+
             return isFrontOfficeMember(username, finantialEntity);
         }
 
         return false;
     }
-    
+
     @Override
     public boolean isBackOfficeMember(final String username) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return FinantialInstitution.findAll().map(l -> isBackOfficeMember(username, l)).reduce((a, b) -> a || b).orElse(false);
     }
 
     @Override
     public boolean isBackOfficeMember(final String username, final FinantialInstitution finantialInstitution) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return FinantialEntity.find(finantialInstitution).map(l -> isBackOfficeMember(username, l)).reduce((a, b) -> a || b)
                 .orElse(false);
     }
 
     @Override
     public boolean isBackOfficeMember(final String username, final FinantialEntity finantialEntity) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         final User user = User.findByUsername(username);
 
         return AcademicAccessRule.isMember(user, AcademicOperationType.MANAGE_STUDENT_PAYMENTS_ADV, emptySet(),
@@ -140,19 +142,20 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isBackOfficeMemberWithinContext(String username, Object context) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
-        final IAcademicTreasuryPlatformDependentServices services = AcademicTreasuryPlataformDependentServicesFactory.implementation();
+
+        final IAcademicTreasuryPlatformDependentServices services =
+                AcademicTreasuryPlataformDependentServicesFactory.implementation();
         if (context instanceof Degree) {
             final Degree degree = (Degree) context;
             final FinantialEntity finantialEntity = services.finantialEntityOfDegree(degree, new LocalDate());
-            
-            if(finantialEntity == null) {
+
+            if (finantialEntity == null) {
                 return false;
             }
-            
+
             return isBackOfficeMember(username, finantialEntity);
         }
 
@@ -170,28 +173,28 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isManager(final String username) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return false;
     }
 
     @Override
     public boolean isAllowToModifySettlements(final String username, final FinantialInstitution finantialInstitution) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return FinantialEntity.find(finantialInstitution).map(l -> isAllowToModifySettlements(username, l))
                 .reduce((a, b) -> a || b).orElse(false);
     }
 
     private boolean isAllowToModifySettlements(final String username, final FinantialEntity finantialEntity) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         final User user = User.findByUsername(username);
 
         return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_SETTLEMENTS, emptySet(),
@@ -201,20 +204,20 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
     @Override
     @Deprecated
     public boolean isAllowToModifyInvoices(final String username, final FinantialInstitution finantialInstitution) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return FinantialEntity.find(finantialInstitution).map(l -> isAllowToModifyInvoices(username, l)).reduce((a, b) -> a || b)
                 .orElse(false);
     }
 
     @Deprecated
     private boolean isAllowToModifyInvoices(final String username, final FinantialEntity finantialEntity) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         final User user = User.findByUsername(username);
 
         return AcademicAccessRule.isMember(user, AcademicOperationType.PAYMENTS_MODIFY_INVOICES, emptySet(),
@@ -223,19 +226,19 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public boolean isAllowToConditionallyAnnulSettlementNote(final String username, final SettlementNote settlementNote) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return false;
     }
 
     @Override
     public boolean isAllowToAnnulSettlementNoteWithoutAnyRestriction(final String username, final SettlementNote settlementNote) {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return false;
         }
-        
+
         return false;
     }
 
@@ -243,11 +246,10 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
     public Set<String> getFrontOfficeMemberUsernames() {
         final Set<String> result = Sets.newHashSet();
 
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return result;
         }
-        
-        
+
         FinantialEntity.findAll().forEach(entity -> {
             result.addAll(AcademicAccessRule
                     .getMembers(AcademicOperationType.MANAGE_STUDENT_PAYMENTS, emptySet(),
@@ -262,10 +264,10 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
     public Set<String> getBackOfficeMemberUsernames() {
         final Set<String> result = Sets.newHashSet();
 
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return result;
         }
-        
+
         FinantialEntity.findAll().forEach(entity -> {
             result.addAll(AcademicAccessRule
                     .getMembers(AcademicOperationType.MANAGE_STUDENT_PAYMENTS_ADV, emptySet(),
@@ -278,10 +280,10 @@ public class AcademicTreasuryAccessControlExtension implements ITreasuryAccessCo
 
     @Override
     public Set<String> getTreasuryManagerMemberUsernames() {
-        if(!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
+        if (!TreasuryAccessControlConfiguration.isAccessControlByAcademicAuthorizations()) {
             return Sets.newHashSet();
         }
-        
+
         return Sets.newHashSet();
     }
 
