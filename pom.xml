@@ -122,16 +122,4 @@
 		</dependency>
 	</dependencies>
 
-
-	   <distributionManagement>
-                <repository>
-                        <id>qubIT-oss</id>
-                        <url>https://repository-oss.omnis.cloud/nexus/repository/releases/</url>
-                </repository>
-                <snapshotRepository>
-                        <id>qubIT-oss</id>
-                        <url>https://repository-oss.omnis.cloud/nexus/repository/snapshots/</url>
-                </snapshotRepository>
-     </distributionManagement>
-
 </project>
