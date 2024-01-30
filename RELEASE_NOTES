@@ -1,4 +1,5 @@
 - Improvement: Adds fenixedu OSS DM [#qubIT-Omnis-4736]
+- Refactor: Remove duplicated classes already declared in fenixedu-academic-treasury-base [#qubIT-Fenix-4915]
 
 9.2.2 (29-11-2023)
 - Refactor: Change visibility of AcademicTreasuryAccessControlExtension#isFrontOfficeMember(String, FinantialEntity) to public, to conform with superclass [#qubIT-Fenix-4596]
