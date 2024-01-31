@@ -1,3 +1,4 @@
+9.3.0 (31-01-2024)
 - Improvement: Adds fenixedu OSS DM [#qubIT-Omnis-4736]
 - Refactor: Remove duplicated classes already declared in fenixedu-academic-treasury-base [#qubIT-Fenix-4915]
 
