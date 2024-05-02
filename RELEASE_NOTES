@@ -1,3 +1,4 @@
+9.6.0 (02-05-2024)
 - Refactor: Bring PaymentCodePool#isReferenceCodesActiveForStudentPortal to this module [#UL-ISCSP-1764]
 - Improvement: Redefine if the option for generating reference codes for student is available [#UL-ISCSP-1764]
 
