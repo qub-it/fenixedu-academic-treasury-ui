@@ -1,6 +1,5 @@
 <%@page import="org.fenixedu.academictreasury.ui.customer.paymentreferencecode.CustomerAccountingPaymentReferenceCodeController"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.mbwaypaymentrequest.CustomerAccountingMbwayPaymentRequestController"%>
-<%@page import="org.fenixedu.treasury.domain.paymentcodes.pool.PaymentCodePool"  %>
 <%@page import="org.fenixedu.treasury.domain.debt.DebtAccount"%>
 <%@page import="org.fenixedu.treasury.domain.FinantialInstitution"%>
 <%@page import="org.fenixedu.academictreasury.ui.customer.CustomerAccountingController"%>
@@ -64,7 +63,7 @@ ${portal.angularToolkit()}
 		</a>
 	</c:if>
 
-	<% if(PaymentCodePool.isReferenceCodesActiveForStudentPortal(debtAccount.getFinantialInstitution())) { %>
+	<% if(CustomerAccountingPaymentReferenceCodeController.isReferenceCodesActiveForStudentPortal(debtAccount.getFinantialInstitution())) { %>
  		&nbsp;|&nbsp;
  		
 		<span class="glyphicon glyphicon-shopping-cart" aria-hidden="true"></span>&nbsp;

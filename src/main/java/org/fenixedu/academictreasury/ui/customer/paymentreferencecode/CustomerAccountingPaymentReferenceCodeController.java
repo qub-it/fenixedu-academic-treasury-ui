@@ -6,7 +6,12 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.ui.customer.CustomerAccountingController;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
+import org.fenixedu.treasury.domain.paymentcodes.integration.SibsPaymentCodePool;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
+import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatformPaymentMode;
+import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.ui.accounting.managecustomer.PaymentReferenceCodeController;
@@ -98,5 +103,23 @@ public class CustomerAccountingPaymentReferenceCodeController extends PaymentRef
     protected String getCreatePostbackUrl(DebtAccount debtAccount) {
         return CREATEPAYMENTCODEFORSEVERALDEBITENTRIESPOSTBACK_URL + "/" + debtAccount.getExternalId();
     }
-    
+
+    public static boolean isReferenceCodesActiveForStudentPortal(FinantialInstitution finantialInstitution) {
+        if (!SibsPaymentCodePool.findForSibsPaymentCodeServiceByActive(finantialInstitution, true).findFirst().isPresent()) {
+            return false;
+        }
+
+        DigitalPaymentPlatform digitalPaymentPlatform =
+                SibsPaymentCodePool.findForSibsPaymentCodeServiceByActive(finantialInstitution, true).findFirst().get();
+
+        if (!DigitalPaymentPlatformPaymentMode
+                .findUnique(digitalPaymentPlatform, TreasurySettings.getInstance().getMbPaymentMethod()).isPresent()) {
+            return false;
+        }
+
+        return Boolean.TRUE.equals(DigitalPaymentPlatformPaymentMode
+                .findUnique(digitalPaymentPlatform, TreasurySettings.getInstance().getMbPaymentMethod()).get()
+                .getActiveForFrontend());
+    }
+
 }
