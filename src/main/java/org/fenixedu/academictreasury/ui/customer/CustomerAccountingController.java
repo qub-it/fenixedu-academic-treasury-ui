@@ -5,6 +5,7 @@ import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -84,7 +85,8 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     }
 
     public static String FORWARD_PAYMENT_URL(DebtAccount debtAccount, DigitalPaymentPlatform digitalPaymentPlatform) {
-        return String.format(CONTROLLER_URL + "/read/%s/forwardpayment/%s", debtAccount.getExternalId(), digitalPaymentPlatform.getExternalId());
+        return String.format(CONTROLLER_URL + "/read/%s/forwardpayment/%s", debtAccount.getExternalId(),
+                digitalPaymentPlatform.getExternalId());
     }
 
     protected String getPrintSettlementNote() {
@@ -240,17 +242,17 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
             }
 
             ((DebitEntry) invoiceEntry).getActiveSibsPaymentRequestsOfPendingDebitEntries().stream()
-                .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
+                    .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
         }
 
         for (PaymentPlan paymentPlan : debtAccount.getActivePaymentPlansSet()) {
             for (Installment installment : paymentPlan.getInstallmentsSet()) {
-                if(installment.isPaid()) {
+                if (installment.isPaid()) {
                     continue;
                 }
-                
+
                 installment.getActiveSibsPaymentRequestsOfPendingInstallments().stream()
-                    .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
+                        .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
             }
         }
 
@@ -272,19 +274,20 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
                 }
 
                 SibsPaymentRequest.findRequestedByDebitEntry((DebitEntry) invoiceEntry)
-                    .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
+                        .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
             }
 
             for (PaymentPlan paymentPlan : inactiveDebtAccount.getActivePaymentPlansSet()) {
                 for (Installment installment : paymentPlan.getInstallmentsSet()) {
-                    if(installment.isPaid()) {
+                    if (installment.isPaid()) {
                         continue;
                     }
-                    
-                    SibsPaymentRequest.findRequestedByInstallment(installment).collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
+
+                    SibsPaymentRequest.findRequestedByInstallment(installment)
+                            .collect(Collectors.toCollection(() -> usedPaymentCodeTargets));
                 }
             }
-            
+
         }
 
         if (findUniqueActiveForForwardPaymentService(debtAccount.getFinantialInstitution()).isPresent()) {
@@ -304,12 +307,11 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
     }
 
     @RequestMapping(value = "/read/{oid}/forwardpayment/{digitalPaymentPlatformId}")
-    public String processReadToForwardPayment(
-            @PathVariable("oid") DebtAccount debtAccount, 
-            @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform,
-            final Model model, final RedirectAttributes redirectAttributes) {
-        return redirect(CustomerAccountingForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/" + digitalPaymentPlatform.getExternalId(),
-                model, redirectAttributes);
+    public String processReadToForwardPayment(@PathVariable("oid") DebtAccount debtAccount,
+            @PathVariable("digitalPaymentPlatformId") DigitalPaymentPlatform digitalPaymentPlatform, final Model model,
+            final RedirectAttributes redirectAttributes) {
+        return redirect(CustomerAccountingForwardPaymentController.CHOOSE_INVOICE_ENTRIES_URL + debtAccount.getExternalId() + "/"
+                + digitalPaymentPlatform.getExternalId(), model, redirectAttributes);
     }
 
     private static final String CUSTOMER_NOT_CREATED_URI = "/customernotcreated";
@@ -433,22 +435,22 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
 
     public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForForwardPaymentService(
             FinantialInstitution finantialInstitution) {
-        return DigitalPaymentPlatform.findForForwardPaymentService(finantialInstitution, true)
-                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
-                .findFirst();
+        Comparator<DigitalPaymentPlatform> comparator =
+                Comparator.comparing(DigitalPaymentPlatform::getName).thenComparing(DigitalPaymentPlatform::getExternalId);
+
+        return DigitalPaymentPlatform.findForForwardPaymentService(finantialInstitution, true).sorted(comparator).findFirst();
     }
 
     public static Optional<? extends DigitalPaymentPlatform> findUniqueActiveForMbwayService(
             FinantialInstitution finantialInstitution) {
-        if(TreasurySettings.getInstance().getMbWayPaymentMethod() == null) {
+        if (TreasurySettings.getInstance().getMbWayPaymentMethod() == null) {
             return Optional.empty();
         }
-        
-        return DigitalPaymentPlatformPaymentMode.findAll()
-                    .filter(m -> m.isActive() && m.getDigitalPaymentPlatform().isActive())
-                    .filter(m -> m.getPaymentMethod() == TreasurySettings.getInstance().getMbWayPaymentMethod())
-                    .map(m -> m.getDigitalPaymentPlatform())
-                    .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
-                    .findFirst();
+
+        return DigitalPaymentPlatformPaymentMode.findAll().filter(m -> m.isActive() && m.getDigitalPaymentPlatform().isActive())
+                .filter(m -> m.getPaymentMethod() == TreasurySettings.getInstance().getMbWayPaymentMethod())
+                .map(m -> m.getDigitalPaymentPlatform())
+                .sorted((o1, o2) -> o1.getName().compareTo(o2.getName()) * 10 + o1.getExternalId().compareTo(o2.getExternalId()))
+                .findFirst();
     }
 }
