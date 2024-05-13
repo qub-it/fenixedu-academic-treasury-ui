@@ -1,3 +1,4 @@
+9.6.1 (13-05-2024)
 - Refactor: Fix comparator applied in CustomerAccountingController#findUniqueActiveForForwardPaymentService [#qubIT-Fenix-5268]
 
 9.6.0 (02-05-2024)
