@@ -1,3 +1,5 @@
+- Refactor: Moves treasury classes for all web apps to treasury base [#qubIT-Omnis-5875]
+
 9.6.1 (13-05-2024)
 - Refactor: Fix comparator applied in CustomerAccountingController#findUniqueActiveForForwardPaymentService [#qubIT-Fenix-5268]
 
