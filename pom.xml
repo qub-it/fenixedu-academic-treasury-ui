@@ -65,7 +65,6 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury-ui</artifactId>
-			<version>9.2.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
