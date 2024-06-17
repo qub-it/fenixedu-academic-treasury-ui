@@ -1,3 +1,5 @@
+- Improvement: Performs release for jdk 17 [#qubIT-Omnis-4737]
+
 9.7.0 (03-06-2024)
 - Refactor: Moves treasury classes for all web apps to treasury base [#qubIT-Omnis-5875]
 
