@@ -171,14 +171,7 @@ ${portal.toolkit()}
 									</c:if>
                             </p>
 
-                            <p>&nbsp;</p> <c:if
-                                test="${not empty tariff.administrativeOffice}">
-                                <p>
-                                    <strong> <c:out
-                                            value="${tariff.administrativeOffice.name.content}" />
-                                    </strong>
-                                </p>
-                            </c:if> <c:if test="${not empty tariff.degreeType}">
+                            <p>&nbsp;</p> <c:if test="${not empty tariff.degreeType}">
                                 <p>
                                     <strong> <c:out
                                             value="${tariff.degreeType.name.content}" />
@@ -335,7 +328,6 @@ ${portal.toolkit()}
 "begindate" : "<c:out value='${searchResult.beginDate}'/>",
 "enddate" : "<c:out value='${searchResult.endDate}'/>",
 "baseamount" : "<c:out value='${searchResult.baseAmount}'/>",
-"administrativeoffice" : "<c:out value='${searchResult.administrativeOffice}'/>",
 "actions" :
 " <a  class=\"btn btn-default btn-xs\" href=\"${pageContext.request.contextPath}/academictreasury/manageemoluments/academictariff/viewemolumenttariffsviewEmolumentTariffs/view/${searchResult.externalId}\"><spring:message code='label.view'/></a>" +
 " <a  class=\"btn btn-xs btn-danger\" href=\"#\" onClick=\"javascript:processDelete('${searchResult.externalId}')\"><span class=\"glyphicon glyphicon-trash\" aria-hidden=\"true\"></span>&nbsp;<spring:message code='label.delete'/></a>" +
@@ -352,7 +344,6 @@ ${portal.toolkit()}
 			{ data: 'begindate' },
 			{ data: 'enddate' },
 			{ data: 'baseamount' },
-			/*{ data: 'administrativeoffice' },*/
 			{ data: 'actions',className:"all" }
 			
 		],

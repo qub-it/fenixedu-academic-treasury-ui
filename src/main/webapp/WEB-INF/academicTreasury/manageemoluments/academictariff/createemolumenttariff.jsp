@@ -542,7 +542,6 @@ function registerJqueryReadyClosure(func) {
 
 registerJqueryReadyClosure(function() {
 
-	<%-- End block for providing administrativeOffice options --%>
 	<%-- Block for providing degreeType options --%>
 	<%-- CHANGE_ME --%> <%-- INSERT YOUR FORMAT FOR element --%>
 	degreeType_options = [
