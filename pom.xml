@@ -65,6 +65,7 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury-ui</artifactId>
+			<version>9.5.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.webjars</groupId>
@@ -110,11 +111,6 @@
 			<groupId>com.github.dandelion</groupId>
 			<artifactId>datatables-servlet2</artifactId>
 			<version>0.8.11</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>3.11</version>
 		</dependency>
 	</dependencies>
 
