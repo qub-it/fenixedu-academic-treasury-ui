@@ -11,6 +11,7 @@ import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainExc
 import org.fenixedu.academictreasury.ui.customer.CustomerAccountingController;
 import org.fenixedu.bennu.core.domain.User;
 import org.fenixedu.bennu.spring.portal.BennuSpringController;
+import org.fenixedu.treasury.domain.Customer;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.document.SettlementNote;
 import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
@@ -66,8 +67,14 @@ public class CustomerAccountingForwardPaymentController
     }
 
     private DebtAccount activeDebtAccount(final DebtAccount debtAccount) {
-        return DebtAccount.findUnique(debtAccount.getFinantialInstitution(),
-                ((PersonCustomer) debtAccount.getCustomer()).getActiveCustomer()).get();
+        Customer activeCustomer = debtAccount.getCustomer().getActiveCustomer();
+
+        if (activeCustomer == null) {
+            throw new AcademicTreasuryDomainException(
+                    "error.CustomerAccountingForwardPaymentController.redirectToDebtAccountUrl.missing.active.customer");
+        }
+
+        return DebtAccount.findUnique(debtAccount.getFinantialInstitution(), activeCustomer).get();
     }
 
     @RequestMapping(value = CHOOSE_INVOICE_ENTRIES_URI + "{debtAccountId}/{digitalPaymentPlatformId}")
