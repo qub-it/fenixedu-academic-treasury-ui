@@ -1,3 +1,5 @@
+- Refactor: Remove references to IAcademicTreasuryPlatformDependentServices [#qubIT-Fenix-6593]
+
 9.9.1 (16-12-2024)
 - Bug Fix: When retrieving the PersonCustomer#getActiveCustomer(), validate that the active customer is found. If it is not, throw exception [#qubIT-Fenix-6386]
 

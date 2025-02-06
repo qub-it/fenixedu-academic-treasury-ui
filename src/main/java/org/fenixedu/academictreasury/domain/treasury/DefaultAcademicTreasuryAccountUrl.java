@@ -3,7 +3,7 @@ package org.fenixedu.academictreasury.domain.treasury;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academic.domain.student.Registration;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
-import org.fenixedu.academictreasury.services.AcademicTreasuryPlataformDependentServicesFactory;
+import org.fenixedu.academictreasury.util.AcademicTreasuryConstants;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.domain.FinantialInstitution;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
@@ -24,8 +24,8 @@ public class DefaultAcademicTreasuryAccountUrl implements IAcademicTreasuryAccou
 
     @Override
     public String getRegistrationAccountTreasuryManagementURL(Registration registration) {
-        FinantialEntity finantialEntity = AcademicTreasuryPlataformDependentServicesFactory.implementation()
-                .finantialEntityOfDegree(registration.getDegree(), new LocalDate());
+        FinantialEntity finantialEntity =
+                AcademicTreasuryConstants.getFinantialEntityOfDegree(registration.getDegree(), new LocalDate());
 
         if (finantialEntity == null) {
             return getPersonAccountTreasuryManagementURL(registration.getPerson());
@@ -49,8 +49,8 @@ public class DefaultAcademicTreasuryAccountUrl implements IAcademicTreasuryAccou
     @Override
     public String getDebtAccountURL(final TreasuryEvent treasuryEvent) {
         if (DebitEntry.findActive(treasuryEvent).findFirst().isPresent()) {
-            return DebtAccountController.READ_URL
-                    + DebitEntry.findActive(treasuryEvent).findFirst().get().getDebtAccount().getExternalId();
+            return DebtAccountController.READ_URL + DebitEntry.findActive(treasuryEvent).findFirst().get().getDebtAccount()
+                    .getExternalId();
         }
 
         return null;
