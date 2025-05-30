@@ -177,13 +177,15 @@ ${portal.toolkit()}
                                             value="${tariff.degreeType.name.content}" />
                                     </strong>
                                 </p>
-                            </c:if> <c:if test="${not empty tariff.degree}">
+                            </c:if>
+                            <c:forEach var="degree" items="${tariff.associatedDegreesSet}">
                                 <p>
                                     <strong> <c:out
-                                            value="${tariff.degree.nameI18N.content}" />
+                                            value="${degree.nameI18N.content}" />
                                     </strong>
                                 </p>
-                            </c:if> <c:if
+                            </c:forEach>
+                            <c:if
                                 test="${(not empty tariff.degree) && (not empty tariff.cycleType)}">
                                 <p>
                                     <strong> <c:out
