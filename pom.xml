@@ -12,7 +12,7 @@
 
 	<groupId>org.fenixedu</groupId>
 	<artifactId>fenixedu-academic-treasury-ui</artifactId>
-	<version>9.9.2</version>
+	<version>9.9.3</version>
 	<packaging>jar</packaging>
 
 	<name>Academic Treasury UI</name>
