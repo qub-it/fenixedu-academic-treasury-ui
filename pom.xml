@@ -57,11 +57,11 @@
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-treasury-base</artifactId>
+			<version>14.3.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
 			<artifactId>fenixedu-academic-treasury-base</artifactId>
-			<version>12.9.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.fenixedu</groupId>
