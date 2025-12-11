@@ -8,6 +8,7 @@ import org.fenixedu.academictreasury.ui.AcademicTreasuryController;
 import org.fenixedu.bennu.spring.portal.SpringFunctionality;
 import org.fenixedu.treasury.domain.FinantialEntity;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,7 +33,7 @@ public class FinantialEntityController extends AcademicTreasuryBaseController {
     }
 
     private List<FinantialEntity> getSearchUniverseChooseFinantialEntityDataSet() {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = TreasuryConstants.getAuthenticatedUsername();
         
         return FinantialEntity.findWithBackOfficeAccessFor(loggedUsername)
                 .sorted(FinantialEntity.COMPARE_BY_NAME).collect(Collectors.toList());

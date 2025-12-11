@@ -18,6 +18,7 @@ import org.fenixedu.treasury.domain.forwardpayments.ForwardPaymentRequest;
 import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatform;
 import org.fenixedu.treasury.dto.SettlementNoteBean;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,7 +46,7 @@ public class CustomerAccountingForwardPaymentController
 
     @Override
     protected void checkPermissions(DebtAccount debtAccount, Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = TreasuryConstants.getAuthenticatedUsername();
 
         final Person person = User.findByUsername(loggedUsername).getPerson();
         final String fiscalCountryCode = PersonCustomer.addressCountryCode(person);

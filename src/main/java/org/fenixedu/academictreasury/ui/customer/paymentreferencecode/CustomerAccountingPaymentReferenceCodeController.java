@@ -35,7 +35,7 @@ public class CustomerAccountingPaymentReferenceCodeController extends PaymentRef
 
     @Override
     protected void checkPermissions(DebtAccount debtAccount, Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = TreasuryConstants.getAuthenticatedUsername();
 
         final Person person = User.findByUsername(loggedUsername).getPerson();
         final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);

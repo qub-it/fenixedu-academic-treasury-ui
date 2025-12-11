@@ -38,6 +38,7 @@ import org.fenixedu.treasury.domain.payments.integration.DigitalPaymentPlatformP
 import org.fenixedu.treasury.domain.settings.TreasurySettings;
 import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
 import org.fenixedu.treasury.services.integration.erp.ERPExporterManager;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -107,7 +108,7 @@ public class CustomerAccountingController extends AcademicTreasuryBaseController
         model.addAttribute("readCustomerUrl", getReadCustomerUrl());
         model.addAttribute("readAccountUrl", getReadAccountUrl());
 
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = TreasuryConstants.getAuthenticatedUsername();
 
         Customer customer = User.findByUsername(loggedUsername).getPerson().getPersonCustomer();
         model.addAttribute("customer", customer);

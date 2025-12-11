@@ -1,7 +1,6 @@
 package org.fenixedu.academictreasury.ui.customer.mbwaypaymentrequest;
 
-import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
-
+import com.google.common.base.Strings;
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
 import org.fenixedu.academictreasury.domain.exceptions.AcademicTreasuryDomainException;
@@ -11,17 +10,13 @@ import org.fenixedu.bennu.spring.portal.BennuSpringController;
 import org.fenixedu.treasury.domain.debt.DebtAccount;
 import org.fenixedu.treasury.domain.sibspaymentsgateway.MbwayRequest;
 import org.fenixedu.treasury.dto.document.managepayments.PaymentReferenceCodeBean;
-import org.fenixedu.treasury.services.integration.TreasuryPlataformDependentServicesFactory;
+import org.fenixedu.treasury.util.TreasuryConstants;
 import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import com.google.common.base.Strings;
+import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
 @BennuSpringController(value = CustomerAccountingController.class)
 @RequestMapping(CustomerAccountingMbwayPaymentRequestController.CONTROLLER_URL)
@@ -32,7 +27,7 @@ public class CustomerAccountingMbwayPaymentRequestController
 
     @Override
     protected void checkPermissions(DebtAccount debtAccount, Model model) {
-        final String loggedUsername = TreasuryPlataformDependentServicesFactory.implementation().getLoggedUsername();
+        final String loggedUsername = TreasuryConstants.getAuthenticatedUsername();
 
         final Person person = User.findByUsername(loggedUsername).getPerson();
         final String addressFiscalCountryCode = PersonCustomer.addressCountryCode(person);
