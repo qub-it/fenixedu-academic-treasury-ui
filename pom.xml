@@ -12,7 +12,7 @@
 
 	<groupId>org.fenixedu</groupId>
 	<artifactId>fenixedu-academic-treasury-ui</artifactId>
-	<version>9.9.3</version>
+	<version>9.9.4</version>
 	<packaging>jar</packaging>
 
 	<name>Academic Treasury UI</name>
@@ -22,7 +22,7 @@
 			<dependency>
 				<groupId>com.qubit.solution.fenixedu</groupId>
 				<artifactId>fenixedu-oss-dependency-management</artifactId>
-				<version>557</version>
+				<version>559</version>
 				<scope>import</scope>
 				<type>pom</type>
 			</dependency>
