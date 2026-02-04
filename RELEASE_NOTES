@@ -1,3 +1,5 @@
+- Refactor: Remove calls for ITreasuryPlatformDependentServices in JSP files [#qubIT-Fenix-7855]
+
 9.9.5 (06-01-2026)
 - Refactor: Replace ITreasuryPlatformDependentServices#versioning* methods by static FenixEDUTreasuryPlatformDependentServices#getVersioning* [#qubIT-Fenix-7855]
 
