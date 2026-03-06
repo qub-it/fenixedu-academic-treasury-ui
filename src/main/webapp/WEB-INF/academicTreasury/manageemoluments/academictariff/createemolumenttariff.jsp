@@ -167,6 +167,10 @@ function registerJqueryReadyClosure(func) {
                 </div>
             </div>
 
+            <%--
+            ANIL 2026-03-03 (#qubIT-Fenix-8048)
+            remove the cycle type and check if it will be needed in the future
+
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
                     <spring:message
@@ -174,7 +178,6 @@ function registerJqueryReadyClosure(func) {
                 </div>
 
                 <div class="col-sm-4">
-                    <%-- Relation to side 1 drop down rendered in input --%>
                     <select id="academicTariff_cycleType"
                         class="js-example-basic-single" name="cycleType"
                         ng-model="object.cycleType">
@@ -182,6 +185,7 @@ function registerJqueryReadyClosure(func) {
                     </select>
                 </div>
             </div>
+            --%>
 
             <div class="form-group row">
                 <div class="col-sm-2 control-label">
