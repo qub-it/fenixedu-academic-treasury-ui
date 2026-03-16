@@ -61,7 +61,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.google.common.base.Strings;
 
-@BennuSpringController(value = CustomerController.class)
 @SpringFunctionality(app = AcademicTreasuryController.class, title = "label.title.massivetuitiondebtcreation",
         accessGroup = "treasuryManagers")
 @RequestMapping(MassiveDebtGenerationRequestFileController.CONTROLLER_URL)
