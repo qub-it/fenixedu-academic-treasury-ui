@@ -99,7 +99,7 @@ public class CourseFunctionCostController extends AcademicTreasuryBaseController
                 .readNotEmptyDegreeCurricularPlans().stream().sorted(DegreeCurricularPlan.COMPARATOR_BY_PRESENTATION_NAME)
                 .collect(Collectors.toList()));
 
-        model.addAttribute("CourseFunctionCost_competenceCourses_options", CompetenceCourse.readBolonhaCompetenceCourses()
+        model.addAttribute("CourseFunctionCost_competenceCourses_options", CompetenceCourse.findAll()
                 .stream().sorted(CompetenceCourse.COMPETENCE_COURSE_COMPARATOR_BY_NAME).collect(Collectors.toList()));
 
         return jspPage("search");
