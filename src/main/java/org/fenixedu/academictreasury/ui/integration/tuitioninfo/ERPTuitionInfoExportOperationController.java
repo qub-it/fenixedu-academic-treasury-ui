@@ -6,7 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.fenixedu.academictreasury.domain.integration.ERPTuitionInfoExportOperation;
 import org.fenixedu.academictreasury.domain.integration.tuitioninfo.ERPTuitionInfo;

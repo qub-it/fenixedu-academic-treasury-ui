@@ -4,8 +4,8 @@ import static java.lang.String.format;
 
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.fenixedu.academic.domain.Person;

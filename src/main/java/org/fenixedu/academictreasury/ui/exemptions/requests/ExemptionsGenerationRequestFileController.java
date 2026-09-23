@@ -5,8 +5,8 @@ import static org.fenixedu.academictreasury.util.AcademicTreasuryConstants.acade
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.fenixedu.academictreasury.domain.exemptions.requests.ExemptionsGenerationRequestFile;
 import org.fenixedu.academictreasury.ui.AcademicTreasuryBaseController;

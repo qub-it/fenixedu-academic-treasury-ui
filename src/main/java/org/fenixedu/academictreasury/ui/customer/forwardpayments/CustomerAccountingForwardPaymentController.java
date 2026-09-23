@@ -2,8 +2,8 @@ package org.fenixedu.academictreasury.ui.customer.forwardpayments;
 
 import static org.fenixedu.treasury.util.TreasuryConstants.treasuryBundle;
 
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import org.fenixedu.academic.domain.Person;
 import org.fenixedu.academictreasury.domain.customer.PersonCustomer;
