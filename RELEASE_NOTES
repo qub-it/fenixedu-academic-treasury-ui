@@ -1,4 +1,6 @@
 - Refactor: Migrate from javaee to jakarta [#qubIT-Omnis-10960]
+- Refactor: Delete deprecated Spring controllers [#qubIT-Fenix-9499]
+
 9.9.9 (06-08-2026)
 - Refactor: Replaces CompetenceCourse deprecated method references [#qubIT-Fenix-8962]
 
