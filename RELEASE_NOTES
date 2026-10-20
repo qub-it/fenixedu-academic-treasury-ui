@@ -1,3 +1,5 @@
+- Refactor: Migrate from javaee to jakarta [#qubIT-Omnis-10960]
+
 9.10.3 (13-10-2026)
 - Refactor: Delete deprecated Spring controllers [#qubIT-Fenix-9499]
 
